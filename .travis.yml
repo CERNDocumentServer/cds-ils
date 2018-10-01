@@ -1,0 +1,80 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2018 CERN.
+#
+# CDS Books is free software; you can redistribute it and/or modify it
+# under the terms of the MIT License; see LICENSE file for more details.
+
+addons:
+  chrome: stable # https://docs.travis-ci.com/user/chrome
+
+# Chrome Webdriver fails if not on sudo
+# See https://github.com/travis-ci/travis-ci/issues/8836
+sudo: true
+
+dist: trusty # Chrome driver fails if not trusty dist
+
+notifications:
+  email: # sent to the committer and the author
+    on_success: never # default: always
+    on_failure: always # default: always
+
+language: python
+
+matrix:
+  fast_finish: true
+
+cache:
+  - pip
+
+services:
+  - postgresql
+  - redis
+  - rabbitmq
+addons:
+  postgresql: "9.6"
+
+env:
+  global:
+    # Print screenshots to console output
+    - E2E_OUTPUT=base64
+    # Enable end-to-end tests
+    - E2E=no
+  matrix:
+    - REQUIREMENTS=prod E2E=yes
+    - REQUIREMENTS=qa
+
+python:
+  - "3.6"
+
+before_install:
+  - mkdir /tmp/elasticsearch
+  - wget -O - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.2.tar.gz | tar xz --directory=/tmp/elasticsearch --strip-components=1
+  - "/tmp/elasticsearch/bin/elasticsearch > /tmp/local-es.log &"
+  # Chrome webdriver for Selenium
+  - "PATH=$PATH:$HOME/webdrivers"
+  - "if [ ${E2E} == 'yes' ] && [ ! -f $HOME/webdrivers/chromedriver ]; then wget https://chromedriver.storage.googleapis.com/2.31/chromedriver_linux64.zip -P $HOME/webdrivers; unzip -d $HOME/webdrivers $HOME/webdrivers/chromedriver_linux64.zip; fi"
+  - "nvm install 6; nvm use 6"
+  - "travis_retry pip install --upgrade pip setuptools py"
+  - "travis_retry pip install twine wheel coveralls requirements-builder"
+  - "cat requirements.txt > .travis-prod-requirements.txt"
+  - "requirements-builder -e all --level=pypi setup.py > .travis-qa-requirements.txt"
+  - "./scripts/bootstrap"
+
+install:
+  - "travis_retry pip install -r .travis-${REQUIREMENTS}-requirements.txt"
+  - "travis_retry pip install -e .[all]"
+
+before_script:
+  # https://docs.travis-ci.com/user/gui-and-headless-browsers/
+  - "export DISPLAY=:99.0"
+  - "if [ ${E2E} == 'yes' ]; then sh -e /etc/init.d/xvfb start; sleep 3; fi"
+  # Allow ES to start
+  - sleep 10
+  - wget -q --waitretry=1 --retry-connrefused -T 10 -O - http://127.0.0.1:9200 && echo "Elasticsearch is up!" || cat /tmp/local-es.log
+
+script:
+  - ./run-tests.sh # E2E tests are skipped if E2E env is set to 'no'
+
+after_success:
+  - coveralls
