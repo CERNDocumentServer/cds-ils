@@ -15,12 +15,46 @@ You overwrite and set instance-specific configuration by either:
 
 from __future__ import absolute_import, print_function
 
+import os
 from datetime import timedelta
 
 
 def _(x):
     """Identity function used to trigger string extraction."""
     return x
+
+def _parse_env_bool(var_name, default=None):
+    if str(os.environ.get(var_name)).lower() == 'true':
+        return True
+    elif str(os.environ.get(var_name)).lower() == 'false':
+        return False
+    return default
+
+# Search
+# ======
+ELASTICSEARCH_HOST = os.environ.get('ELASTICSEARCH_HOST', 'localhost')
+ELASTICSEARCH_PORT = int(os.environ.get('ELASTICSEARCH_PORT', '9200'))
+ELASTICSEARCH_USER = os.environ.get('ELASTICSEARCH_USER')
+ELASTICSEARCH_PASSWORD = os.environ.get('ELASTICSEARCH_PASSWORD')
+ELASTICSEARCH_URL_PREFIX = os.environ.get('ELASTICSEARCH_URL_PREFIX', '')
+ELASTICSEARCH_USE_SSL = _parse_env_bool('ELASTICSEARCH_USE_SSL')
+ELASTICSEARCH_VERIFY_CERTS = _parse_env_bool('ELASTICSEARCH_VERIFY_CERTS')
+
+es_host_params = {
+    'host': ELASTICSEARCH_HOST,
+    'port': ELASTICSEARCH_PORT,
+}
+if ELASTICSEARCH_USER and ELASTICSEARCH_PASSWORD:
+    es_host_params['http_auth'] = (ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD)
+if ELASTICSEARCH_URL_PREFIX:
+    es_host_params['url_prefix'] = ELASTICSEARCH_URL_PREFIX
+if ELASTICSEARCH_USE_SSL is not None:
+    es_host_params['use_ssl'] = ELASTICSEARCH_USE_SSL
+if ELASTICSEARCH_VERIFY_CERTS is not None:
+    es_host_params['verify_certs'] = ELASTICSEARCH_VERIFY_CERTS
+
+SEARCH_ELASTIC_HOSTS = [es_host_params]
+"""Elasticsearch hosts configuration."""
 
 
 # Rate limiting
@@ -137,8 +171,10 @@ SESSION_COOKIE_SECURE = True
 #: provided, the allowed hosts variable is set to localhost. In production it
 #: should be set to the correct host and it is strongly recommended to only
 #: route correct hosts to the application.
-APP_ALLOWED_HOSTS = ['cds-books.com', 'localhost', '127.0.0.1']
-
+APP_ALLOWED_HOSTS = [
+    os.environ.get("ALLOWED_HOST"),
+    os.environ.get("HOSTNAME"),  # fix disallowed host error during /ping
+]
 # OAI-PMH
 # =======
 OAISERVER_ID_PREFIX = 'oai:cds-books.com:'
@@ -149,5 +185,34 @@ OAISERVER_ID_PREFIX = 'oai:cds-books.com:'
 # debug mode. More configuration options are available at
 # https://flask-debugtoolbar.readthedocs.io/en/latest/#configuration
 
+DEBUG = False
+DEBUG_TB_ENABLED = True
 #: Switches off incept of redirects by Flask-DebugToolbar.
 DEBUG_TB_INTERCEPT_REDIRECTS = False
+
+# Sentry
+# ======
+LOGGING_SENTRY_LEVEL = "WARNING"
+"""Sentry logging level."""
+
+LOGGING_SENTRY_PYWARNINGS = False
+"""Enable logging of Python warnings to Sentry."""
+
+LOGGING_SENTRY_CELERY = False
+"""Configure Celery to send logging to Sentry."""
+
+SENTRY_DSN = None
+"""Set SENTRY_DSN environment variable."""
+
+SENTRY_CONFIG = {
+    "environment": os.environ.get("SENTRY_ENVIRONMENT", "dev")
+}
+
+try:
+    # Try to get the release tag
+    from raven import fetch_git_sha
+    SENTRY_CONFIG["release"] = fetch_git_sha(
+        os.environ.get("DEPLOYMENT_INSTANCE_PATH")
+    )
+except Exception:
+    pass
