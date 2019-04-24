@@ -76,7 +76,7 @@ I18N_LANGUAGES = [
 # Base templates
 # ==============
 #: Global base template.
-BASE_TEMPLATE = 'cds_books/page.html'
+BASE_TEMPLATE = 'invenio_theme/page.html'
 #: Cover page base template (used for e.g. login/sign-up).
 COVER_TEMPLATE = 'invenio_theme/page_cover.html'
 #: Footer base template.
@@ -88,14 +88,7 @@ SETTINGS_TEMPLATE = 'invenio_theme/page_settings.html'
 
 # Theme configuration
 # ===================
-#: Site name
-THEME_SITENAME = _('CDS Books')
-#: Use default frontpage.
-THEME_FRONTPAGE = True
-#: Frontpage title.
-THEME_FRONTPAGE_TITLE = _('CDS Books')
-#: Frontpage template.
-THEME_FRONTPAGE_TEMPLATE = 'cds_books/frontpage.html'
+THEME_FRONTPAGE = False
 
 # Email configuration
 # ===================
