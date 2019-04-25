@@ -24,5 +24,3 @@ pipenv run pip install -e $script_path/..
 # Build assets
 pipenv run invenio collect -v
 pipenv run invenio webpack buildall
-
-
