@@ -10,8 +10,8 @@ set -e
 
 # Clean redis
 pipenv run invenio shell --no-term-title -c "import redis; redis.StrictRedis.from_url(app.config['CACHE_REDIS_URL']).flushall(); print('Cache cleared')"
-pipenv run invenio db destroy --yes-i-know
-pipenv run invenio db init create
+pipenv run invenio db drop --yes-i-know
+pipenv run invenio db create
 pipenv run invenio index destroy --force --yes-i-know
 pipenv run invenio index init --force
 pipenv run invenio index queue init purge
@@ -32,6 +32,9 @@ pipenv run invenio roles add librarian@test.ch librarian
 # assign actions
 pipenv run invenio access allow superuser-access role admin
 pipenv run invenio access allow ils-backoffice-access role librarian
+
+#index users
+pipenv run ils patrons index
 
 # Create ILS demo data
 pipenv run ils demo data
