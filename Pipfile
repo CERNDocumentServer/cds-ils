@@ -11,6 +11,7 @@ uwsgitop = ">=0.11"
 uwsgi-tools = ">=1.1.1"
 lxml = ">=3.5.0,<4.2.6"
 invenio-app-ils = {editable = true,git = "https://github.com/inveniosoftware/invenio-app-ils.git",ref = "master",extras = [ "lorem" ]}
+python-ldap = "*"
 
 [dev-packages]
 Flask-Debugtoolbar = ">=0.10.1"
@@ -35,3 +36,6 @@ python_version = "3.6"
 [scripts]
 test = "python setup.py test"
 build_sphinx = "python setup.py build_sphinx"
+
+[pipenv]
+allow_prereleases = true

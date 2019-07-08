@@ -39,6 +39,9 @@ setup(
         'console_scripts': [
             'cds-books = invenio_app.cli:cli',
         ],
+        "flask.commands": [
+            "ldap-users = cds_books.ldap.cli:ldap_users",
+        ],
         'invenio_base.apps': [
         ],
         'invenio_base.blueprints': [

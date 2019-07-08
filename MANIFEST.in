@@ -28,12 +28,15 @@ include Dockerfile
 include Dockerfile.base
 include LICENSE
 include Pipfile
+include Pipfile.lock
 include pytest.ini
 include scripts/bootstrap
 include scripts/console
 include scripts/server
 include scripts/setup
 include scripts/update
+include scripts/ldap_sync
+include tests
 prune docs/_build
 recursive-include docs *.bat
 recursive-include docs *.py
