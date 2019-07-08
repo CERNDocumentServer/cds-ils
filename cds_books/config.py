@@ -23,6 +23,7 @@ def _(x):
     """Identity function used to trigger string extraction."""
     return x
 
+
 def _parse_env_bool(var_name, default=None):
     if str(os.environ.get(var_name)).lower() == 'true':
         return True
@@ -209,3 +210,7 @@ try:
     )
 except Exception:
     pass
+
+# LDAP configuration
+# ======
+CDS_BOOKS_LDAP_URL = "ldap://xldap.cern.ch"
