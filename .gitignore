@@ -63,3 +63,6 @@ target/
 
 # Vim swapfiles
 .*.sw?
+
+# vscode history
+**/.history
