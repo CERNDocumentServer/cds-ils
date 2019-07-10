@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2a9dc39f59b6f042a552ef47a5f2b787a9609585b772895ca97fcd5ce6c2fdd4"
+            "sha256": "9d0afac49c5cea7bb4ee7f1a50be8fa158787358564558d13d3610c764e74eba"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -481,7 +481,7 @@
                 "lorem"
             ],
             "git": "https://github.com/inveniosoftware/invenio-app-ils.git",
-            "ref": "38a7288bd21b2c97992966a90de5a9dae4067f3c"
+            "ref": "d00a2461059350da86bd9bd1e13f24da2a94c6d1"
         },
         "invenio-assets": {
             "hashes": [
