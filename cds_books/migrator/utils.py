@@ -10,6 +10,7 @@
 
 from flask import current_app
 
+
 def process_fireroles(fireroles):
     """Extract firerole definitions."""
     rigths = set()

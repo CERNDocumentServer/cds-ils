@@ -29,14 +29,6 @@
             ],
             "version": "==2.5.1"
         },
-        "appnope": {
-            "hashes": [
-                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
-                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
-            ],
-            "markers": "sys_platform == 'darwin'",
-            "version": "==0.1.0"
-        },
         "arrow": {
             "hashes": [
                 "sha256:7954440e7621629a3e4c30dfd2038362d153e1e2b50424c7a6f10e1cdf211a7b",
@@ -107,7 +99,7 @@
         "cds-dojson": {
             "editable": true,
             "git": "https://github.com/CERNDocumentServer/cds-dojson",
-            "ref": "d0b3a6ac3a2df82084771c5ed590eab476fedbf8"
+            "ref": "ac076e37c0c199b404094568421c9c8818346b91"
         },
         "celery": {
             "hashes": [

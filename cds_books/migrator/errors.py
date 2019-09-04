@@ -19,3 +19,19 @@ class LossyConversion(DoJSONException):
         self.missing = kwargs.pop('missing', None)
         self.message = 'Lossy conversion: {0}'.format(self.missing or '')
         super(LossyConversion, self).__init__(*args, **kwargs)
+
+
+class BooksMigrationException(Exception):
+    """Base exception for books migration errors."""
+
+
+class DocumentMigrationError(BooksMigrationException):
+    """Raised for multipart migration errors."""
+
+
+class MultipartMigrationError(BooksMigrationException):
+    """Raised for multipart migration errors."""
+
+
+class SerialMigrationError(BooksMigrationException):
+    """Raised for serial migration errors."""

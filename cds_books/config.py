@@ -29,6 +29,7 @@ def _(x):
     """Identity function used to trigger string extraction."""
     return x
 
+
 def _parse_env_bool(var_name, default=None):
     if str(os.environ.get(var_name)).lower() == 'true':
         return True
@@ -233,5 +234,7 @@ ILS_VIEWS_PERMISSIONS_FACTORY = views_permissions_factory
 # Migrator configuration
 # ======
 MIGRATOR_RECORDS_DUMPLOADER_CLS = \
-    'cds_books.migrator.records:CDSRecordDumpLoader'
+    'cds_books.migrator.records:CDSDocumentDumpLoader'
 MIGRATOR_RECORDS_DUMP_CLS = 'cds_books.migrator.records:CDSRecordDump'
+
+JSONSCHEMAS_SCHEMAS = ['ils_schemas', 'loans']
