@@ -18,6 +18,12 @@ from __future__ import absolute_import, print_function
 import os
 from datetime import timedelta
 
+from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
+from invenio_app_ils.pidstore.pids import PATRON_PID_TYPE
+
+from .patrons.api import Patron
+from .patrons.permissions import views_permissions_factory
+
 
 def _(x):
     """Identity function used to trigger string extraction."""
@@ -214,3 +220,13 @@ except Exception:
 # LDAP configuration
 # ======
 CDS_BOOKS_LDAP_URL = "ldap://xldap.cern.ch"
+
+
+# RECORDS REST
+# ============
+
+RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
+
+# ILS
+# ==========
+ILS_VIEWS_PERMISSIONS_FACTORY = views_permissions_factory

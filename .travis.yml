@@ -41,7 +41,7 @@ env:
     # Enable end-to-end tests
     - E2E=no
   matrix:
-    - REQUIREMENTS=prod E2E=yes
+    - REQUIREMENTS=prod E2E=no
     - REQUIREMENTS=qa
 
 python:
