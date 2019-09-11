@@ -48,4 +48,5 @@ recursive-include cds_books *.po *.pot *.mo
 recursive-include cds_books *.json *.html *.js *.scss
 recursive-include cds_books *.png *.jpg *.svg
 recursive-include docker *.cfg *.conf *.crt *.ini *.key *.pem *.sh
+recursive-include tests *.json
 recursive-include tests *.py

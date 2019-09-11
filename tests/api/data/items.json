@@ -1,0 +1,20 @@
+[
+  {
+    "pid": "itemid-1",
+    "barcode": "123456789-1",
+    "document_pid": "docid-1",
+    "internal_location_pid": "ilocid-1",
+    "circulation_restriction": "NO_RESTRICTION",
+    "medium": "NOT_SPECIFIED",
+    "status": "MISSING"
+  },
+  {
+    "pid": "itemid-2",
+    "barcode": "123456789-3",
+    "document_pid": "docid-2",
+    "internal_location_pid": "ilocid-1",
+    "circulation_restriction": "NO_RESTRICTION",
+    "medium": "NOT_SPECIFIED",
+    "status": "CAN_CIRCULATE"
+  }
+]

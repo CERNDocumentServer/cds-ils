@@ -47,6 +47,9 @@ setup(
         'invenio_base.blueprints': [
             'cds_books = cds_books.theme.views:blueprint',
         ],
+        'invenio_base.api_blueprints': [
+            "cds_books_patron_loans = cds_books.patrons.views:create_patron_loans_blueprint",
+        ],
         'invenio_assets.webpack': [
             'cds_books_theme = cds_books.theme.webpack:theme',
         ],
@@ -55,6 +58,10 @@ setup(
         ],
         'invenio_i18n.translations': [
             'messages = cds_books',
+        ],
+        "invenio_access.actions": [
+            "retrieve_patron_loans_access_action = "
+            "cds_books.patrons.permissions:retrieve_patron_loans_access_action"
         ],
     },
     classifiers=[
