@@ -11,7 +11,15 @@ uwsgitop = ">=0.11"
 uwsgi-tools = ">=1.1.1"
 lxml = ">=3.5.0,<4.2.6"
 invenio-app-ils = {editable = true,git = "https://github.com/inveniosoftware/invenio-app-ils.git",ref = "master",extras = [ "lorem" ]}
+invenio-migrator = {editable = true,version = "==1.0.0a10"}
+cds-books = {editable = true,path = "."}
+invenio-db = {editable = true,version = "*"}
+invenio-files-rest = "*"
+invenio-records-files = "*"
+cds-dojson = {editable = true,git = "https://github.com/CERNDocumentServer/cds-dojson",ref = "books"}
+fuzzywuzzy = "*"
 python-ldap = "*"
+lorem = "*"
 
 [dev-packages]
 Flask-Debugtoolbar = ">=0.10.1"
@@ -29,6 +37,7 @@ pytest-mock = ">=1.6.0"
 pytest-pep8 = ">=1.0.6"
 pytest-random-order = ">=0.5.4"
 pytest-runner = ">=3.0.0,<5"
+cds-books = {path = "."}
 
 [requires]
 python_version = "3.6"

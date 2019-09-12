@@ -230,3 +230,11 @@ RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
 # ILS
 # ==========
 ILS_VIEWS_PERMISSIONS_FACTORY = views_permissions_factory
+
+# Migrator configuration
+# ======
+MIGRATOR_RECORDS_DUMPLOADER_CLS = \
+    'cds_books.migrator.records:CDSDocumentDumpLoader'
+MIGRATOR_RECORDS_DUMP_CLS = 'cds_books.migrator.records:CDSRecordDump'
+
+JSONSCHEMAS_SCHEMAS = ['ils_schemas', 'loans']
