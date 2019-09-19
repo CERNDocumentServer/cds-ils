@@ -71,7 +71,7 @@ def documents(sources, source_type, include):
     default=None)
 @with_appcontext
 def parents(rectype, source, include):
-    """Migrate parents serials, multiparts or keywords from dumps."""
+    """Migrate parents serials, multiparts or tags from dumps."""
     click.echo('Migrating {}s...'.format(rectype))
     with commit():
         import_parents_from_file(source, rectype=rectype, include=include)
