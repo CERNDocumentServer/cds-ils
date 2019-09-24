@@ -8,6 +8,8 @@
 
 """CDS Books ldap API."""
 
+import json
+
 import ldap
 from flask import current_app
 from invenio_accounts.models import User
@@ -175,8 +177,10 @@ class LdapUserImporter():
             return user.id
 
         for ldap_user in self.ldap_users:
-            user_id = _commit_user(ldap_user)
+            print("Importing user with person id {}".format(
+                ldap_user['employeeID'][0].decode("utf8")))
 
+            user_id = _commit_user(ldap_user)
             identity = UserIdentity(
                 **self.import_user_identity(user_id, ldap_user))
             db.session.add(identity)

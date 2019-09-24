@@ -21,10 +21,23 @@ from sqlalchemy.orm.exc import NoResultFound
 from .api import LdapClient, LdapUserImporter
 
 
+def index_ldap_users():
+    """Index ldap users in ES."""
+    from invenio_base.app import create_cli
+
+    cli = create_cli()
+    runner = current_app.test_cli_runner()
+    command = "ils patrons index"
+    click.secho('ils {}...'.format(command), fg='green')
+    runner.invoke(cli, command, catch_exceptions=True)
+
+
 def import_ldap_users(ldap_users):
     """Import ldap users in db."""
     importer = LdapUserImporter(ldap_users)
     importer.import_users()
+    click.secho('Now indexing...', fg='green')
+    index_ldap_users()
 
 
 def check_user_for_update(system_user, ldap_user):
