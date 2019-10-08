@@ -10,7 +10,7 @@ uwsgi = ">=2.0"
 uwsgitop = ">=0.11"
 uwsgi-tools = ">=1.1.1"
 lxml = ">=3.5.0,<4.2.6"
-invenio-app-ils = {editable = true,git = "https://github.com/inveniosoftware/invenio-app-ils.git",ref = "master",extras = [ "lorem" ]}
+invenio-app-ils = {editable = true,git = "https://github.com/inveniosoftware/invenio-app-ils.git",ref = "ui-deploy-as-spa",extras = [ "lorem" , "elasticsearch6" ]}
 invenio-migrator = {editable = true,version = "==1.0.0a10"}
 cds-books = {editable = true,path = "."}
 invenio-db = {editable = true,version = "*"}
