@@ -68,7 +68,7 @@ def create_app():
 
 
 @pytest.fixture()
-def testdata(app, db, es_clear):
+def testdata(app, db, es_clear, system_user):
     """Create, index and return test data."""
     indexer = RecordIndexer()
 
@@ -116,7 +116,6 @@ def testdata(app, db, es_clear):
 
     # flush all indices after indexing, otherwise ES won't be ready for tests
     current_search.flush_and_refresh(index='*')
-
     return {
         "locations": locations,
         "documents": documents,
