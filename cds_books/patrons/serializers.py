@@ -20,7 +20,7 @@ def serialize_on_loan_book_information(loan):
         end_date=loan["end_date"],
         library=location["name"],
         location=location["address"],
-        title=document["title"]["title"]
+        title=document["title"]
     )
 
 
@@ -33,7 +33,7 @@ def serialize_loan_request_book_information(loan):
         request_end_date=loan["end_date"],
         library=location["name"],
         location=location["address"],
-        title=document["title"]["title"]
+        title=document["title"]
     )
 
 
