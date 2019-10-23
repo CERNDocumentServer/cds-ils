@@ -107,6 +107,7 @@
                 "sha256:821d11967f0f3f8fe24bd61ecfc7b6acbb5a926b719f1e8c4d5ff7bc09e18d81",
                 "sha256:ae4541fb3af5182bd4af749fee9b89c4858f2792d34bb5d034967e662cf9b55c"
             ],
+            "markers": "python_version < '3.7'",
             "version": "==4.4.0rc3"
         },
         "certifi": {
@@ -503,7 +504,7 @@
                 "postgresql"
             ],
             "git": "https://github.com/inveniosoftware/invenio-app-ils.git",
-            "ref": "72dbac231792c4fc918fac591e3f07a0fe585bbf"
+            "ref": "46ff7f8e79e8a481f94d5989bb53826aa8e52379"
         },
         "invenio-assets": {
             "hashes": [
