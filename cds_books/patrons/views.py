@@ -29,7 +29,7 @@ def pass_patron_from_es():
             if not len(results.hits.hits):
                 abort(404)
             patron = results.hits.hits[0]["_source"]
-            return f(self, patron=patron, *args, **kwargs)
+            return f(self, patron=patron.to_dict(), *args, **kwargs)
         return inner
     return pass_patron_decorator
 
