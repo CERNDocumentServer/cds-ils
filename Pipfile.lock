@@ -224,10 +224,10 @@
         },
         "elasticsearch": {
             "hashes": [
-                "sha256:693935914d59a517dfffdaab547ff906712a386d9e25027517464960221cbd4c",
-                "sha256:7644fa0a9ae524344185bda561826a781a5c6bd4d3eb98a24515c567aab88327"
+                "sha256:0140787216646e1eb7eb001f8146aff7071d7ca438854249787b6cc221ddd266",
+                "sha256:283a6afa5dc08c21016c295b5237fbd9c74895b0b297ceb97c879ec7d67a5f47"
             ],
-            "version": "==7.0.5"
+            "version": "==7.1.0"
         },
         "elasticsearch-dsl": {
             "hashes": [
@@ -513,7 +513,7 @@
                 "postgresql"
             ],
             "git": "https://github.com/inveniosoftware/invenio-app-ils.git",
-            "ref": "1bcf0ee3e868de48c1213019edc4092372d055f8"
+            "ref": "5d3fd1e1f565dc803c15f5cd4bd25f1e0c95bc7a"
         },
         "invenio-assets": {
             "hashes": [
@@ -571,11 +571,11 @@
         },
         "invenio-files-rest": {
             "hashes": [
-                "sha256:1b573616dfef3c575d1a7b56dd1de325742a0a4e0d23042569c3eeedb30833c9",
-                "sha256:bfed3b562f33833b8275a87204a2b91a0a37ac3dd152800689ef188485a2c001"
+                "sha256:709244f0de83964303df01b6eab5204785576b2f5f1e92d122581d94f8a44ecd",
+                "sha256:a371a828b506e8c76be2f6f6c03e3647483d46b699155a1a4a96fe7d8d70a228"
             ],
             "index": "pypi",
-            "version": "==1.0.1"
+            "version": "==1.0.3"
         },
         "invenio-formatter": {
             "hashes": [
@@ -1701,11 +1701,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:27abc3fef618a01bebb1f0d6d303d2816a99aa87a5968ebc32fe971be91eb1e6",
-                "sha256:58cee9e09242937e136dbb3dab466116ba20d6b7828c7620f23947f37eb4dae4"
+                "sha256:15837d2880cb94821087bc07476892ea740696b20e90288fd6c19e44b435abdb",
+                "sha256:b6cf7ad9064049ee486586b3a0ddd70dc5136c40e1147e7d286efd77ba66c5eb"
             ],
             "index": "pypi",
-            "version": "==5.2.2"
+            "version": "==5.2.3"
         },
         "pytest-cache": {
             "hashes": [
