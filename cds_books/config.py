@@ -16,7 +16,6 @@ You overwrite and set instance-specific configuration by either:
 from __future__ import absolute_import, print_function
 
 import os
-from datetime import timedelta
 
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.pidstore.pids import PATRON_PID_TYPE
@@ -129,23 +128,11 @@ ACCOUNTS_USERINFO_HEADERS = True
 
 # Celery configuration
 # ====================
-
 BROKER_URL = 'amqp://guest:guest@localhost:5672/'
 #: URL of message broker for Celery (default is RabbitMQ).
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672/'
 #: URL of backend for result storage (default is Redis).
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
-#: Scheduled tasks configuration (aka cronjobs).
-CELERY_BEAT_SCHEDULE = {
-    'indexer': {
-        'task': 'invenio_indexer.tasks.process_bulk_queue',
-        'schedule': timedelta(minutes=5),
-    },
-    'accounts': {
-        'task': 'invenio_accounts.tasks.clean_session_table',
-        'schedule': timedelta(minutes=60),
-    },
-}
 
 # Database
 # ========
@@ -242,9 +229,16 @@ MIGRATOR_RECORDS_DUMPLOADER_CLS = \
     'cds_books.migrator.records:CDSDocumentDumpLoader'
 MIGRATOR_RECORDS_DUMP_CLS = 'cds_books.migrator.records:CDSRecordDump'
 
-JSONSCHEMAS_SCHEMAS = ["ils", "loans", "documents", "document_requests",
-                       "acquisition", "ill", "invenio_records_files",
-                       "invenio_opendefinition"]
+JSONSCHEMAS_SCHEMAS = [
+    "acquisition",
+    "document_requests",
+    "documents",
+    "ill",
+    "ils",
+    "invenio_opendefinition",
+    "invenio_records_files",
+    "loans",
+]
 
 ILS_LITERATURE_COVER_URLS_BUILDER = build_syndetic_cover_urls
 

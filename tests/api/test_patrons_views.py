@@ -32,7 +32,6 @@ def test_patron_loans_view(app, system_user, testdata, client):
     db.session.commit()
 
     patron = Patron(system_user.id)
-
     PatronIndexer().index(patron)
     current_search.flush_and_refresh(index='*')
 

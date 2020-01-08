@@ -56,6 +56,16 @@ def app_config(app_config):
     """Get app config."""
     app_config["APP_ALLOWED_HOSTS"] = ["localhost"]
     app_config["CELERY_TASK_ALWAYS_EAGER"] = True
+    app_config["JSONSCHEMAS_SCHEMAS"] = [
+        "acquisition",
+        "document_requests",
+        "documents",
+        "ill",
+        "ils",
+        "invenio_opendefinition",
+        "invenio_records_files",
+        "loans",
+    ]
     return app_config
 
 
