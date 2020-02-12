@@ -15,11 +15,12 @@ from contextlib import contextmanager
 import click
 from elasticsearch_dsl import Q
 from flask import current_app
-from invenio_app_ils.pidstore.providers import DocumentIdProvider, \
-    SeriesIdProvider, TagIdProvider
-from invenio_app_ils.records.api import Document, Series, Tag
+from invenio_app_ils.documents.api import Document, DocumentIdProvider
+from invenio_app_ils.documents.search import DocumentSearch
+from invenio_app_ils.pidstore.providers import SeriesIdProvider
+from invenio_app_ils.records.api import Series
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild
-from invenio_app_ils.search.api import DocumentSearch, SeriesSearch
+from invenio_app_ils.search.api import SeriesSearch
 from invenio_base.app import create_cli
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
@@ -76,8 +77,6 @@ def model_provider_by_rectype(rectype):
         return Series, SeriesIdProvider
     elif rectype == 'document':
         return Document, DocumentIdProvider
-    elif rectype == 'tag':
-        return Tag, TagIdProvider
     else:
         raise ValueError('Unknown rectype: {}'.format(rectype))
 
