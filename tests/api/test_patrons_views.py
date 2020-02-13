@@ -12,7 +12,7 @@ from flask import url_for
 from invenio_access.models import ActionUsers
 from invenio_accounts.models import User
 from invenio_accounts.testutils import login_user_via_session
-from invenio_app_ils.indexer import PatronsIndexer
+from invenio_app_ils.patrons.indexer import PatronIndexer
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_search import current_search
@@ -32,7 +32,7 @@ def test_patron_loans_view(app, system_user, testdata, client):
     db.session.commit()
 
     patron = Patron(system_user.id)
-    PatronsIndexer().index(patron)
+    PatronIndexer().index(patron)
     current_search.flush_and_refresh(index='*')
 
     login_user_via_session(client, email=system_user.email)

@@ -10,10 +10,8 @@
 from __future__ import absolute_import, print_function
 
 from flask import current_app
-from invenio_accounts.models import User
 from invenio_app_ils.records.api import Patron as ILSPatron
 from invenio_oauthclient.models import RemoteAccount
-from invenio_userprofiles.api import UserProfile
 
 
 class Patron(ILSPatron):

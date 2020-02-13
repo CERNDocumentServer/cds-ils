@@ -24,14 +24,10 @@ from invenio_app_ils.search.api import SeriesSearch
 from invenio_base.app import create_cli
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
-from invenio_migrator.cli import _loadrecord, dumps
-from invenio_pidstore.errors import PIDAlreadyExists
-from invenio_pidstore.models import PersistentIdentifier
-from invenio_records import Record
-from invenio_records.models import RecordMetadata
+from invenio_migrator.cli import _loadrecord
 
 from cds_books.migrator.errors import DocumentMigrationError, \
-    LossyConversion, MultipartMigrationError, SerialMigrationError
+    MultipartMigrationError
 from cds_books.migrator.records import CDSParentRecordDumpLoader
 
 

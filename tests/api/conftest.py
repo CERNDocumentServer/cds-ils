@@ -13,22 +13,17 @@ import json
 import os
 
 import pytest
-from invenio_accounts.models import User
 from invenio_app.factory import create_api
-from invenio_app_ils.records.api import Document, InternalLocation, Item, \
-    Location
+from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
+from invenio_app_ils.records.api import InternalLocation, Item, Location
 from invenio_circulation.api import Loan
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
-from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_search import current_search
-from invenio_userprofiles.models import UserProfile
 
 from invenio_app_ils.pidstore.pids import (  # isort:skip
-    DOCUMENT_PID_TYPE,
-    EITEM_PID_TYPE,
     ITEM_PID_TYPE,
     LOCATION_PID_TYPE,
     INTERNAL_LOCATION_PID_TYPE,

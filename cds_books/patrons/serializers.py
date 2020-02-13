@@ -7,8 +7,9 @@
 
 """Invenio App ILS Patron Loans Information views."""
 
-from flask import Response, jsonify, url_for
-from invenio_app_ils.records.api import Document, Location
+from flask import jsonify
+from invenio_app_ils.documents.api import Document
+from invenio_app_ils.records.api import Location
 
 
 def serialize_on_loan_book_information(loan):

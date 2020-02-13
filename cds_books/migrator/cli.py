@@ -11,15 +11,8 @@
 
 from __future__ import absolute_import, print_function
 
-import json
-import os
-import re
-
 import click
-import sqlalchemy
-from flask import current_app
 from flask.cli import with_appcontext
-from invenio_db import db
 
 from cds_books.migrator.api import commit, import_documents_from_dump, \
     import_documents_from_record_file, import_parents_from_file, \

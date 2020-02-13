@@ -20,14 +20,12 @@ from cds_dojson.marc21.fields.books.errors import ManualMigrationRequired, \
     MissingRequiredField, UnexpectedValue
 from cds_dojson.marc21.utils import create_record
 from flask import current_app
-from invenio_app_ils.pidstore.providers import DocumentIdProvider
-from invenio_app_ils.records.api import Document
+from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_db import db
 from invenio_migrator.records import RecordDump, RecordDumpLoader
 from invenio_migrator.utils import disable_timestamp
 from invenio_pidstore.errors import PIDDoesNotExistError
-from invenio_pidstore.models import PersistentIdentifier, PIDStatus, \
-    RecordIdentifier
+from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_records import Record
 
 from cds_books.migrator.errors import LossyConversion
