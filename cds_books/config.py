@@ -37,6 +37,7 @@ def _parse_env_bool(var_name, default=None):
         return False
     return default
 
+
 # Search
 # ======
 ELASTICSEARCH_HOST = os.environ.get('ELASTICSEARCH_HOST', 'localhost')
@@ -62,7 +63,6 @@ if ELASTICSEARCH_VERIFY_CERTS is not None:
 
 SEARCH_ELASTIC_HOSTS = [es_host_params]
 """Elasticsearch hosts configuration."""
-
 
 # Rate limiting
 # =============
@@ -211,6 +211,7 @@ SENTRY_CONFIG = {
 try:
     # Try to get the release tag
     from raven import fetch_git_sha
+
     SENTRY_CONFIG["release"] = fetch_git_sha(
         os.environ.get("DEPLOYMENT_INSTANCE_PATH")
     )
@@ -220,7 +221,6 @@ except Exception:
 # LDAP configuration
 # ======
 CDS_BOOKS_LDAP_URL = "ldap://xldap.cern.ch"
-
 
 # RECORDS REST
 # ============
@@ -237,4 +237,6 @@ MIGRATOR_RECORDS_DUMPLOADER_CLS = \
     'cds_books.migrator.records:CDSDocumentDumpLoader'
 MIGRATOR_RECORDS_DUMP_CLS = 'cds_books.migrator.records:CDSRecordDump'
 
-JSONSCHEMAS_SCHEMAS = ['ils_schemas', 'loans']
+JSONSCHEMAS_SCHEMAS = ['ils', 'loans', 'documents', "document_requests",
+                       "acquisition", "ill", "invenio_records_files",
+                       "invenio_opendefinition"]
