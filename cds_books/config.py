@@ -21,6 +21,7 @@ from datetime import timedelta
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.pidstore.pids import PATRON_PID_TYPE
 
+from .literature.covers import build_literature_cover_urls
 from .patrons.api import Patron
 from .patrons.permissions import views_permissions_factory
 
@@ -240,3 +241,5 @@ MIGRATOR_RECORDS_DUMP_CLS = 'cds_books.migrator.records:CDSRecordDump'
 JSONSCHEMAS_SCHEMAS = ['ils', 'loans', 'documents', "document_requests",
                        "acquisition", "ill", "invenio_records_files",
                        "invenio_opendefinition"]
+
+ILS_LITERATURE_COVER_URLS_BUILDER = build_literature_cover_urls
