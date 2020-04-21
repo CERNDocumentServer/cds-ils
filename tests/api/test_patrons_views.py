@@ -32,14 +32,17 @@ def test_patron_loans_view(app, system_user, testdata, client):
     db.session.commit()
 
     patron = Patron(system_user.id)
+
     PatronIndexer().index(patron)
     current_search.flush_and_refresh(index='*')
 
     login_user_via_session(client, email=system_user.email)
+
     resp = client.get(
         url_for(
             "cds_books_patron_loans.patron_loans",
-            person_id="1"))
+            person_id=1))
+
     assert resp.status_code == 200
 
     expected_books_on_loan = [{
@@ -59,5 +62,7 @@ def test_patron_loans_view(app, system_user, testdata, client):
     data = resp.json
     assert data["books_on_loan"] == expected_books_on_loan
     assert data["loan_requests"] == expected_loan_requests
-    assert data["person_id"] == patron.extra_info["person_id"]
-    assert data["department"] == patron.extra_info["department"]
+
+    if patron.extra_info:
+        assert data["person_id"] == patron.extra_info["person_id"]
+        assert data["department"] == patron.extra_info["department"]

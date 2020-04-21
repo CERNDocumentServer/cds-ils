@@ -489,7 +489,7 @@
                 "postgresql"
             ],
             "git": "https://github.com/inveniosoftware/invenio-app-ils.git",
-            "ref": "2216de96bd77fc5b5c2a0f5eb05adada424481b3"
+            "ref": "94a60e45d1c232f72a9699f11f59bce21e765958"
         },
         "invenio-assets": {
             "hashes": [
