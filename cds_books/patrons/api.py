@@ -36,7 +36,7 @@ class Patron(ILSPatron):
     def dumps(self):
         """Return python representation of Patron metadata."""
         dump = super(Patron, self).dumps()
-        if self.extra_info:
+        if hasattr(self, 'extra_info') and self.extra_info:
             dump.update({
                 "person_id": self.extra_info.get("person_id", ""),
                 "department": self.extra_info.get("department", "")

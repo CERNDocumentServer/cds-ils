@@ -20,7 +20,7 @@ cds-dojson = {editable = true,git = "https://github.com/CERNDocumentServer/cds-d
 fuzzywuzzy = "*"
 python-ldap = "*"
 lorem = "*"
-invenio-accounts = {editable = true, git = "https://github.com/inveniosoftware/invenio-accounts.git",ref = "rest-api"}
+invenio-accounts = {editable = true, git = "https://github.com/inveniosoftware/invenio-accounts.git",ref = "master"}
 invenio-oauthclient = {editable = true, git = "https://github.com/inveniosoftware/invenio-oauthclient.git",ref = "rest-api"}
 
 [dev-packages]
