@@ -6,7 +6,8 @@
     "abstracts": [{ "value": "This is an abstract" }],
     "language": ["en"],
     "edition": "ed. 1",
-    "publication_year": "2020"
+    "publication_year": "2020",
+    "cover_metadata": { "isbn": "0123456789" }
   },
   {
     "pid": "docid-2",
@@ -14,6 +15,7 @@
     "authors": [{ "full_name": "Caroline Fraser" }],
     "abstracts": [{ "value": "This is an abstract" }],
     "language": ["it"],
-    "publication_year": "2020"
+    "publication_year": "2020",
+    "identifiers": [{ "isbn": "9876543210" }]
   }
 ]

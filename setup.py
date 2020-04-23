@@ -44,6 +44,7 @@ setup(
             'migration = cds_books.migrator.cli:migration',
         ],
         'invenio_base.apps': [
+            'cds_books_literature = cds_books.literature.ext:CdsBooksLiterature'
         ],
         'invenio_base.blueprints': [
             'cds_books = cds_books.theme.views:blueprint',
