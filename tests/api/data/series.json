@@ -1,0 +1,35 @@
+[
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-1",
+    "title": "The Gulf: The Making of An American Sea",
+    "authors": ["Einstein, Albert", "Stachel, John J et al."],
+    "abstract": "This is a multipart monograph",
+    "mode_of_issuance": "MULTIPART_MONOGRAPH",
+    "cover_metadata": { "ISSN": "0123456789" }
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-2",
+    "title": "The Gulf: The Making of An American Sea",
+    "authors": ["Banek, Cora", "Banek, Georg"],
+    "abstract": "This is a multipart monograph",
+    "mode_of_issuance": "MULTIPART_MONOGRAPH",
+    "identifiers": [{ "scheme": "ISSN", "value": "0123456789" }]
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-3",
+    "title": "Springer tracts in modern physics",
+    "abstract": "This is serial",
+    "mode_of_issuance": "SERIAL"
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-4",
+    "title": "Dispersion Forces",
+    "authors": ["Buhmann, Stefan Yoshi"],
+    "abstract": "This is a multipart monograph",
+    "mode_of_issuance": "MULTIPART_MONOGRAPH"
+  }
+]

@@ -1,5 +1,6 @@
 [
   {
+    "$schema": "https://127.0.0.1:5000/schemas/items/item-v1.0.0.json",
     "pid": "itemid-1",
     "barcode": "123456789-1",
     "document_pid": "docid-1",
@@ -9,6 +10,7 @@
     "status": "MISSING"
   },
   {
+    "$schema": "https://127.0.0.1:5000/schemas/items/item-v1.0.0.json",
     "pid": "itemid-2",
     "barcode": "123456789-3",
     "document_pid": "docid-2",

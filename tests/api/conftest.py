@@ -15,7 +15,8 @@ import os
 import pytest
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
-from invenio_app_ils.records.api import InternalLocation, Item, Location
+from invenio_app_ils.records.api import InternalLocation, Item, Location, \
+    Series
 from invenio_circulation.api import Loan
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_db import db
@@ -24,9 +25,10 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_search import current_search
 
 from invenio_app_ils.pidstore.pids import (  # isort:skip
+    INTERNAL_LOCATION_PID_TYPE,
     ITEM_PID_TYPE,
     LOCATION_PID_TYPE,
-    INTERNAL_LOCATION_PID_TYPE,
+    SERIES_PID_TYPE,
 )
 
 
@@ -53,6 +55,7 @@ def mint_record_pid(pid_type, pid_field, record):
 def app_config(app_config):
     """Get app config."""
     app_config["APP_ALLOWED_HOSTS"] = ["localhost"]
+    app_config["CELERY_TASK_ALWAYS_EAGER"] = True
     return app_config
 
 
@@ -109,11 +112,20 @@ def testdata(app, db, es_clear, system_user):
         db.session.commit()
         indexer.index(record)
 
+    series = load_json_from_datadir("series.json")
+    for serie in series:
+        record = Series.create(serie)
+        mint_record_pid(SERIES_PID_TYPE, "pid", record)
+        record.commit()
+        db.session.commit()
+        indexer.index(record)
+
     # flush all indices after indexing, otherwise ES won't be ready for tests
     current_search.flush_and_refresh(index='*')
     return {
-        "locations": locations,
         "documents": documents,
         "items": items,
         "loans": loans,
+        "locations": locations,
+        "series": series,
     }

@@ -11,11 +11,12 @@
 from invenio_records.signals import after_record_insert, after_record_update, \
     before_record_insert, before_record_update
 
-from .tasks import set_cover, update_cover
+from cds_books.literature.covers import preemptively_set_first_isbn_as_cover
+from cds_books.literature.tasks import pick_identifier_with_cover
 
 
-class CdsBooksLiterature(object):
-    """CdsBooksLiterature extension."""
+class CdsBooks(object):
+    """CdsBooks extension."""
 
     def __init__(self, app=None):
         """Literature initialization."""
@@ -24,7 +25,7 @@ class CdsBooksLiterature(object):
     @staticmethod
     def register_signals(app):
         """Register Literature signals."""
-        before_record_insert.connect(update_cover)
-        before_record_update.connect(update_cover)
-        after_record_insert.connect(set_cover)
-        after_record_update.connect(set_cover)
+        before_record_insert.connect(preemptively_set_first_isbn_as_cover)
+        before_record_update.connect(preemptively_set_first_isbn_as_cover)
+        after_record_insert.connect(pick_identifier_with_cover)
+        after_record_update.connect(pick_identifier_with_cover)
