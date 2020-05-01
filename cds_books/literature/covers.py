@@ -8,6 +8,7 @@
 """Literature covers."""
 
 import os
+from functools import partial
 
 from invenio_app_ils.literature.covers_builder import build_placeholder_urls
 
@@ -15,9 +16,8 @@ from invenio_app_ils.literature.covers_builder import build_placeholder_urls
 def is_record_with_cover(record):
     """Check if this type of record has cover."""
     schema = record.get("$schema")
-    if (
-        schema.endswith("document-v1.0.0.json") or
-        schema.endswith("series-v1.0.0.json")
+    if schema.endswith("document-v1.0.0.json") or schema.endswith(
+        "series-v1.0.0.json"
     ):
         return True
     return False
@@ -26,8 +26,8 @@ def is_record_with_cover(record):
 def has_already_cover(record):
     """Check if record has already valid cover in cover_metadata."""
     cover_metadata = record.get("cover_metadata", {})
-    return (
-        cover_metadata.get("ISBN", False) or cover_metadata.get("ISSN", False)
+    return cover_metadata.get("ISBN", False) or cover_metadata.get(
+        "ISSN", False
     )
 
 
@@ -68,21 +68,27 @@ def build_syndetic_cover_urls(metadata):
 
     issn = cover_metadata.get("ISSN", "")
     if issn:
-        scheme = 'ISSN'
+        scheme = "ISSN"
         scheme_value = issn
 
     isbn = cover_metadata.get("ISBN", "")
     if isbn:
-        scheme = 'ISBN'
+        scheme = "ISBN"
         scheme_value = isbn
 
     if issn or isbn:
+        _url = "{url}?client={client}&{sheme}={value}/{size}.gif"
+        partial_url = partial(
+            _url.format,
+            url=url,
+            client=client,
+            sheme=scheme,
+            value=scheme_value,
+        )
         return {
-            "small": "{url}?client={client}&{sheme}={scheme_value}/SC.gif".format(
-                url=url, client=client, sheme=scheme, scheme_value=scheme_value),
-            "medium": "{url}?client={client}&{sheme}={scheme_value}/MC.gif".format(
-                url=url, client=client, sheme=scheme, scheme_value=scheme_value),
-            "large": "{url}?client={client}&{sheme}={scheme_value}/LC.gif".format(
-                url=url, client=client, sheme=scheme, scheme_value=scheme_value),
+            "is_placeholder": False,
+            "small": partial_url(size="SC"),
+            "medium": partial_url(size="MC"),
+            "large": partial_url(size="LC"),
         }
     return build_placeholder_urls()

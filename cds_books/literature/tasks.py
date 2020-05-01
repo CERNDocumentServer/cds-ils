@@ -12,8 +12,8 @@ import urllib
 from celery import shared_task
 from invenio_db import db
 
-from .covers import build_syndetic_cover_urls, \
-    has_already_cover, is_record_with_cover
+from .covers import build_syndetic_cover_urls, has_already_cover, \
+    is_record_with_cover
 
 MIN_CONTENT_LENGTH = 128
 
