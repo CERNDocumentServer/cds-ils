@@ -43,7 +43,8 @@ setup(
             "ldap-users = cds_books.ldap.cli:ldap_users",
             'migration = cds_books.migrator.cli:migration',
         ],
-        'invenio_base.apps': [
+        'invenio_base.api_apps': [
+            'cds_books = cds_books.ext:CdsBooks'
         ],
         'invenio_base.blueprints': [
             'cds_books = cds_books.theme.views:blueprint',
@@ -56,6 +57,9 @@ setup(
         ],
         'invenio_config.module': [
             'cds_books = cds_books.config',
+        ],
+        "invenio_celery.tasks": [
+            "cds_books_tasks = cds_books.literature.tasks",
         ],
         'invenio_i18n.translations': [
             'messages = cds_books',
