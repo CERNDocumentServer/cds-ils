@@ -1,0 +1,72 @@
+{
+  "name": "cds-ils",
+  "version": "0.1.0",
+  "dependencies": {
+    "@babel/runtime": "^7.9.2",
+    "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.0",
+    "axios": "^0.19.2",
+    "formik": "^2.1.4",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
+    "lodash": "^4.17.15",
+    "luxon": "^1.23.0",
+    "path": "^0.12.7",
+    "prop-types": "^15.7.2",
+    "qs": "^6.9.3",
+    "react": "^16.13.1",
+    "react-app-polyfill": "^1.0.6",
+    "react-copy-to-clipboard": "^5.0.2",
+    "react-dom": "^16.13.1",
+    "react-overridable": "^0.0.2",
+    "react-redux": "^7.2.0",
+    "react-router-dom": "^5.1.2",
+    "react-scroll": "^1.7.16",
+    "react-searchkit": "^0.19.0",
+    "react-show-more": "^2.0.0",
+    "react-tagcloud": "^2.0.0",
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0",
+    "semantic-ui-calendar-react": "^0.15.3",
+    "semantic-ui-less": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
+    "yup": "^0.27.0"
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react": "^7.20.0",
+    "prettier": "^1.19.1",
+    "react-scripts": "^3.4.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "plugins": [
+      "react"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  }
+}
