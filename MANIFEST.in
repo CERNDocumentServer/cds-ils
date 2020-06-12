@@ -50,3 +50,18 @@ recursive-include cds_books *.png *.jpg *.svg
 recursive-include docker *.cfg *.conf *.crt *.ini *.key *.pem *.sh
 recursive-include tests *.json
 recursive-include tests *.py
+recursive-include ui *.config
+recursive-include ui *.env
+recursive-include ui *.eslintrc
+recursive-include ui *.html
+recursive-include ui *.ico
+recursive-include ui *.js
+recursive-include ui *.json
+recursive-include ui *.less
+recursive-include ui *.md
+recursive-include ui *.overrides
+recursive-include ui *.png
+recursive-include ui *.prettierignore
+recursive-include ui *.prettierrc
+recursive-include ui *.txt
+recursive-include ui *.variables

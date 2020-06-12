@@ -1,0 +1,67 @@
+/*******************************
+        Import Directives
+*******************************/
+
+/*------------------
+       Theme
+-------------------*/
+
+@theme: @@element;
+
+/*--------------------
+   Site Variables
+---------------------*/
+
+/* Default site.variables */
+@import '@{themesFolder}/default/globals/site.variables';
+
+/* Packaged site.variables */
+@import '@{themesFolder}/@{siteFolder}/globals/site.variables';
+
+/* Component's site.variables */
+@import (optional) '@{themesFolder}/@{theme}/globals/site.variables';
+
+/* REACT-INVENIO-APP-ILS site.variables */
+@import (optional) '@{ilsThemeFolder}/globals/site.variables';
+
+/* Site theme site.variables */
+@import (optional) '@{siteFolder}/globals/site.variables';
+
+/*-------------------
+ Component Variables
+---------------------*/
+
+/* Default */
+@import '@{themesFolder}/default/@{type}s/@{element}.variables';
+
+/* Packaged Theme */
+@import (optional, multiple) '@{themesFolder}/@{theme}/@{type}s/@{element}.variables';
+
+/* REACT-INVENIO-APP-ILS Theme */
+@import (optional, multiple) '@{ilsThemeFolder}/@{type}s/@{element}.variables';
+
+/* Site Theme */
+@import (optional, multiple) '@{siteFolder}/@{type}s/@{element}.variables';
+
+/*******************************
+             Mix-ins
+*******************************/
+
+/*------------------
+       Fonts
+-------------------*/
+
+.loadFonts() when (@importGoogleFonts) {
+  @import (css)
+    url('@{googleProtocol}fonts.googleapis.com/css?family=@{googleFontRequest}');
+}
+
+/*------------------
+     Overrides
+-------------------*/
+
+.loadUIOverrides() {
+  @import (optional, multiple) '@{themesFolder}/@{theme}/@{type}s/@{element}.overrides';
+  @import (optional, multiple) '@{ilsThemeFolder}/@{type}s/@{element}.overrides';
+  @import (optional, multiple) '@{siteFolder}/@{type}s/@{element}.overrides';
+}

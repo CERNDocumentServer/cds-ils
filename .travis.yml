@@ -7,12 +7,7 @@
 
 addons:
   chrome: stable # https://docs.travis-ci.com/user/chrome
-
-# Chrome Webdriver fails if not on sudo
-# See https://github.com/travis-ci/travis-ci/issues/8836
-sudo: true
-
-dist: trusty # Chrome driver fails if not trusty dist
+  postgresql: "9.6"
 
 notifications:
   email: # sent to the committer and the author
@@ -31,8 +26,6 @@ services:
   - postgresql
   - redis
   - rabbitmq
-addons:
-  postgresql: "9.6"
 
 env:
   global:
@@ -47,7 +40,7 @@ before_install:
   - "wget -O - $ES7_DOWNLOAD_URL | tar xz --directory=/tmp/elasticsearch --strip-components=1"
   - "/tmp/elasticsearch/bin/elasticsearch &"
   - "sleep 20"
-  - "nvm install 6; nvm use 6"
+  - "nvm install 12; nvm use 12"
   - "travis_retry pip install --upgrade pip setuptools py pipenv"
   - "travis_retry pip install twine wheel coveralls"
 
