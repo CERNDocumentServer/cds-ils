@@ -1,0 +1,8 @@
+/*******************************
+   Site.Variables - CDS ILS
+*******************************/
+
+@fsPrimaryColor            : rgba(174, 30, 206, 0.95);
+@fsSecondaryColor          : #6899D0;
+
+@orange :  rgba(174, 30, 206, 0.95);
