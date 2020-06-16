@@ -20,6 +20,8 @@ from datetime import timedelta
 
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.pidstore.pids import PATRON_PID_TYPE
+from invenio_records_rest.schemas.fields import SanitizedUnicode
+from marshmallow.fields import Bool
 
 from .literature.covers import build_syndetic_cover_urls
 from .patrons.api import Patron
@@ -245,3 +247,69 @@ JSONSCHEMAS_SCHEMAS = ["ils", "loans", "documents", "document_requests",
                        "invenio_opendefinition"]
 
 ILS_LITERATURE_COVER_URLS_BUILDER = build_syndetic_cover_urls
+
+# Namespaces for fields added to the metadata schema
+ILS_RECORDS_METADATA_NAMESPACES = {
+    "document": {
+        "accelerator_experiments": {
+            "@context": "https://cern.ch/accelerator_experiments/terms"
+        },
+        "standard_CERN_status": {
+            "@context": "https://cern.ch/standard_CERN_status/terms"
+        },
+    }
+}
+
+# Fields added to the metadata schema.
+ILS_RECORDS_METADATA_EXTENSIONS = {
+    "document": {
+        "accelerator_experiments:accelerator": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode()
+        },
+        "accelerator_experiments:curated_relation": {
+            "elasticsearch": "boolean",
+            "marshmallow": Bool()
+        },
+        "accelerator_experiments:experiment": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode()
+        },
+        "accelerator_experiments:institution": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode()
+        },
+        "accelerator_experiments:legacy_name": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode()
+        },
+        "accelerator_experiments:project": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode()
+        },
+        "accelerator_experiments:study": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode()
+        },
+        "standard_CERN_status:CERN_applicability": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode()
+        },
+        "standard_CERN_status:standard_validity": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode(required=True)
+        },
+        "standard_CERN_status:checkdate": {
+            "elasticsearch": "date",
+            "marshmallow": SanitizedUnicode()
+        },
+        "standard_CERN_status:comment": {
+            "elasticsearch": "text",
+            "marshmallow": SanitizedUnicode()
+        },
+        "standard_CERN_status:expert": {
+            "elasticsearch": "keyword",
+            "marshmallow": SanitizedUnicode()
+        },
+    }
+}
