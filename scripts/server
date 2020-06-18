@@ -11,6 +11,8 @@ set -e
 script_path=$(dirname "$0")
 
 export FLASK_ENV=development
+export SYNDETIC_CLIENT=cernlibrary
+export SERVER_NAME=localhost:5000
 # Start Worker and Server
 pipenv run celery worker -A invenio_app.celery -l INFO & pid_celery=$!
 
