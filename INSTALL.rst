@@ -48,13 +48,25 @@ Next, create database tables, search indexes and message queues:
 .. code-block:: console
 
     $ ./scripts/setup
-    
+
 If the setup scripts fails because of missing vocabularies:
 
 .. code-block:: console
 
     $ cd <your-virtualenv-path>/invenio-app-ils/invenio_app_ils
     $ pipenv run ils setup --verbose
+
+
+Covers
+------
+
+If the covers are not displayed first run the server (to start celery)
+and after the setup script:
+
+.. code-block:: console
+
+    $ ./scripts/server
+    $ ./scripts/setup
 
 Running
 -------
