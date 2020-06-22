@@ -172,9 +172,11 @@ SESSION_COOKIE_SECURE = True
 #: provided, the allowed hosts variable is set to localhost. In production it
 #: should be set to the correct host and it is strongly recommended to only
 #: route correct hosts to the application.
+#: TODO change me in production
 APP_ALLOWED_HOSTS = [
-    os.environ.get("ALLOWED_HOST"),
-    os.environ.get("HOSTNAME"),  # fix disallowed host error during /ping
+    os.environ.get("ALLOWED_HOST", "localhost"),
+    "127.0.0.1",
+    os.environ.get("HOSTNAME", ""),  # fix disallowed host error during /ping
 ]
 # OAI-PMH
 # =======

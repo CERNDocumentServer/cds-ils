@@ -10,7 +10,7 @@ const CustomHome = ({ ...props }) => {
 };
 
 const overriddenCmps = {
-  'Home.layout': CustomHome,
+  // 'Home.layout': CustomHome,
 };
 
 ReactDOM.render(
