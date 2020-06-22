@@ -18,7 +18,6 @@ module.exports = {
       qs: path.resolve('./node_modules/qs'),
       react: path.resolve('./node_modules/react'),
       'react-dom': path.resolve('./node_modules/react-dom'),
-      'react-router-dom': path.resolve('./node_modules/react-dom'),
       'react-overridable': path.resolve('./node_modules/react-overridable'),
       'react-searchkit': path.resolve('./node_modules/react-searchkit'),
       'react-redux': path.resolve('./node_modules/react-redux'),
