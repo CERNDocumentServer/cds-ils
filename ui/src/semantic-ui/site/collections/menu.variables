@@ -1,4 +1,3 @@
 /*******************************
     Menu.overrides - CDS ILS
 *******************************/
-@highlightBorder: 2px solid rgba(174, 30, 206, 0.95) ;
