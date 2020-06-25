@@ -3,6 +3,7 @@ import Qs from 'qs';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Grid, Header, List } from 'semantic-ui-react';
+import { config } from '../../../config';
 
 export const Footer = ({ ...props }) => {
   const onClickBookRequestLink = () => {
@@ -22,9 +23,10 @@ export const Footer = ({ ...props }) => {
             <Grid.Column>
               <Header as="h4" content="CERN Library" />
               <p>
-                Open 24 hours a day, <br />
+                Open 24 hours a day <br />
                 every day of the year <br />
-                Staffed from 8.30 to 18.00, <br />
+                <br />
+                Staffed from 8.30 to 18.00 <br />
                 Monday-Friday
               </p>
             </Grid.Column>
@@ -32,7 +34,9 @@ export const Footer = ({ ...props }) => {
               <Header as="h4" content="Help" />
               <List>
                 <List.Item>
-                  <Link to={onClickBookRequestLink()}>Request literature</Link>
+                  <Link to={onClickBookRequestLink()}>
+                    Request new literature
+                  </Link>
                 </List.Item>
                 <List.Item>
                   <a href="#" target="_blank" rel="noopener noreferrer">
@@ -55,12 +59,17 @@ export const Footer = ({ ...props }) => {
               <List>
                 <List.Item>+41 22 767 24 35</List.Item>
                 <List.Item>
-                  <a href="mailto: library.desk@cern.ch">
-                    library.desk@cern.ch
+                  <a href={`mailto:${config.uiConfig.library_email}`}>
+                    {config.uiConfig.library_email}
                   </a>
                 </List.Item>
+              </List>
+              <Header as="h4" content="Technical Support" />
+              <List>
                 <List.Item>
-                  <a href="mailto: cds.support@cern.ch">cds.support@cern.ch</a>
+                  <a href={`mailto:${config.uiConfig.support_email}`}>
+                    {config.uiConfig.support_email}
+                  </a>
                 </List.Item>
               </List>
             </Grid.Column>
@@ -70,8 +79,13 @@ export const Footer = ({ ...props }) => {
       <Container fluid className="footer-lower">
         <Container>
           <Header as="h4" textAlign="center">
-            <Header.Content>Integrated Library System</Header.Content>
-            <Header.Subheader>Powered by INVENIO</Header.Subheader>
+            <Header.Content>CERN Library Catalogue</Header.Content>
+            <Header.Subheader>
+              Powered by{' '}
+              <a href="https://inveniosoftware.org" target="_blank">
+                INVENIO
+              </a>
+            </Header.Subheader>
           </Header>
         </Container>
       </Container>

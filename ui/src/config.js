@@ -67,6 +67,8 @@ const uiConfig = {
       },
     },
   },
+  support_email: 'cds.support@cern.ch',
+  library_email: 'library.desk@cern.ch',
 };
 
 export const config = {

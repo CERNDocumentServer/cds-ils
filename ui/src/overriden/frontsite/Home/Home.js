@@ -11,9 +11,11 @@ export const Home = () => {
     <Container fluid className="fs-landing-page-section-wrapper">
       <Container fluid className="dot-background-container">
         <Container fluid className="dot-background">
-          <Container textAlign="center" className="fs-landing-page-section">
+          <Container
+            textAlign="center"
+            className="fs-landing-page-section no-background"
+          >
             <DocumentCardGroup
-              className="no-background"
               title="Most Loaned Books"
               headerClass="section-header highlight"
               fetchDataMethod={documentApi.list}

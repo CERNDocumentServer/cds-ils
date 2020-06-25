@@ -4,8 +4,12 @@
 
 /* Frontsite */
 @{fs-parent-selector} {
-  .no-background.ui.cards > .card,
-  .ui.card {
-    background: none;
+  .container {
+    &.no-background {
+      .ui.cards > .card,
+      .ui.card {
+        background: none;
+      }
+    }
   }
 }
