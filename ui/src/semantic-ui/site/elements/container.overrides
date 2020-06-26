@@ -1,3 +1,12 @@
 /*******************************
          Site Overrides
 *******************************/
+
+/* Frontsite */
+@{fs-parent-selector} {
+  @{ui-container} {
+    &.fs-headline-section {
+      min-height: 65vh;
+    }
+  }
+}
