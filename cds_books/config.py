@@ -18,7 +18,7 @@ from __future__ import absolute_import, print_function
 import os
 
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
-from invenio_app_ils.pidstore.pids import PATRON_PID_TYPE
+from invenio_app_ils.patrons.api import PATRON_PID_TYPE
 from invenio_records_rest.schemas.fields import SanitizedUnicode
 from marshmallow.fields import Bool
 
@@ -214,31 +214,41 @@ except Exception:
 # ======
 CDS_BOOKS_LDAP_URL = "ldap://xldap.cern.ch"
 
-# RECORDS REST
-# ============
-
-RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
-
-# ILS
-# ==========
-ILS_VIEWS_PERMISSIONS_FACTORY = views_permissions_factory
-
+###############################################################################
 # Migrator configuration
-# ======
+###############################################################################
 MIGRATOR_RECORDS_DUMPLOADER_CLS = \
     'cds_books.migrator.records:CDSDocumentDumpLoader'
 MIGRATOR_RECORDS_DUMP_CLS = 'cds_books.migrator.records:CDSRecordDump'
 
+# whitelist schemas for migration
 JSONSCHEMAS_SCHEMAS = [
     "acquisition",
     "document_requests",
     "documents",
+    "eitems",
     "ill",
-    "ils",
+    "internal_locations",
+    "items",
     "invenio_opendefinition",
     "invenio_records_files",
     "loans",
+    "locations",
+    "series",
+    "vocabularies",
 ]
+
+###############################################################################
+# RECORDS REST
+###############################################################################
+
+RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
+
+
+###############################################################################
+# ILS overridden
+###############################################################################
+ILS_VIEWS_PERMISSIONS_FACTORY = views_permissions_factory
 
 ILS_LITERATURE_COVER_URLS_BUILDER = build_syndetic_cover_urls
 
