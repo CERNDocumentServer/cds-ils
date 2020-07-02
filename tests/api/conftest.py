@@ -15,7 +15,8 @@ import os
 import pytest
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
-from invenio_app_ils.internal_locations.api import INTERNAL_LOCATION_PID_TYPE, \
+from invenio_app_ils.internal_locations.api import \
+    INTERNAL_LOCATION_PID_TYPE, \
     InternalLocation
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
