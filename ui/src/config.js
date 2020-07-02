@@ -1,4 +1,4 @@
-const uiConfig = {
+export const uiConfig = {
   extensions: {
     document: {
       label: 'Other',
@@ -67,6 +67,11 @@ const uiConfig = {
       },
     },
   },
+  staticPages: [
+    { name: 'about', route: '/about', apiURL: '1' },
+    { name: 'terms', route: '/terms', apiURL: '2' },
+    { name: 'faq', route: '/faq', apiURL: '3' },
+  ],
   support_email: 'cds.support@cern.ch',
   library_email: 'library.desk@cern.ch',
 };

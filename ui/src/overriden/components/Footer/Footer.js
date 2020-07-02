@@ -1,20 +1,13 @@
-import { FrontSiteRoutes } from '@inveniosoftware/react-invenio-app-ils';
-import Qs from 'qs';
+import {
+  FrontSiteRoutes,
+  getStaticPageByName,
+} from '@inveniosoftware/react-invenio-app-ils';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Grid, Header, List } from 'semantic-ui-react';
 import { config } from '../../../config';
 
 export const Footer = ({ ...props }) => {
-  const onClickBookRequestLink = () => {
-    const params = Qs.parse(window.location.search);
-    const queryString = params['?q'];
-    return {
-      pathname: FrontSiteRoutes.documentRequestForm,
-      state: { queryString },
-    };
-  };
-
   return (
     <footer>
       <Container fluid className="footer-upper">
@@ -34,14 +27,9 @@ export const Footer = ({ ...props }) => {
               <Header as="h4" content="Help" />
               <List>
                 <List.Item>
-                  <Link to={onClickBookRequestLink()}>
+                  <Link to={FrontSiteRoutes.documentRequestForm}>
                     Request new literature
                   </Link>
-                </List.Item>
-                <List.Item>
-                  <a href="#" target="_blank" rel="noopener noreferrer">
-                    F.A.Q.
-                  </a>
                 </List.Item>
                 <List.Item>
                   <a
@@ -51,6 +39,36 @@ export const Footer = ({ ...props }) => {
                   >
                     Scientific Information Service
                   </a>
+                </List.Item>
+                <List.Item>
+                  <Link
+                    to={
+                      getStaticPageByName(config.uiConfig.staticPages, 'faq')
+                        .route
+                    }
+                  >
+                    F.A.Q.
+                  </Link>
+                </List.Item>
+                <List.Item>
+                  <Link
+                    to={
+                      getStaticPageByName(config.uiConfig.staticPages, 'about')
+                        .route
+                    }
+                  >
+                    About
+                  </Link>
+                </List.Item>
+                <List.Item>
+                  <Link
+                    to={
+                      getStaticPageByName(config.uiConfig.staticPages, 'terms')
+                        .route
+                    }
+                  >
+                    Terms and Privacy
+                  </Link>
                 </List.Item>
               </List>
             </Grid.Column>
@@ -82,7 +100,11 @@ export const Footer = ({ ...props }) => {
             <Header.Content>CERN Library Catalogue</Header.Content>
             <Header.Subheader>
               Powered by{' '}
-              <a href="https://inveniosoftware.org" target="_blank">
+              <a
+                href="https://inveniosoftware.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 INVENIO
               </a>
             </Header.Subheader>

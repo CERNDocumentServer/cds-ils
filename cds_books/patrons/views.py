@@ -10,8 +10,8 @@
 from functools import wraps
 
 from flask import Blueprint, abort, current_app
+from invenio_app_ils.patrons.search import PatronsSearch
 from invenio_app_ils.permissions import need_permissions
-from invenio_app_ils.search.api import PatronsSearch
 from invenio_circulation.search.api import search_by_patron_item_or_document
 from invenio_rest import ContentNegotiatedMethodView
 

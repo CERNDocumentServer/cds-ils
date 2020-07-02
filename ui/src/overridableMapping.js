@@ -9,7 +9,7 @@ import { Slogan } from './overriden/frontsite/Home/Slogan';
 export const overriddenCmps = {
   'Home.Headline.slogan': Slogan,
   'Home.content': Home,
-  'Footer.layout': Footer,
+  ILSFooter: Footer,
   'ILSMenu.RightMenuItems': RightMenuItem,
   'ILSMenu.RightMenuItemsMobile': RightMenuItemMobile,
 };

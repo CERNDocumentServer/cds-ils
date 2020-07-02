@@ -15,7 +15,7 @@ from invenio_app_ils.literature.covers_builder import build_placeholder_urls
 
 def is_record_with_cover(record):
     """Check if this type of record has cover."""
-    schema = record.get("$schema")
+    schema = record["$schema"]
     if schema.endswith("document-v1.0.0.json") or schema.endswith(
         "series-v1.0.0.json"
     ):

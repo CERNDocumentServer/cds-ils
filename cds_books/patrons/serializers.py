@@ -9,7 +9,7 @@
 
 from flask import jsonify
 from invenio_app_ils.documents.api import Document
-from invenio_app_ils.records.api import Location
+from invenio_app_ils.locations.api import Location
 
 
 def serialize_on_loan_book_information(loan):
