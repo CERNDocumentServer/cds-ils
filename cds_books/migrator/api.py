@@ -17,8 +17,8 @@ from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
-from invenio_app_ils.series.api import Series, SeriesIdProvider
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild
+from invenio_app_ils.series.api import Series, SeriesIdProvider
 from invenio_app_ils.series.search import SeriesSearch
 from invenio_base.app import create_cli
 from invenio_db import db

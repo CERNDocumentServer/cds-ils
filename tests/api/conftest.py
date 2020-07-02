@@ -15,21 +15,17 @@ import os
 import pytest
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
-from invenio_app_ils.records.api import InternalLocation, Item, Location, \
-    Series
+from invenio_app_ils.internal_locations.api import INTERNAL_LOCATION_PID_TYPE, \
+    InternalLocation
+from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
+from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
+from invenio_app_ils.series.api import SERIES_PID_TYPE, Series
 from invenio_circulation.api import Loan
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_search import current_search
-
-from invenio_app_ils.pidstore.pids import (  # isort:skip
-    INTERNAL_LOCATION_PID_TYPE,
-    ITEM_PID_TYPE,
-    LOCATION_PID_TYPE,
-    SERIES_PID_TYPE,
-)
 
 
 def load_json_from_datadir(filename):

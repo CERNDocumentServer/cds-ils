@@ -12,6 +12,8 @@
 
 # Ignoring 36810 (insecure numpy version). This can be removed when Travis
 # updates numpy (https://travis-ci.community/t/issue-pipenv-check-fails-due-to-numpy/2120/3).
+# Ignoring 38334 - upgrade monit for pipenv
+export PIPENV_PYUP_API_KEY=""
 pipenv check --ignore 36759 --ignore 36810 --ignore 38334 && \
 pipenv run pydocstyle cds_books tests docs && \
 pipenv run isort -rc -c -df && \
