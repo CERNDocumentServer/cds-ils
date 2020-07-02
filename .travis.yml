@@ -43,7 +43,7 @@ before_install:
   - "sleep 20"
   - "nvm install 12; nvm use 12"
   - "travis_retry pip install --upgrade pip setuptools py"
-  - "travis_retry pip uninstall pipenv"
+  - "travis_retry pip uninstall pipenv -y"
   - "travis_retry pip install pipenv==2018.11.26"
   - "travis_retry pip install twine wheel coveralls"
 
