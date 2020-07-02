@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5def410b45d6d1b0f8163d22415b8b50bf148cec2fa29e688630f48ad8b5f31d"
+            "sha256": "6886a4694574fe2f878649712589049063ca428899827d48bd0864b446008e78"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -517,14 +517,17 @@
             "version": "==1.2.6"
         },
         "invenio-app-ils": {
-            "editable": true,
             "extras": [
-                "lorem",
                 "elasticsearch7",
+                "lorem",
                 "postgresql"
             ],
-            "git": "https://github.com/inveniosoftware/invenio-app-ils.git",
-            "ref": "826989dcdcaeffd43bda54ba4d864680072c0fb4"
+            "hashes": [
+                "sha256:91c55cbb19a2814842efa7fd2120990725b49649cb8227c60abca75993537412",
+                "sha256:e9e9bc95551f046247d0cbc7429a0a3aac3be7d00fc74d79efc3df6493fd97ec"
+            ],
+            "index": "pypi",
+            "version": "==1.0.0a5"
         },
         "invenio-assets": {
             "hashes": [
