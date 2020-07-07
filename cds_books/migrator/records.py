@@ -15,12 +15,14 @@ import logging
 import uuid
 
 import arrow
+import click
 from cds_dojson.marc21 import marc21
 from cds_dojson.marc21.fields.books.errors import ManualMigrationRequired, \
     MissingRequiredField, UnexpectedValue
 from cds_dojson.marc21.utils import create_record
 from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
+from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 from invenio_migrator.records import RecordDump, RecordDumpLoader
 from invenio_migrator.utils import disable_timestamp
@@ -106,7 +108,11 @@ class CDSRecordDump(RecordDump):
                 update_access(val, self.collection_access)
                 return dt, val
             except LossyConversion as e:
-                raise e
+                current_app.logger.error(
+                    'MIGRATION RULE MISSING {0} - {1}'.format(
+                        e.missing, marc_record))
+                # TODO uncomment when data cleaner
+                # raise e
             except Exception as e:
                 current_app.logger.error(
                     'Impossible to convert to JSON {0} - {1}'.format(
@@ -215,10 +221,11 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
         dump.prepare_revisions()
         dump.prepare_pids()
         dump.prepare_files()
+        # if we have a final revision - to remove when data cleaned.
+        if dump.rest[-1]:
+            record = cls.create_record(dump)
 
-        record = cls.create_record(dump)
-
-        return record
+            return record
 
     @classmethod
     @disable_timestamp
@@ -233,13 +240,18 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
             object_type='rec',
             object_uuid=record_uuid,
         )
+        # -1 should mean the latest revision
         timestamp, json_data = dump.rest[-1]
         json_data['pid'] = provider.pid.pid_value
         record.model.json = json_data
         record.model.created = dump.created.replace(tzinfo=None)
         record.model.updated = timestamp.replace(tzinfo=None)
-        document = Document.create(record.model.json, record_uuid)
-        document.commit()
-        db.session.commit()
+        try:
+            document = Document.create(record.model.json, record_uuid)
+            document.commit()
+            db.session.commit()
 
-        return document
+            return document
+        except IlsValidationError as e:
+            click.secho(e.original_exception, fg='red')
+            raise e
