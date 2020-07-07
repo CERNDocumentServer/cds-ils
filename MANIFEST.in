@@ -55,6 +55,7 @@ recursive-include ui *.env
 recursive-include ui *.eslintrc
 recursive-include ui *.html
 recursive-include ui *.ico
+recursive-include ui *.jpg
 recursive-include ui *.js
 recursive-include ui *.json
 recursive-include ui *.less
