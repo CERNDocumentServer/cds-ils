@@ -4,15 +4,16 @@ import {
 } from '@inveniosoftware/react-invenio-app-ils';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Grid, Header, List } from 'semantic-ui-react';
+import { Container, Grid, Header, Image, List } from 'semantic-ui-react';
 import { config } from '../../../config';
 
 export const Footer = ({ ...props }) => {
+  const cernLogo = process.env.PUBLIC_URL + '/cern-logo.png';
   return (
     <footer>
       <Container fluid className="footer-upper">
         <Container>
-          <Grid columns={3} stackable>
+          <Grid columns={4} stackable>
             <Grid.Column>
               <Header as="h4" content="CERN Library" />
               <p>
@@ -90,6 +91,21 @@ export const Footer = ({ ...props }) => {
                   </a>
                 </List.Item>
               </List>
+            </Grid.Column>
+            <Grid.Column>
+              <Header as="h4" content="CERN Document Server" />
+              <p>
+                A{' '}
+                <a
+                  href="https://cds.cern.ch"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  CDS
+                </a>{' '}
+                website
+              </p>
+              <Image src={cernLogo} size="tiny" href="https://home.cern" />
             </Grid.Column>
           </Grid>
         </Container>

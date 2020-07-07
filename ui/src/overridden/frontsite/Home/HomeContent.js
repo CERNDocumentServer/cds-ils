@@ -2,11 +2,17 @@ import {
   documentApi,
   DocumentCardGroup,
   FrontSiteRoutes,
+  Headline,
 } from '@inveniosoftware/react-invenio-app-ils';
 import React from 'react';
+import { parametrize } from 'react-overridable';
 import { Container } from 'semantic-ui-react';
 
-export const Home = () => {
+export const HomeHeadline = parametrize(Headline, {
+  backgroundImageURL: process.env.PUBLIC_URL + '/home-headline-background.jpg',
+});
+
+export const HomeContent = () => {
   return (
     <Container fluid className="fs-landing-page-section-wrapper">
       <Container fluid className="dot-background-container">

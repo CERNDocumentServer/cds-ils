@@ -10,7 +10,7 @@ export const Slogan = ({ ...props }) => {
             CERN Library Catalogue
           </Header>
           <Header.Subheader className="fs-headline-subheader">
-            Books, e-books, papers, standards at CERN.
+            Books, e-books, journals, papers, standards at CERN.
           </Header.Subheader>
         </Grid.Column>
       </Grid>
