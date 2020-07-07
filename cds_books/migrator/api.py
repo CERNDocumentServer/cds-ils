@@ -18,6 +18,8 @@ from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild
+from invenio_app_ils.relations.api import SERIAL_RELATION, \
+    MULTIPART_MONOGRAPH_RELATION
 from invenio_app_ils.series.api import Series, SeriesIdProvider
 from invenio_app_ils.series.search import SeriesSearch
 from invenio_base.app import create_cli
@@ -83,6 +85,12 @@ def import_parents_from_file(dump_file, rectype, include):
     with click.progressbar(json.load(dump_file).items()) as bar:
         records = []
         for key, parent in bar:
+            if 'legacy_recid' in parent:
+                click.echo('Importing parent "{0}({1})"...'.
+                           format(parent['legacy_recid'], rectype))
+            else:
+                click.echo('Importing parent "{0}({1})"...'.
+                           format(parent['title'], rectype))
             if include_keys is None or key in include_keys:
                 has_children = parent.get('_migration', {}).get('children', [])
                 has_volumes = parent.get('_migration', {}).get('volumes', [])
@@ -114,6 +122,8 @@ def import_documents_from_record_file(sources, include):
         with click.progressbar(json.load(source).items()) as bar:
             records = []
             for key, parent in bar:
+                click.echo('Importing document "{}"...'.
+                           format(parent['legacy_recid']))
                 if include_keys is None or key in include_keys:
                     record = import_record(
                         parent,
@@ -134,6 +144,8 @@ def import_documents_from_dump(sources, source_type, eager, include):
         data = json.load(source)
         with click.progressbar(data) as records:
             for item in records:
+                click.echo('Processing document "{}"...'.
+                           format(item['recid']))
                 if include is None or str(item['recid']) in include:
                     _loadrecord(item, source_type, eager=eager)
     # We don't get the record back from _loadrecord so re-index all documents
@@ -150,9 +162,12 @@ def get_multipart_by_legacy_recid(recid):
         ]
     )
     result = search.execute()
-    if result.hits.total < 1:
-        raise MultipartMigrationError(
-            'no multipart found with legacy recid {}'.format(recid))
+    if not result.hits or result.hits.total < 1:
+        click.secho('no multipart found with legacy recid {}'.format(recid),
+                    fg='red')
+        # TODO uncomment with cleaner data
+        # raise MultipartMigrationError(
+        #     'no multipart found with legacy recid {}'.format(recid))
     elif result.hits.total > 1:
         raise MultipartMigrationError(
             'found more than one multipart with recid {}'.format(recid))
@@ -164,6 +179,7 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
     """Create multipart volume documents."""
     volumes = {}
     # Combine all volume data by volume number
+    click.echo('Creating volume for {}...'.format(multipart_legacy_recid))
     for obj in migration_volumes:
         volume_number = obj['volume']
         if volume_number not in volumes:
@@ -186,9 +202,10 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
     first_volume = next(volume_numbers)
     first = Document.get_record_by_pid(pid)
     if 'title' in volumes[first_volume]:
-        first['title']['title'] = volumes[first_volume]['title']
+        first['title'] = volumes[first_volume]['title']
         first['volume'] = first_volume
     first['_migration']['multipart_legacy_recid'] = multipart_legacy_recid
+    # to be tested
     if 'legacy_recid' in first:
         del first['legacy_recid']
     first.commit()
@@ -197,7 +214,7 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
     # Create new records for the rest
     for number in volume_numbers:
         temp = first.copy()
-        temp['title']['title'] = volumes[number]['title']
+        temp['title'] = volumes[number]['title']
         temp['volume'] = number
         record_uuid = uuid.uuid4()
         provider = DocumentIdProvider.create(
@@ -213,6 +230,8 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
 def create_parent_child_relation(parent, child, relation_type, volume):
     """Create parent child relations."""
     rr = RecordRelationsParentChild()
+    click.echo('Creating relations: {0} - {1}'.format(parent['pid'],
+                                                      child['pid']))
     rr.add(
         parent=parent,
         child=child,
@@ -225,22 +244,27 @@ def link_and_create_multipart_volumes():
     """Link and create multipart volume records."""
     click.echo('Creating document volumes and multipart relations...')
     search = DocumentSearch().filter('term', _migration__is_multipart=True)
-
     for hit in search.scan():
         if 'legacy_recid' not in hit:
             continue
+        click.secho('Linking multipart {}...'.format(hit.legacy_recid),
+                    fg='green')
         multipart = get_multipart_by_legacy_recid(hit.legacy_recid)
         documents = create_multipart_volumes(
             hit.pid,
             hit.legacy_recid,
             hit._migration.volumes
         )
+
         for document in documents:
             if document and multipart:
+                click.echo(
+                    'Creating relations: {0} - {1}'.format(multipart['pid'],
+                                                           document['pid']))
                 create_parent_child_relation(
                     multipart,
                     document,
-                    current_app.config['MULTIPART_MONOGRAPH_RELATION'],
+                    MULTIPART_MONOGRAPH_RELATION,
                     document['volume']
                 )
 
@@ -283,12 +307,12 @@ def link_documents_and_serials():
             for serial in get_serials_by_child_recid(hit.legacy_recid):
                 volume = get_migrated_volume_by_serial_title(
                     record,
-                    serial['title']['title']
+                    serial['title']
                 )
                 create_parent_child_relation(
                     serial,
                     record,
-                    current_app.config['SERIAL_RELATION'],
+                    SERIAL_RELATION,
                     volume
                 )
 
@@ -339,8 +363,8 @@ def validate_serial_records():
     search = SeriesSearch().filter('term', mode_of_issuance='SERIAL')
     for serial_hit in search.scan():
         # Store titles and check for duplicates
-        if 'title' in serial_hit and 'title' in serial_hit.title:
-            title = serial_hit.title.title
+        if 'title' in serial_hit:
+            title = serial_hit.title
             if title in titles:
                 current_app.logger.warning(
                     'Serial title "{}" already exists'.format(title))
@@ -374,12 +398,12 @@ def validate_multipart_records():
                 relation['pid'],
                 pid_type=relation['pid_type']
             )
-            if child['title']['title'] not in titles:
+            if child['title'] not in titles:
                 click.echo(
                     '[Multipart {}] Title "{}" does not exist in '
                     'migration data'.format(
                         multipart['pid'],
-                        child['title']['title']
+                        child['title']
                     )
                 )
 
