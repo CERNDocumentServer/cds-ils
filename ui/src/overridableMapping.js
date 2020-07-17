@@ -10,6 +10,7 @@ import {
   HomeHeadline,
 } from './overridden/frontsite/Home/HomeContent';
 import { Slogan } from './overridden/frontsite/Home/Slogan';
+import { DeliveryIcon } from './overridden/backoffice/DeliveryIcon/DeliveryIcon';
 
 export const overriddenCmps = {
   'Home.Headline': HomeHeadline,
@@ -20,4 +21,7 @@ export const overriddenCmps = {
   'ILSMenu.LogoMobile': LogoMobile,
   'ILSMenu.RightMenuItems': RightMenuItem,
   'ILSMenu.RightMenuItemsMobile': RightMenuItemMobile,
+  'LoanListEntry.DeliveryIcon': DeliveryIcon,
+  'LoanMetadata.DeliveryIcon': DeliveryIcon,
+  'RequestForPatronMessage.DeliveryIcon': DeliveryIcon,
 };
