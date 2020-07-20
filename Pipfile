@@ -10,7 +10,7 @@ uwsgi = ">=2.0"
 uwsgitop = ">=0.11"
 uwsgi-tools = ">=1.1.1"
 lxml = ">=3.5.0,<4.2.6"
-invenio-app-ils = {editable = true, version = "==1.0.0a6", extras = [ "lorem" , "elasticsearch7", "postgresql" ]}
+invenio-app-ils = {editable = true, version = "==1.0.0a8", extras = [ "lorem" , "elasticsearch7", "postgresql" ]}
 invenio-migrator = {editable = true,version = "==1.0.0a10"}
 cds-books = {editable = true,path = "."}
 invenio-records-files = "*"
