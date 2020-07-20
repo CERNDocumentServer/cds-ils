@@ -1,6 +1,15 @@
-export const uiConfig = {
-  extensions: {
-    document: {
+export const config = {
+  APP: {
+    staticPages: [
+      { name: 'about', route: '/about', apiURL: '1' },
+      { name: 'terms', route: '/terms', apiURL: '2' },
+      { name: 'faq', route: '/faq', apiURL: '3' },
+    ],
+    supportEmail: 'cds.support@cern.ch',
+    libraryEmail: 'library.desk@cern.ch',
+  },
+  DOCUMENTS: {
+    extensions: {
       label: 'Other',
       fields: {
         'accelerator_experiments:accelerator': {
@@ -67,15 +76,4 @@ export const uiConfig = {
       },
     },
   },
-  staticPages: [
-    { name: 'about', route: '/about', apiURL: '1' },
-    { name: 'terms', route: '/terms', apiURL: '2' },
-    { name: 'faq', route: '/faq', apiURL: '3' },
-  ],
-  support_email: 'cds.support@cern.ch',
-  library_email: 'library.desk@cern.ch',
-};
-
-export const config = {
-  uiConfig: uiConfig,
 };

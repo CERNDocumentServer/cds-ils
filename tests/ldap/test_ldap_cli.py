@@ -7,7 +7,6 @@
 
 from __future__ import absolute_import, print_function
 
-import pytest
 from invenio_accounts.models import User
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
