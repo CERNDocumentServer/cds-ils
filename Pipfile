@@ -12,6 +12,7 @@ uwsgi-tools = ">=1.1.1"
 lxml = ">=3.5.0,<4.2.6"
 invenio-app-ils = {editable = true, version = "==1.0.0a8", extras = [ "lorem" , "elasticsearch7", "postgresql" ]}
 invenio-migrator = {editable = true,version = "==1.0.0a10"}
+invenio = ">=3.3,<3.4"
 cds-books = {editable = true,path = "."}
 invenio-records-files = "*"
 cds-dojson = {editable = true,git = "https://github.com/CERNDocumentServer/cds-dojson",ref = "books"}
