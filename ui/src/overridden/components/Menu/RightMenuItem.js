@@ -14,7 +14,7 @@ const dropdownEntries = (
       F.A.Q.
     </Dropdown.Item>
     <Dropdown.Divider />
-    <Dropdown.Item as="a" href={`mailto:${config.uiConfig.library_email}`}>
+    <Dropdown.Item as="a" href={`mailto:${config.libraryEmail}`}>
       Ask a librarian
     </Dropdown.Item>
     <Dropdown.Divider />

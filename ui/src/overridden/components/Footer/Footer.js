@@ -42,32 +42,13 @@ export const Footer = ({ ...props }) => {
                   </a>
                 </List.Item>
                 <List.Item>
-                  <Link
-                    to={
-                      getStaticPageByName(config.uiConfig.staticPages, 'faq')
-                        .route
-                    }
-                  >
-                    F.A.Q.
-                  </Link>
+                  <Link to={getStaticPageByName('faq').route}>F.A.Q.</Link>
                 </List.Item>
                 <List.Item>
-                  <Link
-                    to={
-                      getStaticPageByName(config.uiConfig.staticPages, 'about')
-                        .route
-                    }
-                  >
-                    About
-                  </Link>
+                  <Link to={getStaticPageByName('about').route}>About</Link>
                 </List.Item>
                 <List.Item>
-                  <Link
-                    to={
-                      getStaticPageByName(config.uiConfig.staticPages, 'terms')
-                        .route
-                    }
-                  >
+                  <Link to={getStaticPageByName('terms').route}>
                     Terms and Privacy
                   </Link>
                 </List.Item>
@@ -78,16 +59,16 @@ export const Footer = ({ ...props }) => {
               <List>
                 <List.Item>+41 22 767 24 35</List.Item>
                 <List.Item>
-                  <a href={`mailto:${config.uiConfig.library_email}`}>
-                    {config.uiConfig.library_email}
+                  <a href={`mailto:${config.libraryEmail}`}>
+                    {config.libraryEmail}
                   </a>
                 </List.Item>
               </List>
               <Header as="h4" content="Technical Support" />
               <List>
                 <List.Item>
-                  <a href={`mailto:${config.uiConfig.support_email}`}>
-                    {config.uiConfig.support_email}
+                  <a href={`mailto:${config.supportEmail}`}>
+                    {config.supportEmail}
                   </a>
                 </List.Item>
               </List>

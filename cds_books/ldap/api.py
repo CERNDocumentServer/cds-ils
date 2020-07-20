@@ -8,8 +8,6 @@
 
 """CDS Books ldap API."""
 
-import json
-
 import ldap
 from flask import current_app
 from invenio_accounts.models import User
