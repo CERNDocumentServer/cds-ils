@@ -18,8 +18,8 @@ from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild
-from invenio_app_ils.relations.api import SERIAL_RELATION, \
-    MULTIPART_MONOGRAPH_RELATION
+from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
+    SERIAL_RELATION
 from invenio_app_ils.series.api import Series, SeriesIdProvider
 from invenio_app_ils.series.search import SeriesSearch
 from invenio_base.app import create_cli
@@ -199,6 +199,7 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
     volume_numbers = iter(sorted(volumes.keys()))
 
     # Re-use the current record for the first volume
+    # TODO review this - there are more cases of multiparts
     first_volume = next(volume_numbers)
     first = Document.get_record_by_pid(pid)
     if 'title' in volumes[first_volume]:
