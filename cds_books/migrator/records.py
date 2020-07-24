@@ -184,10 +184,16 @@ class CDSParentRecordDumpLoader(RecordDumpLoader):
             object_uuid=record_uuid,
         )
         dump['pid'] = provider.pid.pid_value
-        record = model.create(dump, record_uuid)
-        record.model.created = datetime.datetime.utcnow()
-        record.commit()
-        return record
+        try:
+            record = model.create(dump, record_uuid)
+            record.model.created = datetime.datetime.utcnow()
+            record.commit()
+            return record
+        except IlsValidationError as e:
+            click.secho("RECID {0} did not pass validation. ERROR: \n {1}"
+                        .format(dump['legacy_recid'], e), fg='red')
+            # TODO uncomment when data cleaner - needed for testing on dev
+            # raise e
 
 
 class CDSDocumentDumpLoader(RecordDumpLoader):
@@ -253,5 +259,6 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
 
             return document
         except IlsValidationError as e:
-            click.secho(e.original_exception, fg='red')
-            raise e
+            click.secho(e.original_exception.message, fg='red')
+            # TODO uncomment when data cleaner - needed for testing on dev
+            # raise e
