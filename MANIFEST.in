@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2019 CERN.
+# Copyright (C) 2020 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
@@ -21,9 +21,6 @@ include *.rst
 include *.sh
 include *.yml
 include babel.ini
-include docker/haproxy/Dockerfile
-include docker/nginx/Dockerfile
-include docker/postgres/Dockerfile
 include Dockerfile
 include Dockerfile.base
 include LICENSE
@@ -51,21 +48,5 @@ recursive-include cds_ils *.png *.jpg *.svg
 recursive-include docker *.cfg *.conf *.crt *.ini *.key *.pem *.sh
 recursive-include tests *.json
 recursive-include tests *.py
-recursive-include ui *.config
-recursive-include ui *.env
-recursive-include ui *.eslintrc
-recursive-include ui *.html
-recursive-include ui *.ico
-recursive-include ui *.jpg
-recursive-include ui *.js
-recursive-include ui *.json
-recursive-include ui *.less
-recursive-include ui *.md
-recursive-include ui *.overrides
-recursive-include ui *.png
-recursive-include ui *.prettierignore
-recursive-include ui *.prettierrc
-recursive-include ui *.txt
-recursive-include ui *.variables
-recursive-include ui *.svg
 recursive-include tests *.html
+prune ui

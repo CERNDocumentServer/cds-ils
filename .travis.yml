@@ -34,6 +34,8 @@ env:
     # Force pipenv to create a new virtualenv to bypass travis virtualenv.
     - PIPENV_IGNORE_VIRTUALENVS=1
     - PIPENV_PYUP_API_KEY=""
+    # Needed after release of v50.0.0 of setuptools (Setuptools overrides the stdlib distutils on import) [temporary solution]
+    - SETUPTOOLS_USE_DISTUTILS="stdlib"
 
 python:
   - "3.6"

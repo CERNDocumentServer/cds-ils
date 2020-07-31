@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2019 CERN.
+# Copyright (C) 2020 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
@@ -13,6 +13,7 @@ You overwrite and set instance-specific configuration by either:
 - Environment variables: ``APP_<variable name>``
 """
 
+import copy
 import os
 from datetime import timedelta
 
@@ -20,6 +21,7 @@ from invenio_app_ils.config import \
     CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE
+from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
 from marshmallow.fields import Bool
 
@@ -41,8 +43,9 @@ def _parse_env_bool(var_name, default=None):
     return default
 
 
+###############################################################################
 # Search
-# ======
+###############################################################################
 ELASTICSEARCH_HOST = os.environ.get("ELASTICSEARCH_HOST", "localhost")
 ELASTICSEARCH_PORT = int(os.environ.get("ELASTICSEARCH_PORT", "9200"))
 ELASTICSEARCH_USER = os.environ.get("ELASTICSEARCH_USER")
@@ -51,10 +54,7 @@ ELASTICSEARCH_URL_PREFIX = os.environ.get("ELASTICSEARCH_URL_PREFIX", "")
 ELASTICSEARCH_USE_SSL = _parse_env_bool("ELASTICSEARCH_USE_SSL")
 ELASTICSEARCH_VERIFY_CERTS = _parse_env_bool("ELASTICSEARCH_VERIFY_CERTS")
 
-es_host_params = {
-    "host": ELASTICSEARCH_HOST,
-    "port": ELASTICSEARCH_PORT,
-}
+es_host_params = {"host": ELASTICSEARCH_HOST, "port": ELASTICSEARCH_PORT}
 if ELASTICSEARCH_USER and ELASTICSEARCH_PASSWORD:
     es_host_params["http_auth"] = (ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD)
 if ELASTICSEARCH_URL_PREFIX:
@@ -67,13 +67,15 @@ if ELASTICSEARCH_VERIFY_CERTS is not None:
 SEARCH_ELASTIC_HOSTS = [es_host_params]
 """Elasticsearch hosts configuration."""
 
+###############################################################################
 # Rate limiting
-# =============
-#: Storage for ratelimiter.
+###############################################################################
+#: Storage for rate limiter.
 RATELIMIT_STORAGE_URL = "redis://localhost:6379/3"
 
+###############################################################################
 # I18N
-# ====
+###############################################################################
 #: Default language
 BABEL_DEFAULT_LANGUAGE = "en"
 #: Default time zone
@@ -83,8 +85,9 @@ I18N_LANGUAGES = [
     # ('fr', _('French'))
 ]
 
-# Base templates
-# ==============
+###############################################################################
+# Theme
+###############################################################################
 #: Global base template.
 BASE_TEMPLATE = "invenio_theme/page.html"
 #: Cover page base template (used for e.g. login/sign-up).
@@ -96,12 +99,11 @@ HEADER_TEMPLATE = "invenio_theme/header.html"
 #: Settings base template.
 SETTINGS_TEMPLATE = "invenio_theme/page_settings.html"
 
-# Theme configuration
-# ===================
 THEME_FRONTPAGE = False
 
-# Email configuration
-# ===================
+###############################################################################
+# Email
+###############################################################################
 #: Email address for support.
 SUPPORT_EMAIL = "cds.support@cern.ch"
 #: Management email for internal notifications.
@@ -111,13 +113,9 @@ MAIL_SUPPRESS_SEND = True
 #: Email address for email notification sender.
 MAIL_NOTIFY_SENDER = "library.desk@cern.ch"
 
-# Assets
-# ======
-#: Static files collection method (defaults to copying files).
-COLLECT_STORAGE = "flask_collect.storage.file"
-
+###############################################################################
 # Accounts
-# ========
+###############################################################################
 #: Email address used as sender of account registration emails.
 SECURITY_EMAIL_SENDER = SUPPORT_EMAIL
 #: Email subject for account registration emails.
@@ -130,8 +128,9 @@ ACCOUNTS_SESSION_REDIS_URL = "redis://localhost:6379/1"
 #: client. Set to False, in case of doubt.
 ACCOUNTS_USERINFO_HEADERS = True
 
+###############################################################################
 # Celery configuration
-# ====================
+###############################################################################
 BROKER_URL = "amqp://guest:guest@localhost:5672/"
 #: URL of message broker for Celery (default is RabbitMQ).
 CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672/"
@@ -146,20 +145,23 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+###############################################################################
 # Database
-# ========
+###############################################################################
 #: Database URI including user and password
 SQLALCHEMY_DATABASE_URI = (
     "postgresql+psycopg2://cds-ils:cds-ils@localhost/cds-ils"
 )
 
+###############################################################################
 # JSONSchemas
-# ===========
+###############################################################################
 #: Hostname used in URLs for local JSONSchemas.
 JSONSCHEMAS_HOST = "cds-ils.cern.ch"
 
+###############################################################################
 # Flask configuration
-# ===================
+###############################################################################
 # See details on
 # http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values
 
@@ -174,18 +176,20 @@ SESSION_COOKIE_SECURE = True
 #: provided, the allowed hosts variable is set to localhost. In production it
 #: should be set to the correct host and it is strongly recommended to only
 #: route correct hosts to the application.
-#: TODO change me in production
 APP_ALLOWED_HOSTS = [
     os.environ.get("ALLOWED_HOST", "localhost"),
     "127.0.0.1",
     os.environ.get("HOSTNAME", ""),  # fix disallowed host error during /ping
 ]
-# OAI-PMH
-# =======
-OAISERVER_ID_PREFIX = "oai:cds-ils.com:"
 
+###############################################################################
+# OAI-PMH
+###############################################################################
+OAISERVER_ID_PREFIX = "oai:cds-ils.cern.ch:"
+
+###############################################################################
 # Debug
-# =====
+###############################################################################
 # Flask-DebugToolbar is by default enabled when the application is running in
 # debug mode. More configuration options are available at
 # https://flask-debugtoolbar.readthedocs.io/en/latest/#configuration
@@ -195,8 +199,9 @@ DEBUG_TB_ENABLED = True
 #: Switches off incept of redirects by Flask-DebugToolbar.
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 
+###############################################################################
 # Sentry
-# ======
+###############################################################################
 LOGGING_SENTRY_LEVEL = "WARNING"
 """Sentry logging level."""
 
@@ -221,8 +226,59 @@ try:
 except Exception:
     pass
 
+###############################################################################
+# OAuth
+###############################################################################
+OAUTH_REMOTE_REST_APP = copy.deepcopy(cern_openid.REMOTE_REST_APP)
+OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
+    "OAUTH_CERN_OPENID_LOGOUT_URL",
+    "https://keycloak-qa.cern.ch/auth/realms/cern/"
+    "protocol/openid-connect/logout",
+)
+OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
+    os.environ.get("SPA_HOST", "http://localhost:3000") + "/login"
+)
+OAUTH_REMOTE_REST_APP["disconnect_redirect_url"] = os.environ.get(
+    "SPA_HOST", "http://localhost:3000"
+)
+OAUTH_REMOTE_REST_APP["error_redirect_url"] = (
+    os.environ.get("SPA_HOST", "http://localhost:3000") + "/login"
+)
+OAUTH_REMOTE_REST_APP["params"].update(
+    dict(
+        base_url=os.environ.get(
+            "OAUTH_CERN_OPENID_BASE_URL",
+            "https://keycloak-qa.cern.ch/auth/realms/cern",
+        ),
+        access_token_url=os.environ.get(
+            "OAUTH_CERN_OPENID_ACCESS_TOKEN_URL",
+            "https://keycloak-qa.cern.ch/auth/realms/cern/"
+            "protocol/openid-connect/token",
+        ),
+        authorize_url=os.environ.get(
+            "OAUTH_CERN_OPENID_AUTHORIZE_URL",
+            "https://keycloak-qa.cern.ch/auth/realms/cern/"
+            "protocol/openid-connect/auth",
+        ),
+    )
+)
+
+OAUTHCLIENT_REST_REMOTE_APPS = dict(cern_openid=OAUTH_REMOTE_REST_APP)
+OAUTHCLIENT_CERN_OPENID_ALLOWED_ROLES = ["cern-user", "librarian", "admin"]
+
+CERN_APP_OPENID_CREDENTIALS = dict(
+    consumer_key=os.environ.get(
+        "OAUTH_CERN_OPENID_CLIENT_ID", "localhost-cds-ils"
+    ),
+    consumer_secret=os.environ.get(
+        "OAUTH_CERN_OPENID_CLIENT_SECRET", "<change me>"
+    ),
+)
+USERPROFILES_EXTEND_SECURITY_FORMS = True
+
+###############################################################################
 # LDAP configuration
-# ======
+###############################################################################
 CDS_ILS_LDAP_URL = "ldap://xldap.cern.ch"
 
 ###############################################################################
@@ -232,6 +288,12 @@ MIGRATOR_RECORDS_DUMPLOADER_CLS = (
     "cds_ils.migrator.records:CDSDocumentDumpLoader"
 )
 MIGRATOR_RECORDS_DUMP_CLS = "cds_ils.migrator.records:CDSRecordDump"
+
+###############################################################################
+# JSONSchemas
+###############################################################################
+#: Hostname used in URLs for local JSONSchemas.
+JSONSCHEMAS_HOST = "cds-books.com"
 
 # whitelist schemas for migration
 JSONSCHEMAS_SCHEMAS = [
@@ -253,9 +315,7 @@ JSONSCHEMAS_SCHEMAS = [
 ###############################################################################
 # RECORDS REST
 ###############################################################################
-
 RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
-
 
 ###############################################################################
 # ILS overridden
