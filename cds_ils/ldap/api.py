@@ -157,10 +157,7 @@ class LdapUserImporter:
 
     def import_user(self, user):
         """Return new user entry."""
-        return {
-            "email": user["mail"][0].decode("utf8"),
-            "active": True,
-        }
+        return {"email": user["mail"][0].decode("utf8"), "active": True}
 
     def import_remote_account(self, user_id, ldap_user):
         """Return new user entry."""
@@ -208,14 +205,12 @@ class LdapUserImporter:
             )
             db.session.add(profile)
 
-            client_id = (
-                current_app.config.get("CERN_APP_CREDENTIALS", {}).get(
-                    "consumer_key"
-                ) or "CLIENT_ID"
-            )
+            client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
+                "consumer_key"
+            ]
             remote_account = RemoteAccount(
                 client_id=client_id,
-                **self.import_remote_account(user_id, ldap_user)
+                **self.import_remote_account(user_id, ldap_user),
             )
             db.session.add(remote_account)
 
@@ -224,6 +219,7 @@ class LdapUserImporter:
 
 def import_ldap_users(ldap_users):
     """Import ldap users in db."""
+
     def index_ldap_users():
         """Index ldap users in ES."""
         from invenio_base.app import create_cli
@@ -249,12 +245,14 @@ def check_user_for_update(system_user, ldap_user):
         system_user.extra_data.update(dict(department=ldap_user_department))
         db.session.commit()
 
-        _log_info("department_updated",
-                  dict(
-                      user_id=system_user.user.id,
-                      previous_department=previous_department,
-                      new_department=ldap_user_department
-                  ))
+        _log_info(
+            "department_updated",
+            dict(
+                user_id=system_user.user.id,
+                previous_department=previous_department,
+                new_department=ldap_user_department,
+            ),
+        )
 
 
 def delete_user(system_user):
@@ -271,10 +269,7 @@ def _log_info(action, extra=None):
         extra = dict()
     name = "ldap_users_synchronization"
     structured_msg = dict(
-        name=name,
-        uuid=str(uuid.uuid4()),
-        action=action,
-        **extra,
+        name=name, uuid=str(uuid.uuid4()), action=action, **extra
     )
     structured_msg_str = json.dumps(structured_msg, sort_keys=True)
     current_app.logger.info(structured_msg_str)
@@ -283,6 +278,7 @@ def _log_info(action, extra=None):
 def sync_users():
     """Sync ldap with system users command."""
     import time
+
     start_time = time.time()
 
     ldap_url = current_app.config["CDS_ILS_LDAP_URL"]

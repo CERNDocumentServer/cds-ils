@@ -8,7 +8,7 @@ import { Container, Grid, Header, Image, List } from 'semantic-ui-react';
 import { config } from '../../../config';
 
 export const Footer = ({ ...props }) => {
-  const cernLogo = process.env.PUBLIC_URL + '/cern-logo.png';
+  const cernLogo = process.env.PUBLIC_URL + '/cern-logo-white-150.png';
   return (
     <footer>
       <Container fluid className="footer-upper">

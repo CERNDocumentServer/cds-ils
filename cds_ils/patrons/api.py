@@ -24,19 +24,22 @@ class Patron(ILSPatron):
         """Create a `Patron` instance."""
         super(Patron, self).__init__(id, revision_id)
 
-        client_id = current_app.config.get(
-                "CERN_APP_CREDENTIALS", {}).get("consumer_key") or "CLIENT_ID"
-        remote_user = RemoteAccount.get(id, client_id)
         self.extra_info = None
+        client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
+            "consumer_key"
+        ]
+        remote_user = RemoteAccount.get(id, client_id)
         if remote_user:
             self.extra_info = remote_user.extra_data
 
     def dumps(self):
         """Return python representation of Patron metadata."""
         dump = super(Patron, self).dumps()
-        if hasattr(self, 'extra_info') and self.extra_info:
-            dump.update({
-                "person_id": self.extra_info.get("person_id", ""),
-                "department": self.extra_info.get("department", "")
-            })
+        if hasattr(self, "extra_info") and self.extra_info:
+            dump.update(
+                {
+                    "person_id": self.extra_info.get("person_id", ""),
+                    "department": self.extra_info.get("department", ""),
+                }
+            )
         return dump

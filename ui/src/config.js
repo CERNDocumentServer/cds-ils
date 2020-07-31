@@ -1,5 +1,6 @@
 export const config = {
   APP: {
+    LOGO_SRC: null,
     staticPages: [
       { name: 'about', route: '/about', apiURL: '1' },
       { name: 'terms', route: '/terms', apiURL: '2' },
@@ -7,6 +8,21 @@ export const config = {
     ],
     supportEmail: 'cds.support@cern.ch',
     libraryEmail: 'library.desk@cern.ch',
+    ENABLE_LOCAL_ACCOUNT_LOGIN: false,
+    OAUTH_PROVIDERS: {
+      github: {
+        enabled: false,
+      },
+      cern: {
+        enabled: true,
+        label: 'Sign in with CERN',
+        name: 'cern',
+        url: '/api/oauth/login/cern_openid/',
+        icon: '',
+        semanticUiColor: 'grey',
+        className: '',
+      },
+    },
   },
   VOCABULARIES: {
     documentRequests: {
