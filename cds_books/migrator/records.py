@@ -146,35 +146,20 @@ class CDSRecordDump(RecordDump):
         self.revisions.append(self._prepare_final_revision(it[-1]))
 
 
-class CDSParentRecordDump(RecordDump):
-    """Dump CDS parent record."""
-
-    def _prepare_revision(self, data):
-        """Prepare data."""
-        dt = datetime.datetime.utcnow()
-
-        val = data
-        val['_collections'] = self.data.get('collections', [])
-
-        return dt, val
-
-    def prepare_revisions(self):
-        """Prepare record revisions for migration."""
-        self.revisions = [self.data]
-
-
-class CDSParentRecordDumpLoader(RecordDumpLoader):
-    """Migrate a CDS parent records."""
+class CDSRecordDumpLoader:
+    """Migrate a CDS records."""
 
     @classmethod
-    def create(cls, dump, model, pid_provider):
+    def create(cls, dump, model, pid_provider, legacy_id_key='legacy_recid'):
         """Create record based on dump."""
-        record = cls.create_record(dump, model, pid_provider)
+        record = cls.create_record(dump, model, pid_provider,
+                                   legacy_id_key=legacy_id_key)
         return record
 
     @classmethod
     @disable_timestamp
-    def create_record(cls, dump, model, pid_provider):
+    def create_record(cls, dump, model, pid_provider,
+                      legacy_id_key='legacy_recid'):
         """Create a new record from dump."""
         # Reserve record identifier, create record and recid pid in one
         # operation.
@@ -191,7 +176,7 @@ class CDSParentRecordDumpLoader(RecordDumpLoader):
             return record
         except IlsValidationError as e:
             click.secho("RECID {0} did not pass validation. ERROR: \n {1}"
-                        .format(dump['legacy_recid'], e), fg='red')
+                        .format(dump[legacy_id_key], e), fg='red')
             # TODO uncomment when data cleaner - needed for testing on dev
             # raise e
 
