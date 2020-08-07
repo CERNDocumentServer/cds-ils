@@ -1,0 +1,12 @@
+# Copyright (C) 2019 CERN.
+#
+# CDS Books is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
+
+# This script requires mounted EOS volume
+
+pipenv run ils db create
+pipenv run cds-books fixtures pages
+pipenv run cds-books fixtures location
+pipenv run cds-books fixtures patrons
+pipenv cds-books migration internal-locations /Volumes/cds/test/books/migration/records/tmp/libraries.json

@@ -36,6 +36,7 @@ include scripts/server
 include scripts/setup
 include scripts/update
 include scripts/ldap_sync
+include scripts/life_data_setup
 include tests
 prune docs/_build
 recursive-include docs *.bat
