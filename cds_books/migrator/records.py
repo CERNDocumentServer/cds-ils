@@ -175,75 +175,78 @@ class CDSRecordDumpLoader:
             record.commit()
             return record
         except IlsValidationError as e:
+            click.secho("VALIDATION ERROR", fg='blue')
             click.secho("RECID {0} did not pass validation. ERROR: \n {1}"
-                        .format(dump[legacy_id_key], e), fg='red')
+                        .format(dump[legacy_id_key],
+                                ['{0}: {1}'.format(error.res['field'],
+                                                   error.res['message']) for
+                                 error in e.errors]).join('\n'), fg='red')
             # TODO uncomment when data cleaner - needed for testing on dev
             # raise e
 
+    class CDSDocumentDumpLoader(RecordDumpLoader):
+        """Migrate a CDS record.
 
-class CDSDocumentDumpLoader(RecordDumpLoader):
-    """Migrate a CDS record.
+        create and create_record has been changed to change the hardcoded
+        pid_type recid to docid.
+        """
 
-    create and create_record has been changed to change the hardcoded pid_type
-    recid to docid.
-    """
+        @classmethod
+        def create_files(cls, *args, **kwargs):
+            """Disable the files load."""
+            pass
 
-    @classmethod
-    def create_files(cls, *args, **kwargs):
-        """Disable the files load."""
-        pass
+        @classmethod
+        def create(cls, dump):
+            """Create record based on dump."""
+            # If 'record' is not present, just create the PID
+            if not dump.data.get('record'):
+                try:
+                    PersistentIdentifier.get(pid_type='docid',
+                                             pid_value=dump.recid)
+                except PIDDoesNotExistError:
+                    PersistentIdentifier.create(
+                        'docid', dump.recid,
+                        status=PIDStatus.RESERVED
+                    )
+                    db.session.commit()
+                return None
 
-    @classmethod
-    def create(cls, dump):
-        """Create record based on dump."""
-        # If 'record' is not present, just create the PID
-        if not dump.data.get('record'):
+            dump.prepare_revisions()
+            dump.prepare_pids()
+            dump.prepare_files()
+            # if we have a final revision - to remove when data cleaned.
             try:
-                PersistentIdentifier.get(pid_type='docid',
-                                         pid_value=dump.recid)
-            except PIDDoesNotExistError:
-                PersistentIdentifier.create(
-                    'docid', dump.recid,
-                    status=PIDStatus.RESERVED
-                )
+                # import ipdb;ipdb.set_trace()
+                if dump.revisions[-1]:
+                    record = cls.create_record(dump)
+
+                    return record
+            except IndexError as e:
+                click.secho("Revision problem", fg='red')
+
+        @classmethod
+        @disable_timestamp
+        def create_record(cls, dump):
+            """Create a new record from dump."""
+            # Reserve record identifier, create record and recid pid in one
+            # operation.
+            record_uuid = uuid.uuid4()
+            provider = DocumentIdProvider.create(
+                object_type='rec',
+                object_uuid=record_uuid,
+            )
+            timestamp, json_data = dump.revisions[-1]
+            json_data['pid'] = provider.pid.pid_value
+            try:
+                document = Document.create(json_data, record_uuid)
+                document.model.created = dump.created.replace(tzinfo=None)
+                document.model.updated = timestamp.replace(tzinfo=None)
+                document.commit()
                 db.session.commit()
-            return None
 
-        dump.prepare_revisions()
-        dump.prepare_pids()
-        dump.prepare_files()
-        # if we have a final revision - to remove when data cleaned.
-        if dump.rest[-1]:
-            record = cls.create_record(dump)
-
-            return record
-
-    @classmethod
-    @disable_timestamp
-    def create_record(cls, dump):
-        """Create a new record from dump."""
-        # Reserve record identifier, create record and recid pid in one
-        # operation.
-        timestamp, data = dump.latest
-        record = Record.create(data)
-        record_uuid = uuid.uuid4()
-        provider = DocumentIdProvider.create(
-            object_type='rec',
-            object_uuid=record_uuid,
-        )
-        # -1 should mean the latest revision
-        timestamp, json_data = dump.rest[-1]
-        json_data['pid'] = provider.pid.pid_value
-        record.model.json = json_data
-        record.model.created = dump.created.replace(tzinfo=None)
-        record.model.updated = timestamp.replace(tzinfo=None)
-        try:
-            document = Document.create(record.model.json, record_uuid)
-            document.commit()
-            db.session.commit()
-
-            return document
-        except IlsValidationError as e:
-            click.secho(e.original_exception.message, fg='red')
-            # TODO uncomment when data cleaner - needed for testing on dev
-            # raise e
+                return document
+            except IlsValidationError as e:
+                click.secho(e.original_exception.message, fg='red')
+                # TODO uncomment when data cleaner - needed for testing on dev
+                # raise e
