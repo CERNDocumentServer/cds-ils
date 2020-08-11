@@ -16,9 +16,9 @@ from flask.cli import with_appcontext
 
 from cds_books.migrator.api import commit, import_documents_from_dump, \
     import_documents_from_record_file, import_internal_locations_from_json, \
-    import_parents_from_file, link_and_create_multipart_volumes, \
-    link_documents_and_serials, reindex_pidtype, validate_multipart_records, \
-    validate_serial_records
+    import_items_from_json, import_parents_from_file, \
+    link_and_create_multipart_volumes, link_documents_and_serials, \
+    reindex_pidtype, validate_multipart_records, validate_serial_records
 
 
 @click.group()
@@ -76,13 +76,27 @@ def parents(rectype, source, include):
 @click.option(
     '--include',
     '-i',
-    help='Comma-separated list of legacy recids to include in the import',
+    help='Comma-separated list of legacy ids to include in the import',
     default=None)
 @with_appcontext
 def internal_locations(source, include):
     """Migrate documents from CDS legacy."""
     with commit():
         import_internal_locations_from_json(source, include=include)
+
+
+@migration.command()
+@click.argument('source', type=click.File('r'), nargs=-1)
+@click.option(
+    '--include',
+    '-i',
+    help='Comma-separated list of legacy recids to include in the import',
+    default=None)
+@with_appcontext
+def items(source, include):
+    """Migrate documents from CDS legacy."""
+    with commit():
+        import_items_from_json(source, include=include)
 
 
 @migration.group()

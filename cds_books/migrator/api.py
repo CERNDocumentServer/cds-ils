@@ -13,6 +13,7 @@ import uuid
 from contextlib import contextmanager
 
 import click
+from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
@@ -20,6 +21,8 @@ from invenio_app_ils.documents.search import DocumentSearch
 from invenio_app_ils.ill.api import Library, LibraryIdProvider
 from invenio_app_ils.internal_locations.api import InternalLocation, \
     InternalLocationIdProvider
+from invenio_app_ils.internal_locations.search import InternalLocationSearch
+from invenio_app_ils.items.api import Item, ItemIdProvider
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
@@ -32,8 +35,11 @@ from invenio_indexer.api import RecordIndexer
 from invenio_migrator.cli import _loadrecord
 
 from cds_books.migrator.errors import DocumentMigrationError, \
-    MultipartMigrationError
+    ItemMigrationError, MultipartMigrationError
 from cds_books.migrator.records import CDSRecordDumpLoader
+from cds_books.migrator.utils import clean_item_record
+
+lt_es7 = ES_VERSION[0] < 7
 
 
 @contextmanager
@@ -82,6 +88,8 @@ def model_provider_by_rectype(rectype):
         return InternalLocation, InternalLocationIdProvider
     elif rectype == "library":
         return Library, LibraryIdProvider
+    elif rectype == "item":
+        return Item, ItemIdProvider
     else:
         raise ValueError('Unknown rectype: {}'.format(rectype))
 
@@ -191,8 +199,68 @@ def import_internal_locations_from_json(dump_file, include,
                     record = import_record(record, model, provider,
                                            legacy_id_key='legacy_id')
                     records.append(record)
-    # Index all new parent records
+    # Index all new internal location and libraries records
     bulk_index_records(records)
+
+
+def import_items_from_json(dump_file, include, rectype="item"):
+    """Load items from json file."""
+    dump_file = dump_file[0]
+    model, provider = model_provider_by_rectype(rectype)
+
+    include_ids = None if include is None else include.split(',')
+    with click.progressbar(json.load(dump_file)) as bar:
+        records = []
+        for record in bar:
+            click.echo('Importing item "{0}({1})"...'.
+                       format(record['barcode'], rectype))
+            if include_ids is None or record['barcode'] in include_ids:
+
+                internal_location_pid_value = \
+                    get_internal_location_by_legacy_recid(
+                        record["id_crcLIBRARY"]).pid.pid_value
+
+                record["internal_location_pid"] = internal_location_pid_value
+                try:
+                    record["document_pid"] = get_document_by_legacy_recid(
+                        record["id_bibrec"]).pid.pid_value
+                except DocumentMigrationError:
+                    continue
+                try:
+                    clean_item_record(record)
+                except ItemMigrationError:
+                    continue
+                record = import_record(record, model, provider,
+                                       legacy_id_key='barcode')
+                if record:
+                    records.append(record)
+    # Index all new item records
+    bulk_index_records(records)
+
+
+def get_internal_location_by_legacy_recid(legacy_recid):
+    """Search for internal location by legacy id."""
+    search = InternalLocationSearch().query(
+        'bool',
+        filter=[
+            Q('term', legacy_id=legacy_recid),
+        ]
+    )
+    result = search.execute()
+    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    if not result.hits or hits_total < 1:
+        click.secho('no internal location found with legacy id {}'.format(
+            legacy_recid),
+            fg='red')
+        raise ItemMigrationError(
+            'no internal location found with legacy id {}'.format(
+                legacy_recid))
+    elif hits_total > 1:
+        raise MultipartMigrationError(
+            'found more than one internal location with legacy id {}'.format(
+                legacy_recid))
+    else:
+        return InternalLocation.get_record_by_pid(result.hits[0].pid)
 
 
 def get_multipart_by_legacy_recid(recid):
@@ -205,17 +273,47 @@ def get_multipart_by_legacy_recid(recid):
         ]
     )
     result = search.execute()
-    if not result.hits or result.hits.total < 1:
+    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    if not result.hits or hits_total < 1:
         click.secho('no multipart found with legacy recid {}'.format(recid),
                     fg='red')
         # TODO uncomment with cleaner data
         # raise MultipartMigrationError(
         #     'no multipart found with legacy recid {}'.format(recid))
-    elif result.hits.total > 1:
+    elif hits_total > 1:
         raise MultipartMigrationError(
             'found more than one multipart with recid {}'.format(recid))
     else:
         return Series.get_record_by_pid(result.hits[0].pid)
+
+
+def get_document_by_legacy_recid(legacy_recid):
+    """Search documents by its legacy recid."""
+    search = DocumentSearch().query(
+        'bool',
+        filter=[
+            Q('term', legacy_recid=legacy_recid),
+        ]
+    )
+    result = search.execute()
+    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    if not result.hits or hits_total < 1:
+        click.secho(
+            'no document found with legacy recid {}'.format(legacy_recid),
+            fg='red')
+        raise DocumentMigrationError(
+            'no document found with legacy recid {}'.format(legacy_recid))
+    elif hits_total > 1:
+        click.secho(
+            'no document found with legacy recid {}'.format(legacy_recid),
+            fg='red')
+        raise DocumentMigrationError(
+            'found more than one document with recid {}'.format(legacy_recid))
+    else:
+        click.secho(
+            '! document found with legacy recid {}'.format(legacy_recid),
+            fg='green')
+        return Document.get_record_by_pid(result.hits[0].pid)
 
 
 def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
@@ -341,6 +439,7 @@ def get_migrated_volume_by_serial_title(record, title):
 
 def link_documents_and_serials():
     """Link documents/multiparts and serials."""
+
     def link_records_and_serial(record_cls, search):
         for hit in search.scan():
             # Skip linking if the hit doesn't have a legacy recid since it
@@ -381,6 +480,7 @@ def validate_serial_records():
     * Find duplicate serials
     * Ensure all children of migrated serials were migrated
     """
+
     def validate_serial_relation(serial, recids):
         relations = serial.relations.get().get('serial', [])
         if len(recids) != len(relations):
@@ -428,6 +528,7 @@ def validate_multipart_records():
     Performs the following checks:
     * Ensure all volumes of migrated multiparts were migrated
     """
+
     def validate_multipart_relation(multipart, volumes):
         relations = multipart.relations.get().get('multipart_monograph', [])
         titles = [volume['title'] for volume in volumes if 'title' in volume]

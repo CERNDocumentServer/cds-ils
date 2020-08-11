@@ -35,3 +35,7 @@ class MultipartMigrationError(BooksMigrationException):
 
 class SerialMigrationError(BooksMigrationException):
     """Raised for serial migration errors."""
+
+
+class ItemMigrationError(BooksMigrationException):
+    """Raiser for item migration errors."""
