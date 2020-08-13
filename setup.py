@@ -42,10 +42,15 @@ setup(
             "migration = cds_books.migrator.cli:migration",
             "fixtures = cds_books.cli:fixtures",
         ],
+        "invenio_db.models": ["cds_books = cds_books.ldap.models",],
+        "invenio_admin.views": [
+            "invenio_ldap_sync = cds_books.ldap.admin:ldap_sync",
+        ],
         "invenio_base.api_apps": ["cds_books = cds_books.ext:CdsBooks"],
         "invenio_base.apps": ["cds_books_app = cds_books.ext:CdsBooks"],
         "invenio_base.blueprints": [
             "cds_books = cds_books.theme.views:blueprint",
+            "cds_books_admin = cds_books.ldap.admin:blueprint",
         ],
         "invenio_base.api_blueprints": [
             "cds_books_patron_loans = cds_books.patrons.views:create_patron_loans_blueprint",
@@ -56,6 +61,7 @@ setup(
         "invenio_config.module": ["cds_books = cds_books.config",],
         "invenio_celery.tasks": [
             "cds_books_tasks = cds_books.literature.tasks",
+            "cds_books_ldap_tasks = cds_books.ldap.tasks",
         ],
         "invenio_i18n.translations": ["messages = cds_books",],
         "invenio_access.actions": [
