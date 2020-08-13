@@ -1,0 +1,14 @@
+{% extends 'admin/model/create.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% from 'admin/lib.html' import extra with context %}
+
+{% block create_form %}
+  <h3>Start a new ldap synchronization task</h3>
+  <form action="" method="POST" role="form" class="admin-form form-horizontal" enctype="multipart/form-data">
+    <div class="form-group">
+      <div class="col-md-12 submit-row">
+        <input type="submit" class="btn btn-primary" value="Start task">
+      </div>
+    </div>
+  </form>
+{% endblock %}

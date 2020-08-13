@@ -16,7 +16,10 @@ You overwrite and set instance-specific configuration by either:
 from __future__ import absolute_import, print_function
 
 import os
+from datetime import timedelta
 
+from invenio_app_ils.config import \
+    CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE
 from invenio_records_rest.schemas.fields import SanitizedUnicode
@@ -136,6 +139,14 @@ BROKER_URL = "amqp://guest:guest@localhost:5672/"
 CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672/"
 #: URL of backend for result storage (default is Redis).
 CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
+#: Scheduled tasks configuration (aka cronjobs).
+CELERY_BEAT_SCHEDULE = {
+    **ILS_CELERY_BEAT_SCHEDULE,  # Parent config
+    "synchronize_users": {
+        "task": "cds_books.ldap.tasks.synchronize_users_task",
+        "schedule": timedelta(days=1),
+    },
+}
 
 # Database
 # ========

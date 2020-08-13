@@ -7,12 +7,14 @@
 
 from __future__ import absolute_import, print_function
 
+import pytest
 from invenio_accounts.models import User
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
 
-from cds_books.ldap.cli import check_user_for_update, delete_user, \
+from cds_books.ldap.api import check_user_for_update, delete_user, \
     import_ldap_users
+from cds_books.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 
 
 def test_delete_user(app, system_user, testdata, app_with_mail):
@@ -65,3 +67,30 @@ def test_import_ldap_users(app):
         UserIdentity.id == ldap_users[0]["uidNumber"][0].decode("utf8")
     ).one()
     assert RemoteAccount.query.filter(RemoteAccount.user_id == user.id).one()
+
+
+def test_log_table(app, db):
+    """Test that the log table works."""
+    def find(log):
+        return LdapSynchronizationLog.query.filter_by(id=log.id).one_or_none()
+
+    # Basic insertion
+    log = LdapSynchronizationLog.create_cli()
+    found = find(log)
+    assert found
+    assert found.status == TaskStatus.RUNNING and found.agent == Agent.CLI
+    found.query.delete()
+    found = find(log)
+    assert not found
+
+    # Change state
+    log = LdapSynchronizationLog.create_celery('1')
+    found = find(log)
+    assert found.status == TaskStatus.RUNNING and found.agent == Agent.CELERY
+    assert found.task_id == '1'
+    found.set_succeeded(5, 6, 7, 8)
+    found = find(log)
+    assert found.status == TaskStatus.SUCCEEDED
+    assert found.ldap_fetch_count == 5
+    with pytest.raises(AssertionError):
+        found.set_succeeded(1, 2, 3, 4)

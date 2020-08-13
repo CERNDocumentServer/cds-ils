@@ -10,7 +10,6 @@ import os
 
 import click
 import redis
-from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
 from invenio_app_ils.cli import minter
@@ -33,27 +32,33 @@ def fixtures():
 def pages():
     """Register CDS static pages."""
     pages = [
-        Page(url='/about',
-             title='About',
-             description='About',
-             content='Library about page',
-             template_name='invenio_pages/default.html'),
-        Page(url='/terms',
-             title='Terms',
-             description='Terms',
-             content='Terms and Privacy',
-             template_name='invenio_pages/default.html'),
-        Page(url='/faq',
-             title='F.A.Q.',
-             description='F.A.Q.',
-             content='Frequently Asked Questions',
-             template_name='invenio_pages/default.html'),
+        Page(
+            url="/about",
+            title="About",
+            description="About",
+            content="Library about page",
+            template_name="invenio_pages/default.html",
+        ),
+        Page(
+            url="/terms",
+            title="Terms",
+            description="Terms",
+            content="Terms and Privacy",
+            template_name="invenio_pages/default.html",
+        ),
+        Page(
+            url="/faq",
+            title="F.A.Q.",
+            description="F.A.Q.",
+            content="Frequently Asked Questions",
+            template_name="invenio_pages/default.html",
+        ),
     ]
     with db.session.begin_nested():
         Page.query.delete()
         db.session.add_all(pages)
     db.session.commit()
-    click.echo('static pages created :)')
+    click.echo("static pages created :)")
 
 
 @fixtures.command()
