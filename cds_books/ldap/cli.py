@@ -14,6 +14,8 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
+from invenio_app_ils.anonymization import anonymize_patron_data
+from invenio_app_ils.circulation.tasks import send_active_loans_mail
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount
 from sqlalchemy.orm.exc import NoResultFound
@@ -28,7 +30,7 @@ def index_ldap_users():
     cli = create_cli()
     runner = current_app.test_cli_runner()
     command = "ils patrons index"
-    click.secho('ils {}...'.format(command), fg='green')
+    click.secho("ils {}...".format(command), fg="green")
     runner.invoke(cli, command, catch_exceptions=True)
 
 
@@ -36,7 +38,7 @@ def import_ldap_users(ldap_users):
     """Import ldap users in db."""
     importer = LdapUserImporter(ldap_users)
     importer.import_users()
-    click.secho('Now indexing...', fg='green')
+    click.secho("Now indexing...", fg="green")
     index_ldap_users()
 
 
@@ -44,19 +46,20 @@ def check_user_for_update(system_user, ldap_user):
     """Check if there is an ldap update for a user and commit changes."""
     ldap_user_department = ldap_user["department"][0].decode("utf8")
     if not system_user.extra_data["department"] == ldap_user_department:
-        click.secho("Changes detected for system user {}".format(
-            str(system_user.user)), fg="green")
+        click.secho(
+            "Changes detected for system user {}".format(
+                str(system_user.user)
+            ),
+            fg="green",
+        )
         click.secho(
             "System user's department {} is different than the {}".format(
-                system_user.extra_data["department"], ldap_user_department),
-            fg="green")
+                system_user.extra_data["department"], ldap_user_department
+            ),
+            fg="green",
+        )
         system_user.extra_data.update(dict(department=ldap_user_department))
         db.session.commit()
-
-
-def delete_user(system_user):
-    """Delete a system user."""
-    pass
 
 
 @click.group()
@@ -64,11 +67,21 @@ def ldap_users():
     """Ldap users import CLI."""
 
 
+def delete_user(system_user):
+    """Delete a system user."""
+    with current_app.app_context():
+        try:
+            anonymize_patron_data(system_user.id)
+        except AssertionError:
+            send_active_loans_mail(system_user.id)
+
+
 @ldap_users.command(name="import")
 @with_appcontext
 def import_users():
     """Load users from ldap and import them in db."""
     import time
+
     start_time = time.time()
 
     ldap_url = current_app.config["CDS_BOOKS_LDAP_URL"]
@@ -81,7 +94,7 @@ def import_users():
 
     click.secho(
         "--- Finished in %s seconds ---" % (time.time() - start_time),
-        fg="green"
+        fg="green",
     )
 
 
@@ -90,6 +103,7 @@ def import_users():
 def sync_users():
     """Sync ldap with system users command."""
     import time
+
     start_time = time.time()
 
     ldap_url = current_app.config["CDS_BOOKS_LDAP_URL"]
@@ -111,8 +125,12 @@ def sync_users():
         if ldap_user:
             check_user_for_update(system_user, ldap_user)
         else:
-            click.secho("Deleting user {} with ccid {}".format(
-                system_user.user, system_user_person_id), fg="red")
+            click.secho(
+                "Deleting user {} with ccid {}".format(
+                    system_user.user, system_user_person_id
+                ),
+                fg="red",
+            )
             delete_user(system_user)
 
     # Check if any ldap user is not in our system
@@ -127,5 +145,5 @@ def sync_users():
 
     click.secho(
         "--- Finished in %s seconds ---" % (time.time() - start_time),
-        fg="green"
+        fg="green",
     )

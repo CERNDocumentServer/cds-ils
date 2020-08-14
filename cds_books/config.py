@@ -33,35 +33,35 @@ def _(x):
 
 
 def _parse_env_bool(var_name, default=None):
-    if str(os.environ.get(var_name)).lower() == 'true':
+    if str(os.environ.get(var_name)).lower() == "true":
         return True
-    elif str(os.environ.get(var_name)).lower() == 'false':
+    elif str(os.environ.get(var_name)).lower() == "false":
         return False
     return default
 
 
 # Search
 # ======
-ELASTICSEARCH_HOST = os.environ.get('ELASTICSEARCH_HOST', 'localhost')
-ELASTICSEARCH_PORT = int(os.environ.get('ELASTICSEARCH_PORT', '9200'))
-ELASTICSEARCH_USER = os.environ.get('ELASTICSEARCH_USER')
-ELASTICSEARCH_PASSWORD = os.environ.get('ELASTICSEARCH_PASSWORD')
-ELASTICSEARCH_URL_PREFIX = os.environ.get('ELASTICSEARCH_URL_PREFIX', '')
-ELASTICSEARCH_USE_SSL = _parse_env_bool('ELASTICSEARCH_USE_SSL')
-ELASTICSEARCH_VERIFY_CERTS = _parse_env_bool('ELASTICSEARCH_VERIFY_CERTS')
+ELASTICSEARCH_HOST = os.environ.get("ELASTICSEARCH_HOST", "localhost")
+ELASTICSEARCH_PORT = int(os.environ.get("ELASTICSEARCH_PORT", "9200"))
+ELASTICSEARCH_USER = os.environ.get("ELASTICSEARCH_USER")
+ELASTICSEARCH_PASSWORD = os.environ.get("ELASTICSEARCH_PASSWORD")
+ELASTICSEARCH_URL_PREFIX = os.environ.get("ELASTICSEARCH_URL_PREFIX", "")
+ELASTICSEARCH_USE_SSL = _parse_env_bool("ELASTICSEARCH_USE_SSL")
+ELASTICSEARCH_VERIFY_CERTS = _parse_env_bool("ELASTICSEARCH_VERIFY_CERTS")
 
 es_host_params = {
-    'host': ELASTICSEARCH_HOST,
-    'port': ELASTICSEARCH_PORT,
+    "host": ELASTICSEARCH_HOST,
+    "port": ELASTICSEARCH_PORT,
 }
 if ELASTICSEARCH_USER and ELASTICSEARCH_PASSWORD:
-    es_host_params['http_auth'] = (ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD)
+    es_host_params["http_auth"] = (ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD)
 if ELASTICSEARCH_URL_PREFIX:
-    es_host_params['url_prefix'] = ELASTICSEARCH_URL_PREFIX
+    es_host_params["url_prefix"] = ELASTICSEARCH_URL_PREFIX
 if ELASTICSEARCH_USE_SSL is not None:
-    es_host_params['use_ssl'] = ELASTICSEARCH_USE_SSL
+    es_host_params["use_ssl"] = ELASTICSEARCH_USE_SSL
 if ELASTICSEARCH_VERIFY_CERTS is not None:
-    es_host_params['verify_certs'] = ELASTICSEARCH_VERIFY_CERTS
+    es_host_params["verify_certs"] = ELASTICSEARCH_VERIFY_CERTS
 
 SEARCH_ELASTIC_HOSTS = [es_host_params]
 """Elasticsearch hosts configuration."""
@@ -69,14 +69,14 @@ SEARCH_ELASTIC_HOSTS = [es_host_params]
 # Rate limiting
 # =============
 #: Storage for ratelimiter.
-RATELIMIT_STORAGE_URL = 'redis://localhost:6379/3'
+RATELIMIT_STORAGE_URL = "redis://localhost:6379/3"
 
 # I18N
 # ====
 #: Default language
-BABEL_DEFAULT_LANGUAGE = 'en'
+BABEL_DEFAULT_LANGUAGE = "en"
 #: Default time zone
-BABEL_DEFAULT_TIMEZONE = 'Europe/Zurich'
+BABEL_DEFAULT_TIMEZONE = "Europe/Zurich"
 #: Other supported languages (do not include the default language in list).
 I18N_LANGUAGES = [
     # ('fr', _('French'))
@@ -85,15 +85,15 @@ I18N_LANGUAGES = [
 # Base templates
 # ==============
 #: Global base template.
-BASE_TEMPLATE = 'invenio_theme/page.html'
+BASE_TEMPLATE = "invenio_theme/page.html"
 #: Cover page base template (used for e.g. login/sign-up).
-COVER_TEMPLATE = 'invenio_theme/page_cover.html'
+COVER_TEMPLATE = "invenio_theme/page_cover.html"
 #: Footer base template.
-FOOTER_TEMPLATE = 'invenio_theme/footer.html'
+FOOTER_TEMPLATE = "invenio_theme/footer.html"
 #: Header base template.
-HEADER_TEMPLATE = 'invenio_theme/header.html'
+HEADER_TEMPLATE = "invenio_theme/header.html"
 #: Settings base template.
-SETTINGS_TEMPLATE = 'invenio_theme/page_settings.html'
+SETTINGS_TEMPLATE = "invenio_theme/page_settings.html"
 
 # Theme configuration
 # ===================
@@ -103,23 +103,26 @@ THEME_FRONTPAGE = False
 # ===================
 #: Email address for support.
 SUPPORT_EMAIL = "cds.support@cern.ch"
+#: Management email for internal notifications.
+MANAGEMENT_EMAIL = "cds.internal@cern.ch"
 #: Disable email sending by default.
 MAIL_SUPPRESS_SEND = True
+#: Email address for email notification sender.
+MAIL_NOTIFY_SENDER = "library.desk@cern.ch"
 
 # Assets
 # ======
 #: Static files collection method (defaults to copying files).
-COLLECT_STORAGE = 'flask_collect.storage.file'
+COLLECT_STORAGE = "flask_collect.storage.file"
 
 # Accounts
 # ========
 #: Email address used as sender of account registration emails.
 SECURITY_EMAIL_SENDER = SUPPORT_EMAIL
 #: Email subject for account registration emails.
-SECURITY_EMAIL_SUBJECT_REGISTER = _(
-    "Welcome to CDS Books!")
+SECURITY_EMAIL_SUBJECT_REGISTER = _("Welcome to CDS Books!")
 #: Redis session storage URL.
-ACCOUNTS_SESSION_REDIS_URL = 'redis://localhost:6379/1'
+ACCOUNTS_SESSION_REDIS_URL = "redis://localhost:6379/1"
 #: Enable session/user id request tracing. This feature will add X-Session-ID
 #: and X-User-ID headers to HTTP response. You MUST ensure that NGINX (or other
 #: proxies) removes these headers again before sending the response to the
@@ -128,22 +131,23 @@ ACCOUNTS_USERINFO_HEADERS = True
 
 # Celery configuration
 # ====================
-BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+BROKER_URL = "amqp://guest:guest@localhost:5672/"
 #: URL of message broker for Celery (default is RabbitMQ).
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672/"
 #: URL of backend for result storage (default is Redis).
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
 
 # Database
 # ========
 #: Database URI including user and password
-SQLALCHEMY_DATABASE_URI = \
-    'postgresql+psycopg2://cds-books:cds-books@localhost/cds-books'
+SQLALCHEMY_DATABASE_URI = (
+    "postgresql+psycopg2://cds-books:cds-books@localhost/cds-books"
+)
 
 # JSONSchemas
 # ===========
 #: Hostname used in URLs for local JSONSchemas.
-JSONSCHEMAS_HOST = 'cds-books.com'
+JSONSCHEMAS_HOST = "cds-books.com"
 
 # Flask configuration
 # ===================
@@ -152,7 +156,7 @@ JSONSCHEMAS_HOST = 'cds-books.com'
 
 #: Secret key - each installation (dev, production, ...) needs a separate key.
 #: It should be changed before deploying.
-SECRET_KEY = 'CHANGE_ME'
+SECRET_KEY = "CHANGE_ME"
 #: Max upload size for form data via application/mulitpart-formdata.
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100 MiB
 #: Sets cookie with the secure flag by default
@@ -169,7 +173,7 @@ APP_ALLOWED_HOSTS = [
 ]
 # OAI-PMH
 # =======
-OAISERVER_ID_PREFIX = 'oai:cds-books.com:'
+OAISERVER_ID_PREFIX = "oai:cds-books.com:"
 
 # Debug
 # =====
@@ -196,9 +200,7 @@ LOGGING_SENTRY_CELERY = False
 SENTRY_DSN = None
 """Set SENTRY_DSN environment variable."""
 
-SENTRY_CONFIG = {
-    "environment": os.environ.get("SENTRY_ENVIRONMENT", "dev")
-}
+SENTRY_CONFIG = {"environment": os.environ.get("SENTRY_ENVIRONMENT", "dev")}
 
 try:
     # Try to get the release tag
@@ -217,9 +219,10 @@ CDS_BOOKS_LDAP_URL = "ldap://xldap.cern.ch"
 ###############################################################################
 # Migrator configuration
 ###############################################################################
-MIGRATOR_RECORDS_DUMPLOADER_CLS = \
-    'cds_books.migrator.records:CDSDocumentDumpLoader'
-MIGRATOR_RECORDS_DUMP_CLS = 'cds_books.migrator.records:CDSRecordDump'
+MIGRATOR_RECORDS_DUMPLOADER_CLS = (
+    "cds_books.migrator.records:CDSDocumentDumpLoader"
+)
+MIGRATOR_RECORDS_DUMP_CLS = "cds_books.migrator.records:CDSRecordDump"
 
 # whitelist schemas for migration
 JSONSCHEMAS_SCHEMAS = [
@@ -269,51 +272,55 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
     "document": {
         "accelerator_experiments:accelerator": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "accelerator_experiments:curated_relation": {
             "elasticsearch": "boolean",
-            "marshmallow": Bool()
+            "marshmallow": Bool(),
         },
         "accelerator_experiments:experiment": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "accelerator_experiments:institution": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "accelerator_experiments:legacy_name": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "accelerator_experiments:project": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "accelerator_experiments:study": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "standard_CERN_status:CERN_applicability": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "standard_CERN_status:standard_validity": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(required=True)
+            "marshmallow": SanitizedUnicode(required=True),
         },
         "standard_CERN_status:checkdate": {
             "elasticsearch": "date",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "standard_CERN_status:comment": {
             "elasticsearch": "text",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
         "standard_CERN_status:expert": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode()
+            "marshmallow": SanitizedUnicode(),
         },
     }
+}
+
+ILS_CIRCULATION_MAIL_TEMPLATES = {
+    "librarian_footer": "cds_librarian_footer.html"
 }

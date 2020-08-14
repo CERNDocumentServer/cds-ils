@@ -11,7 +11,17 @@ from invenio_accounts.models import User
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
 
-from cds_books.ldap.cli import check_user_for_update, import_ldap_users
+from cds_books.ldap.cli import check_user_for_update, delete_user, \
+    import_ldap_users
+
+
+def test_delete_user(app, system_user, testdata, app_with_mail):
+
+    with app_with_mail.extensions["mail"].record_messages() as outbox:
+        assert len(outbox) == 0
+        delete_user(system_user)
+        assert len(outbox) == 1
+        assert outbox[0].recipients == ["cds.internal@cern.ch"]
 
 
 def test_check_users_for_update(app, system_user):
@@ -19,12 +29,12 @@ def test_check_users_for_update(app, system_user):
     with app.app_context():
         user = RemoteAccount.query.join(User).one()
         ldap_user = {
-            'displayName': [b'System User'],
-            'department': [b'Another department'],
-            'uidNumber': [b'1'],
-            'mail': [b'system.user@cern.ch'],
-            'cernAccountType': [b'Primary'],
-            'employeeID': [b'1']
+            "displayName": [b"System User"],
+            "department": [b"Another department"],
+            "uidNumber": [b"1"],
+            "mail": [b"system.user@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"1"],
         }
         check_user_for_update(user, ldap_user)
         assert user.extra_data["department"] == "Another department"
@@ -32,22 +42,26 @@ def test_check_users_for_update(app, system_user):
 
 def test_import_ldap_users(app):
     """Test that ldap user is created."""
-    ldap_users = [{
-        'displayName': [b'Ldap User'],
-        'department': [b'Department'],
-        'uidNumber': [b'1'],
-        'mail': [b'ldap.user@cern.ch'],
-        'cernAccountType': [b'Primary'],
-        'employeeID': [b'1']
-    }]
+    ldap_users = [
+        {
+            "displayName": [b"Ldap User"],
+            "department": [b"Department"],
+            "uidNumber": [b"1"],
+            "mail": [b"ldap.user@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"1"],
+        }
+    ]
 
     import_ldap_users(ldap_users)
 
     user = User.query.filter(
-        User.email == ldap_users[0]["mail"][0].decode("utf8")).one()
+        User.email == ldap_users[0]["mail"][0].decode("utf8")
+    ).one()
     assert user
 
     assert UserProfile.query.filter(UserProfile.user_id == user.id).one()
     assert UserIdentity.query.filter(
-        UserIdentity.id == ldap_users[0]["uidNumber"][0].decode("utf8")).one()
+        UserIdentity.id == ldap_users[0]["uidNumber"][0].decode("utf8")
+    ).one()
     assert RemoteAccount.query.filter(RemoteAccount.user_id == user.id).one()
