@@ -68,3 +68,4 @@ recursive-include ui *.prettierrc
 recursive-include ui *.txt
 recursive-include ui *.variables
 recursive-include ui *.svg
+recursive-include tests *.html

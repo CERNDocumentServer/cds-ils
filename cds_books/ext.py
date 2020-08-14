@@ -8,6 +8,10 @@
 """Literature module."""
 
 
+import os
+
+import jinja2
+from flask import Blueprint
 from invenio_records.signals import after_record_insert, after_record_update, \
     before_record_insert, before_record_update
 
@@ -21,6 +25,20 @@ class CdsBooks(object):
     def __init__(self, app=None):
         """Literature initialization."""
         self.register_signals(app)
+        self.init_app(app)
+
+    def init_app(self, app):
+        """Initialize app."""
+        app.register_blueprint(
+            Blueprint("cds_books", __name__, template_folder="templates",)
+        )
+        app.register_blueprint(
+            Blueprint(
+                "cds_ils_circulation_mail",
+                __name__,
+                template_folder="circulation/templates",
+            )
+        )
 
     @staticmethod
     def register_signals(app):
