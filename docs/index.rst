@@ -1,7 +1,7 @@
 ..
     Copyright (C) 2019 CERN.
 
-    CDS Books is free software; you can redistribute it and/or modify it
+    CDS-ILS is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 
@@ -11,7 +11,7 @@ User's Guide
 ------------
 
 This part of the documentation will show you how to get started in using
-CDS Books.
+CDS-ILS.
 
 .. toctree::
    :maxdepth: 2

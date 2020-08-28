@@ -2,17 +2,17 @@
 #
 # Copyright (C) 2020 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it under
+# CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Tests for literature covers."""
 
 from mock import Mock
 
-from cds_books.literature import tasks
-from cds_books.literature.covers import build_syndetic_cover_urls, \
+from cds_ils.literature import tasks
+from cds_ils.literature.covers import build_syndetic_cover_urls, \
     is_record_with_cover, preemptively_set_first_isbn_as_cover
-from cds_books.literature.tasks import pick_identifier_with_cover
+from cds_ils.literature.tasks import pick_identifier_with_cover
 
 tasks.is_valid_cover = Mock(return_value=True)
 tasks.save_record = Mock(return_value=True)

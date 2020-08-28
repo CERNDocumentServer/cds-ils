@@ -2,10 +2,8 @@
 #
 # Copyright (C) 2019 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it under
+# CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
-
-from __future__ import absolute_import, print_function
 
 import pytest
 from flask import url_for
@@ -18,8 +16,8 @@ from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
 
-from cds_books.patrons.api import Patron
-from cds_books.patrons.permissions import retrieve_patron_loans_access_action
+from cds_ils.patrons.api import Patron
+from cds_ils.patrons.permissions import retrieve_patron_loans_access_action
 
 
 def test_patron_loans_view(app, system_user, testdata, client):
@@ -39,7 +37,7 @@ def test_patron_loans_view(app, system_user, testdata, client):
 
     resp = client.get(
         url_for(
-            "cds_books_patron_loans.patron_loans",
+            "cds_ils_patron_loans.patron_loans",
             person_id=1))
 
     assert resp.status_code == 200

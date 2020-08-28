@@ -2,12 +2,10 @@
 #
 # Copyright (C) 2019 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it under
+# CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Sphinx configuration."""
-
-from __future__ import print_function
 
 import os
 
@@ -47,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'CDS Books'
+project = u'CDS-ILS'
 copyright = u'2019, CERN'
 author = u'`Invenio ILS flavor <http://github.com/inveniosoftware/invenio-app-ils>`.'
 
@@ -60,7 +58,7 @@ author = u'`Invenio ILS flavor <http://github.com/inveniosoftware/invenio-app-il
 # Get the version string. Cannot be done with import!
 g = {}
 with open(os.path.join(os.path.dirname(__file__), '..',
-                       'cds_books', 'version.py'),
+                       'cds_ils', 'version.py'),
           'rt') as fp:
     exec(fp.read(), g)
     version = g['__version__']
@@ -119,13 +117,13 @@ html_theme = 'alabaster'
 html_theme_options = {
     'description': 'This is the CERN Document Server source code overlay for',
     'github_user': 'inveniosoftware',
-    'github_repo': 'cds-books',
+    'github_repo': 'cds-ils',
     'github_button': False,
     'github_banner': True,
     'show_powered_by': False,
     'extra_nav_links': {
-        'cds-books@GitHub': 'https://github.com/CERNDocumentServer/cds-books',
-        'cds-books@PyPI': 'https://pypi.python.org/pypi/cds-books/',
+        'cds-ils@GitHub': 'https://github.com/CERNDocumentServer/cds-ils',
+        'cds-ils@PyPI': 'https://pypi.python.org/pypi/cds-ils/',
     }
 }
 
@@ -230,7 +228,7 @@ html_sidebars = {
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'cds-books_namedoc'
+htmlhelp_basename = 'cds-ils_namedoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -252,7 +250,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'cds-books.tex', u'cds-books Documentation',
+    (master_doc, 'cds-ils.tex', u'cds-ils Documentation',
      u'`Invenio ILS flavor <http://github.com/inveniosoftware/invenio-app-ils>`.', 'manual'),
 ]
 
@@ -282,7 +280,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'cds-books', u'cds-books Documentation',
+    (master_doc, 'cds-ils', u'cds-ils Documentation',
      [author], 1)
 ]
 
@@ -296,8 +294,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'cds-books', u'CDS Books Documentation',
-     author, 'cds-books', 'This is the CERN Document Server source code overlay for',
+    (master_doc, 'cds-ils', u'CDS-ILS Documentation',
+     author, 'cds-ils', 'This is the CERN Document Server source code overlay for',
      'Miscellaneous'),
 ]
 

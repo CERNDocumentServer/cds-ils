@@ -2,12 +2,10 @@
 #
 # Copyright (C) 2019 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it under
+# CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Pytest fixtures and plugins for the API application."""
-
-from __future__ import absolute_import, print_function
 
 import pytest
 from invenio_app.factory import create_api
