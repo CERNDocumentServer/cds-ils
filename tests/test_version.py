@@ -2,15 +2,13 @@
 #
 # Copyright (C) 2019 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it under
+# CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Simple test of version import."""
 
-from __future__ import absolute_import, print_function
-
 
 def test_version():
     """Test version import."""
-    from cds_books import __version__
+    from cds_ils import __version__
     assert __version__

@@ -92,7 +92,7 @@
             ],
             "version": "==0.1.1"
         },
-        "cds-books": {
+        "cds-ils": {
             "editable": true,
             "path": "."
         },
@@ -1512,7 +1512,7 @@
             ],
             "version": "==1.4"
         },
-        "cds-books": {
+        "cds-ils": {
             "editable": true,
             "path": "."
         },

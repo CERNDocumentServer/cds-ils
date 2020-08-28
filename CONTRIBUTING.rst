@@ -1,7 +1,7 @@
 ..
     Copyright (C) 2019 CERN.
 
-    CDS Books is free software; you can redistribute it and/or modify it
+    CDS-ILS is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Contributing
@@ -16,7 +16,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/CERNDocumentServer/cds-books/issues.
+Report bugs at https://github.com/CERNDocumentServer/cds-ils/issues.
 
 If you are reporting a bug, please include:
 
@@ -39,15 +39,15 @@ is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-CDS Books could always use more documentation, whether as part of the
-official CDS Books docs, in docstrings, or even on the web in blog posts,
+CDS-ILS could always use more documentation, whether as part of the
+official CDS-ILS docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
 The best way to send feedback is to file an issue at
-https://github.com/CERNDocumentServer/cds-books/issues.
+https://github.com/CERNDocumentServer/cds-ils/issues.
 
 If you are proposing a feature:
 
@@ -59,14 +59,14 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `cds-books` for local development.
+Ready to contribute? Here's how to set up `cds-ils` for local development.
 
-1. Fork the `CERNDocumentServer/cds-books` repo on GitHub.
+1. Fork the `CERNDocumentServer/cds-ils` repo on GitHub.
 2. Clone your fork locally:
 
    .. code-block:: console
 
-      $ git clone git@github.com:your_name_here/cds-books.git
+      $ git clone git@github.com:your_name_here/cds-ils.git
 
 3. Install your local copy. Assuming you have
    `pipenv <https://docs.pipenv.org/install/#installing-pipenv>`_, installed, this is how you
@@ -74,7 +74,7 @@ Ready to contribute? Here's how to set up `cds-books` for local development.
 
    .. code-block:: console
 
-      $ cd cds-books/
+      $ cd cds-ils/
       $ pipenv run install -e .[all]
 
 4. Create a branch for local development:
@@ -119,5 +119,5 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring.
 3. The pull request should work for Python 2.7, 3.3, 3.4 and 3.5. Check
-   https://travis-ci.org/CERNDocumentServer/cds-books/pull_requests
+   https://travis-ci.org/CERNDocumentServer/cds-ils/pull_requests
    and make sure that the tests pass for all supported Python versions.

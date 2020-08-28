@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2019 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it under
+# CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 #
 # Dockerfile that builds a fully functional image of your app.
@@ -15,7 +15,7 @@
 # dependencies.
 
 ARG DEPENDENCIES_VERSION=latest
-FROM cds-books-base:${DEPENDENCIES_VERSION}
+FROM cds-ils-base:${DEPENDENCIES_VERSION}
 
 COPY ./ .
 COPY ./docker/uwsgi/ ${INVENIO_INSTANCE_PATH}

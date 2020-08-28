@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2019 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it under
+# CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
 # To update your MANIFEST.in, use the following commands:
@@ -44,10 +44,10 @@ recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs *.txt
 recursive-include docs Makefile
-recursive-include cds_books *.gitkeep
-recursive-include cds_books *.po *.pot *.mo
-recursive-include cds_books *.json *.html *.js *.scss
-recursive-include cds_books *.png *.jpg *.svg
+recursive-include cds_ils *.gitkeep
+recursive-include cds_ils *.po *.pot *.mo
+recursive-include cds_ils *.json *.html *.js *.scss
+recursive-include cds_ils *.png *.jpg *.svg
 recursive-include docker *.cfg *.conf *.crt *.ini *.key *.pem *.sh
 recursive-include tests *.json
 recursive-include tests *.py

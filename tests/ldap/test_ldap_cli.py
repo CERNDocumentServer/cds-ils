@@ -2,19 +2,17 @@
 #
 # Copyright (C) 2019 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it under
+# CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
-
-from __future__ import absolute_import, print_function
 
 import pytest
 from invenio_accounts.models import User
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
 
-from cds_books.ldap.api import check_user_for_update, delete_user, \
+from cds_ils.ldap.api import check_user_for_update, delete_user, \
     import_ldap_users
-from cds_books.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
+from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 
 
 def test_delete_user(app, system_user, testdata, app_with_mail):

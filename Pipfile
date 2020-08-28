@@ -13,7 +13,7 @@ lxml = ">=3.5.0,<4.2.6"
 invenio-app-ils = {editable = true, version = "==1.0.0a10", extras = [ "lorem" , "elasticsearch7", "postgresql" ]}
 invenio-migrator = {editable = true,version = "==1.0.0a10"}
 invenio = ">=3.3,<3.4"
-cds-books = {editable = true,path = "."}
+cds-ils = {editable = true,path = "."}
 invenio-records-files = "*"
 cds-dojson = {editable = true,git = "https://github.com/CERNDocumentServer/cds-dojson",ref = "books"}
 fuzzywuzzy = "*"
@@ -29,7 +29,7 @@ pytest-invenio = ">=1.3.2,<1.4.0"
 pytest-mock = ">=1.6.0"
 pytest-random-order = ">=0.5.4"
 pytest-runner = ">=3.0.0,<5"
-cds-books = {path = "."}
+cds-ils = {path = "."}
 
 [requires]
 python_version = "3.6"

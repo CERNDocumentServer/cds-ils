@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2018 CERN.
 #
-# CDS Books is free software; you can redistribute it and/or modify it
+# CDS-ILS is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
 # TODO: Transifex integration
@@ -11,7 +11,7 @@
 #    $ python setup.py extract_messages
 #    $ python setup.py init_catalog -l <lang>
 #    $ python setup.py compile_catalog
-# 2) Ensure project has been created on Transifex under the cds-books
+# 2) Ensure project has been created on Transifex under the cds-ils
 #    organisation.
 # 3) Install the transifex-client
 #    $ pip install transifex-client
@@ -25,8 +25,8 @@
 [main]
 host = https://www.transifex.com
 
-[cds-books-messages]
-file_filter = cds_books/translations/<lang>/LC_MESSAGES/messages.po
-source_file = cds_books/translations/messages.pot
+[cds-ils-messages]
+file_filter = cds_ils/translations/<lang>/LC_MESSAGES/messages.po
+source_file = cds_ils/translations/messages.pot
 source_lang = en
 type = PO
