@@ -355,10 +355,6 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
             "elasticsearch": "keyword",
             "marshmallow": SanitizedUnicode(),
         },
-        "unit:legacy_name": {
-            "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
-        },
         "unit:project": {
             "elasticsearch": "keyword",
             "marshmallow": SanitizedUnicode(),

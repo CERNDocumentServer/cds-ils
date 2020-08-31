@@ -55,11 +55,6 @@ export const config = {
           type: 'string',
           default: '',
         },
-        'unit:legacy_name': {
-          label: 'Legacy Name',
-          type: 'string',
-          default: '',
-        },
         'unit:project': {
           label: 'Project',
           type: 'string',
