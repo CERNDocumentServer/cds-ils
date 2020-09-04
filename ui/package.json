@@ -1,6 +1,6 @@
 {
   "name": "cds-ils",
-  "version": "1.0.0a8",
+  "version": "1.0.0a9",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
     "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.11",
