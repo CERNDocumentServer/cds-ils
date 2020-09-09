@@ -13,9 +13,9 @@ from functools import partial
 from invenio_app_ils.literature.covers_builder import build_placeholder_urls
 
 
-def is_record_with_cover(record):
+def should_record_have_cover(record):
     """Check if this type of record has cover."""
-    if '$schema' in record:
+    if "$schema" in record:
         schema = record["$schema"]
         if schema.endswith("document-v1.0.0.json") or schema.endswith(
             "series-v1.0.0.json"
@@ -35,7 +35,16 @@ def has_already_cover(record):
 def preemptively_set_first_isbn_as_cover(sender, *args, **kwargs):
     """Update cover metadata of the record with identifier."""
     record = kwargs.get("record", {})
-    if not is_record_with_cover(record):
+
+    # if this is not the creation of a record but an update, the cover_metadata
+    # will already exist in the object (either as an empty dict or with a
+    # valid identifier), so preemtive will pass the handling of the update to
+    # pick_identifier_with_cover function (called by after_record_update
+    # signal)
+    if "cover_metadata" in record:
+        return
+
+    if not should_record_have_cover(record):
         return
 
     if has_already_cover(record):
@@ -92,4 +101,12 @@ def build_syndetic_cover_urls(metadata):
             "medium": partial_url(size="MC"),
             "large": partial_url(size="LC"),
         }
-    return build_placeholder_urls()
+    return None
+
+
+def build_cover_urls(metadata):
+    """Try to build the cover urls else build placeholder urls."""
+    urls = build_syndetic_cover_urls(metadata)
+    if urls is None:
+        return build_placeholder_urls()
+    return urls

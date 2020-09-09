@@ -25,7 +25,7 @@ from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
 from marshmallow.fields import Bool
 
-from .literature.covers import build_syndetic_cover_urls
+from .literature.covers import build_cover_urls
 from .patrons.api import Patron
 from .patrons.permissions import views_permissions_factory
 
@@ -322,7 +322,7 @@ RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
 ###############################################################################
 ILS_VIEWS_PERMISSIONS_FACTORY = views_permissions_factory
 
-ILS_LITERATURE_COVER_URLS_BUILDER = build_syndetic_cover_urls
+ILS_LITERATURE_COVER_URLS_BUILDER = build_cover_urls
 
 # Namespaces for fields added to the metadata schema
 ILS_RECORDS_METADATA_NAMESPACES = {
