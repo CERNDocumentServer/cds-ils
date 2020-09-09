@@ -17,6 +17,7 @@ import copy
 import os
 from datetime import timedelta
 
+from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
 from invenio_app_ils.config import \
     CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
@@ -181,6 +182,9 @@ APP_ALLOWED_HOSTS = [
     "127.0.0.1",
     os.environ.get("HOSTNAME", ""),  # fix disallowed host error during /ping
 ]
+
+APP_DEFAULT_SECURE_HEADERS["content_security_policy"] = {}
+APP_DEFAULT_SECURE_HEADERS["frame_options"] = None
 
 ###############################################################################
 # OAI-PMH
