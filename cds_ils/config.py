@@ -183,8 +183,16 @@ APP_ALLOWED_HOSTS = [
     os.environ.get("HOSTNAME", ""),  # fix disallowed host error during /ping
 ]
 
-APP_DEFAULT_SECURE_HEADERS["content_security_policy"] = {}
-APP_DEFAULT_SECURE_HEADERS["frame_options"] = None
+APP_DEFAULT_SECURE_HEADERS['content_security_policy'] = {
+    'default-src': ["'self'"],
+    'script-src': ["'self'"],
+    'object-src': ["'self'"],
+    'img-src': ["'self'"],
+    'style-src': ["'self'"],
+    'font-src': ["'self'", "data:", "https://fonts.gstatic.com",
+                 "https://fonts.googleapis.com"],
+}
+
 
 ###############################################################################
 # OAI-PMH
