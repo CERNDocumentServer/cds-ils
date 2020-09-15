@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2019 CERN.
+# Copyright (C) 2019-2020 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
@@ -10,10 +10,13 @@
 import json
 import os
 
+import jinja2
 import pytest
 from invenio_accounts.models import User
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
+from invenio_app_ils.internal_locations.api import \
+    INTERNAL_LOCATION_PID_TYPE, InternalLocation
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
 from invenio_app_ils.series.api import SERIES_PID_TYPE, Series
@@ -26,8 +29,50 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
 
-from invenio_app_ils.internal_locations.api import INTERNAL_LOCATION_PID_TYPE  # noqa isort:skip
-from invenio_app_ils.internal_locations.api import InternalLocation  # noqa isort:skip
+
+@pytest.fixture(scope="module")
+def create_app():
+    """Create test app."""
+    return create_api
+
+
+@pytest.fixture(scope="module")
+def app_with_mail(app):
+    """App with email test templates."""
+    test_templates_path = os.path.join(os.path.dirname(__file__), "templates")
+    enhanced_jinja_loader = jinja2.ChoiceLoader(
+        [app.jinja_loader, jinja2.FileSystemLoader(test_templates_path)]
+    )
+    # override default app jinja_loader to add the new path
+    app.jinja_loader = enhanced_jinja_loader
+    yield app
+
+
+@pytest.fixture(scope="module")
+def app_config(app_config):
+    """Get app config."""
+    tests_config = {
+        "APP_ALLOWED_HOSTS": "localhost",
+        "CELERY_TASK_ALWAYS_EAGER": True,
+        "CDS_ILS_LITERATURE_UPDATE_COVERS": False,
+        "JSONSCHEMAS_SCHEMAS": [
+            "acquisition",
+            "document_requests",
+            "documents",
+            "eitems",
+            "ill",
+            "internal_locations",
+            "items",
+            "invenio_opendefinition",
+            "invenio_records_files",
+            "loans",
+            "locations",
+            "series",
+            "vocabularies",
+        ],
+    }
+    app_config.update(tests_config)
+    return app_config
 
 
 @pytest.fixture()
@@ -51,8 +96,9 @@ def system_user(app, db):
     )
     db.session.add(profile)
 
+    client_id = app.config["CERN_APP_OPENID_CREDENTIALS"]["consumer_key"]
     remote_account = RemoteAccount(
-        client_id="CLIENT_ID",
+        client_id=client_id,
         **dict(
             user_id=user_id,
             extra_data=dict(person_id="1", department="Department"),
@@ -98,9 +144,7 @@ def testdata(app, db, es_clear, system_user):
     internal_locations = load_json_from_datadir("internal_locations.json")
     for internal_location in internal_locations:
         record = InternalLocation.create(internal_location)
-        mint_record_pid(
-            INTERNAL_LOCATION_PID_TYPE, "pid", record
-        )
+        mint_record_pid(INTERNAL_LOCATION_PID_TYPE, "pid", record)
         record.commit()
         db.session.commit()
         indexer.index(record)
@@ -138,7 +182,7 @@ def testdata(app, db, es_clear, system_user):
         indexer.index(record)
 
     # flush all indices after indexing, otherwise ES won't be ready for tests
-    current_search.flush_and_refresh(index='*')
+    current_search.flush_and_refresh(index="*")
     return {
         "documents": documents,
         "items": items,

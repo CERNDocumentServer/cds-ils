@@ -16,9 +16,9 @@ class LossyConversion(DoJSONException):
 
     def __init__(self, *args, **kwargs):
         """Exception custom initialisation."""
-        self.missing = kwargs.pop('missing', None)
-        self.message = 'Lossy conversion: {0}'.format(self.missing or '')
-        super(LossyConversion, self).__init__(*args, **kwargs)
+        self.missing = kwargs.pop("missing", None)
+        self.message = "Lossy conversion: {0}".format(self.missing or "")
+        super().__init__(*args, **kwargs)
 
 
 class CdsIlsMigrationException(Exception):
