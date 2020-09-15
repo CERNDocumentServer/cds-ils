@@ -8,80 +8,65 @@
 """Literature covers."""
 
 import os
+import urllib
 from functools import partial
 
 from invenio_app_ils.literature.covers_builder import build_placeholder_urls
+from invenio_app_ils.proxies import current_app_ils
+
+MIN_CONTENT_LENGTH = 128
 
 
 def should_record_have_cover(record):
     """Check if this type of record has cover."""
     if "$schema" in record:
         schema = record["$schema"]
-        if schema.endswith("document-v1.0.0.json") or schema.endswith(
-            "series-v1.0.0.json"
-        ):
+        Document = current_app_ils.document_record_cls
+        is_document = schema.endswith(Document._schema)
+        Series = current_app_ils.series_record_cls
+        is_series = schema.endswith(Series._schema)
+        if is_document or is_series:
             return True
     return False
 
 
-def has_already_cover(record):
+def has_already_cover(cover_metadata={}):
     """Check if record has already valid cover in cover_metadata."""
-    cover_metadata = record.get("cover_metadata", {})
-    return cover_metadata.get("ISBN", False) or cover_metadata.get(
-        "ISSN", False
-    )
+    return cover_metadata.get("ISBN") or cover_metadata.get("ISSN")
 
 
-def preemptively_set_first_isbn_as_cover(sender, *args, **kwargs):
-    """Update cover metadata of the record with identifier."""
-    record = kwargs.get("record", {})
+def is_valid_cover(cover_metadata):
+    """Fetch all sizes of cover from url and evaluate if they are valid."""
+    syndetics_urls = build_syndetic_cover_urls(cover_metadata)
+    if syndetics_urls is None:
+        return False
 
-    # if this is not the creation of a record but an update, the cover_metadata
-    # will already exist in the object (either as an empty dict or with a
-    # valid identifier), so preemtive will pass the handling of the update to
-    # pick_identifier_with_cover function (called by after_record_update
-    # signal)
-    if "cover_metadata" in record:
-        return
+    try:
+        for size in ["small", "medium", "large"]:
+            resp = urllib.request.urlopen(syndetics_urls[size])
+            has_error = resp.getcode() != 200
+            less_than_1_pixel = (
+                int(resp.getheader("Content-Length")) <= MIN_CONTENT_LENGTH
+            )
+            if has_error or less_than_1_pixel:
+                return False
+    except Exception:
+        return False
 
-    if not should_record_have_cover(record):
-        return
-
-    if has_already_cover(record):
-        return
-
-    identifiers = record.get("identifiers")
-    if not identifiers:
-        return
-
-    record.setdefault("cover_metadata", {})
-    schema = record.get("$schema")
-
-    if schema.endswith("series-v1.0.0.json"):
-        for ident in identifiers:
-            if ident["scheme"] == "ISSN":
-                record["cover_metadata"]["ISSN"] = ident["value"]
-                return
-
-    for ident in identifiers:
-        if ident["scheme"] == "ISBN":
-            record["cover_metadata"]["ISBN"] = ident["value"]
-            return
+    return True
 
 
-def build_syndetic_cover_urls(metadata):
+def build_syndetic_cover_urls(cover_metadata):
     """Decorate literature with cover urls for all sizes."""
     client = os.environ.get("SYNDETIC_CLIENT")
     url = "https://secure.syndetics.com/index.aspx"
 
-    cover_metadata = metadata.get("cover_metadata", {})
-
-    issn = cover_metadata.get("ISSN", "")
+    issn = cover_metadata.get("ISSN")
     if issn:
         scheme = "ISSN"
         scheme_value = issn
 
-    isbn = cover_metadata.get("ISBN", "")
+    isbn = cover_metadata.get("ISBN")
     if isbn:
         scheme = "ISBN"
         scheme_value = isbn
@@ -106,7 +91,6 @@ def build_syndetic_cover_urls(metadata):
 
 def build_cover_urls(metadata):
     """Try to build the cover urls else build placeholder urls."""
-    urls = build_syndetic_cover_urls(metadata)
-    if urls is None:
-        return build_placeholder_urls()
-    return urls
+    cover_metadata = metadata.get("cover_metadata", {})
+    syndetics_urls = build_syndetic_cover_urls(cover_metadata)
+    return syndetics_urls or build_placeholder_urls()

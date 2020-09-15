@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2018 CERN.
+# Copyright (C) 2018-2020 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-addons:
-  chrome: stable # https://docs.travis-ci.com/user/chrome
-  postgresql: "9.6"
 
 notifications:
-  email: # sent to the committer and the author
-    on_success: never # default: always
-    on_failure: always # default: always
+  email: false
 
 language: python
 
@@ -27,9 +22,12 @@ services:
   - redis
   - rabbitmq
 
+addons:
+  postgresql: "12.4"
+
 env:
   global:
-    - ES7_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.3.0-linux-x86_64.tar.gz"
+    - ES7_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.1-linux-x86_64.tar.gz"
     - ES_HOST=127.0.0.1
     # Needed after release of v50.0.0 of setuptools (Setuptools overrides the stdlib distutils on import) [temporary solution]
     - SETUPTOOLS_USE_DISTUTILS="stdlib"

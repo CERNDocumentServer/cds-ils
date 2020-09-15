@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS ldap API."""
+
 import json
 import uuid
 
@@ -16,6 +17,7 @@ from invenio_accounts.models import User
 from invenio_app_ils.anonymization import anonymize_patron_data
 from invenio_app_ils.circulation.tasks import send_active_loans_mail
 from invenio_db import db
+from invenio_oauthclient.contrib.cern_openid import find_remote_by_client_id
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
 from sqlalchemy.orm.exc import NoResultFound
@@ -146,12 +148,16 @@ class LdapUserImporter:
     def __init__(self, ldap_users):
         """Constructor."""
         self.ldap_users = ldap_users
+        self.client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
+            "consumer_key"
+        ]
+        self.remote = find_remote_by_client_id(self.client_id)
 
     def import_user_identity(self, user_id, ldap_user):
         """Return new user identity entry."""
         return {
             "id": ldap_user["uidNumber"][0].decode("utf8"),
-            "method": "cern",
+            "method":  self.remote.name,
             "id_user": user_id,
         }
 
@@ -204,12 +210,8 @@ class LdapUserImporter:
                 **self.import_user_profile(user_id, ldap_user)
             )
             db.session.add(profile)
-
-            client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
-                "consumer_key"
-            ]
             remote_account = RemoteAccount(
-                client_id=client_id,
+                client_id=self.client_id,
                 **self.import_remote_account(user_id, ldap_user),
             )
             db.session.add(remote_account)
@@ -239,10 +241,10 @@ def import_ldap_users(ldap_users):
 def check_user_for_update(system_user, ldap_user):
     """Check if there is an ldap update for a user and commit changes."""
     ldap_user_department = ldap_user["department"][0].decode("utf8")
-    if not system_user.extra_data["department"] == ldap_user_department:
-        previous_department = system_user.extra_data["department"]
+    if not system_user.extra_data.get("department") == ldap_user_department:
+        previous_department = system_user.extra_data.get("department")
 
-        system_user.extra_data.update(dict(department=ldap_user_department))
+        system_user.extra_data["department"] = ldap_user_department
         db.session.commit()
 
         _log_info(

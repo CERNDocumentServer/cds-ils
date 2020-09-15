@@ -9,7 +9,7 @@
     "language": ["en"],
     "edition": "ed. 1",
     "publication_year": "2020",
-    "cover_metadata": { "ISBN": "0123456789" }
+    "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }]
   },
   {
     "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
@@ -20,6 +20,7 @@
     "abstracts": [{ "value": "This is an abstract" }],
     "language": ["it"],
     "publication_year": "2020",
-    "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }]
+    "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }],
+    "cover_metadata": { "ISBN": "0123456789" }
   }
 ]

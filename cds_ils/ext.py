@@ -5,17 +5,11 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
-"""Literature module."""
+"""CDS-ILS extension."""
 
-
-import os
-
-import jinja2
 from flask import Blueprint
-from invenio_records.signals import after_record_insert, after_record_update, \
-    before_record_insert, before_record_update
+from invenio_records.signals import after_record_insert, after_record_update
 
-from cds_ils.literature.covers import preemptively_set_first_isbn_as_cover
 from cds_ils.literature.tasks import pick_identifier_with_cover
 
 
@@ -23,14 +17,14 @@ class CdsIls(object):
     """CdsIls extension."""
 
     def __init__(self, app=None):
-        """Literature initialization."""
+        """Initialization."""
         self.register_signals(app)
         self.init_app(app)
 
     def init_app(self, app):
         """Initialize app."""
         app.register_blueprint(
-            Blueprint("cds_ils", __name__, template_folder="templates",)
+            Blueprint("cds_ils", __name__, template_folder="templates")
         )
         app.register_blueprint(
             Blueprint(
@@ -42,8 +36,7 @@ class CdsIls(object):
 
     @staticmethod
     def register_signals(app):
-        """Register Literature signals."""
-        before_record_insert.connect(preemptively_set_first_isbn_as_cover)
-        before_record_update.connect(preemptively_set_first_isbn_as_cover)
-        after_record_insert.connect(pick_identifier_with_cover)
-        after_record_update.connect(pick_identifier_with_cover)
+        """Register signals."""
+        if app.config.get("CDS_ILS_LITERATURE_UPDATE_COVERS", True):
+            after_record_insert.connect(pick_identifier_with_cover)
+            after_record_update.connect(pick_identifier_with_cover)

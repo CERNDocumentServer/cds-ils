@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2019 CERN.
+# Copyright (C) 2019-2020 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
@@ -15,14 +15,9 @@ from invenio_oauthclient.models import RemoteAccount
 class Patron(ILSPatron):
     """Patron record class."""
 
-    _index = "patrons-patron-v1.0.0"
-    _doc_type = "patron-v1.0.0"
-    # Fake schema used to identify pid type from ES hit
-    _schema = "patrons/patron-v1.0.0.json"
-
     def __init__(self, id, revision_id=None):
         """Create a `Patron` instance."""
-        super(Patron, self).__init__(id, revision_id)
+        super().__init__(id, revision_id)
 
         self.extra_info = None
         client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
@@ -32,9 +27,8 @@ class Patron(ILSPatron):
         if remote_user:
             self.extra_info = remote_user.extra_data
 
-    def dumps(self):
-        """Return python representation of Patron metadata."""
-        dump = super(Patron, self).dumps()
+    def _add_extra_info(self, dump):
+        """Add extra info when dumping."""
         if hasattr(self, "extra_info") and self.extra_info:
             dump.update(
                 {
@@ -42,4 +36,15 @@ class Patron(ILSPatron):
                     "department": self.extra_info.get("department", ""),
                 }
             )
+
+    def dumps(self):
+        """Return python representation of Patron metadata."""
+        dump = super().dumps()
+        self._add_extra_info(dump)
+        return dump
+
+    def dumps_loader(self, **kwargs):
+        """Return a simpler patron representation for loaders."""
+        dump = super().dumps_loader()
+        self._add_extra_info(dump)
         return dump

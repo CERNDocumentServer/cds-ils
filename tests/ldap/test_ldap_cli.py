@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2019 CERN.
+# Copyright (C) 2019-2020 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
+
+"""Test LDAP functions."""
 
 import pytest
 from invenio_accounts.models import User
@@ -15,13 +17,15 @@ from cds_ils.ldap.api import check_user_for_update, delete_user, \
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 
 
-def test_delete_user(app, system_user, testdata, app_with_mail):
+def test_delete_user(app_with_mail, system_user, testdata):
 
     with app_with_mail.extensions["mail"].record_messages() as outbox:
         assert len(outbox) == 0
         delete_user(system_user)
         assert len(outbox) == 1
-        assert outbox[0].recipients == ["cds.internal@cern.ch"]
+        assert outbox[0].recipients == [
+            app_with_mail.config["MANAGEMENT_EMAIL"]
+        ]
 
 
 def test_check_users_for_update(app, system_user):
@@ -61,14 +65,17 @@ def test_import_ldap_users(app):
     assert user
 
     assert UserProfile.query.filter(UserProfile.user_id == user.id).one()
-    assert UserIdentity.query.filter(
+    user_identity = UserIdentity.query.filter(
         UserIdentity.id == ldap_users[0]["uidNumber"][0].decode("utf8")
     ).one()
+    assert user_identity
+    assert user_identity.method == "cern_openid"
     assert RemoteAccount.query.filter(RemoteAccount.user_id == user.id).one()
 
 
 def test_log_table(app, db):
     """Test that the log table works."""
+
     def find(log):
         return LdapSynchronizationLog.query.filter_by(id=log.id).one_or_none()
 
@@ -82,10 +89,10 @@ def test_log_table(app, db):
     assert not found
 
     # Change state
-    log = LdapSynchronizationLog.create_celery('1')
+    log = LdapSynchronizationLog.create_celery("1")
     found = find(log)
     assert found.status == TaskStatus.RUNNING and found.agent == Agent.CELERY
-    assert found.task_id == '1'
+    assert found.task_id == "1"
     found.set_succeeded(5, 6, 7, 8)
     found = find(log)
     assert found.status == TaskStatus.SUCCEEDED
