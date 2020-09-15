@@ -1,11 +1,11 @@
 import {
   FrontSiteRoutes,
   getStaticPageByName,
+  invenioConfig,
 } from '@inveniosoftware/react-invenio-app-ils';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Grid, Header, Image, List } from 'semantic-ui-react';
-import { config } from '../../../config';
 
 export const Footer = ({ ...props }) => {
   const cernLogo = process.env.PUBLIC_URL + '/cern-logo-white-150.png';
@@ -59,16 +59,16 @@ export const Footer = ({ ...props }) => {
               <List>
                 <List.Item>+41 22 767 24 35</List.Item>
                 <List.Item>
-                  <a href={`mailto:${config.libraryEmail}`}>
-                    {config.libraryEmail}
+                  <a href={`mailto:${invenioConfig.APP.libraryEmail}`}>
+                    {invenioConfig.APP.libraryEmail}
                   </a>
                 </List.Item>
               </List>
               <Header as="h4" content="Technical Support" />
               <List>
                 <List.Item>
-                  <a href={`mailto:${config.supportEmail}`}>
-                    {config.supportEmail}
+                  <a href={`mailto:${invenioConfig.APP.supportEmail}`}>
+                    {invenioConfig.APP.supportEmail}
                   </a>
                 </List.Item>
               </List>
