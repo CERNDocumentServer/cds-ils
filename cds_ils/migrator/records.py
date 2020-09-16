@@ -247,6 +247,7 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
         except IndexError as e:
             click.secho("Revision problem", fg="red")
 
+
     @classmethod
     @disable_timestamp
     def create_record(cls, dump):
@@ -271,5 +272,4 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
         except IlsValidationError as e:
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
             click.secho(e.original_exception.message, fg="red")
-            # TODO uncomment when data cleaner - needed for testing on dev
-            # raise e
+            raise e
