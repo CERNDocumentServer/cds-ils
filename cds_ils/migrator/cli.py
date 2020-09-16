@@ -13,12 +13,19 @@ from logging import FileHandler
 import click
 from flask.cli import with_appcontext
 
-from cds_ils.migrator.api import commit, import_documents_from_dump, \
-    import_documents_from_record_file, import_internal_locations_from_json, \
-    import_items_from_json, import_loans_from_json, import_parents_from_file, \
-    import_users_from_json, link_and_create_multipart_volumes, \
-    link_documents_and_serials, reindex_pidtype, validate_multipart_records, \
-    validate_serial_records
+from cds_ils.migrator.api import commit, import_parents_from_file, \
+    reindex_pidtype
+from cds_ils.migrator.documents.api import import_documents_from_record_file, \
+    import_documents_from_dump
+from cds_ils.migrator.eitems.api import process_files_from_legacy
+from cds_ils.migrator.internal_locations.api import \
+    import_internal_locations_from_json
+from cds_ils.migrator.items.api import import_items_from_json
+from cds_ils.migrator.loans.api import import_loans_from_json
+from cds_ils.migrator.patrons.api import import_users_from_json
+from cds_ils.migrator.series.api import link_and_create_multipart_volumes, \
+    link_documents_and_serials, validate_serial_records, \
+    validate_multipart_records
 
 
 @click.group()
@@ -181,3 +188,11 @@ def validate_serial():
 def validate_multipart():
     """Validate migrated multiparts."""
     validate_multipart_records()
+
+
+@migration.command()
+@with_appcontext
+def eitems_files():
+    """Create eitems for migrated documents."""
+    process_files_from_legacy()
+
