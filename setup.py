@@ -38,7 +38,7 @@ install_requires = [
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
     "invenio-oauthclient>=1.3.3,<1.4.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a11",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a12",
     # migrator deps
     "invenio-migrator==1.0.0a10",
     "invenio-records-files",
