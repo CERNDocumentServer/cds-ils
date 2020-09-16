@@ -24,7 +24,7 @@ from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE
 from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
-from marshmallow.fields import Bool
+from marshmallow.fields import Bool, List
 
 from .literature.covers import build_cover_urls
 from .patrons.api import Patron
@@ -249,13 +249,13 @@ OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
     "protocol/openid-connect/logout",
 )
 OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
-    os.environ.get("SPA_HOST", "http://localhost:3000") + "/login"
+    os.environ.get("SPA_HOST", "http://127.0.0.1:3000") + "/login"
 )
 OAUTH_REMOTE_REST_APP["disconnect_redirect_url"] = os.environ.get(
-    "SPA_HOST", "http://localhost:3000"
+    "SPA_HOST", "http://127.0.0.1:3000"
 )
 OAUTH_REMOTE_REST_APP["error_redirect_url"] = (
-    os.environ.get("SPA_HOST", "http://localhost:3000") + "/login"
+    os.environ.get("SPA_HOST", "http://127.0.0.1:3000") + "/login"
 )
 OAUTH_REMOTE_REST_APP["params"].update(
     dict(
@@ -284,7 +284,7 @@ CERN_APP_OPENID_CREDENTIALS = dict(
         "OAUTH_CERN_OPENID_CLIENT_ID", "localhost-cds-ils"
     ),
     consumer_secret=os.environ.get(
-        "OAUTH_CERN_OPENID_CLIENT_SECRET", "<change me>"
+        "OAUTH_CERN_OPENID_CLIENT_SECRET", "84fc8be1-12a3-47f7-891e-ba01f158559e"
     ),
 )
 USERPROFILES_EXTEND_SECURITY_FORMS = True
@@ -354,7 +354,7 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
     "document": {
         "unit:accelerator": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "unit:curated_relation": {
             "elasticsearch": "boolean",
@@ -362,11 +362,11 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
         },
         "unit:experiment": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "unit:institution": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "unit:project": {
             "elasticsearch": "keyword",
@@ -374,11 +374,11 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
         },
         "unit:study": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "standard_review:applicability": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "standard_review:standard_validity": {
             "elasticsearch": "keyword",

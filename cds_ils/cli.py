@@ -9,7 +9,7 @@
 import os
 
 import click
-import redis
+from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
 from invenio_app_ils.cli import minter

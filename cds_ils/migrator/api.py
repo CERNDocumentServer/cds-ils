@@ -16,13 +16,18 @@ import click
 from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from flask import current_app
+from invenio_app_ils.circulation.api import IlsCirculationLoanIdProvider
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
 from invenio_app_ils.ill.api import Library, LibraryIdProvider
 from invenio_app_ils.internal_locations.api import InternalLocation, \
     InternalLocationIdProvider
 from invenio_app_ils.internal_locations.search import InternalLocationSearch
-from invenio_app_ils.items.api import Item, ItemIdProvider
+from invenio_app_ils.items.api import ITEM_PID_TYPE, Item, ItemIdProvider
+from invenio_app_ils.items.search import ItemSearch
+from invenio_app_ils.patrons.api import SystemAgent
+from invenio_app_ils.patrons.indexer import PatronIndexer
+from invenio_app_ils.patrons.search import PatronsSearch
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
@@ -30,14 +35,18 @@ from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
 from invenio_app_ils.series.api import Series, SeriesIdProvider
 from invenio_app_ils.series.search import SeriesSearch
 from invenio_base.app import create_cli
+from invenio_circulation.api import Loan
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
 from invenio_migrator.cli import _loadrecord
+from invenio_oauthclient.models import RemoteAccount
 
 from cds_ils.migrator.errors import DocumentMigrationError, \
-    ItemMigrationError, MultipartMigrationError
+    ItemMigrationError, LoanMigrationError, MultipartMigrationError, \
+    UserMigrationError
 from cds_ils.migrator.records import CDSRecordDumpLoader
 from cds_ils.migrator.utils import clean_item_record
+from cds_ils.patrons.api import Patron
 
 lt_es7 = ES_VERSION[0] < 7
 
@@ -90,6 +99,8 @@ def model_provider_by_rectype(rectype):
         return Library, LibraryIdProvider
     elif rectype == "item":
         return Item, ItemIdProvider
+    elif rectype == "loan":
+        return Loan, IlsCirculationLoanIdProvider
     else:
         raise ValueError("Unknown rectype: {}".format(rectype))
 
@@ -159,7 +170,9 @@ def import_documents_from_record_file(sources, include):
     bulk_index_records(records)
 
 
-def import_documents_from_dump(sources, source_type, eager, include):
+def import_documents_from_dump(
+    sources, source_type, eager, include, skip_indexing
+):
     """Load records."""
     include = include if include is None else include.split(",")
     for idx, source in enumerate(sources, 1):
@@ -175,7 +188,8 @@ def import_documents_from_dump(sources, source_type, eager, include):
                 if include is None or str(item["recid"]) in include:
                     _loadrecord(item, source_type, eager=eager)
     # We don't get the record back from _loadrecord so re-index all documents
-    reindex_pidtype("docid")
+    if not skip_indexing:
+        reindex_pidtype("docid")
 
 
 def import_internal_locations_from_json(
@@ -209,9 +223,10 @@ def import_internal_locations_from_json(
                     )
                     records.append(record)
                 else:
-                    location_pid_value, _ = (
-                        current_app_ils.get_default_location_pid
-                    )
+                    (
+                        location_pid_value,
+                        _,
+                    ) = current_app_ils.get_default_location_pid
                     record["location_pid"] = location_pid_value
                     record = import_record(
                         record, model, provider, legacy_id_key="legacy_id"
@@ -228,7 +243,6 @@ def import_items_from_json(dump_file, include, rectype="item"):
 
     include_ids = None if include is None else include.split(",")
     with click.progressbar(json.load(dump_file)) as bar:
-        records = []
         for record in bar:
             click.echo(
                 'Importing item "{0}({1})"...'.format(
@@ -250,15 +264,232 @@ def import_items_from_json(dump_file, include, rectype="item"):
                     continue
                 try:
                     clean_item_record(record)
-                except ItemMigrationError:
+                except ItemMigrationError as e:
+                    click.secho(str(e), fg="red")
                     continue
-                record = import_record(
-                    record, model, provider, legacy_id_key="barcode"
+                try:
+                    # check if the item already there
+                    item = get_item_by_barcode(record["barcode"])
+                    if item:
+                        click.secho(
+                            "Item {0}) already exists with pid: {1}".format(
+                                record["barcode"], item.pid
+                            ),
+                            fg="blue",
+                        )
+                        continue
+                except ItemMigrationError:
+                    record = import_record(
+                        record, model, provider, legacy_id_key="barcode"
+                    )
+                try:
+                    # without this script is very slow
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+
+
+def import_users_from_json(dump_file):
+    """Imports additional user data from JSON."""
+    dump_file = dump_file[0]
+    with click.progressbar(json.load(dump_file)) as bar:
+        for record in bar:
+            click.echo(
+                'Importing user "{0}({1})"...'.format(
+                    record["id"], record["email"]
                 )
-                if record:
-                    records.append(record)
-    # Index all new item records
-    bulk_index_records(records)
+            )
+            user = get_user_by_person_id(record["ccid"])
+            if not user:
+                click.secho(
+                    "User {0}({1}) not synced via LDAP".format(
+                        record["id"], record["email"]
+                    ),
+                    fg="red",
+                )
+                continue
+                # todo uncomment when more data
+                # raise UserMigrationError
+            else:
+                client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
+                    "consumer_key"
+                ]
+                account = RemoteAccount.get(
+                    user_id=user.id, client_id=client_id
+                )
+                extra_data = account.extra_data
+                # add legacy_id information
+                account.extra_data.update(legacy_id=record["id"], **extra_data)
+                db.session.add(account)
+                patron = Patron(user.id)
+                PatronIndexer().index(patron)
+        db.session.commit()
+
+
+def import_loans_from_json(dump_file):
+    """Imports loan objects from JSON."""
+    dump_file = dump_file[0]
+    loans = []
+    with click.progressbar(json.load(dump_file)) as bar:
+        for record in bar:
+            click.echo('Importing loan "{0}"...'.format(record["legacy_id"]))
+            user = get_user_by_legacy_id(record["id_crcBORROWER"])
+            if not user:
+                patron_pid = SystemAgent.id
+            else:
+                patron_pid = user.pid
+            try:
+                item = get_item_by_barcode(record["item_barcode"])
+            except ItemMigrationError:
+                continue
+                # Todo uncomment when more data
+                # raise LoanMigrationError(
+                #    'no item found with the barcode {} for loan {}'.format(
+                #        record['item_barcode'], record['legacy_id']))
+
+            # additional check if the loan refers to the same document
+            # as it is already attached to the item
+            document_pid = item.get("document_pid")
+            document = Document.get_record_by_pid(document_pid)
+            if record["legacy_document_id"] is None:
+                raise LoanMigrationError(
+                    "no document id for loan {}".format(record["legacy_id"])
+                )
+            if (
+                document.get("legacy_recid", None)
+                != record["legacy_document_id"]
+            ):
+                # this might happen when record merged or migrated,
+                # the already migrated document should take precedence
+                click.secho(
+                    "inconsistent document dependencies for loan {}".format(
+                        record["legacy_id"]
+                    ),
+                    fg="blue",
+                )
+
+            # create a loan
+            (
+                default_location_pid_value,
+                _,
+            ) = current_app_ils.get_default_location_pid
+
+            if record["status"] == "on loan":
+                loan_dict = dict(
+                    patron_pid=str(patron_pid),
+                    transaction_location_pid=default_location_pid_value,
+                    transaction_user_pid=str(SystemAgent.id),
+                    document_pid=document_pid,
+                    item_pid={
+                        "type": ITEM_PID_TYPE,
+                        "value": item.pid.pid_value,
+                    },
+                    start_date=record["start_date"],
+                    end_date=record["end_date"],
+                    state="ITEM_ON_LOAN",
+                    transaction_date=record["start_date"],
+                )
+            elif record["status"] == "returned":
+                loan_dict = dict(
+                    patron_pid=str(patron_pid),
+                    transaction_location_pid=default_location_pid_value,
+                    transaction_user_pid=str(SystemAgent.id),
+                    transaction_date=record["returned_on"],
+                    document_pid=document_pid,
+                    item_pid={
+                        "type": ITEM_PID_TYPE,
+                        "value": item.pid.pid_value,
+                    },
+                    start_date=record["start_date"],
+                    end_date=record["returned_on"],
+                    state="ITEM_RETURNED",
+                )
+            else:
+                raise LoanMigrationError(
+                    "Unkown loan state for record {0}: {1}".format(
+                        record["legacy_id"], record["state"]
+                    )
+                )
+            model, provider = model_provider_by_rectype("loan")
+            try:
+                loan = import_record(loan_dict, model, provider)
+            except Exception as e:
+                raise e
+            try:
+                # without this script is very slow
+                db.session.commit()
+            except:
+                db.session.rollback()
+    return loans
+
+
+def get_item_by_barcode(barcode):
+    """Retrieve item object by barcode."""
+    search = ItemSearch().query(
+        "bool",
+        filter=[
+            Q("term", barcode=barcode),
+        ],
+    )
+    result = search.execute()
+    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    if not result.hits or hits_total < 1:
+        click.secho("no item found with barcode {}".format(barcode), fg="red")
+        raise ItemMigrationError(
+            "no item found with barcode {}".format(barcode)
+        )
+    elif hits_total > 1:
+        raise ItemMigrationError(
+            "found more than one item with barcode {}".format(barcode)
+        )
+    else:
+        return Item.get_record_by_pid(result.hits[0].pid)
+
+
+def get_user_by_person_id(person_id):
+    """Get ES object of the patron."""
+    search = PatronsSearch().query(
+        "bool",
+        filter=[
+            Q("term", person_id=person_id),
+        ],
+    )
+    results = search.execute()
+    hits_total = results.hits.total if lt_es7 else results.hits.total.value
+    if not results.hits or hits_total < 1:
+        click.secho(
+            "no user found with person_id {}".format(person_id), fg="red"
+        )
+        return None
+    elif hits_total > 1:
+        raise UserMigrationError(
+            "found more than one user with person_id {}".format(person_id)
+        )
+    else:
+        return results.hits[0]
+
+
+def get_user_by_legacy_id(legacy_id):
+    """Get ES object of the patron."""
+    search = PatronsSearch().query(
+        "bool",
+        filter=[
+            Q("term", legacy_id=legacy_id),
+        ],
+    )
+    results = search.execute()
+    hits_total = results.hits.total if lt_es7 else results.hits.total.value
+    if not results.hits or hits_total < 1:
+        click.secho(
+            "no user found with legacy_id {}".format(legacy_id), fg="red"
+        )
+        return None
+    elif hits_total > 1:
+        raise UserMigrationError(
+            "found more than one user with legacy_id {}".format(legacy_id)
+        )
+    else:
+        return results.hits[0]
 
 
 def get_internal_location_by_legacy_recid(legacy_recid):
@@ -279,7 +510,7 @@ def get_internal_location_by_legacy_recid(legacy_recid):
             "no internal location found with legacy id {}".format(legacy_recid)
         )
     elif hits_total > 1:
-        raise MultipartMigrationError(
+        raise ItemMigrationError(
             "found more than one internal location with legacy id {}".format(
                 legacy_recid
             )

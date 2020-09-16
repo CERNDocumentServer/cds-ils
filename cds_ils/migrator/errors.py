@@ -33,9 +33,17 @@ class MultipartMigrationError(CdsIlsMigrationException):
     """Raised for multipart migration errors."""
 
 
+class UserMigrationError(CdsIlsMigrationException):
+    """Raised for user migration errors."""
+
+
 class SerialMigrationError(CdsIlsMigrationException):
     """Raised for serial migration errors."""
 
 
 class ItemMigrationError(CdsIlsMigrationException):
-    """Raiser for item migration errors."""
+    """Raised for item migration errors."""
+
+
+class LoanMigrationError(CdsIlsMigrationException):
+    """Raised for loan migration errors."""

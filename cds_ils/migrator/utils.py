@@ -66,6 +66,7 @@ def update_access(data, *access):
 
 def clean_circulation_restriction(record):
     """Translates circulation restrictions of the item."""
+    record["circulation_restriction"] = "NO_RESTRICTION"
     if "loan_period" in record:
         options = {
             "1 week": "ONE_WEEK",
@@ -82,10 +83,9 @@ def clean_circulation_restriction(record):
             except KeyError:
                 raise ItemMigrationError(
                     "Unknown circulation restriction (loan period) on "
-                    "barcode {}".format(record["barcode"]))
-    else:
-        record["circulation_restriction"] = "NO_RESTRICTION"
-    del record["loan_period"]
+                    "barcode {0}: {1}".format(record["barcode"],
+                                              record['loan_period']))
+        del record["loan_period"]
 
 
 def clean_item_status(record):
@@ -97,7 +97,7 @@ def clean_item_status(record):
         "on shelf": "CAN_CIRCULATE",
         "missing": "MISSING",
         "on loan": "CAN_CIRCULATE",
-        "in binding": "IN BINDING",
+        "in binding": "IN_BINDING",
         "FOR_REFERENCE_ONLY": "FOR_REFERENCE_ONLY"
     }
     try:

@@ -178,11 +178,13 @@ class CDSRecordDumpLoader:
                         .format(dump[legacy_id_key],
                                 ['{0}: {1}'.format(error.res['field'],
                                                    error.res['message']) for
-                                 error in e.errors]).join('\n'), fg='red')
+                                 error in e.errors]).join('\n'), fg='blue')
+            click.secho(e.original_exception.message, fg='blue')
             # TODO uncomment when data cleaner - needed for testing on dev
             # raise e
 
-    class CDSDocumentDumpLoader(RecordDumpLoader):
+
+class CDSDocumentDumpLoader(RecordDumpLoader):
         """Migrate a CDS record.
 
         create and create_record has been changed to change the hardcoded
@@ -245,6 +247,8 @@ class CDSRecordDumpLoader:
 
                 return document
             except IlsValidationError as e:
+                click.secho("Field: {}".format(e.errors[0].res['field']),
+                            fg='red')
                 click.secho(e.original_exception.message, fg='red')
                 # TODO uncomment when data cleaner - needed for testing on dev
                 # raise e
