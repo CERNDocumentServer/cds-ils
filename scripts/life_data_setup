@@ -1,18 +1,20 @@
-# Copyright (C) 2019 CERN.
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2019-2020 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
-# prepare the db
-pipenv run ils db init
-pipenv run ils db create
-pipenv run ils index destroy --force --yes-i-know
-pipenv run ils index init --force
-pipenv run cds-ils fixtures pages
-pipenv run cds-ils fixtures location
-pipenv run cds-ils fixtures demo-patrons
+invenio db init
+invenio db create
+invenio index destroy --force --yes-i-know
+invenio index init --force
+invenio fixtures pages
+invenio fixtures location
+invenio fixtures demo-patrons
 
 # This part requires mounted EOS volume or access to the files
-# pipenv cds-ils migration internal-locations /Volumes/cds/test/books/migration/records/tmp/libraries.json
-# pipenv cds-ils migration documents /Volumes/cds/test/books/migration/records/tmp/demo-books_0.json
-# pipenv cds-ils migration items /Volumes/cds/test/books/migration/records/tmp/items_0.json
+# invenio migration internal-locations /Volumes/cds/test/books/migration/records/tmp/libraries.json
+# invenio migration documents /Volumes/cds/test/books/migration/records/tmp/demo-books_0.json
+# invenio migration items /Volumes/cds/test/books/migration/records/tmp/items_0.json

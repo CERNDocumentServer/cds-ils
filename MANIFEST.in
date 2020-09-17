@@ -9,7 +9,7 @@
 #
 #  git init  # if not already done
 #  git add -A
-#  pipenv run check-manifest -u  # to install run "pipenv install --dev"
+#  check-manifest -u  # to install run "pipenv install --dev"
 #  # please sort the lines in this file after running the commands
 
 # Check manifest will not automatically add these two files:
@@ -19,13 +19,10 @@ include .editorconfig
 include .tx/config
 include *.rst
 include *.sh
+include *.txt
 include *.yml
 include babel.ini
-include Dockerfile
-include Dockerfile.base
 include LICENSE
-include Pipfile
-include Pipfile.lock
 include pytest.ini
 include scripts/bootstrap
 include scripts/console

@@ -102,6 +102,7 @@ setup(
             "cds_ils.patrons.permissions:retrieve_patron_loans_access_action"
         ],
     },
+    extras_require=extras_require,
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,

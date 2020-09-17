@@ -7,11 +7,6 @@
 Installation
 ============
 
-First you need to install
-`pipenv <https://docs.pipenv.org/install/#installing-pipenv>`_, it will handle
-the virtual environment creation for the project in order to sandbox our Python
-environment, as well as manage the dependency installation, among other things.
-
 Start all dependent services using docker-compose (this will start PostgreSQL,
 Elasticsearch 6, RabbitMQ and Redis):
 
@@ -54,7 +49,7 @@ If the setup scripts fails because of missing vocabularies:
 .. code-block:: console
 
     $ cd <your-virtualenv-path>/invenio-app-ils/invenio_app_ils
-    $ pipenv run ils setup --verbose
+    $ invenio setup --verbose
 
 
 Covers
@@ -114,7 +109,7 @@ You can build the documentation with:
 
 .. code-block:: console
 
-    $ pipenv run build_sphinx
+    $ sphinx-build
 
 Production environment
 ----------------------

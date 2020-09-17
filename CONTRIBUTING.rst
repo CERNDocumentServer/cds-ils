@@ -68,14 +68,12 @@ Ready to contribute? Here's how to set up `cds-ils` for local development.
 
       $ git clone git@github.com:your_name_here/cds-ils.git
 
-3. Install your local copy. Assuming you have
-   `pipenv <https://docs.pipenv.org/install/#installing-pipenv>`_, installed, this is how you
-   set up your fork for local development:
+3. Install your local copy. Create a Python virtualenv and then install:
 
    .. code-block:: console
 
       $ cd cds-ils/
-      $ pipenv run install -e .[all]
+      $ pip install -e .[all]
 
 4. Create a branch for local development:
 
