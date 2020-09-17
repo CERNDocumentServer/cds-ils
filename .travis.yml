@@ -31,9 +31,6 @@ env:
   global:
     - ES7_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.3.0-linux-x86_64.tar.gz"
     - ES_HOST=127.0.0.1
-    # Force pipenv to create a new virtualenv to bypass travis virtualenv.
-    - PIPENV_IGNORE_VIRTUALENVS=1
-    - PIPENV_PYUP_API_KEY=""
     # Needed after release of v50.0.0 of setuptools (Setuptools overrides the stdlib distutils on import) [temporary solution]
     - SETUPTOOLS_USE_DISTUTILS="stdlib"
 
@@ -47,8 +44,6 @@ before_install:
   - "sleep 20"
   - "nvm install 12; nvm use 12"
   - "travis_retry pip install --upgrade pip setuptools py"
-  - "travis_retry pip uninstall pipenv -y"
-  - "travis_retry pip install pipenv==2018.11.26"
   - "travis_retry pip install twine wheel coveralls"
 
 install:
