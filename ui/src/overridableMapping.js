@@ -1,4 +1,8 @@
 import { DeliveryIcon } from './overridden/backoffice/DeliveryIcon/DeliveryIcon';
+import {
+  PatronMetadata,
+  PatronMetadataActionMenuItem,
+} from './overridden/backoffice/PatronMetadata/PatronMetadata';
 import { Footer } from './overridden/components/Footer/Footer';
 import {
   Logo,
@@ -14,6 +18,8 @@ import {
 import { Slogan } from './overridden/frontsite/Home/Slogan';
 
 export const overriddenCmps = {
+  'Backoffice.PatronDetails.Metadata': PatronMetadata,
+  'Backoffice.PatronDetails.Metadata.ActionMenuItem': PatronMetadataActionMenuItem,
   'Home.Headline': HomeHeadline,
   'Home.Headline.slogan': Slogan,
   'Home.content': HomeContent,
