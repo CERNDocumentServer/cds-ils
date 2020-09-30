@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2019 CERN.
+# Copyright (C) 2019-2020 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
@@ -11,4 +11,4 @@ This file is imported by ``cds_ils.__init__``,
 and parsed by ``setup.py``.
 """
 
-__version__ = "1.0.0a10"
+__version__ = "1.0.0a11"
