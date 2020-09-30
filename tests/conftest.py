@@ -55,6 +55,7 @@ def app_config(app_config):
         "APP_ALLOWED_HOSTS": "localhost",
         "CELERY_TASK_ALWAYS_EAGER": True,
         "CDS_ILS_LITERATURE_UPDATE_COVERS": False,
+        "EXTEND_LOANS_LOCATION_UPDATED": False,
         "JSONSCHEMAS_SCHEMAS": [
             "acquisition",
             "document_requests",

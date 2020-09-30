@@ -17,11 +17,9 @@ export const Footer = ({ ...props }) => {
             <Grid.Column>
               <Header as="h4" content="CERN Library" />
               <p>
-                Open 24 hours a day <br />
-                every day of the year <br />
-                <br />
-                Staffed from 8.30 to 18.00 <br />
-                Monday-Friday
+                <Link to={FrontSiteRoutes.openingHours}>
+                  Opening hours and holidays
+                </Link>
               </p>
             </Grid.Column>
             <Grid.Column>
@@ -34,7 +32,7 @@ export const Footer = ({ ...props }) => {
                 </List.Item>
                 <List.Item>
                   <a
-                    href=" https://library.web.cern.ch "
+                    href="https://library.web.cern.ch"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
