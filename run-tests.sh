@@ -6,8 +6,6 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
-pydocstyle cds_ils tests docs && \
-isort cds_ils tests --check --diff && \
-check-manifest --ignore ".travis-*,docs/_build*" && \
-sphinx-build -qnNW docs docs/_build/html && \
-pytest tests/
+python -m check_manifest --ignore ".travis-*" && \
+python -m sphinx.cmd.build -qnNW docs docs/_build/html && \
+python -m pytest

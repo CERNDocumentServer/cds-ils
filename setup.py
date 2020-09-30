@@ -17,12 +17,12 @@ history = open("CHANGES.rst").read()
 tests_require = [
     "Sphinx>=3.1.1",
     "mock>=2.0.0",
-    "pytest-invenio>=1.3.2,<1.4.0",
+    "pytest-invenio>=1.4.0",
     "pytest-mock>=1.6.0",
     "pytest-random-order>=0.5.4",
 ]
 
-setup_requires = ["Babel>=2.6.0", "pytest-runner>=3.0.0,<5"]
+setup_requires = ["Babel>=2.8.0"]
 
 extras_require = {"docs": ["Sphinx>=1.5.1"], "tests": tests_require}
 

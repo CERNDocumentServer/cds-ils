@@ -45,14 +45,14 @@ def save_record(record, cover_metadata=None):
     Series = current_app_ils.series_record_cls
     is_series = schema.endswith(Series._schema)
 
+    assert is_document or is_series
+
     if is_document:
         record = Document.get_record_by_pid(record["pid"])
         indexer = current_app_ils.document_indexer
     elif is_series:
         record = Series.get_record_by_pid(record["pid"])
         indexer = current_app_ils.series_indexer
-    else:
-        return
 
     if cover_metadata:
         record["cover_metadata"] = cover_metadata
@@ -88,15 +88,15 @@ def pick_identifier_with_cover_task(record):
 
     # no previous cover or not valid, revalidate all identifiers
     for value in issn_list:
-        cover_metadata = {"ISSN": value}
-        if is_valid_cover(cover_metadata):
-            save_record(record, cover_metadata)
+        new_cover_metadata = {"ISSN": value}
+        if is_valid_cover(new_cover_metadata):
+            save_record(record, new_cover_metadata)
             return
 
     for value in isbn_list:
-        cover_metadata = {"ISBN": value}
-        if is_valid_cover(cover_metadata):
-            save_record(record, cover_metadata)
+        new_cover_metadata = {"ISBN": value}
+        if is_valid_cover(new_cover_metadata):
+            save_record(record, new_cover_metadata)
             return
 
     # previous cover, but no valid identifiers, clean it
