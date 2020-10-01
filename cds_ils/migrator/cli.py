@@ -7,10 +7,11 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator CLI."""
+import logging
+from logging import FileHandler
 
 import click
 from flask.cli import with_appcontext
-from invenio_db import db
 
 from cds_ils.migrator.api import commit, import_documents_from_dump, \
     import_documents_from_record_file, import_internal_locations_from_json, \
@@ -23,6 +24,12 @@ from cds_ils.migrator.api import commit, import_documents_from_dump, \
 @click.group()
 def migration():
     """CDS-ILS migrator commands."""
+    document_handler = FileHandler("documents.log")
+    migrated = FileHandler("documents_migrated.log")
+    b = logging.getLogger("documents")
+    c = logging.getLogger("migrated_documents")
+    b.addHandler(document_handler)
+    c.addHandler(migrated)
 
 
 @migration.command()
@@ -47,17 +54,18 @@ def migration():
 @with_appcontext
 def documents(sources, source_type, include, skip_indexing):
     """Migrate documents from CDS legacy."""
-    with commit():
-        if source_type == "migrator-kit":
-            import_documents_from_record_file(sources, include)
-        else:
-            import_documents_from_dump(
-                sources=sources,
-                source_type=source_type,
-                eager=True,
-                include=include,
-                skip_indexing=skip_indexing,
-            )
+    if source_type == "migrator-kit":
+        import_documents_from_record_file(sources, include)
+    else:
+        import_documents_from_dump(
+            sources=sources,
+            source_type=source_type,
+            eager=True,
+            include=include,
+        )
+    # We don't get the record back from _loadrecord so re-index all documents
+    if not skip_indexing:
+        reindex_pidtype("docid")
 
 
 @migration.command()
@@ -127,7 +135,6 @@ def borrowers(source):
 @with_appcontext
 def loans(source):
     """Migrate documents from CDS legacy."""
-
     import_loans_from_json(source)
     reindex_pidtype("loanid")
 

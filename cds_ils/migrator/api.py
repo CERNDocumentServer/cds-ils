@@ -9,6 +9,7 @@
 """CDS-ILS migrator API."""
 
 import json
+import logging
 import uuid
 from contextlib import contextmanager
 
@@ -19,6 +20,7 @@ from flask import current_app
 from invenio_app_ils.circulation.api import IlsCirculationLoanIdProvider
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
+from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.ill.api import Library, LibraryIdProvider
 from invenio_app_ils.internal_locations.api import InternalLocation, \
     InternalLocationIdProvider
@@ -49,6 +51,7 @@ from cds_ils.migrator.utils import clean_item_record
 from cds_ils.patrons.api import Patron
 
 lt_es7 = ES_VERSION[0] < 7
+migrated_logger = logging.getLogger("migrated_documents")
 
 
 @contextmanager
@@ -170,9 +173,7 @@ def import_documents_from_record_file(sources, include):
     bulk_index_records(records)
 
 
-def import_documents_from_dump(
-    sources, source_type, eager, include, skip_indexing
-):
+def import_documents_from_dump(sources, source_type, eager, include):
     """Load records."""
     include = include if include is None else include.split(",")
     for idx, source in enumerate(sources, 1):
@@ -186,10 +187,26 @@ def import_documents_from_dump(
             for item in records:
                 click.echo('Processing document "{}"...'.format(item["recid"]))
                 if include is None or str(item["recid"]) in include:
-                    _loadrecord(item, source_type, eager=eager)
-    # We don't get the record back from _loadrecord so re-index all documents
-    if not skip_indexing:
-        reindex_pidtype("docid")
+                    try:
+                        _loadrecord(item, source_type, eager=eager)
+                        migrated_logger.warning(
+                            "#RECID {0}: OK".format(item["recid"])
+                        )
+                    except IlsValidationError as e:
+                        document_logger = logging.getLogger("documents")
+                        document_logger.error(
+                            "@RECID: {0} FATAL: {1}".format(
+                                item["recid"],
+                                str(e.original_exception.message),
+                            )
+                        )
+                    except Exception as e:
+                        document_logger = logging.getLogger("documents")
+                        document_logger.error(
+                            "@RECID: {0} ERROR: {1}".format(
+                                item["recid"], str(e)
+                            )
+                        )
 
 
 def import_internal_locations_from_json(
@@ -285,7 +302,7 @@ def import_items_from_json(dump_file, include, rectype="item"):
                 try:
                     # without this script is very slow
                     db.session.commit()
-                except:
+                except Exception:
                     db.session.rollback()
 
 
@@ -418,7 +435,7 @@ def import_loans_from_json(dump_file):
             try:
                 # without this script is very slow
                 db.session.commit()
-            except:
+            except Exception:
                 db.session.rollback()
     return loans
 

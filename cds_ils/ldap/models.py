@@ -17,30 +17,30 @@ from sqlalchemy import Enum
 class Agent(enum.Enum):
     """An agent performing an action."""
 
-    CLI = 'CLI'
+    CLI = "CLI"
     """The command line utility."""
 
-    CELERY = 'CELERY'
+    CELERY = "CELERY"
     """The system, from a scheduled task."""
 
 
 class TaskStatus(enum.Enum):
     """The status of a task."""
 
-    RUNNING = 'RUNNING'
+    RUNNING = "RUNNING"
     """The task is currently running."""
 
-    SUCCEEDED = 'SUCCEEDED'
+    SUCCEEDED = "SUCCEEDED"
     """The task has successfully completed its execution."""
 
-    FAILED = 'FAILED'
+    FAILED = "FAILED"
     """The task was aborted due to an error."""
 
 
 class LdapSynchronizationLog(db.Model):
     """Store the ldap synchronization task history."""
 
-    __tablename__ = 'ldap_sync'
+    __tablename__ = "ldap_sync"
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -50,12 +50,14 @@ class LdapSynchronizationLog(db.Model):
     task_id = db.Column(db.String, nullable=True)
     """The task identifier, in case of a celery task."""
 
-    status = db.Column(Enum(TaskStatus), nullable=False,
-                       default=TaskStatus.RUNNING)
+    status = db.Column(
+        Enum(TaskStatus), nullable=False, default=TaskStatus.RUNNING
+    )
     """The current status of the task."""
 
-    start_time = db.Column(db.DateTime, nullable=False,
-                           default=lambda: datetime.now())
+    start_time = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now()
+    )
     """Task start time."""
 
     end_time = db.Column(db.DateTime, nullable=True)
@@ -87,25 +89,29 @@ class LdapSynchronizationLog(db.Model):
     @classmethod
     def create_cli(cls):
         """Create a new log entry for a task started from the command line."""
-        return cls.__create(dict(
-            agent=Agent.CLI
-        ))
+        return cls.__create(dict(agent=Agent.CLI))
 
     @classmethod
     def create_celery(cls, task_id):
         """Create a new log entry for a task triggered by cron."""
-        return cls.__create(dict(
-            agent=Agent.CELERY,
-            task_id=task_id,
-        ))
+        return cls.__create(
+            dict(
+                agent=Agent.CELERY,
+                task_id=task_id,
+            )
+        )
 
     def is_running(self):
         """Check if the task is currently running."""
         return self.status == TaskStatus.RUNNING
 
-    def set_succeeded(self,
-                      ldap_fetch_count, ils_update_count,
-                      ils_deletion_count, ils_insertion_count):
+    def set_succeeded(
+        self,
+        ldap_fetch_count,
+        ils_update_count,
+        ils_deletion_count,
+        ils_insertion_count,
+    ):
         """Mark this task as complete and log output."""
         assert self.is_running()
         self.status = TaskStatus.SUCCEEDED
@@ -121,5 +127,5 @@ class LdapSynchronizationLog(db.Model):
         assert self.is_running()
         self.status = TaskStatus.FAILED
         self.end_time = datetime.now()
-        self.message = '%s: %s' % (type(exception).__name__, str(exception))
+        self.message = "%s: %s" % (type(exception).__name__, str(exception))
         db.session.commit()

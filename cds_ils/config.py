@@ -183,14 +183,18 @@ APP_ALLOWED_HOSTS = [
     os.environ.get("HOSTNAME", ""),  # fix disallowed host error during /ping
 ]
 
-APP_DEFAULT_SECURE_HEADERS['content_security_policy'] = {
-    'default-src': ["'self'"],
-    'script-src': ["'self'"],
-    'object-src': ["'self'"],
-    'img-src': ["'self'"],
-    'style-src': ["'self'"],
-    'font-src': ["'self'", "data:", "https://fonts.gstatic.com",
-                 "https://fonts.googleapis.com"],
+APP_DEFAULT_SECURE_HEADERS["content_security_policy"] = {
+    "default-src": ["'self'"],
+    "script-src": ["'self'"],
+    "object-src": ["'self'"],
+    "img-src": ["'self'"],
+    "style-src": ["'self'"],
+    "font-src": [
+        "'self'",
+        "data:",
+        "https://fonts.gstatic.com",
+        "https://fonts.googleapis.com",
+    ],
 }
 
 
@@ -284,7 +288,8 @@ CERN_APP_OPENID_CREDENTIALS = dict(
         "OAUTH_CERN_OPENID_CLIENT_ID", "localhost-cds-ils"
     ),
     consumer_secret=os.environ.get(
-        "OAUTH_CERN_OPENID_CLIENT_SECRET", "84fc8be1-12a3-47f7-891e-ba01f158559e"
+        "OAUTH_CERN_OPENID_CLIENT_SECRET",
+        "84fc8be1-12a3-47f7-891e-ba01f158559e",
     ),
 )
 USERPROFILES_EXTEND_SECURITY_FORMS = True
@@ -340,9 +345,7 @@ ILS_LITERATURE_COVER_URLS_BUILDER = build_cover_urls
 # Namespaces for fields added to the metadata schema
 ILS_RECORDS_METADATA_NAMESPACES = {
     "document": {
-        "unit": {
-            "@context": "https://cern.ch/unit/terms"
-        },
+        "unit": {"@context": "https://cern.ch/unit/terms"},
         "standard_review": {
             "@context": "https://cern.ch/standard_review/terms"
         },

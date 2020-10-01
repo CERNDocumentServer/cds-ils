@@ -70,7 +70,7 @@ def location():
         "pid": RecordIdProviderV2.create().pid.pid_value,
         "name": "CERN Central Library",
         "address": "Rue de Meyrin",
-        "email": "library@cern.ch"
+        "email": "library@cern.ch",
     }
     record = Location.create(location)
     minter(LOCATION_PID_TYPE, "pid", record)
@@ -109,27 +109,17 @@ def demo_patrons():
     run_command("roles create librarian")
 
     # Create users
-    run_command(
-        "users create patron1@test.ch -a --password=123456"
-    )  # ID 1
+    run_command("users create patron1@test.ch -a --password=123456")  # ID 1
     create_userprofile_for("patron1@test.ch", "patron1", "Yannic Vilma")
-    run_command(
-        "users create patron2@test.ch -a --password=123456"
-    )  # ID 2
+    run_command("users create patron2@test.ch -a --password=123456")  # ID 2
     create_userprofile_for("patron2@test.ch", "patron2", "Diana Adi")
     run_command("users create admin@test.ch -a --password=123456")  # ID 3
     create_userprofile_for("admin@test.ch", "admin", "Zeki Ryoichi")
-    run_command(
-        "users create librarian@test.ch -a --password=123456"
-    )  # ID 4
+    run_command("users create librarian@test.ch -a --password=123456")  # ID 4
     create_userprofile_for("librarian@test.ch", "librarian", "Hector Nabu")
-    run_command(
-        "users create patron3@test.ch -a --password=123456"
-    )  # ID 5
+    run_command("users create patron3@test.ch -a --password=123456")  # ID 5
     create_userprofile_for("patron3@test.ch", "patron3", "Medrod Tara")
-    run_command(
-        "users create patron4@test.ch -a --password=123456"
-    )  # ID 6
+    run_command("users create patron4@test.ch -a --password=123456")  # ID 6
     create_userprofile_for("patron4@test.ch", "patron4", "Devi Cupid")
 
     # Assign roles
@@ -156,7 +146,11 @@ def vocabularies():
 
     vocabularies_dir = os.path.join(
         # TODO change the path for cds-ils specific
-        os.path.realpath("."), "invenio_app_ils", "vocabularies", "data")
+        os.path.realpath("."),
+        "invenio_app_ils",
+        "vocabularies",
+        "data",
+    )
     json_files = " ".join(
         os.path.join(vocabularies_dir, name)
         for name in os.listdir(vocabularies_dir)
