@@ -241,6 +241,7 @@ except Exception:
 ###############################################################################
 # OAuth
 ###############################################################################
+OAUTH_REMOTE_APP_NAME = "cern_openid"
 OAUTH_REMOTE_REST_APP = copy.deepcopy(cern_openid.REMOTE_REST_APP)
 OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
     "OAUTH_CERN_OPENID_LOGOUT_URL",
