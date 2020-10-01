@@ -17,10 +17,11 @@ from invenio_accounts.models import User
 from invenio_app_ils.anonymization import anonymize_patron_data
 from invenio_app_ils.circulation.tasks import send_active_loans_mail
 from invenio_db import db
-from invenio_oauthclient.contrib.cern_openid import find_remote_by_client_id
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
 from sqlalchemy.orm.exc import NoResultFound
+
+from cds_ils.config import OAUTH_REMOTE_APP_NAME
 
 
 class LdapClient(object):
@@ -151,13 +152,12 @@ class LdapUserImporter:
         self.client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
             "consumer_key"
         ]
-        self.remote = find_remote_by_client_id(self.client_id)
 
     def import_user_identity(self, user_id, ldap_user):
         """Return new user identity entry."""
         return {
             "id": ldap_user["uidNumber"][0].decode("utf8"),
-            "method":  self.remote.name,
+            "method":  OAUTH_REMOTE_APP_NAME,
             "id_user": user_id,
         }
 

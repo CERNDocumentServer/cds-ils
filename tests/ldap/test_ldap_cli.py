@@ -12,6 +12,7 @@ from invenio_accounts.models import User
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
 
+from cds_ils.config import OAUTH_REMOTE_APP_NAME
 from cds_ils.ldap.api import check_user_for_update, delete_user, \
     import_ldap_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
@@ -69,7 +70,7 @@ def test_import_ldap_users(app):
         UserIdentity.id == ldap_users[0]["uidNumber"][0].decode("utf8")
     ).one()
     assert user_identity
-    assert user_identity.method == "cern_openid"
+    assert user_identity.method == OAUTH_REMOTE_APP_NAME
     assert RemoteAccount.query.filter(RemoteAccount.user_id == user.id).one()
 
 
