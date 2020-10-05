@@ -50,7 +50,6 @@ from cds_ils.migrator.records import CDSRecordDumpLoader
 from cds_ils.migrator.utils import clean_item_record
 from cds_ils.patrons.api import Patron
 
-lt_es7 = ES_VERSION[0] < 7
 migrated_logger = logging.getLogger("migrated_documents")
 
 
@@ -347,6 +346,12 @@ def import_loans_from_json(dump_file):
     """Imports loan objects from JSON."""
     dump_file = dump_file[0]
     loans = []
+
+    (
+        default_location_pid_value,
+        _,
+    ) = current_app_ils.get_default_location_pid
+
     with click.progressbar(json.load(dump_file)) as bar:
         for record in bar:
             click.echo('Importing loan "{0}"...'.format(record["legacy_id"]))
@@ -386,10 +391,6 @@ def import_loans_from_json(dump_file):
                 )
 
             # create a loan
-            (
-                default_location_pid_value,
-                _,
-            ) = current_app_ils.get_default_location_pid
 
             if record["status"] == "on loan":
                 loan_dict = dict(
@@ -397,10 +398,7 @@ def import_loans_from_json(dump_file):
                     transaction_location_pid=default_location_pid_value,
                     transaction_user_pid=str(SystemAgent.id),
                     document_pid=document_pid,
-                    item_pid={
-                        "type": ITEM_PID_TYPE,
-                        "value": item.pid.pid_value,
-                    },
+                    item_pid=item.pid,
                     start_date=record["start_date"],
                     end_date=record["end_date"],
                     state="ITEM_ON_LOAN",
@@ -413,10 +411,7 @@ def import_loans_from_json(dump_file):
                     transaction_user_pid=str(SystemAgent.id),
                     transaction_date=record["returned_on"],
                     document_pid=document_pid,
-                    item_pid={
-                        "type": ITEM_PID_TYPE,
-                        "value": item.pid.pid_value,
-                    },
+                    item_pid=item.pid,
                     start_date=record["start_date"],
                     end_date=record["returned_on"],
                     state="ITEM_RETURNED",
@@ -449,7 +444,7 @@ def get_item_by_barcode(barcode):
         ],
     )
     result = search.execute()
-    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    hits_total = result.hits.total
     if not result.hits or hits_total < 1:
         click.secho("no item found with barcode {}".format(barcode), fg="red")
         raise ItemMigrationError(
@@ -472,7 +467,7 @@ def get_user_by_person_id(person_id):
         ],
     )
     results = search.execute()
-    hits_total = results.hits.total if lt_es7 else results.hits.total.value
+    hits_total = results.hits.total
     if not results.hits or hits_total < 1:
         click.secho(
             "no user found with person_id {}".format(person_id), fg="red"
@@ -495,7 +490,7 @@ def get_user_by_legacy_id(legacy_id):
         ],
     )
     results = search.execute()
-    hits_total = results.hits.total if lt_es7 else results.hits.total.value
+    hits_total = results.hits.total
     if not results.hits or hits_total < 1:
         click.secho(
             "no user found with legacy_id {}".format(legacy_id), fg="red"
@@ -515,7 +510,7 @@ def get_internal_location_by_legacy_recid(legacy_recid):
         "bool", filter=[Q("term", legacy_id=legacy_recid)]
     )
     result = search.execute()
-    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    hits_total = result.hits.total
     if not result.hits or hits_total < 1:
         click.secho(
             "no internal location found with legacy id {}".format(
@@ -546,7 +541,7 @@ def get_multipart_by_legacy_recid(recid):
         ],
     )
     result = search.execute()
-    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    hits_total = result.hits.total
     if not result.hits or hits_total < 1:
         click.secho(
             "no multipart found with legacy recid {}".format(recid), fg="red"
@@ -568,7 +563,7 @@ def get_document_by_legacy_recid(legacy_recid):
         "bool", filter=[Q("term", legacy_recid=legacy_recid)]
     )
     result = search.execute()
-    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    hits_total = result.hits.total
     if not result.hits or hits_total < 1:
         click.secho(
             "no document found with legacy recid {}".format(legacy_recid),

@@ -19,9 +19,9 @@ invenio fixtures demo-patrons
 # invenio migration internal-locations /Volumes/cds/test/books/migration/records/tmp/libraries.json
 # invenio migration documents /Volumes/cds/test/books/migration/records/tmp/demo-books_0.json
 # invenio migration items /Volumes/cds/test/books/migration/records/tmp/items_0.json
-# pipenv cds-ils migration documents /eos/media/cds/test/books/migration/records/tmp/demo-books_0.json
-# pipenv cds-ils migration internal-locations /eos/media/cds/test/books/migration/records/tmp/libraries.json
-# pipenv cds-ils migration items /eos/media/cds/test/books/migration/records/tmp/items_0.json
-# pipenv cds-ils migration borrowers /eos/media/cds/test/books/migration/records/tmp/active_users.json
+# cds-ils migration documents /eos/media/cds/test/books/migration/records/tmp/demo-books_0.json
+# cds-ils migration internal-locations /eos/media/cds/test/books/migration/records/tmp/libraries.json
+# cds-ils migration items /eos/media/cds/test/books/migration/records/tmp/items_0.json
+# cds-ils migration borrowers /eos/media/cds/test/books/migration/records/tmp/active_users.json
 
 

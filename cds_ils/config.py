@@ -289,7 +289,7 @@ CERN_APP_OPENID_CREDENTIALS = dict(
     ),
     consumer_secret=os.environ.get(
         "OAUTH_CERN_OPENID_CLIENT_SECRET",
-        "84fc8be1-12a3-47f7-891e-ba01f158559e",
+        "<change_me>",
     ),
 )
 USERPROFILES_EXTEND_SECURITY_FORMS = True
