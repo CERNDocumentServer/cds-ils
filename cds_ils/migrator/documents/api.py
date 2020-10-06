@@ -93,7 +93,7 @@ def get_document_by_legacy_recid(legacy_recid):
     )
     result = search.execute()
     hits_total = result.hits.total.value
-    if not result.hits or hits_total < 1:
+    if hits_total < 1:
         click.secho(
             "no document found with legacy recid {}".format(legacy_recid),
             fg="red",
@@ -122,12 +122,10 @@ def get_all_documents_with_files():
     search = DocumentSearch().filter(
         "bool",
         filter=[
-            Q("term", _migration__eitems_has_files=True),
+            Q("term", _migration__has_files=True),
         ],
     )
-    total = search.count()
-    search = search[0:total]
-    return search.execute()
+    return search
 
 
 def get_documents_with_proxy_eitems():
@@ -138,9 +136,7 @@ def get_documents_with_proxy_eitems():
             Q("term", _migration__eitems_has_proxy=True),
         ],
     )
-    total = search.count()
-    search = search[0:total]
-    return search.execute()
+    return search
 
 
 def get_documents_with_ebl_eitems():
@@ -151,9 +147,7 @@ def get_documents_with_ebl_eitems():
             Q("term", _migration__eitems_has_ebl=True),
         ],
     )
-    total = search.count()
-    search = search[0:total]
-    return search.execute()
+    return search
 
 
 def get_documents_with_external_eitems():
@@ -164,6 +158,4 @@ def get_documents_with_external_eitems():
             Q("term", _migration__eitems_has_external=True),
         ],
     )
-    total = search.count()
-    search = search[0:total]
-    return search.execute()
+    return search
