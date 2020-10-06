@@ -25,9 +25,10 @@ from invenio_base.app import create_cli
 from invenio_circulation.api import Loan
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
+
 from cds_ils.migrator.records import CDSRecordDumpLoader
 
-migrated_logger = logging.getLogger("migrated_documents")
+migrated_logger = logging.getLogger("migrated_records")
 
 
 @contextmanager
@@ -122,5 +123,3 @@ def import_record(dump, model, pid_provider, legacy_id_key="legacy_recid"):
         dump, model, pid_provider, legacy_id_key
     )
     return record
-
-

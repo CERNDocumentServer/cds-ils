@@ -12,7 +12,6 @@ import json
 import logging
 
 import click
-from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.patrons.indexer import PatronIndexer
@@ -20,15 +19,10 @@ from invenio_app_ils.patrons.search import PatronsSearch
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount
 
-from cds_ils.migrator.errors import (
-    UserMigrationError,
-)
+from cds_ils.migrator.errors import UserMigrationError
 from cds_ils.patrons.api import Patron
 
-lt_es7 = ES_VERSION[0] < 7
-migrated_logger = logging.getLogger(
-                            "migrated_documents"
-                        )
+migrated_logger = logging.getLogger("migrated_records")
 
 
 def import_users_from_json(dump_file):
@@ -68,8 +62,6 @@ def import_users_from_json(dump_file):
         db.session.commit()
 
 
-
-
 def get_user_by_person_id(person_id):
     """Get ES object of the patron."""
     search = PatronsSearch().query(
@@ -79,7 +71,7 @@ def get_user_by_person_id(person_id):
         ],
     )
     results = search.execute()
-    hits_total = results.hits.total if lt_es7 else results.hits.total.value
+    hits_total = results.hits.total.value
     if not results.hits or hits_total < 1:
         click.secho(
             "no user found with person_id {}".format(person_id), fg="red"
@@ -102,7 +94,7 @@ def get_user_by_legacy_id(legacy_id):
         ],
     )
     results = search.execute()
-    hits_total = results.hits.total if lt_es7 else results.hits.total.value
+    hits_total = results.hits.total.value
     if not results.hits or hits_total < 1:
         click.secho(
             "no user found with legacy_id {}".format(legacy_id), fg="red"
@@ -114,4 +106,3 @@ def get_user_by_legacy_id(legacy_id):
         )
     else:
         return results.hits[0]
-

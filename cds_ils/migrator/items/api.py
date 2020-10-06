@@ -12,28 +12,20 @@ import json
 import logging
 
 import click
-from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
-
 from invenio_app_ils.items.api import Item
 from invenio_app_ils.items.search import ItemSearch
-
 from invenio_db import db
 
-from cds_ils.migrator.api import model_provider_by_rectype, import_record
+from cds_ils.migrator.api import import_record, model_provider_by_rectype
 from cds_ils.migrator.documents.api import get_document_by_legacy_recid
-from cds_ils.migrator.errors import (
-    DocumentMigrationError,
-    ItemMigrationError,
-)
+from cds_ils.migrator.errors import DocumentMigrationError, ItemMigrationError
 from cds_ils.migrator.internal_locations.api import \
     get_internal_location_by_legacy_recid
 from cds_ils.migrator.utils import clean_item_record
 
-lt_es7 = ES_VERSION[0] < 7
-migrated_logger = logging.getLogger(
-                            "migrated_documents"
-                        )
+migrated_logger = logging.getLogger("migrated_records")
+error_logger = logging.getLogger("records_errored")
 
 
 def import_items_from_json(dump_file, include, rectype="item"):
@@ -56,16 +48,30 @@ def import_items_from_json(dump_file, include, rectype="item"):
                 ).pid.pid_value
 
                 record["internal_location_pid"] = int_loc_pid_value
+
+                # find document
                 try:
                     record["document_pid"] = get_document_by_legacy_recid(
                         record["id_bibrec"]
                     ).pid.pid_value
                 except DocumentMigrationError:
+                    error_logger.error(
+                        "ITEM: {0} ERROR: Document {1} not found".format(
+                            record["barcode"], record["id_bibrec"]
+                        )
+                    )
                     continue
+
+                # clean the item JSON
                 try:
                     clean_item_record(record)
                 except ItemMigrationError as e:
                     click.secho(str(e), fg="red")
+                    error_logger.error(
+                        "ITEM: {0} ERROR: {1}".format(
+                            record["barcode"], str(e)
+                        )
+                    )
                     continue
                 try:
                     # check if the item already there
@@ -79,14 +85,21 @@ def import_items_from_json(dump_file, include, rectype="item"):
                         )
                         continue
                 except ItemMigrationError:
-                    record = import_record(
-                        record, model, provider, legacy_id_key="barcode"
-                    )
-                try:
-                    # without this script is very slow
-                    db.session.commit()
-                except Exception:
-                    db.session.rollback()
+                    try:
+                        import_record(
+                            record, model, provider, legacy_id_key="barcode"
+                        )
+                        db.session.commit()
+                        migrated_logger.warning(
+                            "ITEM: {0} OK".format(record["barcode"])
+                        )
+                    except Exception as e:
+                        error_logger.error(
+                            "ITEM: {0} ERROR: {1}".format(
+                                record["barcode"], str(e)
+                            )
+                        )
+                        db.session.rollback()
 
 
 def get_item_by_barcode(barcode):
@@ -98,7 +111,7 @@ def get_item_by_barcode(barcode):
         ],
     )
     result = search.execute()
-    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    hits_total = result.hits.total.value
     if not result.hits or hits_total < 1:
         click.secho("no item found with barcode {}".format(barcode), fg="red")
         raise ItemMigrationError(
@@ -110,5 +123,3 @@ def get_item_by_barcode(barcode):
         )
     else:
         return Item.get_record_by_pid(result.hits[0].pid)
-
-

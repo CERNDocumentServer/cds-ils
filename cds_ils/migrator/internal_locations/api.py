@@ -12,21 +12,16 @@ import json
 import logging
 
 import click
-from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from invenio_app_ils.internal_locations.api import InternalLocation
 from invenio_app_ils.internal_locations.search import InternalLocationSearch
-
 from invenio_app_ils.proxies import current_app_ils
 
-from cds_ils.migrator.api import model_provider_by_rectype, import_record, \
-    bulk_index_records
+from cds_ils.migrator.api import bulk_index_records, import_record, \
+    model_provider_by_rectype
 from cds_ils.migrator.errors import ItemMigrationError
 
-lt_es7 = ES_VERSION[0] < 7
-migrated_logger = logging.getLogger(
-                            "migrated_documents"
-                        )
+migrated_logger = logging.getLogger("migrated_documents")
 
 
 def import_internal_locations_from_json(
@@ -38,6 +33,12 @@ def import_internal_locations_from_json(
     library_model, library_provider = model_provider_by_rectype("library")
 
     include_ids = None if include is None else include.split(",")
+
+    (
+        location_pid_value,
+        _,
+    ) = current_app_ils.get_default_location_pid
+
     with click.progressbar(json.load(dump_file)) as bar:
         records = []
         for record in bar:
@@ -60,10 +61,7 @@ def import_internal_locations_from_json(
                     )
                     records.append(record)
                 else:
-                    (
-                        location_pid_value,
-                        _,
-                    ) = current_app_ils.get_default_location_pid
+
                     record["location_pid"] = location_pid_value
                     record = import_record(
                         record, model, provider, legacy_id_key="legacy_id"
@@ -79,7 +77,7 @@ def get_internal_location_by_legacy_recid(legacy_recid):
         "bool", filter=[Q("term", legacy_id=legacy_recid)]
     )
     result = search.execute()
-    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    hits_total = result.hits.total.value
     if not result.hits or hits_total < 1:
         click.secho(
             "no internal location found with legacy id {}".format(

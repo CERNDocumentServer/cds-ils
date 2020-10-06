@@ -50,7 +50,6 @@ class CDSRecordDump(RecordDump):
         super(self.__class__, self).__init__(
             data, source_type, latest_only, pid_fetchers, dojson_model
         )
-        cli_logger.info("\n=====#RECID# {0} INIT=====\n".format(data["recid"]))
 
     @property
     def collection_access(self):
@@ -246,7 +245,6 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
                 return record
         except IndexError as e:
             click.secho("Revision problem", fg="red")
-
 
     @classmethod
     @disable_timestamp

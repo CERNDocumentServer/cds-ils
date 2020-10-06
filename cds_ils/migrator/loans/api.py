@@ -12,42 +12,46 @@ import json
 import logging
 
 import click
-from elasticsearch import VERSION as ES_VERSION
 from invenio_app_ils.documents.api import Document
 from invenio_app_ils.items.api import ITEM_PID_TYPE
 from invenio_app_ils.patrons.api import SystemAgent
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
-from cds_ils.migrator.api import model_provider_by_rectype, import_record
-from cds_ils.migrator.errors import (
-    ItemMigrationError,
-    LoanMigrationError,
-)
+from cds_ils.migrator.api import import_record, model_provider_by_rectype
+from cds_ils.migrator.errors import ItemMigrationError, LoanMigrationError
 from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.patrons.api import get_user_by_legacy_id
 
-lt_es7 = ES_VERSION[0] < 7
-migrated_logger = logging.getLogger(
-                            "migrated_documents"
-                        )
+migrated_logger = logging.getLogger("migrated_records")
+records_logger = logging.getLogger("records_errored")
 
 
 def import_loans_from_json(dump_file):
     """Imports loan objects from JSON."""
     dump_file = dump_file[0]
     loans = []
+    (
+        default_location_pid_value,
+        _,
+    ) = current_app_ils.get_default_location_pid
     with click.progressbar(json.load(dump_file)) as bar:
         for record in bar:
             click.echo('Importing loan "{0}"...'.format(record["legacy_id"]))
             user = get_user_by_legacy_id(record["id_crcBORROWER"])
             if not user:
+                # user was deleted, fallback to the SystemAgent
                 patron_pid = SystemAgent.id
             else:
                 patron_pid = user.pid
             try:
                 item = get_item_by_barcode(record["item_barcode"])
             except ItemMigrationError:
+                records_logger.error(
+                    "LOAN: {0}, ERROR: barcode {1} not found.".format(
+                        record["legacy_id"], record["item_barcode"]
+                    )
+                )
                 continue
                 # Todo uncomment when more data
                 # raise LoanMigrationError(
@@ -59,6 +63,12 @@ def import_loans_from_json(dump_file):
             document_pid = item.get("document_pid")
             document = Document.get_record_by_pid(document_pid)
             if record["legacy_document_id"] is None:
+                records_logger.error(
+                    "LOAN: {0}, ERROR: document_legacy_recid {1} not found."
+                    .format(
+                        record["legacy_id"], record["legacy_document_id"]
+                    )
+                )
                 raise LoanMigrationError(
                     "no document id for loan {}".format(record["legacy_id"])
                 )
@@ -74,12 +84,7 @@ def import_loans_from_json(dump_file):
                     ),
                     fg="blue",
                 )
-
             # create a loan
-            (
-                default_location_pid_value,
-                _,
-            ) = current_app_ils.get_default_location_pid
 
             if record["status"] == "on loan":
                 loan_dict = dict(
@@ -120,11 +125,16 @@ def import_loans_from_json(dump_file):
             model, provider = model_provider_by_rectype("loan")
             try:
                 loan = import_record(loan_dict, model, provider)
-            except Exception as e:
-                raise e
-            try:
-                # without this script is very slow
                 db.session.commit()
-            except Exception:
+                migrated_logger.warning(
+                    "LOAN: {0} OK, new pid: {1}".format(
+                        record["legacy_id"], loan["pid"]
+                    )
+                )
+            except Exception as e:
                 db.session.rollback()
+                records_logger.error(
+                    "LOAN: {0} ERROR: {1}".format(record["legacy_id"], str(e))
+                )
+
     return loans

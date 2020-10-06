@@ -17,17 +17,13 @@ from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
-from invenio_app_ils.relations.api import (
-    MULTIPART_MONOGRAPH_RELATION,
-    SERIAL_RELATION,
-)
+from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
+    SERIAL_RELATION
 from invenio_app_ils.series.api import Series
 from invenio_app_ils.series.search import SeriesSearch
 
-from cds_ils.migrator.errors import (
-    DocumentMigrationError,
-    MultipartMigrationError,
-)
+from cds_ils.migrator.errors import DocumentMigrationError, \
+    MultipartMigrationError
 from cds_ils.migrator.relations.api import create_parent_child_relation
 
 lt_es7 = ES_VERSION[0] < 7
@@ -44,7 +40,7 @@ def get_multipart_by_legacy_recid(recid):
         ],
     )
     result = search.execute()
-    hits_total = result.hits.total if lt_es7 else result.hits.total.value
+    hits_total = result.hits.total.value
     if not result.hits or hits_total < 1:
         click.secho(
             "no multipart found with legacy recid {}".format(recid), fg="red"

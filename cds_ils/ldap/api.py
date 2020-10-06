@@ -157,7 +157,7 @@ class LdapUserImporter:
         """Return new user identity entry."""
         return {
             "id": ldap_user["uidNumber"][0].decode("utf8"),
-            "method":  OAUTH_REMOTE_APP_NAME,
+            "method": OAUTH_REMOTE_APP_NAME,
             "id_user": user_id,
         }
 
