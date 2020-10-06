@@ -148,6 +148,15 @@ def loans(source):
     reindex_pidtype("loanid")
 
 
+@migration.command()
+@click.argument("source", type=click.File("r"), nargs=-1)
+@with_appcontext
+def loan_requests(source):
+    """Migrate documents from CDS legacy."""
+    import_loans_from_json(source)
+    reindex_pidtype("loanid")
+
+
 @migration.group()
 def relations():
     """Migrate relations group."""

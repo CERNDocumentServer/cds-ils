@@ -13,7 +13,6 @@ import logging
 
 import click
 from invenio_app_ils.documents.api import Document
-from invenio_app_ils.items.api import ITEM_PID_TYPE
 from invenio_app_ils.patrons.api import SystemAgent
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
@@ -85,37 +84,50 @@ def import_loans_from_json(dump_file):
                     fg="blue",
                 )
             # create a loan
+            loan_dict = dict(
+                patron_pid=str(patron_pid),
+                transaction_location_pid=default_location_pid_value,
+                transaction_user_pid=str(SystemAgent.id),
+                document_pid=document_pid,
+                item_pid={
+                    "value": item.pid.pid_value,
+                    "type": item.pid.pid_type,
+                },
+            )
 
             if record["status"] == "on loan":
-                loan_dict = dict(
-                    patron_pid=str(patron_pid),
-                    transaction_location_pid=default_location_pid_value,
-                    transaction_user_pid=str(SystemAgent.id),
-                    document_pid=document_pid,
-                    item_pid={
-                        "type": ITEM_PID_TYPE,
-                        "value": item.pid.pid_value,
-                    },
-                    start_date=record["start_date"],
-                    end_date=record["end_date"],
-                    state="ITEM_ON_LOAN",
-                    transaction_date=record["start_date"],
+                loan_dict.update(
+                    dict(
+                        start_date=record["start_date"],
+                        end_date=record["end_date"],
+                        state="ITEM_ON_LOAN",
+                        transaction_date=record["start_date"],
+                    )
                 )
             elif record["status"] == "returned":
-                loan_dict = dict(
-                    patron_pid=str(patron_pid),
-                    transaction_location_pid=default_location_pid_value,
-                    transaction_user_pid=str(SystemAgent.id),
-                    transaction_date=record["returned_on"],
-                    document_pid=document_pid,
-                    item_pid={
-                        "type": ITEM_PID_TYPE,
-                        "value": item.pid.pid_value,
-                    },
-                    start_date=record["start_date"],
-                    end_date=record["returned_on"],
-                    state="ITEM_RETURNED",
+                loan_dict.update(
+                    dict(
+                        transaction_date=record["returned_on"],
+                        start_date=record["start_date"],
+                        end_date=record["returned_on"],
+                        state="ITEM_RETURNED",
+                    )
                 )
+            # loan request
+            elif (
+                record["status"] == "waiting" or record["status"] == "pending"
+            ):
+                loan_dict.update(
+                    dict(
+                        transaction_date=record["request_date"],
+                        request_start_date=record["period_of_interest_from"],
+                        request_expire_date=record["period_of_interest_to"],
+                        state="PENDING",
+                    )
+                )
+            # done loan requests became loans, and the rest we can ignore
+            elif record["status"] in ["proposed", "cancelled", "done"]:
+                continue
             else:
                 raise LoanMigrationError(
                     "Unkown loan state for record {0}: {1}".format(
@@ -124,7 +136,9 @@ def import_loans_from_json(dump_file):
                 )
             model, provider = model_provider_by_rectype("loan")
             try:
-                loan = import_record(loan_dict, model, provider)
+                loan = import_record(
+                    loan_dict, model, provider, legacy_id_key=None
+                )
                 db.session.commit()
                 migrated_logger.warning(
                     "LOAN: {0} OK, new pid: {1}".format(

@@ -21,6 +21,7 @@ from cds_dojson.marc21.utils import create_record
 from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
+from invenio_circulation.api import Loan
 from invenio_db import db
 from invenio_migrator.records import RecordDump, RecordDumpLoader
 from invenio_migrator.utils import disable_timestamp
@@ -181,6 +182,8 @@ class CDSRecordDumpLoader:
             object_uuid=record_uuid,
         )
         dump["pid"] = provider.pid.pid_value
+        if legacy_id_key is None:
+            legacy_id_key = "pid"
         try:
             record = model.create(dump, record_uuid)
             record.model.created = datetime.datetime.utcnow()
