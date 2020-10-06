@@ -21,13 +21,11 @@ from cds_dojson.marc21.utils import create_record
 from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
-from invenio_circulation.api import Loan
 from invenio_db import db
 from invenio_migrator.records import RecordDump, RecordDumpLoader
 from invenio_migrator.utils import disable_timestamp
 from invenio_pidstore.errors import PIDDoesNotExistError
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
-from invenio_records import Record
 
 from cds_ils.migrator.errors import LossyConversion
 from cds_ils.migrator.handlers import migration_exception_handler
@@ -216,9 +214,21 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
     """
 
     @classmethod
-    def create_files(cls, *args, **kwargs):
-        """Disable the files load."""
-        pass
+    def create_files(cls, record, files, existing_files):
+        """Dump files information instead of the file."""
+        record["_migration"]["files"] = []
+        for key, meta in files.items():
+            obj = cls.create_file(None, key, meta)
+            # remove not needed, ES cannot handle list of lists
+            del obj["recids_doctype"]
+            record["_migration"]["files"].append(obj)
+        if record["_migration"]["files"]:
+            record["_migration"]["has_files"] = True
+
+    @classmethod
+    def create_file(cls, bucket, key, file_versions):
+        """Return dict describing the latest file version."""
+        return file_versions[-1]
 
     @classmethod
     def create(cls, dump):
@@ -241,9 +251,13 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
         dump.prepare_files()
         # if we have a final revision - to remove when data cleaned.
         try:
-            # import ipdb;ipdb.set_trace()
             if dump.revisions[-1]:
                 record = cls.create_record(dump)
+
+                if dump.files:
+                    cls.create_files(record, dump.files, existing_files=None)
+                    record.commit()
+                    db.session.commit()
 
                 return record
         except IndexError as e:

@@ -51,3 +51,7 @@ class LoanMigrationError(CdsIlsMigrationException):
 
 class EItemMigrationError(CdsIlsMigrationException):
     """Raised for EItem migration errors."""
+
+
+class FileMigrationError(CdsIlsMigrationException):
+    """Raised for File migration errors."""

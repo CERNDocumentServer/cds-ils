@@ -51,9 +51,9 @@ def reindex_pidtype(pid_type):
     runner.invoke(
         cli,
         "index reindex --pid-type {} --yes-i-know".format(pid_type),
-        catch_exceptions=False,
+        catch_exceptions=True,
     )
-    runner.invoke(cli, "index run", catch_exceptions=False)
+    runner.invoke(cli, "index run", catch_exceptions=True)
     click.echo("Indexing completed!")
 
 

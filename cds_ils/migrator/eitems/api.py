@@ -7,11 +7,11 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator API."""
-
+import hashlib
 import io
+import logging
 import time
 import uuid
-from io import BytesIO
 
 import click
 import requests
@@ -25,7 +25,10 @@ from invenio_files_rest.models import Bucket, ObjectVersion
 from cds_ils.migrator.documents.api import get_all_documents_with_files, \
     get_documents_with_ebl_eitems, get_documents_with_external_eitems, \
     get_documents_with_proxy_eitems
-from cds_ils.migrator.errors import EItemMigrationError
+from cds_ils.migrator.errors import EItemMigrationError, FileMigrationError
+
+migrated_logger = logging.getLogger("migrated_records")
+records_logger = logging.getLogger("records_errored")
 
 
 def import_legacy_files(file_link):
@@ -33,16 +36,20 @@ def import_legacy_files(file_link):
     # needed to ignore the migrator in the legacy statistics
     download_request_headers = {"User-Agent": "CDS-ILS Migrator"}
 
-    return io.BytesIO(
-        requests.get(
-            file_link, stream=True, headers=download_request_headers
-        ).content
+    file_response = requests.get(
+        file_link, stream=True, headers=download_request_headers
     )
 
+    file_content_stream = io.BytesIO(file_response.content)
 
-def create_file(bucket, file_stream, filename):
+    return file_content_stream
+
+
+def create_file(bucket, file_stream, filename, dump_file_checksum):
     """Create file for given bucket."""
     file_record = ObjectVersion.create(bucket, filename, stream=file_stream)
+    assert file_record.file.checksum == "md5:{}".format(dump_file_checksum)
+
     db.session.add(file_record)
     db.session.commit()
     return file_record
@@ -77,37 +84,102 @@ def create_eitem(document_pid, open_access=True):
 
 
 def process_files_from_legacy():
-    """Process legacy file."""
-    results = get_all_documents_with_files()
-    click.echo(
-        "Found {} documents with files.".format(results.hits.total.value)
-    )
-    for hit in results:
+    r"""Process legacy file.
+
+    File dump object
+    {
+      "comment": null,
+      "status": "",
+      "version": 1,
+      "encoding": null,
+      "creation_date": "2014-08-15T16:27:10+00:00",
+      "bibdocid": 952822,
+      "mime": "application/pdf",
+      "full_name": "075030183X_TOC.pdf",
+      "superformat": ".pdf",
+      "recids_doctype": [
+        [
+          262151,
+          "Additional",
+          "075030183X_TOC.pdf"
+        ]
+      ],
+      "path": "/opt/cdsweb/var/data/files/g95/952822/content.pdf;1",
+      "size": 264367,
+      "license": {},
+      "modification_date": "2014-08-15T16:27:10+00:00",
+      "copyright": {},
+      "url": "http://cds.cern.ch/record/262151/files/075030183X_TOC.pdf",
+      "checksum": "a8b4bba8a2bbc6780cc7707387c4702f",
+      "description": "1. Table of contents",
+      "format": ".pdf",
+      "name": "075030183X_TOC",
+      "subformat": "",
+      "etag": "\"952822.pdf1\"",
+      "recid": 262151,
+      "flags": [],
+      "hidden": false,
+      "type": "Additional",
+      "full_path": "/opt/cdsweb/var/data/files/g95/952822/content.pdf;1"
+    }
+    """
+    search = get_all_documents_with_files()
+
+    click.echo("Found {} documents with files.".format(search.count()))
+    for hit in search.scan():
         # try not to kill legacy server
         time.sleep(3)
         # make sure the document is in DB not only ES
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
-        for file_link in document["_migration"]["eitems_file_links"]:
 
-            click.echo("File: {}".format(file_link))
-            eitem, bucket = create_eitem_with_bucket_for_document(
-                document["pid"]
+        try:
+            for file_dump in document["_migration"]["files"]:
+
+                # check if url migrated from MARC
+                url_in_marc = [
+                    item
+                    for item in document["_migration"]["eitems_file_links"]
+                    if item["value"] == file_dump["url"]
+                ]
+                if not url_in_marc:
+                    msg = (
+                        "DOCUMENT: {pid}: ERROR: File {file}"
+                        " found in the dump but not in MARC".format(
+                            pid=document.pid, file=file_dump["url"]
+                        )
+                    )
+                    raise FileMigrationError(msg)
+
+                click.echo("File: {}".format(file_dump["url"]))
+                eitem, bucket = create_eitem_with_bucket_for_document(
+                    document["pid"]
+                )
+
+                # get filename
+                file_name = file_dump["description"]
+                if not file_name:
+                    file_name = file_dump["full_name"]
+
+                file_stream = import_legacy_files(
+                    file_dump["url"]
+                )
+
+                file = create_file(bucket, file_stream, file_name,
+                                   file_dump["checksum"])
+                click.echo("Indexing...")
+                EItemIndexer().index(eitem)
+        except Exception as e:
+            msg = "DOCUMENT: {pid} CAN'T MIGRATE FILES ERROR: {error}".format(
+                pid=document["pid"], error=str(e)
             )
-
-            # get filename
-            file_name = file_link["description"]
-            if not file_name:
-                file_name = file_link.split("/")[-1]
-
-            file_stream = import_legacy_files(file_link["value"])
-
-            file = create_file(bucket, file_stream, file_name)
-            click.echo("Indexing...")
-            EItemIndexer().index(eitem)
+            click.secho(msg)
+            records_logger.error(msg)
+            continue
 
         # make sure the files are not imported twice by setting the flag
         document["_migration"]["eitems_has_files"] = False
+        document["_migration"]["has_files"] = False
         document.commit()
         db.session.commit()
         DocumentIndexer().index(document)
@@ -115,14 +187,12 @@ def process_files_from_legacy():
 
 def migrate_external_links():
     """Migrate external links from documents."""
-    results = get_documents_with_external_eitems()
+    search = get_documents_with_external_eitems()
     click.echo(
-        "Found {} documents with external links.".format(
-            results.hits.total.value
-        )
+        "Found {} documents with external links.".format(search.count())
     )
 
-    for hit in results:
+    for hit in search.scan():
         # make sure the document is in DB not only ES
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
@@ -142,19 +212,14 @@ def migrate_external_links():
 
 def migrate_ezproxy_links():
     """Migrate external links from documents."""
-    results = get_documents_with_proxy_eitems()
-    click.echo(
-        "Found {} documents with ezproxy links.".format(
-            results.hits.total.value
-        )
-    )
-    for hit in results:
+    search = get_documents_with_proxy_eitems()
+    click.echo("Found {} documents with ezproxy links.".format(search.count()))
+    for hit in search.scan():
         # make sure the document is in DB not only ES
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 
         for url in document["_migration"]["eitems_external"]:
-
             eitem = create_eitem(document["pid"], open_access=False)
             url["login_required"] = True
             eitem["urls"] = [url]
@@ -169,12 +234,10 @@ def migrate_ezproxy_links():
 
 def migrate_ebl_links():
     """Migrate external links from documents."""
-    results = get_documents_with_ebl_eitems()
-    click.echo(
-        "Found {} documents with ebl links.".format(results.hits.total.value)
-    )
+    search = get_documents_with_ebl_eitems()
+    click.echo("Found {} documents with ebl links.".format(search.count()))
 
-    for hit in results:
+    for hit in search.scan():
         # make sure the document is in DB not only ES
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
