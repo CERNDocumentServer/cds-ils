@@ -11,7 +11,7 @@
 import logging
 
 logger = logging.getLogger("migrator")
-document_logger = logging.getLogger("documents")
+records_logger = logging.getLogger("migrated_records")
 
 
 def migration_exception_handler(exc, output, key, value, **kwargs):
@@ -29,7 +29,7 @@ def migration_exception_handler(exc, output, key, value, **kwargs):
             output["legacy_recid"], exc.message, key, value, output
         )
     )
-    document_logger.error(
+    records_logger.error(
         "@RECID: {0} MARC: {1}, INPUT VALUE: {2} ERROR: {3}"
         "".format(output["legacy_recid"], key, value, exc.message)
     )

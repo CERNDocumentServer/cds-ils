@@ -15,8 +15,8 @@ from flask.cli import with_appcontext
 
 from cds_ils.migrator.api import commit, import_parents_from_file, \
     reindex_pidtype
-from cds_ils.migrator.documents.api import import_documents_from_record_file, \
-    import_documents_from_dump
+from cds_ils.migrator.documents.api import import_documents_from_dump, \
+    import_documents_from_record_file
 from cds_ils.migrator.eitems.api import process_files_from_legacy
 from cds_ils.migrator.internal_locations.api import \
     import_internal_locations_from_json
@@ -24,19 +24,21 @@ from cds_ils.migrator.items.api import import_items_from_json
 from cds_ils.migrator.loans.api import import_loans_from_json
 from cds_ils.migrator.patrons.api import import_users_from_json
 from cds_ils.migrator.series.api import link_and_create_multipart_volumes, \
-    link_documents_and_serials, validate_serial_records, \
-    validate_multipart_records
+    link_documents_and_serials, validate_multipart_records, \
+    validate_serial_records
 
 
 @click.group()
 def migration():
     """CDS-ILS migrator commands."""
-    document_handler = FileHandler("documents.log")
-    migrated = FileHandler("documents_migrated.log")
-    b = logging.getLogger("documents")
-    c = logging.getLogger("migrated_documents")
-    b.addHandler(document_handler)
-    c.addHandler(migrated)
+    records_error_handler = FileHandler("records_errored.log")
+    migrated_records_handler = FileHandler("records_migrated.log")
+
+    records_logger = logging.getLogger("records_errored")
+    migrated_records_logger = logging.getLogger("migrated_records")
+
+    records_logger.addHandler(records_error_handler)
+    migrated_records_logger.addHandler(migrated_records_handler)
 
 
 @migration.command()
@@ -133,8 +135,7 @@ def items(source, include, skip_indexing):
 @with_appcontext
 def borrowers(source):
     """Migrate documents from CDS legacy."""
-    with commit():
-        import_users_from_json(source)
+    import_users_from_json(source)
 
 
 @migration.command()
@@ -195,4 +196,3 @@ def validate_multipart():
 def eitems_files():
     """Create eitems for migrated documents."""
     process_files_from_legacy()
-
