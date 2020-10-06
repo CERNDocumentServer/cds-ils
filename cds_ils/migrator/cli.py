@@ -17,7 +17,8 @@ from cds_ils.migrator.api import commit, import_parents_from_file, \
     reindex_pidtype
 from cds_ils.migrator.documents.api import import_documents_from_dump, \
     import_documents_from_record_file
-from cds_ils.migrator.eitems.api import process_files_from_legacy
+from cds_ils.migrator.eitems.api import migrate_ebl_links, \
+    migrate_external_links, migrate_ezproxy_links, process_files_from_legacy
 from cds_ils.migrator.internal_locations.api import \
     import_internal_locations_from_json
 from cds_ils.migrator.items.api import import_items_from_json
@@ -196,3 +197,12 @@ def validate_multipart():
 def eitems_files():
     """Create eitems for migrated documents."""
     process_files_from_legacy()
+
+
+@migration.command()
+@with_appcontext
+def eitems_providers():
+    """Create eitems for migrated documents."""
+    migrate_external_links()
+    migrate_ezproxy_links()
+    migrate_ebl_links()

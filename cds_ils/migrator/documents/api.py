@@ -118,11 +118,52 @@ def get_document_by_legacy_recid(legacy_recid):
 
 
 def get_all_documents_with_files():
-    """Return all hits documents with files to be migrated."""
+    """Return all documents with files to be migrated."""
     search = DocumentSearch().filter(
         "bool",
         filter=[
             Q("term", _migration__eitems_has_files=True),
         ],
     )
+    total = search.count()
+    search = search[0:total]
+    return search.execute()
+
+
+def get_documents_with_proxy_eitems():
+    """Return documents with eitems behind proxy to be migrated."""
+    search = DocumentSearch().filter(
+        "bool",
+        filter=[
+            Q("term", _migration__eitems_has_proxy=True),
+        ],
+    )
+    total = search.count()
+    search = search[0:total]
+    return search.execute()
+
+
+def get_documents_with_ebl_eitems():
+    """Return documents with eitems from EBL provider to be migrated."""
+    search = DocumentSearch().filter(
+        "bool",
+        filter=[
+            Q("term", _migration__eitems_has_ebl=True),
+        ],
+    )
+    total = search.count()
+    search = search[0:total]
+    return search.execute()
+
+
+def get_documents_with_external_eitems():
+    """Return documents with eitems from external providers to be migrated."""
+    search = DocumentSearch().filter(
+        "bool",
+        filter=[
+            Q("term", _migration__eitems_has_external=True),
+        ],
+    )
+    total = search.count()
+    search = search[0:total]
     return search.execute()

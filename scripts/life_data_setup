@@ -24,4 +24,5 @@ invenio files location --default ils /tmp/ils-files
 
 # create eitems from document files
 # invenio migration eitems-files
+# invenio migration eitems-providers
 
