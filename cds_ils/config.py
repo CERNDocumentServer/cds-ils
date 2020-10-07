@@ -212,7 +212,7 @@ OAISERVER_ID_PREFIX = "oai:cds-ils.cern.ch:"
 
 DEBUG = False
 DEBUG_TB_ENABLED = True
-#: Switches off incept of redirects by Flask-DebugToolbar.
+#: Switches off intercept of redirects by Flask-DebugToolbar.
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 ###############################################################################
@@ -253,13 +253,13 @@ OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
     "protocol/openid-connect/logout",
 )
 OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
-    os.environ.get("SPA_HOST", "http://127.0.0.1:3000") + "/login"
+    os.environ.get("INVENIO_SPA_HOST", "http://127.0.0.1:3000") + "/login"
 )
 OAUTH_REMOTE_REST_APP["disconnect_redirect_url"] = os.environ.get(
-    "SPA_HOST", "http://127.0.0.1:3000"
+    "INVENIO_SPA_HOST", "http://127.0.0.1:3000"
 )
 OAUTH_REMOTE_REST_APP["error_redirect_url"] = (
-    os.environ.get("SPA_HOST", "http://127.0.0.1:3000") + "/login"
+    os.environ.get("INVENIO_SPA_HOST", "http://127.0.0.1:3000") + "/login"
 )
 OAUTH_REMOTE_REST_APP["params"].update(
     dict(
@@ -334,6 +334,11 @@ JSONSCHEMAS_SCHEMAS = [
 # RECORDS REST
 ###############################################################################
 RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
+
+###############################################################################
+# Literature covers Syndetic client ID
+###############################################################################
+CDS_ILS_SYNDETIC_CLIENT = "CHANGE_ME"
 
 ###############################################################################
 # ILS overridden

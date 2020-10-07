@@ -7,10 +7,10 @@
 
 """Literature covers."""
 
-import os
 import urllib
 from functools import partial
 
+from flask import current_app
 from invenio_app_ils.literature.covers_builder import build_placeholder_urls
 from invenio_app_ils.proxies import current_app_ils
 
@@ -58,7 +58,7 @@ def is_valid_cover(cover_metadata):
 
 def build_syndetic_cover_urls(cover_metadata):
     """Decorate literature with cover urls for all sizes."""
-    client = os.environ.get("SYNDETIC_CLIENT")
+    client = current_app.config["CDS_ILS_SYNDETIC_CLIENT"]
     url = "https://secure.syndetics.com/index.aspx"
 
     issn = cover_metadata.get("ISSN")
