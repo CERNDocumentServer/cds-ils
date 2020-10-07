@@ -11,11 +11,11 @@ from flask_webpackext import WebpackBundle
 
 theme = WebpackBundle(
     __name__,
-    'assets',
+    "assets",
     entry={
-        'cds-ils-theme': './scss/cds_ils/theme.scss',
+        "cds-ils-theme": "./scss/cds_ils/theme.scss",
     },
     dependencies={
         # add any additional npm dependencies here...
-    }
+    },
 )

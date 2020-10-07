@@ -34,6 +34,7 @@ class Patron(ILSPatron):
                 {
                     "person_id": self.extra_info.get("person_id", ""),
                     "department": self.extra_info.get("department", ""),
+                    "legacy_id": self.extra_info.get("legacy_id", ""),
                 }
             )
 

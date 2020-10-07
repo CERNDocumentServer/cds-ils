@@ -14,14 +14,15 @@ from invenio_app_ils.permissions import \
     views_permissions_factory as ils_views_permissions_factory
 
 retrieve_patron_loans_access_action = action_factory(
-    "retrieve-patron-loans-access")
+    "retrieve-patron-loans-access"
+)
 
 
 def retrieve_patron_loans_permission(*args, **kwargs):
     """Return permission to retrieve patron loans."""
     return Permission(
-        retrieve_patron_loans_access_action,
-        backoffice_access_action)
+        retrieve_patron_loans_access_action, backoffice_access_action
+    )
 
 
 def views_permissions_factory(action):

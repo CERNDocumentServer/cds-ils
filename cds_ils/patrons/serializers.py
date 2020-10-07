@@ -21,7 +21,7 @@ def serialize_on_loan_book_information(loan):
         end_date=loan["end_date"],
         library=location["name"],
         location=location["address"],
-        title=document["title"]
+        title=document["title"],
     )
 
 
@@ -34,7 +34,7 @@ def serialize_loan_request_book_information(loan):
         request_end_date=loan["end_date"],
         library=location["name"],
         location=location["address"],
-        title=document["title"]
+        title=document["title"],
     )
 
 
@@ -47,19 +47,21 @@ def patron_loans_to_dict(patron_loans):
     """
     books_on_loan_results = patron_loans["active_loans"].hits.hits
     books_on_loan = [
-        serialize_on_loan_book_information(
-            loan['_source']) for loan in books_on_loan_results]
+        serialize_on_loan_book_information(loan["_source"])
+        for loan in books_on_loan_results
+    ]
 
     loan_requests_results = patron_loans["pending_loans"].hits.hits
     loan_requests = [
-        serialize_loan_request_book_information(
-            loan['_source']) for loan in loan_requests_results]
+        serialize_loan_request_book_information(loan["_source"])
+        for loan in loan_requests_results
+    ]
 
     response = dict(
         books_on_loan=books_on_loan,
         loan_requests=loan_requests,
         person_id=patron_loans.get("person_id", ""),
-        department=patron_loans.get("department", "")
+        department=patron_loans.get("department", ""),
     )
     return response
 

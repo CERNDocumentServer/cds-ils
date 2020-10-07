@@ -32,22 +32,25 @@ from cds_ils.migrator.errors import LossyConversion
 from cds_ils.migrator.handlers import migration_exception_handler
 from cds_ils.migrator.utils import process_fireroles, update_access
 
-cli_logger = logging.getLogger('migrator')
+cli_logger = logging.getLogger("migrator")
 
 
 class CDSRecordDump(RecordDump):
     """CDS record dump class."""
 
-    def __init__(self,
-                 data,
-                 source_type='marcxml',
-                 latest_only=False,
-                 pid_fetchers=None,
-                 dojson_model=marc21):
+    def __init__(
+        self,
+        data,
+        source_type="marcxml",
+        latest_only=False,
+        pid_fetchers=None,
+        dojson_model=marc21,
+    ):
         """Initialize."""
-        super(self.__class__, self).__init__(data, source_type, latest_only,
-                                             pid_fetchers, dojson_model)
-        cli_logger.info('\n=====#RECID# {0} INIT=====\n'.format(data['recid']))
+        super(self.__class__, self).__init__(
+            data, source_type, latest_only, pid_fetchers, dojson_model
+        )
+        cli_logger.info("\n=====#RECID# {0} INIT=====\n".format(data["recid"]))
 
     @property
     def collection_access(self):
@@ -58,36 +61,38 @@ class CDSRecordDump(RecordDump):
         only the access rights are correct for the last version.
         """
         read_access = set()
-        if self.data['collections']:
-            for coll, restrictions in \
-                    self.data['collections']['restricted'].items():
-                read_access.update(restrictions['users'])
+        if self.data["collections"]:
+            for coll, restrictions in self.data["collections"][
+                "restricted"
+            ].items():
+                read_access.update(restrictions["users"])
                 read_access.update(
-                    process_fireroles(restrictions['fireroles']))
+                    process_fireroles(restrictions["fireroles"])
+                )
             read_access.discard(None)
 
-        return {'read': list(read_access)}
+        return {"read": list(read_access)}
 
     def _prepare_intermediate_revision(self, data):
         """Convert intermediate versions to marc into JSON."""
-        dt = arrow.get(data['modification_datetime']).datetime
+        dt = arrow.get(data["modification_datetime"]).datetime
 
-        if self.source_type == 'marcxml':
-            marc_record = create_record(data['marcxml'])
+        if self.source_type == "marcxml":
+            marc_record = create_record(data["marcxml"])
             return dt, marc_record
         else:
-            val = data['json']
+            val = data["json"]
 
         # MARC21 versions of the record are only accessible to admins
-        val['_access'] = {
-            'read': ['cds-admin@cern.ch'],
-            'update': ['cds-admin@cern.ch']
+        val["_access"] = {
+            "read": ["cds-admin@cern.ch"],
+            "update": ["cds-admin@cern.ch"],
         }
 
         return dt, val
 
     def _prepare_final_revision(self, data):
-        dt = arrow.get(data['modification_datetime']).datetime
+        dt = arrow.get(data["modification_datetime"]).datetime
 
         exception_handlers = {
             UnexpectedValue: migration_exception_handler,
@@ -95,11 +100,12 @@ class CDSRecordDump(RecordDump):
             ManualMigrationRequired: migration_exception_handler,
         }
 
-        if self.source_type == 'marcxml':
-            marc_record = create_record(data['marcxml'])
+        if self.source_type == "marcxml":
+            marc_record = create_record(data["marcxml"])
             try:
                 val = self.dojson_model.do(
-                    marc_record, exception_handlers=exception_handlers)
+                    marc_record, exception_handlers=exception_handlers
+                )
                 missing = self.dojson_model.missing(marc_record)
                 if missing:
                     raise LossyConversion(missing=missing)
@@ -107,17 +113,21 @@ class CDSRecordDump(RecordDump):
                 return dt, val
             except LossyConversion as e:
                 current_app.logger.error(
-                    'MIGRATION RULE MISSING {0} - {1}'.format(
-                        e.missing, marc_record))
+                    "MIGRATION RULE MISSING {0} - {1}".format(
+                        e.missing, marc_record
+                    )
+                )
                 # TODO uncomment when data cleaner
                 # raise e
             except Exception as e:
                 current_app.logger.error(
-                    'Impossible to convert to JSON {0} - {1}'.format(
-                        e, marc_record))
+                    "Impossible to convert to JSON {0} - {1}".format(
+                        e, marc_record
+                    )
+                )
                 raise e
         else:
-            val = data['json']
+            val = data["json"]
 
             # Calculate the _access key
             update_access(val, self.collection_access)
@@ -135,8 +145,11 @@ class CDSRecordDump(RecordDump):
         # Prepare revisions
         self.revisions = []
 
-        it = [self.data['record'][0]] if self.latest_only \
-            else self.data['record']
+        it = (
+            [self.data["record"][0]]
+            if self.latest_only
+            else self.data["record"]
+        )
 
         for i in it[:-1]:
             self.revisions.append(self._prepare_intermediate_revision(i))
@@ -148,103 +161,115 @@ class CDSRecordDumpLoader:
     """Migrate a CDS records."""
 
     @classmethod
-    def create(cls, dump, model, pid_provider, legacy_id_key='legacy_recid'):
+    def create(cls, dump, model, pid_provider, legacy_id_key="legacy_recid"):
         """Create record based on dump."""
-        record = cls.create_record(dump, model, pid_provider,
-                                   legacy_id_key=legacy_id_key)
+        record = cls.create_record(
+            dump, model, pid_provider, legacy_id_key=legacy_id_key
+        )
         return record
 
     @classmethod
     @disable_timestamp
-    def create_record(cls, dump, model, pid_provider,
-                      legacy_id_key='legacy_recid'):
+    def create_record(
+        cls, dump, model, pid_provider, legacy_id_key="legacy_recid"
+    ):
         """Create a new record from dump."""
         # Reserve record identifier, create record and recid pid in one
         # operation.
         record_uuid = uuid.uuid4()
         provider = pid_provider.create(
-            object_type='rec',
+            object_type="rec",
             object_uuid=record_uuid,
         )
-        dump['pid'] = provider.pid.pid_value
+        dump["pid"] = provider.pid.pid_value
         try:
             record = model.create(dump, record_uuid)
             record.model.created = datetime.datetime.utcnow()
             record.commit()
             return record
         except IlsValidationError as e:
-            click.secho("VALIDATION ERROR", fg='blue')
-            click.secho("RECID {0} did not pass validation. ERROR: \n {1}"
-                        .format(dump[legacy_id_key],
-                                ['{0}: {1}'.format(error.res['field'],
-                                                   error.res['message']) for
-                                 error in e.errors]).join('\n'), fg='red')
+            click.secho("VALIDATION ERROR", fg="blue")
+            click.secho(
+                "RECID {0} did not pass validation. ERROR: \n {1}".format(
+                    dump[legacy_id_key],
+                    [
+                        "{0}: {1}".format(
+                            error.res["field"], error.res["message"]
+                        )
+                        for error in e.errors
+                    ],
+                ).join("\n"),
+                fg="blue",
+            )
+            click.secho(e.original_exception.message, fg="blue")
             # TODO uncomment when data cleaner - needed for testing on dev
             # raise e
 
-    class CDSDocumentDumpLoader(RecordDumpLoader):
-        """Migrate a CDS record.
 
-        create and create_record has been changed to change the hardcoded
-        pid_type recid to docid.
-        """
+class CDSDocumentDumpLoader(RecordDumpLoader):
+    """Migrate a CDS record.
 
-        @classmethod
-        def create_files(cls, *args, **kwargs):
-            """Disable the files load."""
-            pass
+    create and create_record has been changed to change the hardcoded
+    pid_type recid to docid.
+    """
 
-        @classmethod
-        def create(cls, dump):
-            """Create record based on dump."""
-            # If 'record' is not present, just create the PID
-            if not dump.data.get('record'):
-                try:
-                    PersistentIdentifier.get(pid_type='docid',
-                                             pid_value=dump.recid)
-                except PIDDoesNotExistError:
-                    PersistentIdentifier.create(
-                        'docid', dump.recid,
-                        status=PIDStatus.RESERVED
-                    )
-                    db.session.commit()
-                return None
+    @classmethod
+    def create_files(cls, *args, **kwargs):
+        """Disable the files load."""
+        pass
 
-            dump.prepare_revisions()
-            dump.prepare_pids()
-            dump.prepare_files()
-            # if we have a final revision - to remove when data cleaned.
+    @classmethod
+    def create(cls, dump):
+        """Create record based on dump."""
+        # If 'record' is not present, just create the PID
+        if not dump.data.get("record"):
             try:
-                # import ipdb;ipdb.set_trace()
-                if dump.revisions[-1]:
-                    record = cls.create_record(dump)
-
-                    return record
-            except IndexError as e:
-                click.secho("Revision problem", fg='red')
-
-        @classmethod
-        @disable_timestamp
-        def create_record(cls, dump):
-            """Create a new record from dump."""
-            # Reserve record identifier, create record and recid pid in one
-            # operation.
-            record_uuid = uuid.uuid4()
-            provider = DocumentIdProvider.create(
-                object_type='rec',
-                object_uuid=record_uuid,
-            )
-            timestamp, json_data = dump.revisions[-1]
-            json_data['pid'] = provider.pid.pid_value
-            try:
-                document = Document.create(json_data, record_uuid)
-                document.model.created = dump.created.replace(tzinfo=None)
-                document.model.updated = timestamp.replace(tzinfo=None)
-                document.commit()
+                PersistentIdentifier.get(
+                    pid_type="docid", pid_value=dump.recid
+                )
+            except PIDDoesNotExistError:
+                PersistentIdentifier.create(
+                    "docid", dump.recid, status=PIDStatus.RESERVED
+                )
                 db.session.commit()
+            return None
 
-                return document
-            except IlsValidationError as e:
-                click.secho(e.original_exception.message, fg='red')
-                # TODO uncomment when data cleaner - needed for testing on dev
-                # raise e
+        dump.prepare_revisions()
+        dump.prepare_pids()
+        dump.prepare_files()
+        # if we have a final revision - to remove when data cleaned.
+        try:
+            # import ipdb;ipdb.set_trace()
+            if dump.revisions[-1]:
+                record = cls.create_record(dump)
+
+                return record
+        except IndexError as e:
+            click.secho("Revision problem", fg="red")
+
+    @classmethod
+    @disable_timestamp
+    def create_record(cls, dump):
+        """Create a new record from dump."""
+        # Reserve record identifier, create record and recid pid in one
+        # operation.
+        record_uuid = uuid.uuid4()
+        provider = DocumentIdProvider.create(
+            object_type="rec",
+            object_uuid=record_uuid,
+        )
+        timestamp, json_data = dump.revisions[-1]
+        json_data["pid"] = provider.pid.pid_value
+        try:
+            document = Document.create(json_data, record_uuid)
+            document.model.created = dump.created.replace(tzinfo=None)
+            document.model.updated = timestamp.replace(tzinfo=None)
+            document.commit()
+            db.session.commit()
+
+            return document
+        except IlsValidationError as e:
+            click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
+            click.secho(e.original_exception.message, fg="red")
+            # TODO uncomment when data cleaner - needed for testing on dev
+            # raise e

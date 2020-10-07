@@ -32,23 +32,23 @@ class LdapSynchronizationLogModelView(ModelView):
     form_excluded_columns = LdapSynchronizationLog.__table__.columns
     column_default_sort = (LdapSynchronizationLog.start_time, True)
 
-    @expose('/new/', methods=('GET', 'POST'))
+    @expose("/new/", methods=("GET", "POST"))
     def create_view(self):
         """Override the creation form and replace it by an action button."""
-        if flask.request.method == 'POST':
+        if flask.request.method == "POST":
             try:
                 self.start_task()
-                flash('The task was successfully started.', 'success')
+                flash("The task was successfully started.", "success")
             except Exception as e:
                 current_app.logger.exception(e)
-                flash('An error occurred while starting the task.', 'error')
+                flash("An error occurred while starting the task.", "error")
             return redirect(request.path)  # Redirect after POST
 
-        return_url = get_redirect_target() or self.get_url('.index_view')
+        return_url = get_redirect_target() or self.get_url(".index_view")
 
-        return self.render('cds_ils_admin/create_task.html',
-                           return_url=return_url
-                           )
+        return self.render(
+            "cds_ils_admin/create_task.html", return_url=return_url
+        )
 
     @staticmethod
     def start_task():
@@ -57,19 +57,17 @@ class LdapSynchronizationLogModelView(ModelView):
 
 
 blueprint = Blueprint(
-    'cds_ils_admin',
+    "cds_ils_admin",
     __name__,
-    template_folder='templates',
-    static_folder='static',
+    template_folder="templates",
+    static_folder="static",
 )
 
 ldap_sync = {
-    'model': LdapSynchronizationLog,
-    'modelview': LdapSynchronizationLogModelView,
-    'name': 'Ldap Synchronization',
-    'category': _('User Management')
+    "model": LdapSynchronizationLog,
+    "modelview": LdapSynchronizationLogModelView,
+    "name": "Ldap Synchronization",
+    "category": _("User Management"),
 }
 
-__all__ = (
-    'ldap_sync',
-)
+__all__ = ("ldap_sync",)

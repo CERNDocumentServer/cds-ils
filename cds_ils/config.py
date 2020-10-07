@@ -24,7 +24,7 @@ from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE
 from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
-from marshmallow.fields import Bool
+from marshmallow.fields import Bool, List
 
 from .literature.covers import build_cover_urls
 from .patrons.api import Patron
@@ -183,14 +183,18 @@ APP_ALLOWED_HOSTS = [
     os.environ.get("HOSTNAME", ""),  # fix disallowed host error during /ping
 ]
 
-APP_DEFAULT_SECURE_HEADERS['content_security_policy'] = {
-    'default-src': ["'self'"],
-    'script-src': ["'self'"],
-    'object-src': ["'self'"],
-    'img-src': ["'self'"],
-    'style-src': ["'self'"],
-    'font-src': ["'self'", "data:", "https://fonts.gstatic.com",
-                 "https://fonts.googleapis.com"],
+APP_DEFAULT_SECURE_HEADERS["content_security_policy"] = {
+    "default-src": ["'self'"],
+    "script-src": ["'self'"],
+    "object-src": ["'self'"],
+    "img-src": ["'self'"],
+    "style-src": ["'self'"],
+    "font-src": [
+        "'self'",
+        "data:",
+        "https://fonts.gstatic.com",
+        "https://fonts.googleapis.com",
+    ],
 }
 
 
@@ -249,13 +253,13 @@ OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
     "protocol/openid-connect/logout",
 )
 OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
-    os.environ.get("SPA_HOST", "http://localhost:3000") + "/login"
+    os.environ.get("SPA_HOST", "http://127.0.0.1:3000") + "/login"
 )
 OAUTH_REMOTE_REST_APP["disconnect_redirect_url"] = os.environ.get(
-    "SPA_HOST", "http://localhost:3000"
+    "SPA_HOST", "http://127.0.0.1:3000"
 )
 OAUTH_REMOTE_REST_APP["error_redirect_url"] = (
-    os.environ.get("SPA_HOST", "http://localhost:3000") + "/login"
+    os.environ.get("SPA_HOST", "http://127.0.0.1:3000") + "/login"
 )
 OAUTH_REMOTE_REST_APP["params"].update(
     dict(
@@ -284,7 +288,8 @@ CERN_APP_OPENID_CREDENTIALS = dict(
         "OAUTH_CERN_OPENID_CLIENT_ID", "localhost-cds-ils"
     ),
     consumer_secret=os.environ.get(
-        "OAUTH_CERN_OPENID_CLIENT_SECRET", "<change me>"
+        "OAUTH_CERN_OPENID_CLIENT_SECRET",
+        "<change_me>",
     ),
 )
 USERPROFILES_EXTEND_SECURITY_FORMS = True
@@ -340,9 +345,7 @@ ILS_LITERATURE_COVER_URLS_BUILDER = build_cover_urls
 # Namespaces for fields added to the metadata schema
 ILS_RECORDS_METADATA_NAMESPACES = {
     "document": {
-        "unit": {
-            "@context": "https://cern.ch/unit/terms"
-        },
+        "unit": {"@context": "https://cern.ch/unit/terms"},
         "standard_review": {
             "@context": "https://cern.ch/standard_review/terms"
         },
@@ -354,7 +357,7 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
     "document": {
         "unit:accelerator": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "unit:curated_relation": {
             "elasticsearch": "boolean",
@@ -362,11 +365,11 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
         },
         "unit:experiment": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "unit:institution": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "unit:project": {
             "elasticsearch": "keyword",
@@ -374,11 +377,11 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
         },
         "unit:study": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "standard_review:applicability": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+            "marshmallow": List(SanitizedUnicode()),
         },
         "standard_review:standard_validity": {
             "elasticsearch": "keyword",
