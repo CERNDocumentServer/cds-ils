@@ -183,6 +183,9 @@ APP_ALLOWED_HOSTS = [
     os.environ.get("HOSTNAME", ""),  # fix disallowed host error during /ping
 ]
 
+# if you need to render the Debugtoolbar, add 'unsafe-inline':
+#   "script-src": ["'self'", "'unsafe-inline'"],
+#   "style-src": ["'self'", "'unsafe-inline'"],
 APP_DEFAULT_SECURE_HEADERS["content_security_policy"] = {
     "default-src": ["'self'"],
     "script-src": ["'self'"],
@@ -196,12 +199,6 @@ APP_DEFAULT_SECURE_HEADERS["content_security_policy"] = {
         "https://fonts.googleapis.com",
     ],
 }
-
-
-###############################################################################
-# OAI-PMH
-###############################################################################
-OAISERVER_ID_PREFIX = "oai:cds-ils.cern.ch:"
 
 ###############################################################################
 # Debug
@@ -246,23 +243,8 @@ except Exception:
 # OAuth
 ###############################################################################
 OAUTH_REMOTE_APP_NAME = "cern_openid"
-OAUTH_REMOTE_REST_APP = copy.deepcopy(cern_openid.REMOTE_REST_APP)
-OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
-    "OAUTH_CERN_OPENID_LOGOUT_URL",
-    "https://keycloak-qa.cern.ch/auth/realms/cern/"
-    "protocol/openid-connect/logout",
-)
-OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
-    os.environ.get("INVENIO_SPA_HOST", "http://127.0.0.1:3000") + "/login"
-)
-OAUTH_REMOTE_REST_APP["disconnect_redirect_url"] = os.environ.get(
-    "INVENIO_SPA_HOST", "http://127.0.0.1:3000"
-)
-OAUTH_REMOTE_REST_APP["error_redirect_url"] = (
-    os.environ.get("INVENIO_SPA_HOST", "http://127.0.0.1:3000") + "/login"
-)
-OAUTH_REMOTE_REST_APP["params"].update(
-    dict(
+# common
+_OAUTH_REMOTE_APP_COMMON = dict(
         base_url=os.environ.get(
             "OAUTH_CERN_OPENID_BASE_URL",
             "https://keycloak-qa.cern.ch/auth/realms/cern",
@@ -278,11 +260,7 @@ OAUTH_REMOTE_REST_APP["params"].update(
             "protocol/openid-connect/auth",
         ),
     )
-)
-
-OAUTHCLIENT_REST_REMOTE_APPS = dict(cern_openid=OAUTH_REMOTE_REST_APP)
 OAUTHCLIENT_CERN_OPENID_ALLOWED_ROLES = ["cern-user", "librarian", "admin"]
-
 CERN_APP_OPENID_CREDENTIALS = dict(
     consumer_key=os.environ.get(
         "OAUTH_CERN_OPENID_CLIENT_ID", "localhost-cds-ils"
@@ -293,6 +271,47 @@ CERN_APP_OPENID_CREDENTIALS = dict(
     ),
 )
 USERPROFILES_EXTEND_SECURITY_FORMS = True
+###############################################################################
+# non-REST
+OAUTH_REMOTE_APP = copy.deepcopy(cern_openid.REMOTE_APP)
+OAUTH_REMOTE_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
+OAUTHCLIENT_REMOTE_APPS = dict(
+   cern_openid=OAUTH_REMOTE_APP,
+)
+###############################################################################
+# REST
+OAUTH_REMOTE_REST_APP = copy.deepcopy(cern_openid.REMOTE_REST_APP)
+OAUTH_REMOTE_REST_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
+OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
+    "OAUTH_CERN_OPENID_LOGOUT_URL",
+    "https://keycloak-qa.cern.ch/auth/realms/cern/"
+    "protocol/openid-connect/logout",
+)
+OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
+    os.environ.get("INVENIO_SPA_HOST", "http://127.0.0.1:3000") + "/login"
+)
+OAUTH_REMOTE_REST_APP["disconnect_redirect_url"] = os.environ.get(
+    "INVENIO_SPA_HOST", "http://127.0.0.1:3000"
+)
+OAUTH_REMOTE_REST_APP["error_redirect_url"] = (
+    os.environ.get("INVENIO_SPA_HOST", "http://127.0.0.1:3000") + "/login"
+)
+
+OAUTHCLIENT_REST_REMOTE_APPS = dict(cern_openid=OAUTH_REMOTE_REST_APP)
+
+###############################################################################
+# Flask-Security
+
+# Disable user registration
+SECURITY_REGISTERABLE = False
+SECURITY_RECOVERABLE = False
+SECURITY_CONFIRMABLE = False
+SECURITY_CHANGEABLE = False
+PERMANENT_SESSION_LIFETIME = timedelta(1)
+SECURITY_LOGIN_SALT = "CHANGE_ME"
+# Override login template to remove local logins
+# Use this in deployed envs, when having login via CERN SSO only
+# OAUTHCLIENT_LOGIN_USER_TEMPLATE = "cds_ils/login_user.html"
 
 ###############################################################################
 # LDAP configuration

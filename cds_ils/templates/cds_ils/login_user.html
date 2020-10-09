@@ -1,0 +1,11 @@
+{%- extends config.OAUTHCLIENT_LOGIN_USER_TEMPLATE_PARENT %}
+
+{%- from "invenio_oauthclient/_macros.html" import oauth_button %}
+
+{%- block form_outer %}
+  {% if config.OAUTHCLIENT_REMOTE_APPS %}
+    {% for name in config.OAUTHCLIENT_REMOTE_APPS.keys() %}
+      {{ oauth_button(name, next=request.args.get('next')) }}
+    {% endfor %}
+  {% endif %}
+{% endblock %}
