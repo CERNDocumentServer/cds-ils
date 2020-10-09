@@ -8,6 +8,7 @@
 """CDS-ILS Patron api."""
 
 from flask import current_app
+from invenio_app_ils.patrons.api import AnonymousPatron as ILSAnonymousPatron
 from invenio_app_ils.patrons.api import Patron as ILSPatron
 from invenio_oauthclient.models import RemoteAccount
 
@@ -46,6 +47,32 @@ class Patron(ILSPatron):
 
     def dumps_loader(self, **kwargs):
         """Return a simpler patron representation for loaders."""
+        dump = super().dumps_loader()
+        self._add_extra_info(dump)
+        return dump
+
+
+class AnonymousPatron(ILSAnonymousPatron):
+    """Anonymous patron record class."""
+
+    def _add_extra_info(self, dump):
+        """Add extra info when dumping."""
+        dump.update(
+            {
+                "person_id": "anonymous",
+                "department": "anonymous",
+                "legacy_id": "anonymous",
+            }
+        )
+
+    def dumps(self):
+        """Return python representation of metadata."""
+        dump = super().dumps()
+        self._add_extra_info(dump)
+        return dump
+
+    def dumps_loader(self, **kwargs):
+        """Return a simpler representation for loaders."""
         dump = super().dumps_loader()
         self._add_extra_info(dump)
         return dump

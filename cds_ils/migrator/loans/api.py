@@ -12,6 +12,7 @@ import json
 import logging
 
 import click
+from flask import current_app
 from invenio_app_ils.documents.api import Document
 from invenio_app_ils.patrons.api import SystemAgent
 from invenio_app_ils.proxies import current_app_ils
@@ -39,8 +40,9 @@ def import_loans_from_json(dump_file):
             click.echo('Importing loan "{0}"...'.format(record["legacy_id"]))
             user = get_user_by_legacy_id(record["id_crcBORROWER"])
             if not user:
-                # user was deleted, fallback to the SystemAgent
-                patron_pid = SystemAgent.id
+                # user was deleted, fallback to the AnonymousUser
+                anonym = current_app.config["ILS_PATRON_ANONYMOUS_CLASS"](-2)
+                patron_pid = anonym.id
             else:
                 patron_pid = user.pid
             try:

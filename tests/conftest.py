@@ -77,9 +77,9 @@ def app_config(app_config):
 
 
 @pytest.fixture()
-def system_user(app, db):
-    """Create a regular system user."""
-    user = User(**dict(email="system_user@cern.ch", active=True))
+def patron1(app, db):
+    """Create a patron user."""
+    user = User(**dict(email="patron1@cern.ch", active=True))
     db.session.add(user)
     db.session.commit()
 
@@ -130,7 +130,7 @@ def mint_record_pid(pid_type, pid_field, record):
 
 
 @pytest.fixture()
-def testdata(app, db, es_clear, system_user):
+def testdata(app, db, es_clear, patron1):
     """Create, index and return test data."""
     indexer = RecordIndexer()
 

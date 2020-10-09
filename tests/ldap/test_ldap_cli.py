@@ -18,18 +18,18 @@ from cds_ils.ldap.api import check_user_for_update, delete_user, \
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 
 
-def test_delete_user(app_with_mail, system_user, testdata):
-
+def test_delete_user(app_with_mail, patron1, testdata):
+    """Test that email sent when the user is automatically deleted."""
     with app_with_mail.extensions["mail"].record_messages() as outbox:
         assert len(outbox) == 0
-        delete_user(system_user)
+        delete_user(patron1)
         assert len(outbox) == 1
         assert outbox[0].recipients == [
             app_with_mail.config["MANAGEMENT_EMAIL"]
         ]
 
 
-def test_check_users_for_update(app, system_user):
+def test_check_users_for_update(app, patron1):
     """Test check for users update in sync command."""
     with app.app_context():
         user = RemoteAccount.query.join(User).one()
