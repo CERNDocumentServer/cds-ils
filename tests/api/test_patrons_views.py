@@ -16,21 +16,21 @@ from cds_ils.patrons.api import Patron
 from cds_ils.patrons.permissions import retrieve_patron_loans_access_action
 
 
-def test_patron_loans_view(app, system_user, testdata, client):
+def test_patron_loans_view(app, patron1, testdata, client):
     """Test check for users update in sync command."""
 
     db.session.add(
         ActionUsers.allow(
-            retrieve_patron_loans_access_action, user=system_user
+            retrieve_patron_loans_access_action, user=patron1
         )
     )
     db.session.commit()
 
-    patron = Patron(system_user.id)
+    patron = Patron(patron1.id)
     PatronIndexer().index(patron)
     current_search.flush_and_refresh(index="*")
 
-    login_user_via_session(client, email=system_user.email)
+    login_user_via_session(client, email=patron1.email)
 
     resp = client.get(
         url_for("cds_ils_patron_loans.patron_loans", person_id=1)

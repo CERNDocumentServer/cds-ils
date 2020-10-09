@@ -21,7 +21,7 @@ from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
 from invenio_app_ils.config import \
     CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
-from invenio_app_ils.patrons.api import PATRON_PID_TYPE
+from invenio_app_ils.patrons.api import PATRON_PID_TYPE, AnonymousPatron
 from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
 from marshmallow.fields import Bool, List
@@ -429,3 +429,5 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
 ILS_CIRCULATION_MAIL_TEMPLATES = {
     "librarian_footer": "cds_librarian_footer.html"
 }
+
+ILS_PATRON_ANONYMOUS_CLASS = AnonymousPatron
