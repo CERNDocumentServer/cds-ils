@@ -42,7 +42,7 @@
     "react-scripts": "^3.4.1"
   },
   "scripts": {
-    "start": "HTTPS=true craco start",
+    "start": "HOST=127.0.0.1 HTTPS=true craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "craco eject",
