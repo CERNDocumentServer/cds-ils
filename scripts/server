@@ -14,7 +14,7 @@ export FLASK_ENV=development
 export SERVER_NAME=127.0.0.1:5000
 
 # Start Worker and Server
-celery worker -A invenio_app.celery -l INFO & pid_celery=$!
+celery -A invenio_app.celery worker -l INFO & pid_celery=$!
 
 invenio run \
   --cert "$script_path"/../docker/nginx/test.crt \
