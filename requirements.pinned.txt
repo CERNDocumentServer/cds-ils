@@ -6,9 +6,8 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 alembic==1.4.3
-amqp==2.6.1
-appnope==0.1.0
-arrow==0.16.0
+amqp==5.0.1
+arrow==0.17.0
 attrs==20.2.0
 Babel==2.8.0
 backcall==0.2.0
@@ -17,13 +16,15 @@ billiard==3.6.3.0
 bleach==3.2.1
 blinker==1.4
 cachelib==0.1.1
-cds-dojson @ git+https://github.com/CERNDocumentServer/cds-dojson@books
-celery==4.4.7
+cds-dojson @ git+https://github.com/CERNDocumentServer/cds-dojson@7b77b145e3ca083a21e8b344dd28dd6c984ee2f6
+celery==5.0.0
 certifi==2020.6.20
 cffi==1.14.3
 chardet==3.0.4
 click==7.1.2
 click-default-group==1.2.2
+click-didyoumean==0.0.3
+click-repl==0.1.6
 counter-robots==2018.6
 cryptography==3.1.1
 decorator==4.4.2
@@ -64,20 +65,21 @@ html5lib==1.1
 idna==2.10
 importlib-metadata==2.0.0
 infinity==1.5
+iniconfig==1.0.1
 intervals==0.9.0
 invenio==3.3.0
 invenio-access==1.4.1
 invenio-accounts==1.3.0
 invenio-admin==1.2.1
-invenio-app==1.2.6
-invenio-app-ils==1.0.0a13
+invenio-app==1.2.7
+invenio-app-ils==1.0.0a14
 invenio-assets==1.1.5
 invenio-base==1.2.3
 invenio-cache==1.1.0
 invenio-celery==1.2.1
-invenio-circulation==1.0.0a27
+invenio-circulation==1.0.0a28
 invenio-config==1.0.3
-invenio-db==1.0.5
+invenio-db==1.0.6
 invenio-files-rest==1.2.0
 invenio-formatter==1.0.3
 invenio-i18n==1.2.0
@@ -93,7 +95,7 @@ invenio-pages==1.0.0a5
 invenio-pidrelations==1.0.0a7
 invenio-pidstore==1.2.1
 invenio-query-parser==0.6.0
-invenio-queues==1.0.0a2
+invenio-queues==1.0.0a3
 invenio-records==1.3.2
 invenio-records-files==1.2.1
 invenio-records-rest==1.7.2
@@ -104,7 +106,6 @@ invenio-theme==1.1.4
 invenio-userprofiles==1.1.1
 ipython==7.16.1
 ipython-genutils==0.2.0
-isort==5.5.4
 itsdangerous==1.1.0
 jedi==0.17.2
 Jinja2==2.11.2
@@ -114,7 +115,7 @@ jsonpointer==2.0
 jsonref==0.2
 jsonresolver==0.3.1
 jsonschema==3.2.0
-kombu==4.6.11
+kombu==5.0.2
 limits==1.5.1
 lorem==0.1.1
 lxml==4.2.5
@@ -129,11 +130,11 @@ oauthlib==2.1.0
 ordereddict==1.1
 packaging==20.4
 parso==0.7.1
-passlib==1.7.2
+passlib==1.7.4
 pexpect==4.8.0
 pickleshare==0.7.5
 pluggy==0.13.1
-prompt-toolkit==3.0.7
+prompt-toolkit==3.0.8
 psycopg2-binary==2.8.6
 ptyprocess==0.6.0
 pyasn1==0.4.8
@@ -157,12 +158,12 @@ PyYAML==5.3.1
 redis==3.5.3
 requests==2.24.0
 requests-oauthlib==1.1.0
-sentry-sdk==0.18.0
+sentry-sdk==0.19.0
 simplejson==3.17.2
 simplekv==0.14.1
 six==1.15.0
 speaklater==1.3
-SQLAlchemy==1.3.19
+SQLAlchemy==1.3.20
 SQLAlchemy-Continuum==1.3.11
 SQLAlchemy-Utils==0.35.0
 traitlets==4.3.3
@@ -173,7 +174,7 @@ uWSGI==2.0.19.1
 uwsgi-tools==1.1.1
 uwsgitop==0.11
 validators==0.18.1
-vine==1.3.0
+vine==5.0.0
 wcwidth==0.2.5
 webargs==5.5.3
 webassets==2.0
@@ -182,4 +183,4 @@ Werkzeug==1.0.1
 WTForms==2.3.3
 WTForms-Alchemy==0.17.0
 WTForms-Components==0.10.4
-zipp==3.2.0
+zipp==3.3.0
