@@ -1,0 +1,70 @@
+[
+  {
+    "pid": "eitemid-1",
+    "created_by": {"type": "script", "value":  "test"},
+    "document_pid": "docid-2",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": true
+  },
+  {
+    "pid": "eitemid-2",
+    "created_by": {"type": "script", "value":  "test"},
+    "document_pid": "docid-2",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-3",
+    "created_by": {"type": "import", "value":  "springer"},
+    "document_pid": "docid-3",
+    "internal_notes": "EITEM TO MODIFY",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-4",
+    "created_by": {"type": "import", "value":  "ebl"},
+    "document_pid": "docid-1",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  }
+]

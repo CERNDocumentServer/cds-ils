@@ -1,0 +1,70 @@
+[
+    {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "agency_code": "DE-He213",
+    "created_by": {"type": "script", "value":  "springer"},
+    "title": "Half-light: Collected Poems 1965-2016",
+    "authors": [{ "full_name": "Frank Bidart" }],
+    "abstract": "This is an abstract",
+    "edition": "3",
+    "keywords": [{"source": "X", "value": "Patata"}],
+    "document_type": "BOOK",
+    "publication_year": "1950",
+    "identifiers": [{ "scheme": "DOI", "value": "0123456789" },
+                    {"scheme": "ISBN", "value": "0987654321"}],
+    "_eitem": {
+        "pid": "eitmid-1",
+        "created_by": {"type": "script", "value":  "springer"},
+        "internal_notes": "Modified",
+        "description": "Modified description",
+        "open_access": false,
+        "urls": [
+            {
+              "description": "MODIFIED URL",
+              "value": "http://protected-cds-ils.ch/",
+              "login_required": true
+            },
+            {
+              "description": "Another open URL",
+              "value": "http://cds-ils.ch/",
+              "login_required": false
+            }
+        ]
+    }
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "agency_code": "DE-He213",
+    "created_by": {"type": "script", "value":  "test"},
+    "pid": "docid-1",
+    "title": "The Gulf: The Making of An American Sea",
+    "document_type": "BOOK",
+    "authors": [{ "full_name": "Jack E. Davis" }],
+    "abstracts": [{ "value": "This is an abstract" }],
+    "languages": ["en"],
+    "edition": "ed. 1",
+    "publication_year": "2020",
+    "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }],
+    "_eitem": {
+        "pid": "eitmid-1",
+        "created_by": {"type": "script", "value":  "springer"},
+        "document_pid": "docid-1",
+        "internal_notes": "Modified",
+        "description": "EITEM TO OVERWRITE",
+        "open_access": false,
+        "urls": [
+            {
+              "description": "MODIFIED URL",
+              "value": "http://protected-cds-ils.ch/",
+              "login_required": true
+            },
+            {
+              "description": "Another open URL",
+              "value": "http://cds-ils.ch/",
+              "login_required": false
+            }
+        ]
+    }
+  }
+
+]

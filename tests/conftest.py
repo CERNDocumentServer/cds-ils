@@ -6,11 +6,8 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Common pytest fixtures and plugins."""
+from __future__ import absolute_import, print_function
 
-import json
-import os
-
-import jinja2
 import pytest
 from invenio_access import ActionRoles, superuser_access
 from invenio_accounts.models import Role, User
@@ -24,12 +21,12 @@ from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
 from invenio_app_ils.series.api import SERIES_PID_TYPE, Series
 from invenio_circulation.api import Loan
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
-from invenio_db import db
 from invenio_indexer.api import RecordIndexer
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
-from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
+
+from .helpers import _create_records, load_json_from_datadir
 
 
 @pytest.fixture(scope="module")
@@ -126,36 +123,6 @@ def patron1(app, db):
     db.session.add(remote_account)
     db.session.commit()
     return user
-
-
-def load_json_from_datadir(filename):
-    """Load JSON from dir."""
-    _data_dir = os.path.join(os.path.dirname(__file__), "data")
-    with open(os.path.join(_data_dir, filename), "r") as fp:
-        return json.load(fp)
-
-
-def mint_record_pid(pid_type, pid_field, record):
-    """Mint the given PID for the given record."""
-    PersistentIdentifier.create(
-        pid_type=pid_type,
-        pid_value=record[pid_field],
-        object_type="rec",
-        object_uuid=record.id,
-        status=PIDStatus.REGISTERED,
-    )
-    db.session.commit()
-
-
-def _create_records(db, objs, cls, pid_type):
-    """Create records and index."""
-    recs = []
-    for obj in objs:
-        record = cls.create(obj)
-        mint_record_pid(pid_type, "pid", record)
-        recs.append(record)
-    db.session.commit()
-    return recs
 
 
 @pytest.fixture()

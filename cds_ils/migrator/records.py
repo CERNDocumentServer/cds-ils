@@ -280,6 +280,7 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
             document = Document.create(json_data, record_uuid)
             document.model.created = dump.created.replace(tzinfo=None)
             document.model.updated = timestamp.replace(tzinfo=None)
+
             document.commit()
             db.session.commit()
 

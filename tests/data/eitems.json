@@ -1,6 +1,7 @@
 [
   {
     "pid": "eitemid-1",
+    "created_by": {"type": "script", "value":  "test"},
     "document_pid": "docid-2",
     "internal_notes": "An internal note",
     "description": "Description of the electronic item",
@@ -8,6 +9,7 @@
   },
   {
     "pid": "eitemid-2",
+    "created_by": {"type": "script", "value":  "test"},
     "document_pid": "docid-2",
     "internal_notes": "An internal note",
     "description": "Description of the electronic item",

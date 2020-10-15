@@ -1,0 +1,34 @@
+[
+    {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "agency_code": "DE-He213",
+    "created_by": {"type": "script", "value":  "test"},
+    "title": "Half-light: Collected Poems 1965-2016",
+    "authors": [{ "full_name": "Frank Bidart" }],
+    "abstract": "This is an abstract",
+    "edition": "3",
+    "keywords": [{"source": "X", "value": "Patata"}],
+    "document_type": "BOOK",
+    "publication_year": "1950",
+    "identifiers": [{ "scheme": "DOI", "value": "0123456789" }],
+    "_eitem": {
+        "pid": "eitmid-1",
+        "document_pid": "docid-1",
+        "internal_notes": "An internal note",
+        "description": "Description of the electronic item",
+        "open_access": false,
+        "urls": [
+            {
+              "description": "Protected URL",
+              "value": "http://protected-cds-ils.ch/",
+              "login_required": true
+            },
+            {
+              "description": "Another open URL",
+              "value": "http://cds-ils.ch/",
+              "login_required": false
+            }
+        ]
+    }
+  }
+]

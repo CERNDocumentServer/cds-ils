@@ -38,6 +38,7 @@
   {
     "pid": "qaywb-gfe4B",
     "title": "Introduction to cryptography",
+    "edition": "3",
     "authors": [
       {
         "full_name": "Knebl, Helmut",
@@ -66,6 +67,7 @@
   {
     "pid": "kg26x-byc8C",
     "title": "Sidelights on relativity",
+    "edition": "4",
     "authors": [
       {
         "full_name": "Einstein, Albert",
@@ -101,6 +103,7 @@
   {
     "pid": "44gt6-e6d0D",
     "title": "Big Bang",
+    "edition": "11",
     "authors": [
       {
         "full_name": "Jacob, Irene",
@@ -136,6 +139,7 @@
   {
     "pid": "67186-5rs9E",
     "title": "Using REDUCE in high energy physics",
+    "edition": "5",
     "authors": [
       {
         "full_name": "Grozin, A G",
@@ -171,6 +175,7 @@
   {
     "pid": "9bqas-spg3F",
     "title": "Proceedings of the 23rd International Workshop on ECR Ion Sources",
+    "edition": "6",
     "authors": [
       {
         "full_name": "Schaa, Volker R W",
