@@ -3,7 +3,7 @@
   "version": "1.0.0a12",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
-    "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.13",
+    "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.14",
     "axios": "^0.19.2",
     "formik": "^2.1.4",
     "less": "^3.11.1",
@@ -21,7 +21,7 @@
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
     "react-scroll": "^1.7.16",
-    "react-searchkit": "^1.0.0-alpha.3",
+    "react-searchkit": "^1.0.0-alpha.4",
     "react-show-more": "^2.0.0",
     "react-tagcloud": "^2.0.0",
     "redux": "^4.0.5",

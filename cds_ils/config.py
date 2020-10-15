@@ -245,21 +245,21 @@ except Exception:
 OAUTH_REMOTE_APP_NAME = "cern_openid"
 # common
 _OAUTH_REMOTE_APP_COMMON = dict(
-        base_url=os.environ.get(
-            "OAUTH_CERN_OPENID_BASE_URL",
-            "https://keycloak-qa.cern.ch/auth/realms/cern",
-        ),
-        access_token_url=os.environ.get(
-            "OAUTH_CERN_OPENID_ACCESS_TOKEN_URL",
-            "https://keycloak-qa.cern.ch/auth/realms/cern/"
-            "protocol/openid-connect/token",
-        ),
-        authorize_url=os.environ.get(
-            "OAUTH_CERN_OPENID_AUTHORIZE_URL",
-            "https://keycloak-qa.cern.ch/auth/realms/cern/"
-            "protocol/openid-connect/auth",
-        ),
-    )
+    base_url=os.environ.get(
+        "OAUTH_CERN_OPENID_BASE_URL",
+        "https://keycloak-qa.cern.ch/auth/realms/cern",
+    ),
+    access_token_url=os.environ.get(
+        "OAUTH_CERN_OPENID_ACCESS_TOKEN_URL",
+        "https://keycloak-qa.cern.ch/auth/realms/cern/"
+        "protocol/openid-connect/token",
+    ),
+    authorize_url=os.environ.get(
+        "OAUTH_CERN_OPENID_AUTHORIZE_URL",
+        "https://keycloak-qa.cern.ch/auth/realms/cern/"
+        "protocol/openid-connect/auth",
+    ),
+)
 OAUTHCLIENT_CERN_OPENID_ALLOWED_ROLES = ["cern-user", "librarian", "admin"]
 CERN_APP_OPENID_CREDENTIALS = dict(
     consumer_key=os.environ.get(
@@ -276,25 +276,28 @@ USERPROFILES_EXTEND_SECURITY_FORMS = True
 OAUTH_REMOTE_APP = copy.deepcopy(cern_openid.REMOTE_APP)
 OAUTH_REMOTE_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
 OAUTHCLIENT_REMOTE_APPS = dict(
-   cern_openid=OAUTH_REMOTE_APP,
+    cern_openid=OAUTH_REMOTE_APP,
 )
 ###############################################################################
 # REST
+logout_redirect_url = os.environ.get("INVENIO_SPA_HOST",
+                                     "https://127.0.0.1:3000/")
 OAUTH_REMOTE_REST_APP = copy.deepcopy(cern_openid.REMOTE_REST_APP)
 OAUTH_REMOTE_REST_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
 OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
     "OAUTH_CERN_OPENID_LOGOUT_URL",
     "https://keycloak-qa.cern.ch/auth/realms/cern/"
-    "protocol/openid-connect/logout",
+    "protocol/openid-connect/logout/?redirect_uri={}".format(
+        logout_redirect_url),
 )
 OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
-    os.environ.get("INVENIO_SPA_HOST", "http://127.0.0.1:3000") + "/login"
+    os.environ.get("INVENIO_SPA_HOST", "https://127.0.0.1:3000") + "/login"
 )
 OAUTH_REMOTE_REST_APP["disconnect_redirect_url"] = os.environ.get(
-    "INVENIO_SPA_HOST", "http://127.0.0.1:3000"
+    "INVENIO_SPA_HOST", "https://127.0.0.1:3000"
 )
 OAUTH_REMOTE_REST_APP["error_redirect_url"] = (
-    os.environ.get("INVENIO_SPA_HOST", "http://127.0.0.1:3000") + "/login"
+    os.environ.get("INVENIO_SPA_HOST", "https://127.0.0.1:3000") + "/login"
 )
 
 OAUTHCLIENT_REST_REMOTE_APPS = dict(cern_openid=OAUTH_REMOTE_REST_APP)
@@ -309,6 +312,7 @@ SECURITY_CONFIRMABLE = False
 SECURITY_CHANGEABLE = False
 PERMANENT_SESSION_LIFETIME = timedelta(1)
 SECURITY_LOGIN_SALT = "CHANGE_ME"
+SECURITY_POST_LOGOUT_VIEW = '/api/cern_openid/logout/'
 # Override login template to remove local logins
 # Use this in deployed envs, when having login via CERN SSO only
 # OAUTHCLIENT_LOGIN_USER_TEMPLATE = "cds_ils/login_user.html"

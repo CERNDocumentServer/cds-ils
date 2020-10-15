@@ -88,7 +88,8 @@ setup(
             "cds_ils_admin = cds_ils.ldap.admin:blueprint",
         ],
         "invenio_base.api_blueprints": [
-            "cds_ils_patron_loans = cds_ils.patrons.views:create_patron_loans_blueprint"
+            "cds_ils_patron_loans = cds_ils.patrons.views:create_patron_loans_blueprint",
+            "cds_ils_logout = cds_ils.authentication.views:cern_oauth_blueprint",
         ],
         "invenio_assets.webpack": [
             "cds_ils_theme = cds_ils.theme.webpack:theme"
