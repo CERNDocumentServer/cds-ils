@@ -1,6 +1,10 @@
 [
   {
     "pid": "678e3-an678A",
+    "created_by": {
+      "type": "script",
+      "value": "demo"
+    },
     "document_pid": "qaywb-gfe4B",
     "shelf": "530.145.26 DEL",
     "medium": "PAPER",
@@ -12,6 +16,10 @@
   },
   {
     "pid": "hqrmd-hnq4B",
+    "created_by": {
+      "type": "script",
+      "value": "demo"
+    },
     "document_pid": "qaywb-gfe4B",
     "shelf": "004.421.5 DEL",
     "medium": "PAPER",
@@ -23,6 +31,10 @@
   },
   {
     "pid": "733v1-bs28C",
+    "created_by": {
+      "type": "script",
+      "value": "demo"
+    },
     "document_pid": "wb92a-x9s9A",
     "shelf": "530.12 EIN",
     "medium": "PAPER",
@@ -34,6 +46,10 @@
   },
   {
     "pid": "ant42-25q9D",
+    "created_by": {
+      "type": "script",
+      "value": "demo"
+    },
     "document_pid": "44gt6-e6d0D",
     "shelf": "82-3 JAC",
     "medium": "PAPER",
@@ -45,6 +61,10 @@
   },
   {
     "pid": "vgrh9-jvj8E",
+    "created_by": {
+      "type": "script",
+      "value": "demo"
+    },
     "document_pid": "67186-5rs9E",
     "shelf": "004.438.REDUCE GRO",
     "medium": "PAPER",
@@ -56,6 +76,10 @@
   },
   {
     "pid": "rfvy1-tx71F",
+    "created_by": {
+      "type": "script",
+      "value": "demo"
+    },
     "document_pid": "9bqas-spg3F",
     "shelf": "CATANIA 2018",
     "medium": "PAPER",
