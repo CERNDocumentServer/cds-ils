@@ -22,7 +22,7 @@ def test_delete_user(app_with_mail, patron1, testdata):
     """Test that email sent when the user is automatically deleted."""
     with app_with_mail.extensions["mail"].record_messages() as outbox:
         assert len(outbox) == 0
-        delete_user(patron1)
+        delete_user(patron1.id)
         assert len(outbox) == 1
         assert outbox[0].recipients == [
             app_with_mail.config["MANAGEMENT_EMAIL"]

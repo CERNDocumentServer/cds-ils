@@ -257,13 +257,13 @@ def check_user_for_update(system_user, ldap_user):
         )
 
 
-def delete_user(system_user):
+def delete_user(user_id):
     """Delete a system user."""
     with current_app.app_context():
         try:
-            anonymize_patron_data(system_user.id)
+            anonymize_patron_data(user_id)
         except AssertionError:
-            send_active_loans_mail(system_user.id)
+            send_active_loans_mail(user_id)
 
 
 def _log_info(action, extra=None):
@@ -285,7 +285,7 @@ def sync_users():
 
     ldap_url = current_app.config["CDS_ILS_LDAP_URL"]
     ldap_client = LdapClient(ldap_url)
-    system_users = RemoteAccount.query.join(User).all()
+    remote_accounts = RemoteAccount.query.join(User).all()
     ldap_users = ldap_client.get_primary_accounts()
 
     _log_info("users_fetched", dict(users_fetched=len(ldap_users)))
@@ -300,16 +300,23 @@ def sync_users():
         ldap_person_id = ldap_user["employeeID"][0].decode("utf8")
         ldap_users_map.update({ldap_person_id: ldap_user})
 
-    for system_user in system_users:
-        system_user_person_id = system_user.extra_data["person_id"]
-        ldap_user = ldap_users_map.get(system_user_person_id)
+    for remote_account in remote_accounts:
+        remote_account_person_id = remote_account.extra_data["person_id"]
+        ldap_user = ldap_users_map.get(remote_account_person_id)
         if ldap_user:
-            check_user_for_update(system_user, ldap_user)
+            check_user_for_update(remote_account, ldap_user)
         else:
-            system_user_id = system_user.user
-            delete_user(system_user)
+            invenio_user_id = remote_account.user.id
+            invenio_user_email = remote_account.user.email
+            delete_user(invenio_user_id)
 
-            _log_info("user_deleted", dict(user_id=system_user_id))
+            _log_info(
+                "user_deleted",
+                dict(
+                    invenio_user_id=invenio_user_id,
+                    invenio_user_email=invenio_user_email,
+                ),
+            )
 
     # Check if any ldap user is not in our system
 
