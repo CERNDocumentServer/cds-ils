@@ -32,8 +32,8 @@ from cds_ils.migrator.series.api import link_and_create_multipart_volumes, \
 @click.group()
 def migration():
     """CDS-ILS migrator commands."""
-    records_error_handler = FileHandler("records_errored.log")
-    migrated_records_handler = FileHandler("records_migrated.log")
+    records_error_handler = FileHandler("/tmp/records_errored.log")
+    migrated_records_handler = FileHandler("/tmp/records_migrated.log")
 
     records_logger = logging.getLogger("records_errored")
     migrated_records_logger = logging.getLogger("migrated_records")
