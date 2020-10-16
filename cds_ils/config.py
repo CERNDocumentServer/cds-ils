@@ -301,7 +301,7 @@ OAUTHCLIENT_REST_REMOTE_APPS = dict(cern_openid=OAUTH_REMOTE_REST_APP)
 
 ###############################################################################
 # Flask-Security
-
+###############################################################################
 # Disable user registration
 SECURITY_REGISTERABLE = False
 SECURITY_RECOVERABLE = False
@@ -317,6 +317,11 @@ SECURITY_LOGIN_SALT = "CHANGE_ME"
 # LDAP configuration
 ###############################################################################
 CDS_ILS_LDAP_URL = "ldap://xldap.cern.ch"
+
+###############################################################################
+# OAI-PMH
+###############################################################################
+OAISERVER_ID_PREFIX = "oai:cds-ils:"
 
 ###############################################################################
 # Migrator configuration
