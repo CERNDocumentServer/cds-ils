@@ -184,8 +184,6 @@ class CDSRecordDumpLoader:
             legacy_id_key = "pid"
         try:
             record = model.create(dump, record_uuid)
-            record.model.created = datetime.datetime.utcnow()
-            record.commit()
             return record
         except IlsValidationError as e:
             click.secho("VALIDATION ERROR", fg="blue")

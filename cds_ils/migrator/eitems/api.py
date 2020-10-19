@@ -76,10 +76,7 @@ def create_eitem(document_pid, open_access=True):
     )
 
     obj["pid"] = provider.pid.pid_value
-    with db.session.begin_nested():
-        eitem = EItem.create(obj, record_uuid)
-        eitem.commit()
-    db.session.commit()
+    eitem = EItem.create(obj, record_uuid)
     return eitem
 
 
