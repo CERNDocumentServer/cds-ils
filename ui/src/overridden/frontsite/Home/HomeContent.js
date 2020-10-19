@@ -46,11 +46,11 @@ export const HomeContent = () => {
           fetchDataQuery={documentApi
             .query()
             .withDocumentType('BOOK')
-            .sortBy('mostrecent')
+            .sortBy('-created')
             .withSize(5)
             .qs()}
           viewAllUrl={FrontSiteRoutes.documentsListWithQuery(
-            '&sort=mostrecent&order=desc'
+            '&sort=created&order=desc'
           )}
         />
       </Container>
@@ -63,11 +63,11 @@ export const HomeContent = () => {
             .query()
             .withDocumentType('BOOK')
             .withEitems()
-            .sortBy('-mostrecent')
+            .sortBy('-created')
             .withSize(5)
             .qs()}
           viewAllUrl={FrontSiteRoutes.documentsListWithQuery(
-            '&f=doctype%3ABOOK&f=medium%3AELECTRONIC_VERSION&sort=mostrecent&order=desc'
+            '&f=doctype%3ABOOK&f=medium%3AELECTRONIC_VERSION&sort=created&order=desc'
           )}
         />
       </Container>
