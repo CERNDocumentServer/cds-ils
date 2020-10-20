@@ -449,7 +449,36 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
 }
 
 ILS_CIRCULATION_MAIL_TEMPLATES = {
-    "librarian_footer": "cds_librarian_footer.html"
+    "librarian_footer": "cds_librarian_footer.html",
+    "cancel": "cds_cancel.html",
+    "request": "cds_request.html",
+    "request_no_items": "cds_request_no_items.html",
+    "checkin": "cds_checkin.html",
+    "checkout": "cds_checkout.html",
+    "active_loans": "cds_active_loans.html",
+    "extend": "cds_extend.html",
+    "overdue_reminder": "cds_overdue_reminder.html",
+    "expiring_reminder": "cds_will_expire_in_reminder.html"
+}
+
+ILS_DOCUMENT_REQUEST_MAIL_TEMPLATES = {
+    "request_accepted": "cds_document_request_accept.html",
+    "request_rejected_user_cancel":
+        "cds_document_request_reject_user_cancel.html",
+    "request_rejected_in_catalog":
+        "cds_document_request_reject_in_catalog.html",
+    "request_rejected_not_found": "cds_document_request_reject_not_found.html"
+
+}
+
+ILS_ILL_MAIL_TEMPLATES = {
+    "extension_accepted": "cds_patron_loan_extension_accept.html",
+    "extension_declined": "cds_patron_loan_extension_decline.html",
+    "extension_requested": "cds_patron_loan_extension_request.html"
+}
+
+ILS_GLOBAL_MAIL_TEMPLATES = {
+    "footer": "cds_footer.html"
 }
 
 CIRCULATION_LOAN_TRANSITIONS = {
