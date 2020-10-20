@@ -1,0 +1,17 @@
+[
+  {
+    "type": "identifier_scheme",
+    "key": "DOI",
+    "text": "Digital object identifier (DOI)"
+  },
+  {
+    "type": "identifier_scheme",
+    "key": "ISBN",
+    "text": "International Standard Book Number (ISBN)"
+  },
+    {
+    "type": "identifier_scheme",
+    "key": "ISSN",
+    "text": "ISSN"
+  }
+]

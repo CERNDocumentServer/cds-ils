@@ -184,9 +184,8 @@ def vocabularies():
             click.secho(res.output)
 
     vocabularies_dir = os.path.join(
-        # TODO change the path for cds-ils specific
         os.path.realpath("."),
-        "invenio_app_ils",
+        "cds_ils",
         "vocabularies",
         "data",
     )

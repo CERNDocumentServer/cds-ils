@@ -1,0 +1,92 @@
+[
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "ARXIV",
+    "text": "arXiv"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "SAFARI",
+    "text": "Safari Books Online (SAFARI)"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "DCL",
+    "text": "DCL"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "DESY",
+    "text": "DESY"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "DOE",
+    "text": "DOE"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "EBL",
+    "text": "EBL"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "FIZ",
+    "text": "FIZ"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "HAL",
+    "text": "HAL"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "INDICO.CERN.CH",
+    "text": "INDICO.CERN.CH"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "INIS",
+    "text": "INIS"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "INSPIRE",
+    "text": "INSPIRE"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "KEK",
+    "text": "KEK"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "LHCLHC",
+    "text": "LHCLHC"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "SAFARI",
+    "text": "SAFARI"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "SCEM",
+    "text": "SCEM"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "UDCCERN",
+    "text": "UDCCERN"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "WAI01",
+    "text": "WAI01"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "URN",
+    "text": "Uniform Resource Name (URN)"
+  }
+]
