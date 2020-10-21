@@ -28,6 +28,7 @@ from invenio_app_ils.indexer import wait_es_refresh
 from invenio_app_ils.items.api import ITEM_PID_TYPE
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE
 from invenio_app_ils.proxies import current_app_ils
+from invenio_app_ils.series.api import SERIES_PID_TYPE
 from invenio_base.app import create_cli
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_circulation.proxies import current_circulation
@@ -38,12 +39,19 @@ from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
 from invenio_search import current_search
 from invenio_userprofiles import UserProfile
 
+from cds_ils.literature.tasks import pick_identifier_with_cover_task
+
 CURRENT_DIR = pathlib.Path(__file__).parent.absolute()
 
 
 @click.group()
 def fixtures():
     """Create initial data and demo records."""
+
+
+@click.group()
+def covers():
+    """Covers scripts group."""
 
 
 @fixtures.command()
@@ -219,6 +227,43 @@ def vocabularies():
     run_command("vocabulary index json --force {}".format(json_files))
     run_command("vocabulary index opendefinition spdx --force")
     run_command("vocabulary index opendefinition opendefinition --force")
+
+
+def recreate_cover(pid, record_class):
+    """Recreate cover for a given record pid."""
+    record = record_class.get_record_by_pid(pid)
+    if record:
+        pick_identifier_with_cover_task(record)
+        click.secho("Recreated cover for PID: {}".format(pid), fg="blue")
+    else:
+        click.secho("No document or series found with PID: {}", fg="red")
+
+
+@covers.command()
+@click.option(
+    "-t", "--pid-type", required=True, type=click.Choice(["docid", "serid"])
+)
+@click.option("-a", "--all", required=False, is_flag=True)
+@click.option("-p", "--pid")
+@with_appcontext
+def recreate(pid, pid_type, all):
+    """Recreate covers command."""
+    if pid_type == DOCUMENT_PID_TYPE:
+        record_class = current_app_ils.document_record_cls
+    elif pid_type == SERIES_PID_TYPE:
+        record_class = current_app_ils.series_record_cls
+    if all:
+        pid_list = (
+            PersistentIdentifier.query.filter_by(
+                object_type="rec", status=PIDStatus.REGISTERED
+            )
+            .filter(PersistentIdentifier.pid_type == pid_type)
+            .values(PersistentIdentifier.pid_value)
+        )
+        for pid_entry in pid_list:
+            recreate_cover(pid_entry[0], record_class)
+    else:
+        recreate_cover(pid, record_class)
 
 
 @click.group()
