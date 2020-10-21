@@ -39,13 +39,13 @@ install_requires = [
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
     "invenio-oauthclient>=1.3.4,<1.4.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a14",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a16",
     "sentry-sdk>=0.10.2",
     # migrator deps
     "invenio-migrator==1.0.0a10",
     "invenio-records-files",
     "cds-dojson@git+https://github.com/CERNDocumentServer/cds-dojson@books",
-    "lxml>=3.5.0,<4.2.6",
+    "lxml>=3.5.0",
 ]
 
 packages = find_packages()
