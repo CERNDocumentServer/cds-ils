@@ -18,11 +18,18 @@ import os
 from datetime import timedelta
 
 from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
+from invenio_app_ils.circulation.transitions.transitions import \
+    ILSItemOnLoanToItemOnLoan, ILSToItemOnLoan
 from invenio_app_ils.config import \
     CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE, AnonymousPatron
+from invenio_app_ils.permissions import authenticated_user_permission, \
+    backoffice_permission, loan_extend_circulation_permission, \
+    patron_owner_permission
+from invenio_circulation.transitions.transitions import CreatedToPending, \
+    ItemOnLoanToItemReturned, ToCancelled
 from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
 from invenio_records_rest.utils import deny_all
@@ -443,6 +450,61 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
 
 ILS_CIRCULATION_MAIL_TEMPLATES = {
     "librarian_footer": "cds_librarian_footer.html"
+}
+
+CIRCULATION_LOAN_TRANSITIONS = {
+    "CREATED": [
+        dict(
+            dest="PENDING",
+            trigger="request",
+            transition=CreatedToPending,
+            permission_factory=authenticated_user_permission,
+            assign_item=False,
+        ),
+        dict(
+            dest="ITEM_ON_LOAN",
+            trigger="checkout",
+            transition=ILSToItemOnLoan,
+            permission_factory=backoffice_permission,
+        ),
+    ],
+    "PENDING": [
+        dict(
+            dest="ITEM_ON_LOAN",
+            trigger="checkout",
+            transition=ILSToItemOnLoan,
+            permission_factory=backoffice_permission,
+        ),
+        dict(
+            dest="CANCELLED",
+            trigger="cancel",
+            transition=ToCancelled,
+            permission_factory=patron_owner_permission,
+        ),
+    ],
+    "ITEM_ON_LOAN": [
+        dict(
+            dest="ITEM_RETURNED",
+            trigger="checkin",
+            transition=ItemOnLoanToItemReturned,
+            permission_factory=backoffice_permission,
+            assign_item=False,
+        ),
+        dict(
+            dest="ITEM_ON_LOAN",
+            transition=ILSItemOnLoanToItemOnLoan,
+            trigger="extend",
+            permission_factory=loan_extend_circulation_permission,
+        ),
+        dict(
+            dest="CANCELLED",
+            trigger="cancel",
+            transition=ToCancelled,
+            permission_factory=backoffice_permission,
+        ),
+    ],
+    "ITEM_RETURNED": [],
+    "CANCELLED": [],
 }
 
 ILS_PATRON_ANONYMOUS_CLASS = AnonymousPatron
