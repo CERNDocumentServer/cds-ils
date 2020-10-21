@@ -45,7 +45,7 @@ install_requires = [
     "invenio-migrator==1.0.0a10",
     "invenio-records-files",
     "cds-dojson@git+https://github.com/CERNDocumentServer/cds-dojson@books",
-    "lxml>=3.5.0,<4.2.6",
+    "lxml>=3.5.0",
 ]
 
 packages = find_packages()

@@ -21,9 +21,11 @@ from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
 from invenio_app_ils.config import \
     CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
+from invenio_app_ils.locations.api import LOCATION_PID_TYPE
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE, AnonymousPatron
 from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
+from invenio_records_rest.utils import deny_all
 from marshmallow.fields import Bool, List
 
 from .literature.covers import build_cover_urls
@@ -358,6 +360,10 @@ JSONSCHEMAS_SCHEMAS = [
 # RECORDS REST
 ###############################################################################
 RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
+RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE]["create_permission_factory_imp"] \
+    = deny_all
+RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE]["delete_permission_factory_imp"] \
+    = deny_all
 
 ###############################################################################
 # Literature covers Syndetic client ID
