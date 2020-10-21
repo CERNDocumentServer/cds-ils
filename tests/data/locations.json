@@ -2,6 +2,20 @@
   {
     "pid": "locid-1",
     "name": "Main Library",
-    "address": "Route de Meyrin"
+    "address": "Route de Meyrin",
+    "opening_weekdays": [
+      {
+        "weekday": "monday",
+        "is_open": true,
+        "times": [{
+          "start_time": "08:00",
+          "end_time": "12:00"
+        },
+      {
+        "start_time": "13:00",
+        "end_time": "18:00"
+      }
+      ]}
+    ]
   }
 ]

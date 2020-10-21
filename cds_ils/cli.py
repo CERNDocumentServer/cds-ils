@@ -66,11 +66,38 @@ def pages():
 def location():
     """Create library location."""
     click.echo("Creating locations...")
+    weekdays = [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+    ]
+
+    closed = ["saturday", "sunday"]
+    times = [
+        {"start_time": "08:30", "end_time": "18:00"},
+    ]
+    opening_weekdays = []
+    for weekday in weekdays:
+        is_open = weekday not in closed
+        opening_weekdays.append(
+            {
+                "weekday": weekday,
+                "is_open": weekday not in closed,
+                **({"times": times} if is_open else {}),
+            }
+        )
+
     location = {
         "pid": RecordIdProviderV2.create().pid.pid_value,
         "name": "CERN Central Library",
         "address": "Rue de Meyrin",
         "email": "library@cern.ch",
+        "opening_weekdays": opening_weekdays,
+        "opening_exceptions": [],
     }
     record = Location.create(location)
     minter(LOCATION_PID_TYPE, "pid", record)
