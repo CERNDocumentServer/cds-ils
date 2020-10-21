@@ -7,8 +7,10 @@
 
 """CLI for CDS-ILS."""
 import os
+import pathlib
 
 import click
+import pkg_resources
 from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
@@ -31,26 +33,36 @@ def fixtures():
 @with_appcontext
 def pages():
     """Register CDS static pages."""
+
+    def page_data(page):
+        return (
+            pkg_resources.resource_stream(
+                "cds_ils", os.path.join("static_pages", page)
+            )
+            .read()
+            .decode("utf8")
+        )
+
     pages = [
         Page(
             url="/about",
             title="About",
             description="About",
-            content="Library about page",
+            content=page_data("about.html"),
             template_name="invenio_pages/default.html",
         ),
         Page(
             url="/terms",
             title="Terms",
             description="Terms",
-            content="Terms and Privacy",
+            content=page_data("terms.html"),
             template_name="invenio_pages/default.html",
         ),
         Page(
             url="/faq",
             title="F.A.Q.",
             description="F.A.Q.",
-            content="Frequently Asked Questions",
+            content=page_data("faq.html"),
             template_name="invenio_pages/default.html",
         ),
     ]
