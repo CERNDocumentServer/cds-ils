@@ -3,5 +3,10 @@
     "type": "affiliation_identifier_scheme",
     "key": "ROR",
     "text": "Research Organization Registry (ROR)"
+  },
+  {
+    "type": "affiliation_identifier_scheme",
+    "key": "GRID",
+    "text": "Global Research Identifier Database (GRID)"
   }
 ]

@@ -1,13 +1,8 @@
 [
   {
     "type": "acq_order_line_payment_mode",
-    "key": "CREDIT_CARD",
-    "text": "Credit Card"
-  },
-  {
-    "type": "acq_order_line_payment_mode",
-    "key": "CASH",
-    "text": "Cash"
+    "key": "INDIVIDUAL_PAYMENT",
+    "text": "Individual payment"
   },
   {
     "type": "acq_order_line_payment_mode",

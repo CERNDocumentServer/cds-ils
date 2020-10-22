@@ -23,6 +23,11 @@ export const config = {
       },
     },
   },
+  CIRCULATION: {
+    extensionsMaxCount: 10000, // should be infinite
+    requestDuration: 120,
+    loanWillExpireDays: 3,
+  },
   VOCABULARIES: {
     documentRequests: {
       doc_req_type: 'doc_req_type',

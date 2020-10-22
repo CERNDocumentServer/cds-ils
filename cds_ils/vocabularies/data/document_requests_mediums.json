@@ -8,5 +8,10 @@
     "key": "ELECTRONIC",
     "type": "doc_req_medium",
     "text": "Electronic"
+  },
+  {
+    "key": "PAPER_ELECTRONIC",
+    "type": "doc_req_medium",
+    "text": "Paper + electronic"
   }
 ]

@@ -1,12 +1,12 @@
 [
   {
-    "key": "INTERNAL_BUDGET",
+    "key": "BUDGET_CODE",
     "type": "doc_req_payment_method",
-    "text": "Internal budget"
+    "text": "Budget code"
   },
   {
-    "key": "CASH",
+    "key": "CASH_CARD",
     "type": "doc_req_payment_method",
-    "text": "Cash"
+    "text": "Cash/card"
   }
 ]

@@ -18,5 +18,10 @@
     "type": "series_url_access_restriction",
     "key": "PACKAGE_DEAL",
     "text": "Package deal"
+  },
+  {
+    "type": "series_url_access_restriction",
+    "key": "NOT_DEFINED",
+    "text": "Not defined"
   }
 ]
