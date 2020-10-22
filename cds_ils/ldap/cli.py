@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2015-2020 CERN.
 #
 # cds-migrator-kit is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,7 +12,7 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 
-from .api import LdapClient, import_ldap_users, sync_users
+from .api import import_ldap_users, sync_users
 from .models import LdapSynchronizationLog
 
 
@@ -25,22 +25,7 @@ def ldap_users():
 @with_appcontext
 def import_users():
     """Load users from ldap and import them in db."""
-    import time
-
-    start_time = time.time()
-
-    ldap_url = current_app.config["CDS_ILS_LDAP_URL"]
-    ldap_client = LdapClient(ldap_url)
-    ldap_users = ldap_client.get_primary_accounts()
-
-    click.secho("Users found {}".format(len(ldap_users)))
-
-    import_ldap_users(ldap_users)
-
-    click.secho(
-        "--- Finished in %s seconds ---" % (time.time() - start_time),
-        fg="green",
-    )
+    import_ldap_users()
 
 
 @ldap_users.command(name="sync")

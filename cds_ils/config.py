@@ -17,6 +17,7 @@ import copy
 import os
 from datetime import timedelta
 
+from celery.schedules import crontab
 from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
 from invenio_app_ils.circulation.transitions.transitions import \
     ILSItemOnLoanToItemOnLoan, ILSToItemOnLoan
@@ -151,7 +152,7 @@ CELERY_BEAT_SCHEDULE = {
     **ILS_CELERY_BEAT_SCHEDULE,  # Parent config
     "synchronize_users": {
         "task": "cds_ils.ldap.tasks.synchronize_users_task",
-        "schedule": timedelta(days=1),
+        "schedule": crontab(minute=0, hour=4),  # every day, 4am
     },
 }
 
@@ -162,12 +163,6 @@ CELERY_BEAT_SCHEDULE = {
 SQLALCHEMY_DATABASE_URI = (
     "postgresql+psycopg2://cds-ils:cds-ils@localhost/cds-ils"
 )
-
-###############################################################################
-# JSONSchemas
-###############################################################################
-#: Hostname used in URLs for local JSONSchemas.
-JSONSCHEMAS_HOST = "cds-ils.cern.ch"
 
 ###############################################################################
 # Flask configuration
@@ -182,15 +177,7 @@ SECRET_KEY = "CHANGE_ME"
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100 MiB
 #: Sets cookie with the secure flag by default
 SESSION_COOKIE_SECURE = True
-#: Since HAProxy and Nginx route all requests no matter the host header
-#: provided, the allowed hosts variable is set to localhost. In production it
-#: should be set to the correct host and it is strongly recommended to only
-#: route correct hosts to the application.
-APP_ALLOWED_HOSTS = [
-    os.environ.get("ALLOWED_HOST", "localhost"),
-    "127.0.0.1",
-    os.environ.get("HOSTNAME", ""),  # fix disallowed host error during /ping
-]
+APP_ALLOWED_HOSTS = ["127.0.0.1"]
 
 # if you need to render the Debugtoolbar, add 'unsafe-inline':
 #   "script-src": ["'self'", "'unsafe-inline'"],
@@ -348,7 +335,7 @@ MIGRATOR_RECORDS_DUMP_CLS = "cds_ils.migrator.records:CDSRecordDump"
 # JSONSchemas
 ###############################################################################
 #: Hostname used in URLs for local JSONSchemas.
-JSONSCHEMAS_HOST = "cds-books.com"
+JSONSCHEMAS_HOST = "cds-ils.cern.ch"
 
 # whitelist schemas for migration
 JSONSCHEMAS_SCHEMAS = [

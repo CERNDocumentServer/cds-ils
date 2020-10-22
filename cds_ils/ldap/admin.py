@@ -13,7 +13,6 @@ from flask_admin.base import expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.helpers import get_redirect_target
 from flask_babelex import gettext as _
-from invenio_db import db
 
 from cds_ils.ldap.models import LdapSynchronizationLog
 from cds_ils.ldap.tasks import synchronize_users_task
