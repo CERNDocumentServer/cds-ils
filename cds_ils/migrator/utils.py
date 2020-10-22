@@ -105,7 +105,7 @@ def clean_item_status(record):
         "missing": "MISSING",
         "on loan": "CAN_CIRCULATE",
         "in binding": "IN_BINDING",
-        "FOR_REFERENCE_ONLY": "FOR_REFERENCE_ONLY",
+        "FOR_REFERENCE_ONLY": "CAN_CIRCULATE",
     }
     try:
         record["status"] = options[record["status"]]
