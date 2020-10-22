@@ -163,7 +163,8 @@ class LdapUserImporter:
 
     def import_user(self, user):
         """Return new user entry."""
-        return {"email": user["mail"][0].decode("utf8"), "active": True}
+        return {"email": user["mail"][0].decode("utf8").lower(),
+                "active": True}
 
     def import_remote_account(self, user_id, ldap_user):
         """Return new user entry."""
