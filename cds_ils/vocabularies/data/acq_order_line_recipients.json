@@ -8,5 +8,10 @@
     "type": "acq_recipient",
     "key": "LIBRARY",
     "text": "Library"
+  },
+  {
+    "type": "acq_recipient",
+    "key": "BOOKSHOP",
+    "text": "Bookshop"
   }
 ]

@@ -17,7 +17,7 @@ bleach==3.2.1
 blinker==1.4
 cachelib==0.1.1
 cds-dojson @ git+https://github.com/CERNDocumentServer/cds-dojson@7b77b145e3ca083a21e8b344dd28dd6c984ee2f6
-celery==5.0.0
+celery==5.0.1
 certifi==2020.6.20
 cffi==1.14.3
 chardet==3.0.4
@@ -26,7 +26,7 @@ click-default-group==1.2.2
 click-didyoumean==0.0.3
 click-repl==0.1.6
 counter-robots==2018.6
-cryptography==3.1.1
+cryptography==3.2
 decorator==4.4.2
 dnspython==2.0.0
 dojson==1.4.0
@@ -34,7 +34,7 @@ elasticsearch==7.9.1
 elasticsearch-dsl==7.3.0
 email-validator==1.1.1
 Flask==1.1.2
-Flask-Admin==1.5.6
+Flask-Admin==1.5.7
 Flask-Alembic==2.0.1
 Flask-Assets==2.0
 Flask-BabelEx==0.9.4
@@ -72,8 +72,9 @@ invenio-access==1.4.1
 invenio-accounts==1.3.1
 invenio-admin==1.2.1
 invenio-app==1.2.7
-invenio-app-ils==1.0.0a17
+invenio-app-ils==1.0.0a18
 invenio-assets==1.1.5
+invenio-banners==1.0.0a1
 invenio-base==1.2.3
 invenio-cache==1.1.0
 invenio-celery==1.2.1
@@ -88,6 +89,7 @@ invenio-jsonschemas==1.1.0
 invenio-logging==1.3.0
 invenio-mail==1.0.2
 invenio-migrator==1.0.0a10
+invenio-oaiserver==1.2.0
 invenio-oauth2server==1.2.0
 invenio-oauthclient==1.3.4
 invenio-opendefinition==1.0.0a9
@@ -118,11 +120,11 @@ jsonschema==3.2.0
 kombu==5.0.2
 limits==1.5.1
 lorem==0.1.1
-lxml==4.3.0
+lxml==4.6.1
 Mako==1.1.3
 MarkupSafe==1.1.1
 marshmallow==3.8.0
-maxminddb==2.0.2
+maxminddb==2.0.3
 maxminddb-geolite2==2018.703
 msgpack==1.0.0
 node-semver==0.1.1
@@ -141,7 +143,7 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycountry==20.7.3
 pycparser==2.20
-Pygments==2.7.1
+Pygments==2.7.2
 PyJWT==1.7.1
 pynpm==0.1.2
 pyparsing==2.4.7
@@ -158,7 +160,7 @@ PyYAML==5.3.1
 redis==3.5.3
 requests==2.24.0
 requests-oauthlib==1.1.0
-sentry-sdk==0.19.0
+sentry-sdk==0.19.1
 simplejson==3.17.2
 simplekv==0.14.1
 six==1.15.0
@@ -169,7 +171,7 @@ SQLAlchemy-Utils==0.35.0
 traitlets==4.3.3
 ua-parser==0.10.0
 uritools==3.0.0
-urllib3==1.25.10
+urllib3==1.25.11
 uWSGI==2.0.19.1
 uwsgi-tools==1.1.1
 uwsgitop==0.11
@@ -183,4 +185,4 @@ Werkzeug==1.0.1
 WTForms==2.3.3
 WTForms-Alchemy==0.17.0
 WTForms-Components==0.10.4
-zipp==3.3.0
+zipp==3.4.0

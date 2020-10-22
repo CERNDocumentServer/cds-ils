@@ -11,6 +11,11 @@
   },
   {
     "type": "author_identifier_scheme",
+    "key": "VIAF",
+    "text": "VIAF"
+  },
+  {
+    "type": "author_identifier_scheme",
     "key": "GRID",
     "text": "Global Research Identifier Database (GRID)"
   }

@@ -21,9 +21,14 @@ from celery.schedules import crontab
 from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
 from invenio_app_ils.circulation.transitions.transitions import \
     ILSItemOnLoanToItemOnLoan, ILSToItemOnLoan
+from invenio_app_ils.circulation.utils import circulation_can_be_requested, \
+    circulation_is_loan_duration_valid, circulation_loan_will_expire_days
 from invenio_app_ils.config import \
     CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
+from invenio_app_ils.ill.api import can_item_circulate, \
+    circulation_default_extension_duration, \
+    circulation_default_loan_duration
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE, AnonymousPatron
 from invenio_app_ils.permissions import authenticated_user_permission, \
@@ -36,6 +41,7 @@ from invenio_records_rest.schemas.fields import SanitizedUnicode
 from invenio_records_rest.utils import deny_all
 from marshmallow.fields import Bool, List
 
+from .circulation.utils import circulation_cds_extension_max_count
 from .literature.covers import build_cover_urls
 from .patrons.api import Patron
 from .patrons.permissions import views_permissions_factory
@@ -375,6 +381,15 @@ ILS_VIEWS_PERMISSIONS_FACTORY = views_permissions_factory
 
 ILS_LITERATURE_COVER_URLS_BUILDER = build_cover_urls
 
+#: Period of time in days, before loans expire, for notifications etc.
+ILS_CIRCULATION_LOAN_WILL_EXPIRE_DAYS = 3
+
+#: Notification email for overdue loan sent automatically every X days
+ILS_CIRCULATION_MAIL_OVERDUE_REMINDER_INTERVAL = 7
+
+#: The maximum duration of a loan request
+ILS_CIRCULATION_LOAN_REQUEST_DURATION_DAYS = 120
+
 # Namespaces for fields added to the metadata schema
 ILS_RECORDS_METADATA_NAMESPACES = {
     "document": {
@@ -436,7 +451,6 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
 }
 
 ILS_CIRCULATION_MAIL_TEMPLATES = {
-    "librarian_footer": "cds_librarian_footer.html",
     "cancel": "cds_cancel.html",
     "request": "cds_request.html",
     "request_no_items": "cds_request_no_items.html",
@@ -499,6 +513,25 @@ ILS_VOCABULARIES = [
     "series_url_access_restriction",
     "tag",
 ]
+
+###############################################################################
+# CIRCULATION overridden config
+###############################################################################
+
+CIRCULATION_POLICIES = dict(
+    checkout=dict(
+        duration_default=circulation_default_loan_duration,
+        duration_validate=circulation_is_loan_duration_valid,
+        item_can_circulate=can_item_circulate,
+    ),
+    extension=dict(
+        from_end_date=True,
+        duration_default=circulation_default_extension_duration,
+        max_count=circulation_cds_extension_max_count,
+    ),
+    request=dict(can_be_requested=circulation_can_be_requested),
+    upcoming_return_range=circulation_loan_will_expire_days,
+)
 
 CIRCULATION_LOAN_TRANSITIONS = {
     "CREATED": [

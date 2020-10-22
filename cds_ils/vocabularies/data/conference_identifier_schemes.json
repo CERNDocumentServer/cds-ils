@@ -3,5 +3,10 @@
     "type": "conference_identifier_scheme",
     "key": "OTHER",
     "text": "Other"
+  },
+  {
+    "type": "conference_identifier_scheme",
+    "key": "INSPIRE_CNUM",
+    "text": "Inspire CNUM"
   }
 ]
