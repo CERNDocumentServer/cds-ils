@@ -37,6 +37,8 @@ def test_send_email_delete_user_with_loans(app, patron1, testdata):
 
         assert_contains("patron1@cern.ch")
         assert_contains("loanid-2")
+        assert_contains("Prairie Fires: The American Dreams of Laura Ingalls"
+                        " Wilder")
 
 
 def test_update_user_from_ldap(app, db, patron1, testdata):
@@ -77,7 +79,7 @@ def test_import_users(app, db, testdata, mocker):
         "cds_ils.ldap.api.LdapClient.get_primary_accounts",
         return_value=ldap_users,
     )
-    mocker.patch("cds_ils.ldap.api._reindex_patrons")
+    mocker.patch("invenio_app_ils.patrons.indexer.reindex_patrons")
 
     import_ldap_users()
 
