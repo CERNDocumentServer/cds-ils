@@ -442,7 +442,6 @@ ILS_CIRCULATION_MAIL_TEMPLATES = {
     "request_no_items": "cds_request_no_items.html",
     "checkin": "cds_checkin.html",
     "checkout": "cds_checkout.html",
-    "active_loans": "cds_active_loans.html",
     "extend": "cds_extend.html",
     "overdue_reminder": "cds_overdue_reminder.html",
     "expiring_reminder": "cds_will_expire_in_reminder.html"

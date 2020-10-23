@@ -39,7 +39,7 @@ install_requires = [
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
     "invenio-oauthclient>=1.3.4,<1.4.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a17",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a18",
     "sentry-sdk>=0.10.2",
     # migrator deps
     "invenio-migrator==1.0.0a10",
@@ -99,6 +99,7 @@ setup(
         "invenio_celery.tasks": [
             "cds_ils_tasks = cds_ils.literature.tasks",
             "cds_ils_ldap_tasks = cds_ils.ldap.tasks",
+            "cds_ils_mail_tasks = cds_ils.mail.tasks",
         ],
         "invenio_i18n.translations": ["messages = cds_ils"],
         "invenio_access.actions": [

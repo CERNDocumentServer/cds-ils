@@ -15,14 +15,15 @@ import uuid
 import ldap
 from flask import current_app
 from invenio_accounts.models import User
-from invenio_app_ils.anonymization import anonymize_patron_data
 from invenio_app_ils.errors import AnonymizationActiveLoansError
+from invenio_app_ils.patrons.anonymization import anonymize_patron_data
+from invenio_app_ils.patrons.indexer import reindex_patrons
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
 
-from cds_ils.circulation.tasks import send_active_loans_mail
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
+from cds_ils.mail.tasks import send_warning_mail_patron_has_active_loans
 
 
 def ldap_user_get(user, field_name):
@@ -190,16 +191,6 @@ class LdapUserImporter:
         db.session.add(remote_account)
 
 
-def _reindex_patrons():
-    """Launch the CLI cmd to re-index all users."""
-    from invenio_base.app import create_cli
-
-    cli = create_cli()
-    runner = current_app.test_cli_runner()
-    command = "ils patrons index"
-    runner.invoke(cli, command, catch_exceptions=True)
-
-
 def import_ldap_users():
     """Import ldap users in db."""
     start_time = time.time()
@@ -224,7 +215,7 @@ def import_ldap_users():
 
     db.session.commit()
 
-    _reindex_patrons()
+    reindex_patrons()
 
     print("Users imported: {}".format(len(ldap_users)))
     print("--- Finished in %s seconds ---" % (time.time() - start_time))
@@ -243,7 +234,7 @@ def _delete_invenio_user(user_id):
         anonymize_patron_data(user_id)
         return True
     except AnonymizationActiveLoansError:
-        send_active_loans_mail(user_id)
+        send_warning_mail_patron_has_active_loans.apply_async((user_id,))
         return False
 
 
@@ -375,7 +366,7 @@ def sync_users():
 
             invenio_users_added_count += 1
 
-    _reindex_patrons()
+    reindex_patrons()
 
     total_time = time.time() - start_time
 

@@ -1,0 +1,43 @@
+{% block subject %}
+CERN Library Catalogue: cannot delete user, action needed!
+{% endblock %}
+
+{% block body_plain %}
+Dear librarians,
+
+the user "{{ patron.name }} <{{ patron.email }}>" (id {{ patron.pid }}, CERN Person id {{patron.person_id}}) is not anymore in the CERN users directory.
+The system could not anonymize data and delete the user because active loans have been found.
+
+Please, take the action to cancel the loans of this user so that data can be successfully anonymized.
+
+Patron details in the backoffice area: <{{ spa_routes.HOST }}{{ spa_routes.PATHS['patron'] }}/{{ patron.pid }}>
+
+List of active loans:
+{%- for loan in loans %}
+  * "{{ loan.document.title }}" - start date: {{ loan.start_date }} - end date: {{ loan.end_date }} - loan PID: {{ loan.pid }} - <{{ spa_routes.HOST }}{{ spa_routes.PATHS['loan'] }}/{{ loan.pid }}>
+{% endfor %}
+
+Thank you!
+{% endblock %}
+
+{% block body_html %}
+Dear librarians,
+
+the user "{{ patron.name }} <{{ patron.email }}>" (id {{ patron.pid }}, CERN Person id {{patron.person_id}}) is not anymore in the CERN users directory.
+The system could not anonymize data and delete the user because active loans have been found.
+
+Please, take the action to cancel the loans of this user so that data can be successfully anonymized.
+
+See <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['patron'] }}/{{ patron.pid }}">patron details</a> in the backoffice area.
+
+List of active loans:
+<ul>
+{% for loan in loans %}
+ <li>
+   "{{ loan.document.title }}" - start date: {{ loan.start_date }} - end date: {{ loan.end_date }} - loan PID: {{ loan.pid }} - see <a href="<{{ spa_routes.HOST }}{{ spa_routes.PATHS['loan'] }}/{{ loan.pid }}>">loan details</a> in the backoffice area.
+ </li>
+{% endfor %}
+</ul>
+
+Thank you!
+{% endblock %}
