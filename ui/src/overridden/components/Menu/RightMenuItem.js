@@ -1,7 +1,6 @@
 import {
   FrontSiteRoutes,
   getStaticPageByName,
-  invenioConfig,
 } from '@inveniosoftware/react-invenio-app-ils';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -18,7 +17,7 @@ const DropdownItems = () => {
         F.A.Q.
       </Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item as="a" href={`mailto:${invenioConfig.APP.libraryEmail}`}>
+      <Dropdown.Item as={Link} to={getStaticPageByName('contact').route}>
         Ask a librarian
       </Dropdown.Item>
       <Dropdown.Divider />

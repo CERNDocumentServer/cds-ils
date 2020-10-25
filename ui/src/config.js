@@ -1,13 +1,12 @@
 export const config = {
   APP: {
     LOGO_SRC: null,
-    staticPages: [
+    STATIC_PAGES: [
       { name: 'about', route: '/about', apiURL: '1' },
       { name: 'terms', route: '/terms', apiURL: '2' },
       { name: 'faq', route: '/faq', apiURL: '3' },
+      { name: 'contact', route: '/contact', apiURL: '4' },
     ],
-    supportEmail: 'cds.support@cern.ch',
-    libraryEmail: 'library.desk@cern.ch',
     ENABLE_LOCAL_ACCOUNT_LOGIN: false,
     OAUTH_PROVIDERS: {
       github: {
