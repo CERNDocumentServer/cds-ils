@@ -1,7 +1,6 @@
 import {
   FrontSiteRoutes,
   getStaticPageByName,
-  invenioConfig,
 } from '@inveniosoftware/react-invenio-app-ils';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -15,33 +14,8 @@ export const Footer = ({ ...props }) => {
         <Container>
           <Grid columns={4} stackable>
             <Grid.Column>
-              <Header as="h4" content="CERN Library" />
-              <p>
-                <Link to={FrontSiteRoutes.openingHours}>
-                  Opening hours and holidays
-                </Link>
-              </p>
-            </Grid.Column>
-            <Grid.Column>
-              <Header as="h4" content="Help" />
-              <List>
-                <List.Item>
-                  <Link to={FrontSiteRoutes.documentRequestForm}>
-                    Request new literature
-                  </Link>
-                </List.Item>
-                <List.Item>
-                  <a
-                    href="https://library.web.cern.ch"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Scientific Information Service
-                  </a>
-                </List.Item>
-                <List.Item>
-                  <Link to={getStaticPageByName('faq').route}>F.A.Q.</Link>
-                </List.Item>
+              <Header as="h4" content="About" />
+              <List relaxed>
                 <List.Item>
                   <Link to={getStaticPageByName('about').route}>About</Link>
                 </List.Item>
@@ -53,20 +27,36 @@ export const Footer = ({ ...props }) => {
               </List>
             </Grid.Column>
             <Grid.Column>
-              <Header as="h4" content="Contact us" />
-              <List>
-                <List.Item>+41 22 767 24 35</List.Item>
+              <Header as="h4" content="Need help?" />
+              <List relaxed>
                 <List.Item>
-                  <a href={`mailto:${invenioConfig.APP.libraryEmail}`}>
-                    {invenioConfig.APP.libraryEmail}
-                  </a>
+                  <Link to={getStaticPageByName('contact').route}>
+                    Contact us
+                  </Link>
+                </List.Item>
+                <List.Item>
+                  <Link to={getStaticPageByName('faq').route}>F.A.Q.</Link>
+                </List.Item>
+                <List.Item>
+                  <Link to={FrontSiteRoutes.documentRequestForm}>
+                    Request new literature
+                  </Link>
                 </List.Item>
               </List>
-              <Header as="h4" content="Technical Support" />
-              <List>
+            </Grid.Column>
+            <Grid.Column>
+              <Header as="h4" content="CERN Library" />
+              <List relaxed>
                 <List.Item>
-                  <a href={`mailto:${invenioConfig.APP.supportEmail}`}>
-                    {invenioConfig.APP.supportEmail}
+                  <Link to={FrontSiteRoutes.openingHours}>Opening hours</Link>
+                </List.Item>
+                <List.Item>
+                  <a
+                    href="https://scientific-info.cern"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Scientific Information Service
                   </a>
                 </List.Item>
               </List>

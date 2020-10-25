@@ -66,21 +66,28 @@ def pages():
             title="About",
             description="About",
             content=page_data("about.html"),
-            template_name="invenio_pages/default.html",
+            template_name="invenio_pages/dynamic.html",
         ),
         Page(
             url="/terms",
             title="Terms",
             description="Terms",
             content=page_data("terms.html"),
-            template_name="invenio_pages/default.html",
+            template_name="invenio_pages/dynamic.html",
         ),
         Page(
             url="/faq",
             title="F.A.Q.",
             description="F.A.Q.",
             content=page_data("faq.html"),
-            template_name="invenio_pages/default.html",
+            template_name="invenio_pages/dynamic.html",
+        ),
+        Page(
+            url="/contact",
+            title="Contact",
+            description="Contact",
+            content=page_data("contact.html"),
+            template_name="invenio_pages/dynamic.html",
         ),
     ]
     with db.session.begin_nested():
