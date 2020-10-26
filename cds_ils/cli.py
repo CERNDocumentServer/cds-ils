@@ -6,22 +6,39 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CLI for CDS-ILS."""
+import json
 import os
 import pathlib
+import random
+from datetime import date, timedelta
+from random import randint
 
+import arrow
 import click
+import lorem
 import pkg_resources
+from elasticsearch_dsl import Q
 from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
 from invenio_app_ils.cli import minter
-from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
-from invenio_app_ils.locations.indexer import LocationIndexer
+from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
+from invenio_app_ils.indexer import wait_es_refresh
+from invenio_app_ils.internal_locations.api import INTERNAL_LOCATION_PID_TYPE
+from invenio_app_ils.items.api import ITEM_PID_TYPE
+from invenio_app_ils.locations.api import LOCATION_PID_TYPE
+from invenio_app_ils.proxies import current_app_ils
 from invenio_base.app import create_cli
+from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
+from invenio_circulation.proxies import current_circulation
 from invenio_db import db
 from invenio_pages import Page
+from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
+from invenio_search import current_search
 from invenio_userprofiles import UserProfile
+
+CURRENT_DIR = pathlib.Path(__file__).parent.absolute()
 
 
 @click.group()
@@ -87,7 +104,6 @@ def location():
         "saturday",
         "sunday",
     ]
-
     closed = ["saturday", "sunday"]
     times = [
         {"start_time": "08:30", "end_time": "18:00"},
@@ -102,7 +118,6 @@ def location():
                 **({"times": times} if is_open else {}),
             }
         )
-
     location = {
         "pid": RecordIdProviderV2.create().pid.pid_value,
         "name": "CERN Central Library",
@@ -111,12 +126,10 @@ def location():
         "opening_weekdays": opening_weekdays,
         "opening_exceptions": [],
     }
-    record = Location.create(location)
+    record = current_app_ils.location_record_cls.create(location)
     minter(LOCATION_PID_TYPE, "pid", record)
-    record.commit()
     db.session.commit()
-    indexer = LocationIndexer()
-    indexer.index(record)
+    current_app_ils.location_indexer.index(record)
 
 
 def create_userprofile_for(email, username, full_name):
@@ -169,6 +182,8 @@ def demo_patrons():
     run_command("access allow superuser-access role admin")
     run_command("access allow ils-backoffice-access role librarian")
 
+    run_command("patrons index")
+
 
 @fixtures.command()
 @with_appcontext
@@ -197,3 +212,278 @@ def vocabularies():
     run_command("vocabulary index json --force {}".format(json_files))
     run_command("vocabulary index opendefinition spdx --force")
     run_command("vocabulary index opendefinition opendefinition --force")
+
+
+@click.group()
+def demo():
+    """Create real demo data."""
+
+
+def mint_record_pid(pid_type, pid_field, record):
+    """Mint the given PID for the given record."""
+    PersistentIdentifier.create(
+        pid_type=pid_type,
+        pid_value=record[pid_field],
+        object_type="rec",
+        object_uuid=record.id,
+        status=PIDStatus.REGISTERED,
+    )
+    db.session.commit()
+
+
+@demo.command()
+@click.option("--json-path", "docs_path")
+@with_appcontext
+def create_demo_docs(docs_path):
+    """Insert real demo docs."""
+    demo_docs = os.path.join(CURRENT_DIR, docs_path)
+    with open(os.path.join(demo_docs)) as f:
+        demo_data = json.loads(f.read())
+
+    for d in demo_data:
+        doc = current_app_ils.document_record_cls.create(d)
+        mint_record_pid(DOCUMENT_PID_TYPE, "pid", doc)
+        current_app_ils.document_indexer.index(doc)
+
+    click.secho("Docs were created successfully.", fg="blue")
+
+
+def get_pids(search):
+    """Get a list of pids of the search results."""
+    s = search()
+    results = s.execute()
+    pids = []
+    for hit in results.hits:
+        pids.append(hit["pid"])
+
+    return pids
+
+
+@demo.command()
+@click.option("--json-path", "items_path")
+@with_appcontext
+def create_demo_items(items_path):
+    """Insert real demo items."""
+    demo_items = os.path.join(CURRENT_DIR, items_path)
+    with open(os.path.join(demo_items)) as f:
+        demo_items = json.loads(f.read())
+
+    intloc_pids = get_pids(current_app_ils.internal_location_search_cls)
+
+    for i in demo_items:
+        i["internal_location_pid"] = random.choice(intloc_pids)
+        item = current_app_ils.item_record_cls.create(i)
+        mint_record_pid(ITEM_PID_TYPE, "pid", item)
+        current_app_ils.item_indexer.index(item)
+
+    click.secho("Items were created successfully.", fg="blue")
+
+
+@demo.command()
+@click.option("--user-email", "user_email")
+@click.option("--is-past-loan", is_flag=True)
+@with_appcontext
+def create_loan(user_email, is_past_loan):
+    """Create a loan."""
+    patron = User.query.filter_by(email=user_email).one()
+    patron_pid = patron.get_id()
+
+    loc_pid, _ = current_app_ils.get_default_location_pid
+
+    delivery = list(
+        current_app.config["ILS_CIRCULATION_DELIVERY_METHODS"].keys()
+    )[randint(0, 1)]
+
+    loan_dict = {
+        "pid": RecordIdProviderV2.create().pid.pid_value,
+        "patron_pid": "{}".format(patron_pid),
+        "pickup_location_pid": "{}".format(loc_pid),
+        "transaction_location_pid": "{}".format(loc_pid),
+        "transaction_user_pid": "{}".format(patron_pid),
+        "delivery": {"method": delivery},
+    }
+
+    if is_past_loan:
+        loan_dict["state"] = "ITEM_RETURNED"
+        loan_dict["document_pid"] = "qaywb-gfe4B"
+        transaction_date = start_date = arrow.utcnow() - timedelta(days=365)
+        end_date = start_date + timedelta(days=30)
+        item_pid = "678e3-an678A"
+    else:
+        loan_dict["state"] = "ITEM_ON_LOAN"
+        loan_dict["document_pid"] = "67186-5rs9E"
+        transaction_date = start_date = arrow.utcnow() - timedelta(days=21)
+        end_date = start_date + timedelta(days=30)
+        item_pid = "vgrh9-jvj8E"
+
+    loan_dict["transaction_date"] = transaction_date.isoformat()
+    loan_dict["start_date"] = start_date.date().isoformat()
+    loan_dict["end_date"] = end_date.date().isoformat()
+    loan_dict["extension_count"] = randint(0, 3)
+    loan_dict["item_pid"] = {"type": ITEM_PID_TYPE, "value": item_pid}
+
+    loan = current_circulation.loan_record_cls.create(loan_dict)
+    minter(CIRCULATION_LOAN_PID_TYPE, "pid", loan)
+    db.session.commit()
+    current_circulation.loan_indexer().index(loan)
+    item = current_app_ils.item_record_cls.get_record_by_pid(item_pid)
+    current_app_ils.item_indexer.index(item)
+
+    current_search.flush_and_refresh(index="*")
+
+    doc = current_app_ils.document_record_cls.get_record_by_pid(
+        loan_dict["document_pid"]
+    )
+
+    click.secho(
+        "Loan with pid '{0}' on document '{1}' was created.".format(
+            loan_dict["pid"], doc["title"]
+        ),
+        fg="blue",
+    )
+
+
+@demo.command()
+@click.option("--user-email", "user_email")
+@click.option("--given-date", "given_date")
+@with_appcontext
+def clean_loans(user_email, given_date):
+    """Clean loans and doc requests created by given user on given date."""
+    patron = User.query.filter_by(email=user_email).one()
+    patron_pid = patron.get_id()
+
+    patron_document_requests = (
+        current_app_ils.document_request_search_cls()
+        .filter(
+            "bool",
+            filter=[
+                Q("term", patron_pid=patron_pid),
+                Q("term", _created=given_date),
+            ],
+        )
+        .scan()
+    )
+
+    for hit in patron_document_requests:
+        document_request = (
+            current_app_ils.document_request_record_cls.get_record_by_pid(
+                hit.pid
+            )
+        )
+        document_request.delete(force=True)
+        db.session.commit()
+        current_app_ils.document_indexer.delete(document_request)
+
+    patron_loans = (
+        current_circulation.loan_search_cls()
+        .filter(
+            "bool",
+            filter=[
+                Q("term", patron_pid=patron_pid),
+                Q("term", _created=given_date),
+            ],
+        )
+        .scan()
+    )
+
+    for hit in patron_loans:
+        loan = current_circulation.loan_record_cls.get_record_by_pid(hit.pid)
+        loan.delete(force=True)
+        db.session.commit()
+        current_circulation.loan_indexer().delete(loan)
+        if "item_pid" in loan:
+            item = current_app_ils.item_record_cls.get_record_by_pid(
+                loan["item_pid"]["value"]
+            )
+            loan_index = current_circulation.loan_search_cls.Meta.index
+            wait_es_refresh(loan_index)
+            current_app_ils.item_indexer.index(item)
+
+    current_search.flush_and_refresh(index="*")
+
+    click.secho(
+        "Loans and document requests of user with pid '{0}' have been deleted."
+        .format(
+            patron_pid
+        ),
+        fg="blue",
+    )
+
+
+@demo.command()
+@click.option("--path", help="Json filepath for demo data.")
+@click.option("--are-docs", is_flag=True, help="Importing docs.")
+@click.option("--are-items", is_flag=True, help="Importing items.")
+@click.option("--verbose", is_flag=True, help="Verbose output.")
+@with_appcontext
+def import_demo_data(path, are_docs, are_items, verbose):
+    """Import real demo data."""
+    cli = create_cli()
+    runner = current_app.test_cli_runner()
+
+    def run_command(command, catch_exceptions=False):
+        click.secho("cds-ils {}...".format(command), fg="green")
+        res = runner.invoke(cli, command, catch_exceptions=catch_exceptions)
+        if verbose:
+            click.secho(res.output)
+
+    if are_docs:
+        command = "create-demo-docs"
+    elif are_items:
+        command = "create-demo-items"
+
+    run_command("demo " + command + " --json-path " + path)
+
+
+@demo.command()
+@click.option("--user-email", help="User to have a loan on the book.")
+@click.option("--verbose", is_flag=True, help="Verbose output.")
+@with_appcontext
+def user_test_prepare(user_email, verbose):
+    """Import real demo data."""
+    cli = create_cli()
+    runner = current_app.test_cli_runner()
+
+    def run_command(command, catch_exceptions=False):
+        click.secho("cds-ils {}...".format(command), fg="green")
+        res = runner.invoke(cli, command, catch_exceptions=catch_exceptions)
+        if verbose:
+            click.secho(res.output)
+
+    # create ongoing loan
+    run_command("demo create-loan  --user-email " + user_email)
+
+    # create past loan
+    run_command("demo create-loan --is-past-loan --user-email " + user_email)
+
+
+@demo.command()
+@click.option(
+    "--user-email", help="User to delete all of the loans they created."
+)
+@click.option(
+    "--given-date",
+    help="All loans created on this day by the user will be deleted.",
+)
+@click.option("--verbose", is_flag=True, help="Verbose output.")
+@with_appcontext
+def user_test_clean(user_email, given_date, verbose):
+    """Import real demo data."""
+    cli = create_cli()
+    runner = current_app.test_cli_runner()
+
+    def run_command(command, catch_exceptions=False):
+        click.secho("cds-ils {}...".format(command), fg="green")
+        res = runner.invoke(cli, command, catch_exceptions=catch_exceptions)
+        if verbose:
+            click.secho(res.output)
+
+    if not given_date:
+        given_date = arrow.utcnow().format("YYYY-MM-DD")
+
+    run_command(
+        "demo clean-loans --user-email "
+        + user_email
+        + " --given-date "
+        + given_date
+    )
