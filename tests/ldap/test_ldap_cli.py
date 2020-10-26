@@ -20,15 +20,23 @@ from cds_ils.ldap.api import LdapUserImporter, _delete_invenio_user, \
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 
 
-def test_send_email_delete_user_with_loans(app_with_mail, patron1, testdata):
-    """Test that email sent when the user is automatically deleted."""
-    with app_with_mail.extensions["mail"].record_messages() as outbox:
+def test_send_email_delete_user_with_loans(app, patron1, testdata):
+    """Test that email sent when the user is deleted with active loans."""
+    with app.extensions["mail"].record_messages() as outbox:
         assert len(outbox) == 0
         _delete_invenio_user(patron1.id)
         assert len(outbox) == 1
-        assert outbox[0].recipients == [
-            app_with_mail.config["MANAGEMENT_EMAIL"]
+        email = outbox[0]
+        assert email.recipients == [
+            app.config["MANAGEMENT_EMAIL"]
         ]
+
+        def assert_contains(string):
+            assert string in email.body
+            assert string in email.html
+
+        assert_contains("patron1@cern.ch")
+        assert_contains("loanid-2")
 
 
 def test_update_user_from_ldap(app, db, patron1, testdata):
