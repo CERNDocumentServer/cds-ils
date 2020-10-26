@@ -1,0 +1,28 @@
+[
+  {
+    "pid": "eitemid-1",
+    "document_pid": "docid-2",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": true
+  },
+  {
+    "pid": "eitemid-2",
+    "document_pid": "docid-2",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  }
+]
