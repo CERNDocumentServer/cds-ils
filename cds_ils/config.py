@@ -468,6 +468,39 @@ ILS_GLOBAL_MAIL_TEMPLATES = {
     "footer": "cds_footer.html"
 }
 
+# List of available vocabularies
+ILS_VOCABULARIES = [
+    "acq_medium",
+    "acq_order_line_payment_mode",
+    "acq_order_line_purchase_type",
+    "acq_payment_mode",
+    "acq_recipient",
+    "affiliation_identifier_scheme",
+    "alternative_identifier_scheme",
+    "alternative_title_type",
+    "author_identifier_scheme",
+    "author_role",
+    "author_type",
+    "conference_identifier_scheme",
+    "country",
+    "currencies",
+    "doc_req_type",
+    "doc_req_payment_method",
+    "doc_req_medium",
+    "document_accelerators",
+    "document_experiments",
+    "document_standard_reviews",
+    "identifier_scheme",
+    "ill_item_type",
+    "ill_payment_mode",
+    "item_medium",
+    "language",
+    "license",
+    "series_identifier_scheme",
+    "series_url_access_restriction",
+    "tag",
+]
+
 CIRCULATION_LOAN_TRANSITIONS = {
     "CREATED": [
         dict(

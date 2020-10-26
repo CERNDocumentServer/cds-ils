@@ -37,7 +37,8 @@ export const config = {
       fields: {
         'unit:accelerator': {
           label: 'Accelerator',
-          type: 'string',
+          type: 'vocabulary',
+          vocabularyType: 'document_accelerators',
           default: '',
         },
         'unit:curated_relation': {
@@ -47,7 +48,8 @@ export const config = {
         },
         'unit:experiment': {
           label: 'Experiment',
-          type: 'string',
+          type: 'vocabulary',
+          vocabularyType: 'document_experiments',
           default: '',
         },
         'unit:institution': {
@@ -67,7 +69,8 @@ export const config = {
         },
         'standard_review:applicability': {
           label: 'Status CERN Applicability',
-          type: 'string',
+          type: 'vocabulary',
+          vocabularyType: 'document_standard_reviews',
           default: '',
         },
         'standard_review:standard_validity': {
