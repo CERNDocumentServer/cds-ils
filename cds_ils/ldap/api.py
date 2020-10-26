@@ -16,11 +16,12 @@ import ldap
 from flask import current_app
 from invenio_accounts.models import User
 from invenio_app_ils.anonymization import anonymize_patron_data
-from invenio_app_ils.circulation.tasks import send_active_loans_mail
+from invenio_app_ils.errors import AnonymizationActiveLoansError
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
 
+from cds_ils.circulation.tasks import send_active_loans_mail
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
 
 
@@ -241,7 +242,7 @@ def _delete_invenio_user(user_id):
     try:
         anonymize_patron_data(user_id)
         return True
-    except AssertionError:
+    except AnonymizationActiveLoansError:
         send_active_loans_mail(user_id)
         return False
 
