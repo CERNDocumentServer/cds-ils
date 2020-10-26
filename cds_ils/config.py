@@ -26,9 +26,12 @@ from invenio_app_ils.circulation.utils import circulation_can_be_requested, \
 from invenio_app_ils.config import \
     CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
+from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
+from invenio_app_ils.eitems.api import EITEM_PID_TYPE
 from invenio_app_ils.ill.api import can_item_circulate, \
     circulation_default_extension_duration, \
     circulation_default_loan_duration
+from invenio_app_ils.literature.api import LITERATURE_PID_TYPE
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE, AnonymousPatron
 from invenio_app_ils.permissions import authenticated_user_permission, \
@@ -232,13 +235,12 @@ SENTRY_DSN = None
 SENTRY_CONFIG = {"environment": os.environ.get("SENTRY_ENVIRONMENT", "dev")}
 
 try:
-    # Try to get the release tag
     from raven import fetch_git_sha
 
     SENTRY_CONFIG["release"] = fetch_git_sha(
         os.environ.get("DEPLOYMENT_INSTANCE_PATH")
     )
-except Exception:
+except ModuleNotFoundError:
     pass
 
 ###############################################################################
@@ -268,8 +270,7 @@ CERN_APP_OPENID_CREDENTIALS = dict(
         "OAUTH_CERN_OPENID_CLIENT_ID", "localhost-cds-ils"
     ),
     consumer_secret=os.environ.get(
-        "OAUTH_CERN_OPENID_CLIENT_SECRET",
-        "<change_me>",
+        "OAUTH_CERN_OPENID_CLIENT_SECRET", "<change_me>"
     ),
 )
 USERPROFILES_EXTEND_SECURITY_FORMS = True
@@ -277,20 +278,20 @@ USERPROFILES_EXTEND_SECURITY_FORMS = True
 # non-REST
 OAUTH_REMOTE_APP = copy.deepcopy(cern_openid.REMOTE_APP)
 OAUTH_REMOTE_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
-OAUTHCLIENT_REMOTE_APPS = dict(
-    cern_openid=OAUTH_REMOTE_APP,
-)
+OAUTHCLIENT_REMOTE_APPS = dict(cern_openid=OAUTH_REMOTE_APP)
 ###############################################################################
 # REST
-logout_redirect_url = os.environ.get("INVENIO_SPA_HOST",
-                                     "https://127.0.0.1:3000/")
+logout_redirect_url = os.environ.get(
+    "INVENIO_SPA_HOST", "https://127.0.0.1:3000/"
+)
 OAUTH_REMOTE_REST_APP = copy.deepcopy(cern_openid.REMOTE_REST_APP)
 OAUTH_REMOTE_REST_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
 OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
     "OAUTH_CERN_OPENID_LOGOUT_URL",
     "https://keycloak-qa.cern.ch/auth/realms/cern/"
     "protocol/openid-connect/logout/?redirect_uri={}".format(
-        logout_redirect_url),
+        logout_redirect_url
+    ),
 )
 OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
     os.environ.get("INVENIO_SPA_HOST", "https://127.0.0.1:3000") + "/login"
@@ -314,15 +315,10 @@ SECURITY_CONFIRMABLE = False
 SECURITY_CHANGEABLE = False
 PERMANENT_SESSION_LIFETIME = timedelta(1)
 SECURITY_LOGIN_SALT = "CHANGE_ME"
-SECURITY_POST_LOGOUT_VIEW = '/api/cern_openid/logout/'
+SECURITY_POST_LOGOUT_VIEW = "/api/cern_openid/logout/"
 # Override login template to remove local logins
 # Use this in deployed envs, when having login via CERN SSO only
 # OAUTHCLIENT_LOGIN_USER_TEMPLATE = "cds_ils/login_user.html"
-
-###############################################################################
-# LDAP configuration
-###############################################################################
-CDS_ILS_LDAP_URL = "ldap://xldap.cern.ch"
 
 ###############################################################################
 # OAI-PMH
@@ -364,15 +360,35 @@ JSONSCHEMAS_SCHEMAS = [
 # RECORDS REST
 ###############################################################################
 RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
-RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE]["create_permission_factory_imp"] \
-    = deny_all
-RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE]["delete_permission_factory_imp"] \
-    = deny_all
-
-###############################################################################
-# Literature covers Syndetic client ID
-###############################################################################
-CDS_ILS_SYNDETIC_CLIENT = "CHANGE_ME"
+RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE][
+    "create_permission_factory_imp"
+] = deny_all
+RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE][
+    "delete_permission_factory_imp"
+] = deny_all
+# Override serializer for e-items that require authentication
+RECORDS_REST_ENDPOINTS[DOCUMENT_PID_TYPE]["record_serializers"] = {
+    "application/json": "cds_ils.literature.serializers:json_v1_response"
+}
+RECORDS_REST_ENDPOINTS[DOCUMENT_PID_TYPE]["search_serializers"] = {
+    "application/json": "cds_ils.literature.serializers:json_v1_search",
+    "text/csv": "cds_ils.literature.serializers:csv_v1_search",
+}
+RECORDS_REST_ENDPOINTS[EITEM_PID_TYPE]["record_serializers"] = {
+    "application/json": "cds_ils.eitems.serializers:json_v1_response"
+}
+RECORDS_REST_ENDPOINTS[EITEM_PID_TYPE]["search_serializers"] = {
+    "application/json": "cds_ils.eitems.serializers:json_v1_search",
+    "text/csv": "cds_ils.eitems.serializers:csv_v1_search",
+}
+RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["record_serializers"] = {
+    "application/json": "invenio_app_ils.literature.serializers"
+                        ":json_v1_response"
+}
+RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["search_serializers"] = {
+    "application/json": "cds_ils.literature.serializers:json_v1_search",
+    "text/csv": "cds_ils.literature.serializers:csv_v1_search",
+}
 
 ###############################################################################
 # ILS overridden
@@ -458,7 +474,7 @@ ILS_CIRCULATION_MAIL_TEMPLATES = {
     "checkout": "cds_checkout.html",
     "extend": "cds_extend.html",
     "overdue_reminder": "cds_overdue_reminder.html",
-    "expiring_reminder": "cds_will_expire_in_reminder.html"
+    "expiring_reminder": "cds_will_expire_in_reminder.html",
 }
 
 ILS_DOCUMENT_REQUEST_MAIL_TEMPLATES = {
@@ -467,19 +483,16 @@ ILS_DOCUMENT_REQUEST_MAIL_TEMPLATES = {
         "cds_document_request_reject_user_cancel.html",
     "request_rejected_in_catalog":
         "cds_document_request_reject_in_catalog.html",
-    "request_rejected_not_found": "cds_document_request_reject_not_found.html"
-
+    "request_rejected_not_found": "cds_document_request_reject_not_found.html",
 }
 
 ILS_ILL_MAIL_TEMPLATES = {
     "extension_accepted": "cds_patron_loan_extension_accept.html",
     "extension_declined": "cds_patron_loan_extension_decline.html",
-    "extension_requested": "cds_patron_loan_extension_request.html"
+    "extension_requested": "cds_patron_loan_extension_request.html",
 }
 
-ILS_GLOBAL_MAIL_TEMPLATES = {
-    "footer": "cds_footer.html"
-}
+ILS_GLOBAL_MAIL_TEMPLATES = {"footer": "cds_footer.html"}
 
 # List of available vocabularies
 ILS_VOCABULARIES = [
@@ -589,3 +602,13 @@ CIRCULATION_LOAN_TRANSITIONS = {
 }
 
 ILS_PATRON_ANONYMOUS_CLASS = AnonymousPatron
+
+###############################################################################
+# CDS-ILS configuration
+###############################################################################
+#: LDAP configuration
+CDS_ILS_LDAP_URL = "ldap://xldap.cern.ch"
+#: Literature covers Syndetic client ID
+CDS_ILS_SYNDETIC_CLIENT = "CHANGE_ME"
+#: EzProxy URL
+CDS_ILS_EZPROXY_URL = "https://ezproxy.cern.ch/login?url={url}"

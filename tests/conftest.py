@@ -12,9 +12,11 @@ import os
 
 import jinja2
 import pytest
-from invenio_accounts.models import User
+from invenio_access import ActionRoles, superuser_access
+from invenio_accounts.models import Role, User
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
+from invenio_app_ils.eitems.api import EITEM_PID_TYPE, EItem
 from invenio_app_ils.internal_locations.api import \
     INTERNAL_LOCATION_PID_TYPE, InternalLocation
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
@@ -62,6 +64,34 @@ def app_config(app_config):
     }
     app_config.update(tests_config)
     return app_config
+
+
+@pytest.fixture()
+def json_headers():
+    """JSON headers."""
+    return [
+        ("Content-Type", "application/json"),
+        ("Accept", "application/json"),
+    ]
+
+
+@pytest.fixture()
+def admin(app, db):
+    """Create admin, librarians and patrons."""
+    with db.session.begin_nested():
+        datastore = app.extensions["security"].datastore
+        admin = datastore.create_user(
+            email="admin@test.com", password="123456", active=True
+        )
+        # Give role to admin
+        admin_role = Role(name="admin")
+        db.session.add(
+            ActionRoles(action=superuser_access.value, role=admin_role)
+        )
+        datastore.add_role_to_user(admin, admin_role)
+    db.session.commit()
+
+    return admin
 
 
 @pytest.fixture()
@@ -117,63 +147,55 @@ def mint_record_pid(pid_type, pid_field, record):
     db.session.commit()
 
 
+def _create_records(db, objs, cls, pid_type):
+    """Create records and index."""
+    recs = []
+    for obj in objs:
+        record = cls.create(obj)
+        mint_record_pid(pid_type, "pid", record)
+        recs.append(record)
+    db.session.commit()
+    return recs
+
+
 @pytest.fixture()
 def testdata(app, db, es_clear, patron1):
     """Create, index and return test data."""
-    indexer = RecordIndexer()
+    data = load_json_from_datadir("locations.json")
+    locations = _create_records(db, data, Location, LOCATION_PID_TYPE)
 
-    locations = load_json_from_datadir("locations.json")
-    for location in locations:
-        record = Location.create(location)
-        mint_record_pid(LOCATION_PID_TYPE, "pid", record)
-        record.commit()
-        db.session.commit()
-        indexer.index(record)
+    data = load_json_from_datadir("internal_locations.json")
+    int_locs = _create_records(
+        db, data, InternalLocation, INTERNAL_LOCATION_PID_TYPE
+    )
 
-    internal_locations = load_json_from_datadir("internal_locations.json")
-    for internal_location in internal_locations:
-        record = InternalLocation.create(internal_location)
-        mint_record_pid(INTERNAL_LOCATION_PID_TYPE, "pid", record)
-        record.commit()
-        db.session.commit()
-        indexer.index(record)
+    data = load_json_from_datadir("documents.json")
+    documents = _create_records(db, data, Document, DOCUMENT_PID_TYPE)
 
-    documents = load_json_from_datadir("documents.json")
-    for doc in documents:
-        record = Document.create(doc)
-        mint_record_pid(DOCUMENT_PID_TYPE, "pid", record)
-        record.commit()
-        db.session.commit()
-        indexer.index(record)
+    data = load_json_from_datadir("series.json")
+    series = _create_records(db, data, Series, SERIES_PID_TYPE)
 
-    items = load_json_from_datadir("items.json")
-    for item in items:
-        record = Item.create(item)
-        mint_record_pid(ITEM_PID_TYPE, "pid", record)
-        record.commit()
-        db.session.commit()
-        indexer.index(record)
+    data = load_json_from_datadir("items.json")
+    items = _create_records(db, data, Item, ITEM_PID_TYPE)
 
-    loans = load_json_from_datadir("loans.json")
-    for loan in loans:
-        record = Loan.create(loan)
-        mint_record_pid(CIRCULATION_LOAN_PID_TYPE, "pid", record)
-        record.commit()
-        db.session.commit()
-        indexer.index(record)
+    data = load_json_from_datadir("eitems.json")
+    eitems = _create_records(db, data, EItem, EITEM_PID_TYPE)
 
-    series = load_json_from_datadir("series.json")
-    for serie in series:
-        record = Series.create(serie)
-        mint_record_pid(SERIES_PID_TYPE, "pid", record)
-        record.commit()
-        db.session.commit()
-        indexer.index(record)
+    data = load_json_from_datadir("loans.json")
+    loans = _create_records(db, data, Loan, CIRCULATION_LOAN_PID_TYPE)
 
-    # flush all indices after indexing, otherwise ES won't be ready for tests
+    # index
+    ri = RecordIndexer()
+    for rec in (
+        locations + int_locs + series + documents + items + eitems + loans
+    ):
+        ri.index(rec)
+
     current_search.flush_and_refresh(index="*")
     return {
         "documents": documents,
+        "eitems": eitems,
+        "internal_locations": int_locs,
         "items": items,
         "loans": loans,
         "locations": locations,
