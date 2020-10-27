@@ -22,6 +22,33 @@ export const config = {
         className: '',
       },
     },
+    ENVIRONMENTS: [
+      {
+        name: 'dev',
+        display: {
+          text: 'Development environment',
+          color: 'blue',
+          icon: 'code',
+        },
+      },
+      {
+        name: 'sandbox',
+        display: {
+          text: 'Sandbox environment',
+          color: 'teal',
+          icon: 'camera',
+        },
+      },
+      {
+        name: 'production',
+        display: {
+          roles: ['admin'],
+          text: 'Production environment',
+          color: 'red',
+          icon: 'warning',
+        },
+      },
+    ],
   },
   CIRCULATION: {
     extensionsMaxCount: 10000, // should be infinite
