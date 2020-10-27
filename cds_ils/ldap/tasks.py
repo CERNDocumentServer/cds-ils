@@ -12,7 +12,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app
 
-from .api import sync_users
+from .api import update_users
 from .models import LdapSynchronizationLog
 
 celery_logger = get_task_logger(__name__)
@@ -20,12 +20,12 @@ celery_logger = get_task_logger(__name__)
 
 @shared_task
 def synchronize_users_task():
-    """Add entry to database with info about this synchronization."""
+    """Run the task to update users from LDAP."""
     log = LdapSynchronizationLog.create_celery(
         synchronize_users_task.request.id
     )
     try:
-        result = sync_users()
+        result = update_users()
         log.set_succeeded(*result)
     except Exception as e:
         current_app.logger.exception(e)

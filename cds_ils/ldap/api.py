@@ -17,7 +17,8 @@ from flask import current_app
 from invenio_accounts.models import User
 from invenio_app_ils.errors import AnonymizationActiveLoansError
 from invenio_app_ils.patrons.anonymization import anonymize_patron_data
-from invenio_app_ils.patrons.indexer import reindex_patrons
+from invenio_app_ils.patrons.indexer import PatronBaseIndexer, reindex_patrons
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
@@ -190,9 +191,11 @@ class LdapUserImporter:
         remote_account = self.create_invenio_remote_account(user_id, ldap_user)
         db.session.add(remote_account)
 
+        return user_id
 
-def import_ldap_users():
-    """Import ldap users in db."""
+
+def import_users():
+    """Import LDAP users in db."""
     start_time = time.time()
 
     ldap_client = LdapClient()
@@ -200,6 +203,7 @@ def import_ldap_users():
 
     print("Users in LDAP: {}".format(len(ldap_users)))
 
+    imported = 0
     importer = LdapUserImporter()
     for ldap_user in ldap_users:
         email = ldap_user_get(ldap_user, "mail").lower()
@@ -212,20 +216,25 @@ def import_ldap_users():
         employee_id = ldap_user_get(ldap_user, "employeeID")
         print("Importing user with person id {}".format(employee_id))
         importer.import_user(ldap_user)
+        imported += 1
 
     db.session.commit()
+
+    print("Users imported: {}".format(imported))
+    print("Now re-indexing all patrons...")
 
     reindex_patrons()
 
-    print("Users imported: {}".format(len(ldap_users)))
     print("--- Finished in %s seconds ---" % (time.time() - start_time))
 
 
-def _update_invenio_user(invenio_remote_account_id, ldap_user):
+def _update_invenio_user(
+    invenio_remote_account_id, invenio_user_profile, ldap_user
+):
     """Check if the LDAP user has more updated info and update the Invenio."""
+    invenio_user_profile.full_name = ldap_user_get(ldap_user, "displayName")
     ra = RemoteAccount.query.filter_by(id=invenio_remote_account_id).one()
     ra.extra_data["department"] = ldap_user_get(ldap_user, "department")
-    db.session.commit()
 
 
 def _delete_invenio_user(user_id):
@@ -245,13 +254,15 @@ def _log_info(log_uuid, action, extra=dict()):
     current_app.logger.info(structured_msg_str)
 
 
-def sync_users():
-    """Sync ldap with system users command."""
+def update_users():
+    """Sync LDAP users with local users in the DB."""
     log_uuid = str(uuid.uuid4())
     start_time = time.time()
 
+    patron_cls = current_app_ils.patron_cls
+    patron_indexer = PatronBaseIndexer()
+
     invenio_users_updated_count = 0
-    invenio_users_deleted_count = 0
     invenio_users_added_count = 0
 
     # get all CERN users from LDAP
@@ -263,6 +274,9 @@ def sync_users():
         "users_fetched_from_ldap",
         dict(users_fetched=len(ldap_users)),
     )
+
+    if not ldap_users:
+        return 0, 0, 0
 
     # create a map by employeeID for fast lookup
     ldap_users_map = {}
@@ -308,14 +322,25 @@ def sync_users():
         )
         if ldap_user:
             # the imported LDAP user is already in the Invenio db
+            ldap_user_display_name = ldap_user_get(ldap_user, "displayName")
+            up = UserProfile.query.filter_by(
+                user_id=invenio_user["user_id"]
+            ).one()
+            invenio_full_name = up.full_name
+
             ldap_user_department = ldap_user_get(ldap_user, "department")
             invenio_user_department = invenio_user["remote_account_department"]
-            has_changed = invenio_user_department != ldap_user_department
+
+            has_changed = (
+                ldap_user_display_name != invenio_full_name
+                or invenio_user_department != ldap_user_department
+            )
             if has_changed:
                 _update_invenio_user(
                     invenio_remote_account_id=invenio_user[
                         "remote_account_id"
                     ],
+                    invenio_user_profile=up,
                     ldap_user=ldap_user,
                 )
 
@@ -329,24 +354,12 @@ def sync_users():
                     ),
                 )
 
+                # re-index modified patron
+                patron_indexer.index(patron_cls(invenio_user["user_id"]))
+
                 invenio_users_updated_count += 1
-        else:
-            # the user in Invenio does not exist in LDAP, delete it
 
-            # fetch user and needed values before deletion
-            user_id = invenio_user["user_id"]
-            user = User.query.filter_by(id=user_id).one()
-            email = user.email
-
-            success = _delete_invenio_user(user_id)
-            if success:
-                _log_info(
-                    log_uuid,
-                    "user_deleted",
-                    dict(invenio_user_id=user_id, invenio_user_email=email),
-                )
-
-                invenio_users_deleted_count += 1
+    db.session.commit()
 
     # STEP 2
     # Import any new LDAP user not in Invenio yet, the remaining
@@ -354,7 +367,7 @@ def sync_users():
     if new_ldap_users:
         importer = LdapUserImporter()
         for ldap_user in new_ldap_users:
-            importer.import_user(ldap_user)
+            user_id = importer.import_user(ldap_user)
 
             email = ldap_user_get(ldap_user, "mail").lower()
             employee_id = ldap_user_get(ldap_user, "employeeID")
@@ -364,9 +377,12 @@ def sync_users():
                 dict(email=email, employee_id=employee_id),
             )
 
+            # index newly added patron
+            patron_indexer.index(patron_cls(user_id))
+
             invenio_users_added_count += 1
 
-    reindex_patrons()
+    db.session.commit()
 
     total_time = time.time() - start_time
 
@@ -375,6 +391,68 @@ def sync_users():
     return (
         len(ldap_users),
         invenio_users_updated_count,
-        invenio_users_deleted_count,
         invenio_users_added_count,
     )
+
+
+def delete_users(dry_run=True):
+    """Delete users that are still in the DB but not in LDAP."""
+    raise NotImplementedError("not yet tested properly")
+
+    invenio_users_deleted_count = 0
+
+    # get all CERN users from LDAP
+    ldap_client = LdapClient()
+    ldap_users = ldap_client.get_primary_accounts()
+
+    if not ldap_users:
+        return 0, 0
+
+    # create a map by employeeID for fast lookup
+    ldap_users_map = {}
+    for ldap_user in ldap_users:
+        ldap_person_id = ldap_user_get(ldap_user, "employeeID")
+        ldap_users_map[ldap_person_id] = ldap_user
+
+    remote_accounts = RemoteAccount.query.all()
+
+    # get all Invenio remote accounts and prepare a list with needed info
+    invenio_users = []
+    for remote_account in remote_accounts:
+        invenio_users.append(
+            dict(
+                remote_account_id=remote_account.id,
+                remote_account_person_id=remote_account.extra_data[
+                    "person_id"
+                ],
+                remote_account_department=remote_account.extra_data.get(
+                    "department"
+                ),
+                user_id=remote_account.user_id,
+            )
+        )
+
+    for invenio_user in invenio_users:
+        ldap_user = ldap_users_map.get(
+            invenio_user["remote_account_person_id"]
+        )
+        if not ldap_user:
+            # the user in Invenio does not exist in LDAP, delete it
+
+            # fetch user and needed values before deletion
+            user_id = invenio_user["user_id"]
+            user = User.query.filter_by(id=user_id).one()
+            email = user.email
+
+            if not dry_run:
+                success = _delete_invenio_user(user_id)
+            else:
+                success = True
+
+            if success:
+                invenio_users_deleted_count += 1
+
+    if not dry_run:
+        reindex_patrons()
+
+    return len(ldap_users), invenio_users_deleted_count
