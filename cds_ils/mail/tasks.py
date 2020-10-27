@@ -31,10 +31,10 @@ def send_warning_mail_patron_has_active_loans(patron_pid):
     ]
 
     if len(loans) > 0:  # Email is sent only if there are active loans
-        recipient = current_app.config["MANAGEMENT_EMAIL"]
+        recipients = current_app.config[
+            "ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS"
+        ]
         msg = UserDeletionWarningActiveLoanMessage(
-            patron,
-            loans,
-            recipients=[recipient],
+            patron, loans, recipients=recipients
         )
         send_ils_email(msg)

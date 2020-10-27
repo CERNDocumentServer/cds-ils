@@ -30,7 +30,10 @@ def test_send_email_delete_user_with_loans(app, patron1, testdata):
         _delete_invenio_user(patron1.id)
         assert len(outbox) == 1
         email = outbox[0]
-        assert email.recipients == [app.config["MANAGEMENT_EMAIL"]]
+        assert (
+            email.recipients
+            == app.config["ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS"]
+        )
 
         def assert_contains(string):
             assert string in email.body
@@ -174,11 +177,7 @@ def test_sync_users(app, db, testdata, mocker):
         assert patron_hit["department"] == expected_department
 
     check_existence("ldap.user111@cern.ch", "New user", "A department")
-    check_existence(
-        "ldap.user222@cern.ch",
-        "A new name",
-        "A new department",
-    )
+    check_existence("ldap.user222@cern.ch", "A new name", "A new department")
     check_existence(
         "ldap.user333@cern.ch", "Nothing changed", "Same department"
     )

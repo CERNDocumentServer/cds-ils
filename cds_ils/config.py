@@ -123,8 +123,8 @@ THEME_FRONTPAGE = False
 ###############################################################################
 #: Email address for support.
 SUPPORT_EMAIL = "cds.support@cern.ch"
-#: Management email for internal notifications.
-MANAGEMENT_EMAIL = "cds.internal@cern.ch"
+#: Librarians email for internal system notifications.
+ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS = ["cds.internal@cern.ch"]
 #: Disable email sending by default.
 MAIL_SUPPRESS_SEND = True
 #: Email address for email notification sender.
