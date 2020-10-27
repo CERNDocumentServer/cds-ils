@@ -11,12 +11,15 @@ from copy import deepcopy
 
 import pytest
 from invenio_accounts.models import User
+from invenio_app_ils.patrons.indexer import reindex_patrons
+from invenio_app_ils.patrons.search import PatronsSearch
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
+from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
 
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
 from cds_ils.ldap.api import LdapUserImporter, _delete_invenio_user, \
-    _update_invenio_user, import_ldap_users, ldap_user_get, sync_users
+    import_users, ldap_user_get, update_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 
 
@@ -27,9 +30,7 @@ def test_send_email_delete_user_with_loans(app, patron1, testdata):
         _delete_invenio_user(patron1.id)
         assert len(outbox) == 1
         email = outbox[0]
-        assert email.recipients == [
-            app.config["MANAGEMENT_EMAIL"]
-        ]
+        assert email.recipients == [app.config["MANAGEMENT_EMAIL"]]
 
         def assert_contains(string):
             assert string in email.body
@@ -37,28 +38,9 @@ def test_send_email_delete_user_with_loans(app, patron1, testdata):
 
         assert_contains("patron1@cern.ch")
         assert_contains("loanid-2")
-        assert_contains("Prairie Fires: The American Dreams of Laura Ingalls"
-                        " Wilder")
-
-
-def test_update_user_from_ldap(app, db, patron1, testdata):
-    """Test check for users update in sync command."""
-    remote_account = RemoteAccount.query.join(User).one()
-    ldap_user = {
-        "displayName": [b"System User"],
-        "department": [b"Another department"],
-        "uidNumber": [b"1"],
-        "mail": [b"system.user@cern.ch"],
-        "cernAccountType": [b"Primary"],
-        "employeeID": [b"1"],
-    }
-    _update_invenio_user(
-        invenio_remote_account_id=remote_account.id, ldap_user=ldap_user
-    )
-    db.session.flush()
-
-    remote_account = RemoteAccount.query.join(User).one()
-    assert remote_account.extra_data["department"] == "Another department"
+        assert_contains(
+            "Prairie Fires: The American Dreams of Laura Ingalls" " Wilder"
+        )
 
 
 def test_import_users(app, db, testdata, mocker):
@@ -81,7 +63,7 @@ def test_import_users(app, db, testdata, mocker):
     )
     mocker.patch("invenio_app_ils.patrons.indexer.reindex_patrons")
 
-    import_ldap_users()
+    import_users()
 
     ldap_user = ldap_users[0]
     email = ldap_user_get(ldap_user, "mail").lower()
@@ -111,8 +93,8 @@ def test_sync_users(app, db, testdata, mocker):
             "employeeID": [b"111"],
         },
         {
-            "displayName": [b"Old user, but different department"],
-            "department": [b"Changed department"],
+            "displayName": [b"A new name"],
+            "department": [b"A new department"],
             "uidNumber": [b"222"],
             "mail": [b"ldap.user222@cern.ch"],
             "cernAccountType": [b"Primary"],
@@ -139,14 +121,16 @@ def test_sync_users(app, db, testdata, mocker):
         # Prepare users in DB. Use `LdapUserImporter` to make it easy
         # create old users
         WILL_BE_UPDATED = deepcopy(ldap_users[1])
+        WILL_BE_UPDATED["displayName"] = [b"Previous name"]
         WILL_BE_UPDATED["department"] = [b"Old department"]
         LdapUserImporter().import_user(WILL_BE_UPDATED)
 
         WILL_NOT_CHANGE = deepcopy(ldap_users[2])
         LdapUserImporter().import_user(WILL_NOT_CHANGE)
 
-        # create a user that does not exist anymore in LDAP
-        WILL_BE_DELETED = {
+        # create a user that does not exist anymore in LDAP, but will not
+        # be deleted for safety
+        COULD_BE_DELETED = {
             "displayName": [b"old user left CERN"],
             "department": [b"Department"],
             "uidNumber": [b"444"],
@@ -154,34 +138,51 @@ def test_sync_users(app, db, testdata, mocker):
             "cernAccountType": [b"Primary"],
             "employeeID": [b"444"],
         }
-        LdapUserImporter().import_user(WILL_BE_DELETED)
+        LdapUserImporter().import_user(COULD_BE_DELETED)
         db.session.commit()
+        reindex_patrons()
 
     _prepare()
 
-    n_ldap, n_updated, n_deleted, n_added = sync_users()
+    n_ldap, n_updated, n_added = update_users()
+
+    current_search.flush_and_refresh(index="*")
 
     assert n_ldap == 3
     assert n_updated == 1
-    assert n_deleted == 1
     assert n_added == 1
 
     invenio_users = User.query.all()
-    assert len(invenio_users) == 4  # 3 from LDAP, 1 was already in test data
+    assert len(invenio_users) == 5  # 4 from LDAP, 1 was already in test data
 
-    user111 = User.query.filter_by(email="ldap.user111@cern.ch").one()
-    ra = RemoteAccount.query.filter_by(user_id=user111.id).one()
-    assert ra.extra_data["department"] == "A department"
+    patrons_search = PatronsSearch()
 
-    user222 = User.query.filter_by(email="ldap.user222@cern.ch").one()
-    ra = RemoteAccount.query.filter_by(user_id=user222.id).one()
-    assert ra.extra_data["department"] == "Changed department"
+    def check_existence(expected_email, expected_name, expected_department):
+        """Assert exist in DB and ES."""
+        # check if saved in DB
+        user = User.query.filter_by(email=expected_email).one()
+        up = UserProfile.query.filter_by(user_id=user.id).one()
+        assert up.full_name == expected_name
+        ra = RemoteAccount.query.filter_by(user_id=user.id).one()
+        assert ra.extra_data["department"] == expected_department
 
-    user333 = User.query.filter_by(email="ldap.user333@cern.ch").one()
-    ra = RemoteAccount.query.filter_by(user_id=user333.id).one()
-    assert ra.extra_data["department"] == "Same department"
+        # check if indexed correctly
+        results = patrons_search.filter("term", id=user.id).execute()
+        assert len(results.hits) == 1
+        patron_hit = [r for r in results][0]
+        assert patron_hit["email"] == expected_email
+        assert patron_hit["department"] == expected_department
 
-    assert User.query.filter_by(email="ldap.user444@cern.ch").count() == 0
+    check_existence("ldap.user111@cern.ch", "New user", "A department")
+    check_existence(
+        "ldap.user222@cern.ch",
+        "A new name",
+        "A new department",
+    )
+    check_existence(
+        "ldap.user333@cern.ch", "Nothing changed", "Same department"
+    )
+    check_existence("ldap.user444@cern.ch", "old user left CERN", "Department")
 
 
 def test_log_table(app):
@@ -204,9 +205,9 @@ def test_log_table(app):
     found = find(log)
     assert found.status == TaskStatus.RUNNING and found.agent == Agent.CELERY
     assert found.task_id == "1"
-    found.set_succeeded(5, 6, 7, 8)
+    found.set_succeeded(5, 6, 7)
     found = find(log)
     assert found.status == TaskStatus.SUCCEEDED
     assert found.ldap_fetch_count == 5
     with pytest.raises(AssertionError):
-        found.set_succeeded(1, 2, 3, 4)
+        found.set_succeeded(1, 2, 3)

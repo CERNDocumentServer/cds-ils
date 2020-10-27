@@ -12,7 +12,9 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 
-from .api import import_ldap_users, sync_users
+from .api import delete_users as ldap_delete_users
+from .api import import_users as ldap_import_users
+from .api import update_users as ldap_update_users
 from .models import LdapSynchronizationLog
 
 
@@ -24,18 +26,28 @@ def ldap_users():
 @ldap_users.command(name="import")
 @with_appcontext
 def import_users():
-    """Load users from ldap and import them in db."""
-    import_ldap_users()
+    """Load users from LDAP and import them in DB."""
+    ldap_import_users()
 
 
-@ldap_users.command(name="sync")
+@ldap_users.command(name="update")
 @with_appcontext
-def ldap_sync_users():
-    """Add entry to database with info about this synchronization."""
+def update_users():
+    """Load users from LDAP and import new ones or update existing in DB."""
     log = LdapSynchronizationLog.create_cli()
     try:
-        result = sync_users()
+        result = ldap_update_users()
         log.set_succeeded(*result)
     except Exception as e:
         current_app.logger.exception(e)
         log.set_failed(e)
+
+
+@ldap_users.command(name="delete")
+@with_appcontext
+def delete_users():
+    """Load users from LDAP and delete the ones that are still in the DB."""
+    try:
+        ldap_delete_users()
+    except Exception as e:
+        current_app.logger.exception(e)

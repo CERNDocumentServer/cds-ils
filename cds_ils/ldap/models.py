@@ -109,7 +109,6 @@ class LdapSynchronizationLog(db.Model):
         self,
         ldap_fetch_count,
         ils_update_count,
-        ils_deletion_count,
         ils_insertion_count,
     ):
         """Mark this task as complete and log output."""
@@ -118,7 +117,6 @@ class LdapSynchronizationLog(db.Model):
         self.end_time = datetime.now()
         self.ldap_fetch_count = ldap_fetch_count
         self.ils_update_count = ils_update_count
-        self.ils_deletion_count = ils_deletion_count
         self.ils_insertion_count = ils_insertion_count
         db.session.commit()
 
