@@ -222,8 +222,8 @@ def vocabularies():
 
 
 @click.group()
-def demo():
-    """Create real demo data."""
+def user_testing():
+    """Create real demo data for user testing."""
 
 
 def mint_record_pid(pid_type, pid_field, record):
@@ -238,7 +238,7 @@ def mint_record_pid(pid_type, pid_field, record):
     db.session.commit()
 
 
-@demo.command()
+@user_testing.command()
 @click.option("--json-path", "docs_path")
 @with_appcontext
 def create_demo_docs(docs_path):
@@ -266,7 +266,7 @@ def get_pids(search):
     return pids
 
 
-@demo.command()
+@user_testing.command()
 @click.option("--json-path", "items_path")
 @with_appcontext
 def create_demo_items(items_path):
@@ -286,7 +286,7 @@ def create_demo_items(items_path):
     click.secho("Items were created successfully.", fg="blue")
 
 
-@demo.command()
+@user_testing.command()
 @click.option("--user-email", "user_email")
 @click.option("--is-past-loan", is_flag=True)
 @with_appcontext
@@ -350,7 +350,7 @@ def create_loan(user_email, is_past_loan):
     )
 
 
-@demo.command()
+@user_testing.command()
 @click.option("--user-email", "user_email")
 @click.option("--given-date", "given_date")
 @with_appcontext
@@ -417,7 +417,7 @@ def clean_loans(user_email, given_date):
     )
 
 
-@demo.command()
+@user_testing.command()
 @click.option("--path", help="Json filepath for demo data.")
 @click.option("--are-docs", is_flag=True, help="Importing docs.")
 @click.option("--are-items", is_flag=True, help="Importing items.")
@@ -439,15 +439,15 @@ def import_demo_data(path, are_docs, are_items, verbose):
     elif are_items:
         command = "create-demo-items"
 
-    run_command("demo " + command + " --json-path " + path)
+    run_command("user-testing " + command + " --json-path " + path)
 
 
-@demo.command()
+@user_testing.command()
 @click.option("--user-email", help="User to have a loan on the book.")
 @click.option("--verbose", is_flag=True, help="Verbose output.")
 @with_appcontext
-def user_test_prepare(user_email, verbose):
-    """Import real demo data."""
+def prepare(user_email, verbose):
+    """Create loans for user."""
     cli = create_cli()
     runner = current_app.test_cli_runner()
 
@@ -458,13 +458,15 @@ def user_test_prepare(user_email, verbose):
             click.secho(res.output)
 
     # create ongoing loan
-    run_command("demo create-loan  --user-email " + user_email)
+    run_command("user-testing create-loan  --user-email " + user_email)
 
     # create past loan
-    run_command("demo create-loan --is-past-loan --user-email " + user_email)
+    run_command(
+        "user-testing create-loan --is-past-loan --user-email " + user_email
+    )
 
 
-@demo.command()
+@user_testing.command()
 @click.option(
     "--user-email", help="User to delete all of the loans they created."
 )
@@ -474,8 +476,8 @@ def user_test_prepare(user_email, verbose):
 )
 @click.option("--verbose", is_flag=True, help="Verbose output.")
 @with_appcontext
-def user_test_clean(user_email, given_date, verbose):
-    """Import real demo data."""
+def clean(user_email, given_date, verbose):
+    """Remove loans of user."""
     cli = create_cli()
     runner = current_app.test_cli_runner()
 
@@ -489,7 +491,7 @@ def user_test_clean(user_email, given_date, verbose):
         given_date = arrow.utcnow().format("YYYY-MM-DD")
 
     run_command(
-        "demo clean-loans --user-email "
+        "user-testing clean-loans --user-email "
         + user_email
         + " --given-date "
         + given_date
