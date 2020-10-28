@@ -73,7 +73,7 @@ setup(
     entry_points={
         "console_scripts": ["cds-ils = invenio_app.cli:cli"],
         "flask.commands": [
-            "demo = cds_ils.cli:demo",
+            "user-testing = cds_ils.cli:user_testing",
             "ldap-users = cds_ils.ldap.cli:ldap_users",
             "migration = cds_ils.migrator.cli:migration",
             "fixtures = cds_ils.cli:fixtures",

@@ -6,8 +6,8 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
-# DOCUMENTS_PATH=$1
-# ITEMS_PATH=$2
+DOCUMENTS_PATH=$1
+ITEMS_PATH=$2
 invenio db destroy --yes-i-know
 invenio db init 
 invenio db create
@@ -20,8 +20,8 @@ invenio fixtures vocabularies
 invenio fixtures demo-patrons
 invenio files location --default ils /tmp/ils-files 
 cds-ils migration internal-locations cds_ils/demo_data/libraries.json
-cds-ils demo import-demo-data --are-docs --path demo_data/documents.json  --verbose
-cds-ils demo import-demo-data --are-items --path demo_data/items.json  --verbose
+cds-ils user-testing import-demo-data --are-docs --path $DOCUMENTS_PATH --verbose
+cds-ils user-testing import-demo-data --are-items --path $ITEMS_PATH  --verbose
 
 # This part requires mounted EOS volume or access to the files
 # cds-ils migration documents /eos/media/cds/test/books/migration/records/tmp/demo-books_0.json
