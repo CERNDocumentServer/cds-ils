@@ -6,11 +6,9 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
-DOCUMENTS_PATH=$1
-ITEMS_PATH=$2
-invenio db destroy --yes-i-know
-invenio db init 
-invenio db create
+# invenio db destroy --yes-i-know
+# invenio db init (local)
+# invenio db create (local)
 
 invenio index destroy --force --yes-i-know
 invenio index init --force
@@ -18,8 +16,7 @@ invenio fixtures pages
 invenio fixtures location
 invenio fixtures vocabularies
 invenio fixtures demo-patrons
-invenio files location --default ils /tmp/ils-files 
-cds-ils migration internal-locations cds_ils/demo_data/libraries.json
+# invenio files location --default ils /tmp/ils-files (local)
 cds-ils user-testing import-demo-data --are-docs --path $DOCUMENTS_PATH --verbose
 cds-ils user-testing import-demo-data --are-items --path $ITEMS_PATH  --verbose
 
