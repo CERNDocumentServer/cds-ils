@@ -46,6 +46,7 @@ install_requires = [
     "invenio-records-files",
     "cds-dojson@git+https://github.com/CERNDocumentServer/cds-dojson@books",
     "lxml>=3.5.0",
+    "ipdb>=0.13.4"
 ]
 
 packages = find_packages()

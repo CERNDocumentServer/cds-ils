@@ -293,6 +293,10 @@ def update_users():
             ldap_person_id = ldap_user_get(ldap_user, "employeeID")
             ldap_users_map[ldap_person_id] = ldap_user
             ldap_users_emails.add(email)
+    _log_info(
+        log_uuid,
+        "users_cached",
+    )
 
     remote_accounts = RemoteAccount.query.all()
     _log_info(
@@ -316,6 +320,10 @@ def update_users():
                 user_id=remote_account.user_id,
             )
         )
+    _log_info(
+        log_uuid,
+        "invenio_users_prepared",
+    )
 
     # STEP 1
     # iterate on all Invenio users first, to update outdated info from LDAP
@@ -376,7 +384,15 @@ def update_users():
 
                 invenio_users_updated_count += 1
 
+    _log_info(
+        log_uuid,
+        "invenio_users_updated_and_deleted_before_commit",
+    )
     db.session.commit()
+    _log_info(
+        log_uuid,
+        "invenio_users_updated_and_deleted_after_commit",
+    )
 
     # STEP 2
     # Import any new LDAP user not in Invenio yet, the remaining
@@ -399,7 +415,15 @@ def update_users():
 
             invenio_users_added_count += 1
 
+    _log_info(
+        log_uuid,
+        "invenio_users_created_before_commit",
+    )
     db.session.commit()
+    _log_info(
+        log_uuid,
+        "invenio_users_created_after_commit",
+    )
 
     total_time = time.time() - start_time
 
