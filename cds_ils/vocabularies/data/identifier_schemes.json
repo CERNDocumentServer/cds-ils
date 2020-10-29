@@ -9,9 +9,24 @@
     "key": "ISBN",
     "text": "International Standard Book Number (ISBN)"
   },
-    {
+  {
     "type": "identifier_scheme",
     "key": "ISSN",
     "text": "ISSN"
+  },
+  {
+    "type": "identifier_scheme",
+    "key": "ISSN",
+    "text": "ISSN"
+  },
+  {
+    "type": "identifier_scheme",
+    "key": "REPORT_NUMBER",
+    "text": "Report number"
+  },
+  {
+    "type": "identifier_scheme",
+    "key": "STANDARD_NUMBER",
+    "text": "Standard number"
   }
 ]

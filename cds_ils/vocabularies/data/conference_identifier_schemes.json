@@ -8,5 +8,10 @@
     "type": "conference_identifier_scheme",
     "key": "INSPIRE_CNUM",
     "text": "Inspire CNUM"
+  },
+  {
+    "type": "conference_identifier_scheme",
+    "key": "CERN",
+    "text": "CERN"
   }
 ]
