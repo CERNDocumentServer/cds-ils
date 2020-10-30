@@ -111,6 +111,30 @@ def test_sync_users(app, db, testdata, mocker):
             "cernAccountType": [b"Primary"],
             "employeeID": [b"333"],
         },
+        {
+            "displayName": [b"Name 1"],
+            "department": [b"Department 1"],
+            "uidNumber": [b"555"],
+            "mail": [b"ldap.user555@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"555"],
+        },
+        {
+            "displayName": [b"Name 2"],
+            "department": [b"Department 2"],
+            "uidNumber": [b"666"],
+            "mail": [b"ldap.user555@cern.ch"],  # same email as 555
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"666"],
+        },
+        {
+            "displayName": [b"Name"],
+            "department": [b"Department"],
+            "uidNumber": [b"777"],
+            # missing email
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"777"],
+        },
     ]
 
     # mock LDAP response
@@ -151,12 +175,12 @@ def test_sync_users(app, db, testdata, mocker):
 
     current_search.flush_and_refresh(index="*")
 
-    assert n_ldap == 3
+    assert n_ldap == 6
     assert n_updated == 1
-    assert n_added == 1
+    assert n_added == 2
 
     invenio_users = User.query.all()
-    assert len(invenio_users) == 5  # 4 from LDAP, 1 was already in test data
+    assert len(invenio_users) == 6  # 5 from LDAP, 1 was already in test data
 
     patrons_search = PatronsSearch()
 
@@ -182,6 +206,7 @@ def test_sync_users(app, db, testdata, mocker):
         "ldap.user333@cern.ch", "Nothing changed", "Same department"
     )
     check_existence("ldap.user444@cern.ch", "old user left CERN", "Department")
+    check_existence("ldap.user555@cern.ch", "Name 1", "Department 1")
 
 
 def test_log_table(app):
