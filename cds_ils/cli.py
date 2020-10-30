@@ -21,6 +21,8 @@ from elasticsearch_dsl import Q
 from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
+from invenio_app_ils.circulation.api import \
+    circulation_default_loan_duration_for_item
 from invenio_app_ils.cli import minter
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
 from invenio_app_ils.indexer import wait_es_refresh
@@ -314,13 +316,20 @@ def create_loan(user_email, is_past_loan):
         loan_dict["state"] = "ITEM_RETURNED"
         loan_dict["document_pid"] = "qaywb-gfe4B"
         transaction_date = start_date = arrow.utcnow() - timedelta(days=365)
-        end_date = start_date + timedelta(days=30)
+        end_date = start_date + timedelta(weeks=4)
         item_pid = "678e3-an678A"
     else:
         loan_dict["state"] = "ITEM_ON_LOAN"
         loan_dict["document_pid"] = "67186-5rs9E"
-        transaction_date = start_date = arrow.utcnow() - timedelta(days=21)
-        end_date = start_date + timedelta(days=30)
+        transaction_date = start_date = arrow.utcnow() - (
+            timedelta(weeks=4)
+            - timedelta(
+                days=current_app.config[
+                    "ILS_CIRCULATION_LOAN_WILL_EXPIRE_DAYS"
+                ]
+            )
+        )
+        end_date = start_date + timedelta(weeks=4)
         item_pid = "vgrh9-jvj8E"
 
     loan_dict["transaction_date"] = transaction_date.isoformat()
