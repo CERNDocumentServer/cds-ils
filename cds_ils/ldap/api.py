@@ -32,6 +32,11 @@ def ldap_user_get(user, field_name):
     return user[field_name][0].decode("utf8")
 
 
+def ldap_user_get_email(user):
+    """Get the normalized email attribute from the LDAP user object."""
+    return ldap_user_get(user, "mail").lower()
+
+
 class LdapClient(object):
     """Ldap client class for user importation/synchronization.
 
@@ -146,7 +151,7 @@ class LdapUserImporter:
 
     def create_invenio_user(self, ldap_user):
         """Commit new user in db."""
-        email = ldap_user_get(ldap_user, "mail").lower()
+        email = ldap_user_get_email(ldap_user)
         user = User(email=email, active=True)
         db.session.add(user)
         db.session.commit()
@@ -206,7 +211,7 @@ def import_users():
     imported = 0
     importer = LdapUserImporter()
     for ldap_user in ldap_users:
-        email = ldap_user_get(ldap_user, "mail").lower()
+        email = ldap_user_get_email(ldap_user)
         if User.query.filter_by(email=email).count() > 0:
             print(
                 "User with email {} already imported, skipping.".format(email)
@@ -229,12 +234,13 @@ def import_users():
 
 
 def _update_invenio_user(
-    invenio_remote_account_id, invenio_user_profile, ldap_user
+    invenio_remote_account_id, invenio_user_profile, invenio_user, ldap_user
 ):
     """Check if the LDAP user has more updated info and update the Invenio."""
     invenio_user_profile.full_name = ldap_user_get(ldap_user, "displayName")
     ra = RemoteAccount.query.filter_by(id=invenio_remote_account_id).one()
     ra.extra_data["department"] = ldap_user_get(ldap_user, "department")
+    invenio_user.email = ldap_user_get_email(ldap_user)
 
 
 def _delete_invenio_user(user_id):
@@ -279,10 +285,14 @@ def update_users():
         return 0, 0, 0
 
     # create a map by employeeID for fast lookup
+    ldap_users_emails = set()
     ldap_users_map = {}
     for ldap_user in ldap_users:
-        ldap_person_id = ldap_user_get(ldap_user, "employeeID")
-        ldap_users_map[ldap_person_id] = ldap_user
+        email = ldap_user_get_email(ldap_user)
+        if email not in ldap_users_emails:
+            ldap_person_id = ldap_user_get(ldap_user, "employeeID")
+            ldap_users_map[ldap_person_id] = ldap_user
+            ldap_users_emails.add(email)
 
     remote_accounts = RemoteAccount.query.all()
     _log_info(
@@ -323,24 +333,31 @@ def update_users():
         if ldap_user:
             # the imported LDAP user is already in the Invenio db
             ldap_user_display_name = ldap_user_get(ldap_user, "displayName")
-            up = UserProfile.query.filter_by(
-                user_id=invenio_user["user_id"]
+            user_id = invenio_user["user_id"]
+            user_profile = UserProfile.query.filter_by(
+                user_id=user_id
             ).one()
-            invenio_full_name = up.full_name
+            invenio_full_name = user_profile.full_name
 
             ldap_user_department = ldap_user_get(ldap_user, "department")
             invenio_user_department = invenio_user["remote_account_department"]
 
+            user = User.query.filter_by(id=user_id).one()
+            ldap_user_email = ldap_user_get_email(ldap_user)
+            invenio_user_email = user.email
+
             has_changed = (
                 ldap_user_display_name != invenio_full_name
-                or invenio_user_department != ldap_user_department
+                or ldap_user_department != invenio_user_department
+                or ldap_user_email != invenio_user_email
             )
             if has_changed:
                 _update_invenio_user(
                     invenio_remote_account_id=invenio_user[
                         "remote_account_id"
                     ],
-                    invenio_user_profile=up,
+                    invenio_user_profile=user_profile,
+                    invenio_user=user,
                     ldap_user=ldap_user,
                 )
 
@@ -369,7 +386,7 @@ def update_users():
         for ldap_user in new_ldap_users:
             user_id = importer.import_user(ldap_user)
 
-            email = ldap_user_get(ldap_user, "mail").lower()
+            email = ldap_user_get_email(ldap_user)
             employee_id = ldap_user_get(ldap_user, "employeeID")
             _log_info(
                 log_uuid,
