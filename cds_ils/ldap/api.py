@@ -211,6 +211,10 @@ def import_users():
     imported = 0
     importer = LdapUserImporter()
     for ldap_user in ldap_users:
+        if "mail" not in ldap_user:
+            print("User with employee ID {} does not have an email"
+                  .format(ldap_user_get(ldap_user, "employeeID")))
+            continue
         email = ldap_user_get_email(ldap_user)
         if User.query.filter_by(email=email).count() > 0:
             print(
@@ -288,6 +292,10 @@ def update_users():
     ldap_users_emails = set()
     ldap_users_map = {}
     for ldap_user in ldap_users:
+        if "mail" not in ldap_user:
+            print("User with employee ID {} does not have an email"
+                  .format(ldap_user_get(ldap_user, "employeeID")))
+            continue
         email = ldap_user_get_email(ldap_user)
         if email not in ldap_users_emails:
             ldap_person_id = ldap_user_get(ldap_user, "employeeID")
