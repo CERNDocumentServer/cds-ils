@@ -306,16 +306,9 @@ def update_users():
         "users_cached",
     )
 
-    remote_accounts = RemoteAccount.query.all()
-    _log_info(
-        log_uuid,
-        "users_fetched_from_invenio",
-        dict(users_fetched=len(remote_accounts)),
-    )
-
     # get all Invenio remote accounts and prepare a list with needed info
     invenio_users = []
-    for remote_account in remote_accounts:
+    for remote_account in RemoteAccount.query:
         invenio_users.append(
             dict(
                 remote_account_id=remote_account.id,
@@ -463,11 +456,9 @@ def delete_users(dry_run=True):
         ldap_person_id = ldap_user_get(ldap_user, "employeeID")
         ldap_users_map[ldap_person_id] = ldap_user
 
-    remote_accounts = RemoteAccount.query.all()
-
     # get all Invenio remote accounts and prepare a list with needed info
     invenio_users = []
-    for remote_account in remote_accounts:
+    for remote_account in RemoteAccount.query:
         invenio_users.append(
             dict(
                 remote_account_id=remote_account.id,
