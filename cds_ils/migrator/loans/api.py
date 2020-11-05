@@ -41,7 +41,7 @@ def import_loans_from_json(dump_file):
             user = get_user_by_legacy_id(record["id_crcBORROWER"])
             if not user:
                 # user was deleted, fallback to the AnonymousUser
-                anonym = current_app.config["ILS_PATRON_ANONYMOUS_CLASS"](-2)
+                anonym = current_app.config["ILS_PATRON_ANONYMOUS_CLASS"]
                 patron_pid = anonym.id
             else:
                 patron_pid = user.pid
