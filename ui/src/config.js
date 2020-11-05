@@ -128,4 +128,11 @@ export const config = {
       },
     },
   },
+  PATRONS: {
+    customFields: {
+      personID: {
+        field: 'person_id',
+      },
+    },
+  },
 };
