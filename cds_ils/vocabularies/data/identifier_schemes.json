@@ -2,31 +2,11 @@
   {
     "type": "identifier_scheme",
     "key": "DOI",
-    "text": "Digital object identifier (DOI)"
+    "text": "Digital Object Identifier (DOI)"
   },
   {
     "type": "identifier_scheme",
     "key": "ISBN",
     "text": "International Standard Book Number (ISBN)"
-  },
-  {
-    "type": "identifier_scheme",
-    "key": "ISSN",
-    "text": "ISSN"
-  },
-  {
-    "type": "identifier_scheme",
-    "key": "ISSN",
-    "text": "ISSN"
-  },
-  {
-    "type": "identifier_scheme",
-    "key": "REPORT_NUMBER",
-    "text": "Report number"
-  },
-  {
-    "type": "identifier_scheme",
-    "key": "STANDARD_NUMBER",
-    "text": "Standard number"
   }
 ]

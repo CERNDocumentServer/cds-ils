@@ -16,6 +16,11 @@
   },
   {
     "type": "alternative_title_type",
+    "key": "TRANSLATED_SUBTITLE",
+    "text": "Translated Subtitle"
+  },
+  {
+    "type": "alternative_title_type",
     "key": "OTHER",
     "text": "Other"
   }

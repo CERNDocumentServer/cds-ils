@@ -18,10 +18,5 @@
     "type": "author_identifier_scheme",
     "key": "GRID",
     "text": "Global Research Identifier Database (GRID)"
-  },
-  {
-    "type": "author_identifier_scheme",
-    "key": "INSPIRE_ID",
-    "text": "Inspire Author Identifier"
   }
 ]

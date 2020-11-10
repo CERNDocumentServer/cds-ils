@@ -7,7 +7,7 @@
   {
     "type": "alternative_identifier_scheme",
     "key": "SAFARI",
-    "text": "Safari Books Online (SAFARI)"
+    "text": "SAFARI"
   },
   {
     "type": "alternative_identifier_scheme",
@@ -21,12 +21,12 @@
   },
   {
     "type": "alternative_identifier_scheme",
-    "key": "SAFARI",
-    "text": "SAFARI"
+    "key": "SCEM",
+    "text": "SCEM"
   },
   {
     "type": "alternative_identifier_scheme",
-    "key": "SCEM",
-    "text": "SCEM"
+    "key": "SPRINGER",
+    "text": "SPRINGER"
   }
 ]

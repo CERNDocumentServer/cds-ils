@@ -2,16 +2,16 @@
   {
     "type": "series_identifier_scheme",
     "key": "ISBN",
-    "text": "ISBN"
+    "text": "International Standard Book Number (ISBN)"
   },
   {
     "type": "series_identifier_scheme",
     "key": "ISSN",
-    "text": "ISSN"
+    "text": "International Standard Serial Number (ISSN)"
   },
   {
     "type": "series_identifier_scheme",
     "key": "DOI",
-    "text": "DOI"
+    "text": "Digital Object Identifier (DOI)"
   }
 ]
