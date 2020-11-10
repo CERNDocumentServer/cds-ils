@@ -10,23 +10,21 @@ import json
 import os
 import pathlib
 import random
-from datetime import date, timedelta
+from datetime import timedelta
 from random import randint
 
 import arrow
 import click
-import lorem
 import pkg_resources
+from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
-from invenio_app_ils.circulation.api import \
-    circulation_default_loan_duration_for_item
+from invenio_app_ils.circulation.search import get_active_loan_by_item_pid
 from invenio_app_ils.cli import minter
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
 from invenio_app_ils.indexer import wait_es_refresh
-from invenio_app_ils.internal_locations.api import INTERNAL_LOCATION_PID_TYPE
 from invenio_app_ils.items.api import ITEM_PID_TYPE
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE
 from invenio_app_ils.proxies import current_app_ils
@@ -294,6 +292,33 @@ def create_demo_items(items_path):
 @with_appcontext
 def create_loan(user_email, is_past_loan):
     """Create a loan."""
+    # hardcode doc/item pids from the demo_data jsons
+    ongoing_loan_item_pid = "vgrh9-jvj8E"
+    past_loan_item_pid = "678e3-an678A"
+    ongoing_loan_doc_pid = "67186-5rs9E"
+    past_loan_doc_pid = "qaywb-gfe4B"
+
+    active_loan = (
+        get_active_loan_by_item_pid(
+            {"type": "pitmid", "value": ongoing_loan_item_pid}
+        )
+        .execute()
+        .hits
+    )
+
+    lt_es7 = ES_VERSION[0] < 7
+    total = active_loan.total if lt_es7 else active_loan.total.value
+
+    if total > 0 and not is_past_loan:
+        click.secho(
+            "Item for ongoing loan is already loaned by patron with email {0}."
+            .format(
+                active_loan[0].patron.email
+            ),
+            fg="red",
+        )
+        return
+
     patron = User.query.filter_by(email=user_email).one()
     patron_pid = patron.get_id()
 
@@ -314,13 +339,15 @@ def create_loan(user_email, is_past_loan):
 
     if is_past_loan:
         loan_dict["state"] = "ITEM_RETURNED"
-        loan_dict["document_pid"] = "qaywb-gfe4B"
-        transaction_date = start_date = arrow.utcnow() - timedelta(days=365)
+        loan_dict["document_pid"] = past_loan_doc_pid
+        transaction_date = start_date = arrow.utcnow() - timedelta(
+            days=365
+        )
         end_date = start_date + timedelta(weeks=4)
-        item_pid = "678e3-an678A"
+        item_pid = past_loan_item_pid
     else:
         loan_dict["state"] = "ITEM_ON_LOAN"
-        loan_dict["document_pid"] = "67186-5rs9E"
+        loan_dict["document_pid"] = ongoing_loan_doc_pid
         transaction_date = start_date = arrow.utcnow() - (
             timedelta(weeks=4)
             - timedelta(
@@ -330,7 +357,7 @@ def create_loan(user_email, is_past_loan):
             )
         )
         end_date = start_date + timedelta(weeks=4)
-        item_pid = "vgrh9-jvj8E"
+        item_pid = ongoing_loan_item_pid
 
     loan_dict["transaction_date"] = transaction_date.isoformat()
     loan_dict["start_date"] = start_date.date().isoformat()
