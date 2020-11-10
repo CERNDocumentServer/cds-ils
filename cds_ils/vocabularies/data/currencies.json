@@ -13,5 +13,15 @@
     "key": "USD",
     "type": "currencies",
     "text": "US Dollar"
+  },
+  {
+    "key": "GBP",
+    "type": "currencies",
+    "text": "British Pound"
+  },
+  {
+    "key": "YEN",
+    "type": "currencies",
+    "text": "Yen"
   }
 ]

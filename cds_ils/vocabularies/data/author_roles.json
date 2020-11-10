@@ -2,7 +2,7 @@
   {
     "type": "author_role",
     "key": "AUTHOR",
-    "text": "Contact Person"
+    "text": "Author"
   },
   {
     "type": "author_role",
@@ -13,11 +13,6 @@
     "type": "author_role",
     "key": "ILLUSTRATOR",
     "text": "Illustrator"
-  },
-  {
-    "type": "author_role",
-    "key": "OTHER",
-    "text": "Other"
   },
   {
     "type": "author_role",
