@@ -7,6 +7,8 @@
 
 """Literature JSON serializers."""
 
+from invenio_app_ils.literature.serializers.custom_fields import \
+    field_cover_metadata
 from invenio_app_ils.literature.serializers.json import \
     JSONSerializer as IlsJSONSerializer
 
@@ -24,6 +26,7 @@ class LiteratureJSONSerializer(IlsJSONSerializer):
         eitems = literature["metadata"].get("eitems", {}).get("hits", [])
         for eitem in eitems:
             format_login_required_urls(eitem)
+        field_cover_metadata(literature["metadata"])
         return literature
 
     def transform_search_hit(
@@ -36,4 +39,5 @@ class LiteratureJSONSerializer(IlsJSONSerializer):
         eitems = hit["metadata"].get("eitems", {}).get("hits", [])
         for eitem in eitems:
             format_login_required_urls(eitem)
+        field_cover_metadata(hit["metadata"])
         return hit
