@@ -6,19 +6,19 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 alembic==1.4.3
-amqp==5.0.1
+amqp==5.0.2
 arrow==0.17.0
-attrs==20.2.0
-Babel==2.8.0
+attrs==20.3.0
+Babel==2.9.0
 backcall==0.2.0
 base32-lib==1.0.2
 billiard==3.6.3.0
 bleach==3.2.1
 blinker==1.4
 cachelib==0.1.1
-cds-dojson @ git+https://github.com/CERNDocumentServer/cds-dojson@7b77b145e3ca083a21e8b344dd28dd6c984ee2f6
-celery==5.0.1
-certifi==2020.6.20
+cds-dojson @ git+https://github.com/CERNDocumentServer/cds-dojson@7da8f7af4fb5e278c97231d9ad18ab0fc5bb2a57
+celery==5.0.2
+certifi==2020.11.8
 cffi==1.14.3
 chardet==3.0.4
 click==7.1.2
@@ -26,13 +26,13 @@ click-default-group==1.2.2
 click-didyoumean==0.0.3
 click-repl==0.1.6
 counter-robots==2018.6
-cryptography==3.2
+cryptography==3.2.1
 decorator==4.4.2
 dnspython==2.0.0
 dojson==1.4.0
-elasticsearch==7.9.1
+elasticsearch==7.10.0
 elasticsearch-dsl==7.3.0
-email-validator==1.1.1
+email-validator==1.1.2
 Flask==1.1.2
 Flask-Admin==1.5.7
 Flask-Alembic==2.0.1
@@ -80,7 +80,7 @@ invenio-cache==1.1.0
 invenio-celery==1.2.1
 invenio-circulation==1.0.0a28
 invenio-config==1.0.3
-invenio-db==1.0.6
+invenio-db==1.0.7
 invenio-files-rest==1.2.0
 invenio-formatter==1.0.3
 invenio-i18n==1.2.0
@@ -123,7 +123,7 @@ lorem==0.1.1
 lxml==4.6.1
 Mako==1.1.3
 MarkupSafe==1.1.1
-marshmallow==3.8.0
+marshmallow==3.9.1
 maxminddb==2.0.3
 maxminddb-geolite2==2018.703
 msgpack==1.0.0
@@ -154,13 +154,13 @@ python-dateutil==2.8.1
 python-editor==1.0.4
 python-geoip==1.2
 python-ldap==3.2.0
-pytz==2020.1
+pytz==2020.4
 pywebpack==1.1.0
 PyYAML==5.3.1
 redis==3.5.3
-requests==2.24.0
+requests==2.25.0
 requests-oauthlib==1.1.0
-sentry-sdk==0.19.1
+sentry-sdk==0.19.3
 simplejson==3.17.2
 simplekv==0.14.1
 six==1.15.0
@@ -171,7 +171,7 @@ SQLAlchemy-Utils==0.35.0
 traitlets==4.3.3
 ua-parser==0.10.0
 uritools==3.0.0
-urllib3==1.25.11
+urllib3==1.26.2
 uWSGI==2.0.19.1
 uwsgi-tools==1.1.1
 uwsgitop==0.11
