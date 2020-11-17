@@ -17,6 +17,6 @@ CDS_ILS_IMPORTER_PROVIDERS = {
         "priority": 2,
         "agency_code": "DE-He213",
     },
-    "ebl": {"priority": 3, "agency_code": "EBC263817"},
+    "ebl": {"priority": 3, "agency_code": "MiAaPQ"},
     "safari": {"priority": 4, "agency_code": "CaSebORM"},
 }

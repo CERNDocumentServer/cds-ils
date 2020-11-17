@@ -105,19 +105,26 @@ setup(
             "cds_ils.patrons.permissions:retrieve_patron_loans_access_action"
         ],
         # importer and migrator
-        "cds_ils.importers": ["cds = cds_ils.importer.providers.cds.importer:CDSImporter",
-                              "springer = cds_ils.importer.providers.springer.importer:SpringerImporter",
-                              ],
+        "cds_ils.importers": [
+            "cds = cds_ils.importer.providers.cds.importer:CDSImporter",
+            "springer = cds_ils.importer.providers.springer.importer:SpringerImporter",
+            "ebl = cds_ils.importer.providers.ebl.importer:EBLImporter",
+            "safari = cds_ils.importer.providers.ebl.importer:SafariImporter",
+        ],
         'cds_dojson.marc21.base': [
             'base = cds_dojson.marc21.fields.base',
         ],
         'cds_ils.marc21.models': [
             'cds_document = cds_ils.importer.providers.cds.cds:model',
-            'springer_document = cds_ils.importer.providers.springer.springer:model'
+            'springer_document = cds_ils.importer.providers.springer.springer:model',
+            'ebl_document = cds_ils.importer.providers.ebl.ebl:model',
+            'safari_document = cds_ils.importer.providers.safari.safari:model',
         ],
         'cds_ils.marc21.document': [
             'cds = cds_ils.importer.providers.cds.rules.document',
             'springer = cds_ils.importer.providers.springer.rules.document',
+            'ebl = cds_ils.importer.providers.ebl.rules.document',
+            'safari = cds_ils.importer.providers.safari.rules.document',
         ],
     },
     extras_require=extras_require,

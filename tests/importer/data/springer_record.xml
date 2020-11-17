@@ -1,0 +1,152 @@
+<record xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/MARC21/slim">
+    <controlfield tag="001">978-0-306-47915-1</controlfield>
+    <controlfield tag="003">DE-He213</controlfield>
+    <controlfield tag="005">20200920092740.0</controlfield>
+    <controlfield tag="007">cr nn 008mamaa</controlfield>
+    <controlfield tag="008">121227s2001    xxu|    s    |||| 0|eng d</controlfield>
+    <datafield tag="020" ind2=" " ind1=" ">
+      <subfield code="a">9780306479151</subfield>
+      <subfield code="9">978-0-306-47915-1</subfield>
+    </datafield>
+        <datafield tag="020" ind2=" " ind1=" ">
+      <subfield code="a">9780306479151X</subfield>
+      <subfield code="9">978-0-306-47915-1</subfield>
+    </datafield>
+    <datafield tag="024" ind2=" " ind1="7">
+      <subfield code="a">10.1007/b100336</subfield>
+      <subfield code="2">doi</subfield>
+    </datafield>
+    <datafield tag="050" ind2="4" ind1=" ">
+      <subfield code="a">QC770-798</subfield>
+    </datafield>
+    <datafield tag="050" ind2="4" ind1=" ">
+      <subfield code="a">QC702.7.H42</subfield>
+    </datafield>
+    <datafield tag="072" ind2="7" ind1=" ">
+      <subfield code="a">PHM</subfield>
+      <subfield code="2">bicssc</subfield>
+    </datafield>
+    <datafield tag="072" ind2="7" ind1=" ">
+      <subfield code="a">SCI051000</subfield>
+      <subfield code="2">bisacsh</subfield>
+    </datafield>
+    <datafield tag="072" ind2="7" ind1=" ">
+      <subfield code="a">PHM</subfield>
+      <subfield code="2">thema</subfield>
+    </datafield>
+    <datafield tag="082" ind2="4" ind1="0">
+      <subfield code="a">539.7092</subfield>
+      <subfield code="2">23</subfield>
+    </datafield>
+    <datafield tag="245" ind2="0" ind1="1">
+      <subfield code="a">Advances in Nuclear Physics</subfield>
+      <subfield code="h">[electronic resource] :</subfield>
+      <subfield code="b">Volume 26 /</subfield>
+      <subfield code="c">edited by J.W. Negele, Erich W. Vogt.</subfield>
+    </datafield>
+    <datafield tag="250" ind2=" " ind1=" ">
+      <subfield code="a">1st ed. 2001.</subfield>
+    </datafield>
+    <datafield tag="264" ind2="1" ind1=" ">
+      <subfield code="a">New York, NY :</subfield>
+      <subfield code="b">Springer US :</subfield>
+      <subfield code="b">Imprint: Springer,</subfield>
+      <subfield code="c">2001.</subfield>
+    </datafield>
+    <datafield tag="300" ind2=" " ind1=" ">
+      <subfield code="a">XX, 386 p.</subfield>
+      <subfield code="b">online resource.</subfield>
+    </datafield>
+    <datafield tag="336" ind2=" " ind1=" ">
+      <subfield code="a">text</subfield>
+      <subfield code="b">txt</subfield>
+      <subfield code="2">rdacontent</subfield>
+    </datafield>
+    <datafield tag="337" ind2=" " ind1=" ">
+      <subfield code="a">computer</subfield>
+      <subfield code="b">c</subfield>
+      <subfield code="2">rdamedia</subfield>
+    </datafield>
+    <datafield tag="338" ind2=" " ind1=" ">
+      <subfield code="a">online resource</subfield>
+      <subfield code="b">cr</subfield>
+      <subfield code="2">rdacarrier</subfield>
+    </datafield>
+    <datafield tag="347" ind2=" " ind1=" ">
+      <subfield code="a">text file</subfield>
+      <subfield code="b">PDF</subfield>
+      <subfield code="2">rda</subfield>
+    </datafield>
+    <datafield tag="490" ind2=" " ind1="1">
+      <subfield code="a">Advances in Nuclear Physics ;</subfield>
+      <subfield code="v">26</subfield>
+    </datafield>
+    <datafield tag="505" ind2=" " ind1="0">
+      <subfield code="a">The Spin Structure of the Nucleon -- Liquid-Gas Phase Transition in Nuclear Multifragmentation -- High Spin Properties of Atomic Nuclei -- The Deuteron: Structure and Form Factors.</subfield>
+    </datafield>
+    <datafield tag="520" ind2=" " ind1=" ">
+      <subfield code="a">The four articles ...</subfield>
+    </datafield>
+    <datafield tag="650" ind2="0" ind1=" ">
+      <subfield code="a">Nuclear physics.</subfield>
+    </datafield>
+    <datafield tag="650" ind2="0" ind1=" ">
+      <subfield code="a">Heavy ions.</subfield>
+    </datafield>
+    <datafield tag="650" ind2="4" ind1="1">
+      <subfield code="a">Nuclear Physics, Heavy Ions, Hadrons.</subfield>
+      <subfield code="0">https://scigraph.springernature.com/ontologies/product-market-codes/P23010</subfield>
+    </datafield>
+    <datafield tag="700" ind2=" " ind1="1">
+      <subfield code="a">Negele, J.W.</subfield>
+      <subfield code="e">editor.</subfield>
+      <subfield code="4">edt</subfield>
+      <subfield code="4">http://id.loc.gov/vocabulary/relators/edt</subfield>
+    </datafield>
+    <datafield tag="700" ind2=" " ind1="1">
+      <subfield code="a">Vogt, Erich W.</subfield>
+      <subfield code="e">editor.</subfield>
+      <subfield code="4">edt</subfield>
+      <subfield code="4">http://id.loc.gov/vocabulary/relators/edt</subfield>
+    </datafield>
+    <datafield tag="710" ind2=" " ind1="2">
+      <subfield code="a">SpringerLink (Online service)</subfield>
+    </datafield>
+    <datafield tag="773" ind2=" " ind1="0">
+      <subfield code="t">Springer Nature eBook</subfield>
+    </datafield>
+    <datafield tag="776" ind2="8" ind1="0">
+      <subfield code="i">Printed edition:</subfield>
+      <subfield code="z">9780306466854</subfield>
+    </datafield>
+    <datafield tag="776" ind2="8" ind1="0">
+      <subfield code="i">Printed edition:</subfield>
+      <subfield code="z">9781475705683</subfield>
+    </datafield>
+    <datafield tag="776" ind2="8" ind1="0">
+      <subfield code="i">Printed edition:</subfield>
+      <subfield code="z">9781475705690</subfield>
+    </datafield>
+    <datafield tag="830" ind2="0" ind1=" ">
+      <subfield code="a">Advances in Nuclear Physics ;</subfield>
+      <subfield code="v">26</subfield>
+    </datafield>
+    <datafield tag="856" ind2="0" ind1="4">
+      <subfield code="u">https://doi.org/10.1007/b100336</subfield>
+    </datafield>
+    <datafield tag="912" ind2=" " ind1=" ">
+      <subfield code="a">ZDB-2-PHA</subfield>
+    </datafield>
+    <datafield tag="912" ind2=" " ind1=" ">
+      <subfield code="a">ZDB-2-SXP</subfield>
+    </datafield>
+    <datafield tag="912" ind2=" " ind1=" ">
+      <subfield code="a">ZDB-2-BAE</subfield>
+    </datafield>
+    <datafield tag="950" ind2=" " ind1=" ">
+      <subfield code="a">Physics and Astronomy (SpringerNature-11651)</subfield>
+    </datafield>
+    <datafield tag="950" ind2=" " ind1=" ">
+      <subfield code="a">Physics and Astronomy (R0) (SpringerNature-43715)</subfield>
+    </datafield>
+  </record>

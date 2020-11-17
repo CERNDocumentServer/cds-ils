@@ -6,11 +6,13 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Springer Importer rules."""
+import re
 
 from cds_dojson.marc21.fields.books.errors import UnexpectedValue
 from cds_dojson.marc21.fields.utils import clean_val, filter_list_values, \
     out_strip
-from dojson.utils import for_each_value, force_list
+from dojson.errors import IgnoreKey
+from dojson.utils import filter_values, for_each_value, force_list
 from invenio_app_ils.documents.api import Document
 
 from cds_ils.importer.errors import ManualImportRequired
@@ -19,10 +21,11 @@ from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role
 
 
 # REQUIRED_FIELDS
-@model.over("provider_recid", "^001")
+@model.over("alternative_identifiers", "^001")
+@filter_list_values
 def recid(self, key, value):
     """Record Identifier."""
-    return value
+    return [{"scheme": "SPRINGER", "value": value}]
 
 
 @model.over("agency_code", "^003")
@@ -144,9 +147,10 @@ def identifiers(self, key, value):
     for v in force_list(value):
         subfield_u = clean_val("u", v, str)
         sub_a = clean_val("a", v, str)
-        isbn = {"value": sub_a, "scheme": "ISBN", "material": subfield_u}
-        if isbn not in _isbns:
-            _isbns.append(isbn)
+        if sub_a:
+            isbn = {"value": sub_a, "scheme": "ISBN", "material": subfield_u}
+            if isbn not in _isbns:
+                _isbns.append(isbn)
     return _isbns
 
 
@@ -170,21 +174,121 @@ def identifiers(self, key, value):
     return _identifiers
 
 
-@model.over("subjects", "^0504_")
-@for_each_value
-def subjects(self, key, value):
+@model.over("subjects", "^050_4")
+def subjects_loc(self, key, value):
     """Translates subject classification."""
-    _subjects = self.get("subjects")
+    _subjects = self.get("subjects", [])
 
-    _subjects.append({"scheme": "TODO", "value": clean_val("a", value, str)})
+    _subjects.append({"scheme": "LoC", "value": clean_val("a", value, str)})
     return _subjects
 
 
-@model.over("subjects", "^0824_")
-@for_each_value
-def subjects(self, key, value):
+@model.over("subjects", "^082_4")
+def subjects_dewey(self, key, value):
     """Translates subject classification."""
-    _subjects = self.get("subjects")
+    _subjects = self.get("subjects", [])
 
-    _subjects.append({"scheme": "TODO", "value": clean_val("a", value, str)})
+    _subjects.append({"scheme": "Dewey", "value": clean_val("a", value, str)})
     return _subjects
+
+
+@model.over("edition", "^250__")
+@out_strip
+def edition(self, key, value):
+    """Translate edition field."""
+    # TODO remove year if present and ed.
+    return clean_val("a", value, str)
+
+
+@model.over("number_of_pages", "^300__")
+@out_strip
+def number_of_pages(self, key, value):
+    """Translate number of pages."""
+    numbers = re.findall(r"\d+", clean_val("a", value, str))
+    return numbers[0]
+
+
+@model.over("_serial", "^4901_")
+@filter_list_values
+@for_each_value
+def serial(self, key, value):
+    """Translate serial."""
+    issn_value = clean_val("x", value, str)
+    identifiers = None
+    if issn_value:
+        identifiers = [{"scheme": "ISSN", "value": issn_value}]
+
+    return {
+        "title": clean_val("a", value, str, req=True),
+        "identifiers": None,
+        "volume": re.findall(r"\d+", clean_val("v", value, str))[0],
+    }
+
+
+@model.over("table_of_content", "^5050_")
+@out_strip
+def table_of_content(self, key, value):
+    """Translate table of content."""
+    return clean_val("a", value, str).split("--")
+
+
+@model.over("open_access", "^5060_")
+@out_strip
+def open_access(self, key, value):
+    """Translate open access."""
+    _open_access = clean_val("a", value, str)
+    _eitem = self.get("_eitem", {})
+    if _open_access.lower() == "open access":
+        _eitem["open_access"] = True
+        self["_eitem"] = _eitem
+    raise IgnoreKey("open_access")
+
+
+@model.over("abstract", "^520__")
+@out_strip
+def abstract(self, key, value):
+    """Translate abstract."""
+    return clean_val("a", value, str)
+
+
+@model.over("keywords", "(^650_0|^65014|^65024)")
+@filter_list_values
+def keywords(self, key, value):
+    """Translate keywords."""
+    _keywords = self.get("keywords", [])
+
+    keyword = {"source": "SPR", "value": clean_val("a", value, str, req=True)}
+
+    if keyword not in _keywords:
+        _keywords.append(keyword)
+    return _keywords
+
+
+@model.over("identifiers", "^77608")
+@filter_list_values
+def id_isbns(self, key, value):
+    """Translate identifiers isbn."""
+    _identifiers = self.get("identifiers", [])
+
+    isbn_value = clean_val("a", value, str)
+
+    if isbn_value:
+        isbn = {
+            "scheme": "ISBN",
+            "value": clean_val("a", value, str),
+            "material": clean_val("u", value, str),
+        }
+
+        if isbn not in _identifiers:
+            _identifiers.append(isbn)
+
+    return _identifiers
+
+
+@model.over("_eitem", "^950__")
+@out_strip
+def eitem_internal_note(self, key, value):
+    """Translate item internal note."""
+    _eitem = self.get("_eitem", {})
+    _eitem["internal_note"] = clean_val("a", value, str)
+    return _eitem

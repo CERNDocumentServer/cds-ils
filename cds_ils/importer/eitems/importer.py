@@ -84,17 +84,20 @@ class EItemImporter(object):
         elif hits_total == 1:
             try:
                 existing_eitem = eitem_cls.get_record_by_pid(
-                    results.hits[0].pid)
+                    results.hits[0].pid
+                )
                 metadata_to_update = {}
-                self._build_eitem_dict(metadata_to_update,
-                                       matched_document["pid"])
+                self._build_eitem_dict(
+                    metadata_to_update, matched_document["pid"]
+                )
                 existing_eitem.update(metadata_to_update)
                 existing_eitem.commit()
                 eitem_indexer.index(existing_eitem)
             except IlsValidationError as e:
                 db.session.rollback()
-                click.secho("Field: {}".format(e.errors[0].res["field"]),
-                            fg="red")
+                click.secho(
+                    "Field: {}".format(e.errors[0].res["field"]), fg="red"
+                )
                 click.secho(e.original_exception.message, fg="red")
         else:
             for hit in results:
@@ -124,17 +127,17 @@ class EItemImporter(object):
             if doi["scheme"] == "DOI"
         ]
         eitem_json.update(
-            {
-                "document_pid": document_pid,
-                "open_access": self.open_access,
-                "identifiers": dois,
-                "created_by": {
+            dict(
+                document_pid=document_pid,
+                open_access=self.open_access,
+                identifiers=dois,
+                created_by={
                     "type": "import",
                     "value": self.metadata_provider,
                 },
-                "urls": self.json_data["_eitem"]["urls"],
-                "description": self.json_data["_eitem"]["description"],
-            }
+                urls=self.json_data["_eitem"].get("urls", []),
+                description=self.json_data["_eitem"].get("description", ""),
+            )
         )
 
     def _apply_url_login(self, eitem):
@@ -162,8 +165,9 @@ class EItemImporter(object):
                 eitem_indexer.index(eitem)
                 return eitem
             except IlsValidationError as e:
-                click.secho("Field: {}".format(e.errors[0].res["field"]),
-                            fg="red")
+                click.secho(
+                    "Field: {}".format(e.errors[0].res["field"]), fg="red"
+                )
                 click.secho(e.original_exception.message, fg="red")
                 db.session.rollback()
                 raise e

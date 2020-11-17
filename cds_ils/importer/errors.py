@@ -56,3 +56,9 @@ class DocumentImportError(CDSImporterException):
     """Document import exception."""
 
     message = "[DOCUMENT IMPORT ERROR]"
+
+
+class SeriesImportError(CDSImporterException):
+    """Document import exception."""
+
+    message = "[SERIES IMPORT ERROR]"
