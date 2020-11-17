@@ -8,7 +8,6 @@
 
 """CDS Migrator Records loader."""
 
-import datetime
 import logging
 import uuid
 
@@ -29,7 +28,8 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 from cds_ils.migrator.errors import LossyConversion
 from cds_ils.migrator.handlers import migration_exception_handler
-from cds_ils.migrator.utils import process_fireroles, update_access
+from cds_ils.migrator.utils import clean_created_by_field, process_fireroles, \
+    update_access
 
 cli_logger = logging.getLogger("migrator")
 
@@ -274,6 +274,8 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
         )
         timestamp, json_data = dump.revisions[-1]
         json_data["pid"] = provider.pid.pid_value
+        json_data = clean_created_by_field(json_data)
+
         try:
             document = Document.create(json_data, record_uuid)
             document.model.created = dump.created.replace(tzinfo=None)
