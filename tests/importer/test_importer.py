@@ -3,6 +3,7 @@ import time
 from invenio_app_ils.proxies import current_app_ils
 
 from cds_ils.importer.importer import Importer
+from cds_ils.importer.series.importer import SeriesImporter
 from tests.helpers import load_json_from_datadir
 
 
@@ -119,3 +120,34 @@ def test_replace_eitems_by_provider_priority(importer_test_data):
         "value": "springer",
     }
     assert updated_eitem["description"] == "EITEM TO OVERWRITE"
+
+
+def test_add_document_to_serial(app, db):
+    document_cls = current_app_ils.document_record_cls
+    series_cls = current_app_ils.series_record_cls
+
+    json_data = load_json_from_datadir(
+        "new_document_with_serial.json", relpath="importer"
+    )
+
+    importer = Importer(json_data[0], "springer")
+
+    report = importer.import_record()
+    assert report["created"]
+    assert report["series"]
+
+    created_document = document_cls.get_record_by_pid(report["created"])
+
+    series_list = []
+    for series in report["series"]:
+        series_list.append(series_cls.get_record_by_pid(series))
+
+    assert series_list[0]["title"] == "Advances in Nuclear Physics ;"
+    assert series_list[0]["identifiers"] == [
+        {"scheme": "ISSN", "value": "123455"}
+    ]
+    # check if relations creates
+    assert (
+        created_document["relations_extra_metadata"]["serial"][0]["pid_value"]
+        == series_list[0]["pid"]
+    )

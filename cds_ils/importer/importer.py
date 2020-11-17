@@ -6,12 +6,15 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer module."""
+import click
+from invenio_app_ils.errors import RecordRelationsError
 from invenio_app_ils.proxies import current_app_ils
 
 from cds_ils.importer.config import CDS_ILS_IMPORTER_PROVIDERS
 from cds_ils.importer.documents.api import fuzzy_search_document
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
+from cds_ils.importer.series.importer import SeriesImporter
 
 
 class Importer(object):
@@ -22,7 +25,7 @@ class Importer(object):
     EITEM_OPEN_ACCESS = True
     EITEM_URLS_LOGIN_REQUIRED = True
 
-    HELPER_METADATA_FIELDS = ("_eitem", "agency_code")
+    HELPER_METADATA_FIELDS = ("_eitem", "agency_code", "_serial")
 
     def __init__(self, json_data, metadata_provider):
         """Constructor."""
@@ -43,6 +46,8 @@ class Importer(object):
             self.EITEM_OPEN_ACCESS,
             self.EITEM_URLS_LOGIN_REQUIRED,
         )
+        series_json = json_data.get("_serial", None)
+        self.series_importer = SeriesImporter(series_json, metadata_provider)
 
         self.ambiguous_matches = []
         self.created = None
@@ -80,22 +85,27 @@ class Importer(object):
 
     def import_record(self):
         """Import record."""
-        self._validate_provider()
         document_indexer = current_app_ils.document_indexer
-        matched_document = self._match_document()
+        self._validate_provider()
+        series_list = []
+
         # finds the exact match, update records
+        matched_document = self._match_document()
 
         if matched_document:
             self.document_importer.update_document(matched_document)
             self.eitem_importer.update_eitems(matched_document)
+            series_list = self.series_importer.import_series(matched_document)
 
             document_indexer.index(matched_document)
+
             self.updated = matched_document
             return {
                 "created": None,
                 "updated": self.updated["pid"],
                 "ambiguous": self.ambiguous_matches,
                 "fuzzy": self.fuzzy_matches,
+                "series": [series["pid"] for series in series_list],
             }
 
         # finds the multiple matches or fuzzy matches, does not create new doc
@@ -106,16 +116,20 @@ class Importer(object):
                 "updated": None,
                 "ambiguous": self.ambiguous_matches,
                 "fuzzy": self.fuzzy_matches,
+                "series": None,
             }
 
         document = self.document_importer.create_document()
         if document:
             self.eitem_importer.import_eitem(document)
             self.created = document
+            series_list = self.series_importer.import_series(document)
             document_indexer.index(document)
-        return {
-            "created": self.created["pid"],
-            "updated": None,
-            "ambiguous": self.ambiguous_matches,
-            "fuzzy": self.fuzzy_matches,
-        }
+
+            return {
+                "created": self.created["pid"],
+                "updated": None,
+                "ambiguous": self.ambiguous_matches,
+                "fuzzy": self.fuzzy_matches,
+                "series": [series["pid"] for series in series_list],
+            }

@@ -15,6 +15,12 @@ from dojson.utils import force_list
 from six import iteritems
 
 
+def rreplace(s, phrase, replace_with):
+    """Reverse replace."""
+    s = s[::1].replace(phrase, replace_with, 1)
+    return s[::1]
+
+
 def _get_correct_ils_contributor_role(subfield, role):
     """Clean up roles."""
     translations = {

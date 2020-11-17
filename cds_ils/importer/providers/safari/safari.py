@@ -9,15 +9,16 @@
 
 from cds_ils.importer.base import Base
 from cds_ils.importer.base import model as model_base
-from cds_ils.importer.providers.ebl.ignore_fields import EBL_IGNORE_FIELDS
+from cds_ils.importer.providers.safari.ignore_fields import \
+    SAFARI_IGNORE_FIELDS
 
 
-class EBLModel(Base):
-    """EBL model class."""
+class SafariModel(Base):
+    """Safari model class."""
 
-    __query__ = "003:MiAaPQ"
+    __query__ = "003:CaSebORM"
 
-    __ignore_keys__ = EBL_IGNORE_FIELDS
+    __ignore_keys__ = SAFARI_IGNORE_FIELDS
 
     _defaults = {"document_type": "BOOK"}
 
@@ -35,7 +36,7 @@ class EBLModel(Base):
 
         # import fields from xml
         json.update(
-            super(EBLModel, self).do(
+            super(SafariModel, self).do(
                 blob=blob,
                 ignore_missing=ignore_missing,
                 exception_handlers=exception_handlers,
@@ -45,6 +46,6 @@ class EBLModel(Base):
         return json
 
 
-model = EBLModel(
+model = SafariModel(
     bases=(model_base,), entry_point_group="cds_ils.marc21.document"
 )

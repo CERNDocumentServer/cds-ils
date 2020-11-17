@@ -1,0 +1,129 @@
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
+<marc:record>
+<marc:leader>03273nam a22004933i 4500</marc:leader>
+<marc:controlfield tag="001">EBC263817</marc:controlfield>
+<marc:controlfield tag="003">MiAaPQ</marc:controlfield>
+<marc:controlfield tag="005">20200501130549.0</marc:controlfield>
+<marc:controlfield tag="006">m o d | </marc:controlfield>
+<marc:controlfield tag="007">cr cnu||||||||</marc:controlfield>
+<marc:controlfield tag="008">200501s2003 xx o ||||0 eng d</marc:controlfield>
+<marc:datafield tag="020" ind1=" " ind2=" ">
+<marc:subfield code="a">9781420033373</marc:subfield>
+<marc:subfield code="q">(electronic bk.)</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="020" ind1=" " ind2=" ">
+<marc:subfield code="z">9780750309226</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="035" ind1=" " ind2=" ">
+<marc:subfield code="a">(MiAaPQ)EBC263817</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="035" ind1=" " ind2=" ">
+<marc:subfield code="a">(Au-PeEL)EBL263817</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="035" ind1=" " ind2=" ">
+<marc:subfield code="a">(CaPaEBR)ebr10144693</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="035" ind1=" " ind2=" ">
+<marc:subfield code="a">(CaONFJC)MIL65099</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="035" ind1=" " ind2=" ">
+<marc:subfield code="a">(OCoLC)437168767</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="040" ind1=" " ind2=" ">
+<marc:subfield code="a">MiAaPQ</marc:subfield>
+<marc:subfield code="b">eng</marc:subfield>
+<marc:subfield code="e">rda</marc:subfield>
+<marc:subfield code="e">pn</marc:subfield>
+<marc:subfield code="c">MiAaPQ</marc:subfield>
+<marc:subfield code="d">MiAaPQ</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="050" ind1=" " ind2="4">
+<marc:subfield code="a">TK454.4.M3T57 2003</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="082" ind1="0" ind2=" ">
+<marc:subfield code="a">538.4</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="100" ind1="1" ind2=" ">
+<marc:subfield code="a">Tishin, A. M.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="245" ind1="1" ind2="4">
+<marc:subfield code="a">The Magnetocaloric Effect and Its Applications.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="250" ind1=" " ind2=" ">
+<marc:subfield code="a">1st ed.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="264" ind1=" " ind2="1">
+<marc:subfield code="a">Baton Rouge :</marc:subfield>
+<marc:subfield code="b">CRC Press LLC,</marc:subfield>
+<marc:subfield code="c">2003.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="264" ind1=" " ind2="4">
+<marc:subfield code="c">©2003.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="300" ind1=" " ind2=" ">
+<marc:subfield code="a">1 online resource (489 pages)</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="336" ind1=" " ind2=" ">
+<marc:subfield code="a">text</marc:subfield>
+<marc:subfield code="b">txt</marc:subfield>
+<marc:subfield code="2">rdacontent</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="337" ind1=" " ind2=" ">
+<marc:subfield code="a">computer</marc:subfield>
+<marc:subfield code="b">c</marc:subfield>
+<marc:subfield code="2">rdamedia</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="338" ind1=" " ind2=" ">
+<marc:subfield code="a">online resource</marc:subfield>
+<marc:subfield code="b">cr</marc:subfield>
+<marc:subfield code="2">rdacarrier</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="490" ind1="1" ind2=" ">
+<marc:subfield code="a">Condensed Matter Physics Ser.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="505" ind1="0" ind2=" ">
+<marc:subfield code="a">Front Cover -- Contents -- Preface -- Acknowledgments -- Chapter 1. Introduction -- Chapter 2. Physics and models of magnetocaloric effect -- Chapter 3. Methods of magnetocaloric properties investigation -- Chapter 4. Magnetocaloric effect in 3d metals, alloys and compounds -- Chapter 5. Magnetocaloric effect in oxides -- Chapter 6. Magnetocaloric effect in intermetallic compounds -- Chapter 7. Magnetocaloric effect in rare earth-metalloid compounds -- Chapter 8. Magnetocaloric effect in rare earth metals and alloys -- Chapter 9. Magnetocaloric effect in amorphous materials -- Chapter 10. Magnetocaloric effect in the systems with superparamagnetic properties -- Chapter 11. Application of the magnetocaloric effect and magnetic materials in refrigeration apparatuses -- Chapter 12. Conclusion -- Appendix 1 -- Appendix 2 -- References -- Index -- Back Cover.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="520" ind1=" " ind2=" ">
+<marc:subfield code="a">IntroductionTheoryMagnetocaloric effect in the phase transition regionMethods of investigation of magnetocaloric propertiesMagnetocaloric effect in 3d metals and their alloysMagnetocaloric effect in amorphous materialsMagnetocaloric effect in rare earth metals and their alloysMagnetocaloric effect in intermetallic compounds with rare earth elementsMagnetocaloric effect in oxide compoundsMagnetocaloric effect in silicides and germanidesMagnetocaloric effect in nanosized materialsMagnetic refrigerationConclusions.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="588" ind1=" " ind2=" ">
+<marc:subfield code="a">Description based on publisher supplied metadata and other sources.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="590" ind1=" " ind2=" ">
+<marc:subfield code="a">Electronic reproduction. Ann Arbor, Michigan : ProQuest Ebook Central, 2020. Available via World Wide Web. Access may be limited to ProQuest Ebook Central affiliated libraries. </marc:subfield>
+</marc:datafield>
+<marc:datafield tag="650" ind1=" " ind2="0">
+<marc:subfield code="a">Magnetic materials -- Thermal properties.;Adiabatic demagnetization.;Refrigeration and refrigerating machinery.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="655" ind1=" " ind2="4">
+<marc:subfield code="a">Electronic books.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="700" ind1="1" ind2=" ">
+<marc:subfield code="a">Spichkin, Y. I.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="700" ind1="1" ind2=" ">
+<marc:subfield code="a">Tishin, A.M.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="700" ind1="1" ind2=" ">
+<marc:subfield code="a">Spichkin, Y.I.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="776" ind1="0" ind2="8">
+<marc:subfield code="i">Print version:</marc:subfield>
+<marc:subfield code="a">Tishin, A. M.</marc:subfield>
+<marc:subfield code="t">The Magnetocaloric Effect and Its Applications</marc:subfield>
+<marc:subfield code="d">Baton Rouge : CRC Press LLC,c2003</marc:subfield>
+<marc:subfield code="z">9780750309226</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="797" ind1="2" ind2=" ">
+<marc:subfield code="a">ProQuest (Firm)</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="830" ind1=" " ind2="0">
+<marc:subfield code="a">Condensed Matter Physics Ser.</marc:subfield>
+</marc:datafield>
+<marc:datafield tag="856" ind1="4" ind2="0">
+<marc:subfield code="u">https://ebookcentral.proquest.com/lib/cern/detail.action?docID=263817</marc:subfield>
+<marc:subfield code="z">Click here to view book</marc:subfield>
+</marc:datafield>
+</marc:record>
+    </marc:collection>
