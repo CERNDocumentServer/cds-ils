@@ -8,6 +8,7 @@
 
 """CDS Migrator Records utils."""
 from flask import current_app
+from invenio_accounts.models import User
 
 from cds_ils.migrator.errors import ItemMigrationError
 
@@ -129,7 +130,27 @@ def clean_item_record(record):
     clean_item_status(record)
     clean_description_field(record)
     record["shelf"] = record["location"]
-    record["medium"] = "NOT_SPECIFIED"
+    record["medium"] = "PAPER"  # requested as default value
     del record["location"]
     del record["id_bibrec"]
     del record["id_crcLIBRARY"]
+
+
+def clean_created_by_field(record):
+    """Clean the created by field for documents."""
+    if "_email" in record["created_by"]:
+        patron = User.query.filter_by(
+            email=record["created_by"]["_email"]
+        ).one_or_none()
+        if patron:
+            patron_pid = patron.get_id()
+            record["created_by"] = {"type": "user_id", "value": patron_pid}
+        else:
+            record["created_by"] = {"type": "user_id", "value": "anonymous"}
+        del record["created_by"]["_email"]
+    elif record["created_by"]["type"] == "batchuploader":
+        record["created_by"] = {"type": "script", "value": "batchuploader"}
+    else:
+        record["created_by"] = {"type": "script", "value": "migration"}
+
+    return record
