@@ -11,9 +11,11 @@
 import json
 import logging
 from contextlib import contextmanager
+from warnings import warn
 
 import click
 from celery import shared_task
+from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.circulation.api import IlsCirculationLoanIdProvider
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
@@ -22,6 +24,7 @@ from invenio_app_ils.internal_locations.api import InternalLocation, \
     InternalLocationIdProvider
 from invenio_app_ils.items.api import Item, ItemIdProvider
 from invenio_app_ils.series.api import Series, SeriesIdProvider
+from invenio_app_ils.series.search import SeriesSearch
 from invenio_base.app import create_cli
 from invenio_circulation.api import Loan
 from invenio_db import db
@@ -94,6 +97,7 @@ def import_parents_from_file(dump_file, rectype, include):
     include_keys = None if include is None else include.split(",")
     with click.progressbar(json.load(dump_file).items()) as bar:
         records = []
+        unindexed_series = dict()
         for key, parent in bar:
             if "legacy_recid" in parent:
                 click.echo(
@@ -114,8 +118,33 @@ def import_parents_from_file(dump_file, rectype, include):
                     record = import_record(parent, model, provider)
                     records.append(record)
                 elif rectype == "multipart" and has_volumes:
-                    record = import_record(parent, model, provider)
-                    records.append(record)
+                    existing_parent = None
+                    multipart_id = parent["_migration"].get("multipart_id")
+                    if multipart_id:
+                        if multipart_id in unindexed_series:
+                            existing_parent = unindexed_series[multipart_id]
+                        else:
+                            search = SeriesSearch().query(
+                                "bool",
+                                filter=[
+                                    Q("term",
+                                      _migration__serial_id=multipart_id),
+                                ],
+                            )
+                            results = search.execute()
+                            hits_total = results.hits.total.value
+                            if hits_total > 0:
+                                existing_parent = results.hits[0]
+                            else:
+                                unindexed_series[multipart_id] = parent
+                    if not existing_parent:
+                        record = import_record(parent, model, provider)
+                        if record:
+                            records.append(record)
+                    else:
+                        # TODO ensure the parent record is actually the same
+                        warn("Multipart parent record already exists,"
+                             "ignoring.")
     # Index all new parent records
     bulk_index_records(records)
 
