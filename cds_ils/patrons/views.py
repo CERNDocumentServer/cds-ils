@@ -24,7 +24,9 @@ def pass_patron_from_es():
     def pass_patron_decorator(f):
         @wraps(f)
         def inner(self, person_id, *args, **kwargs):
-            results = PatronsSearch().filter("term", id=person_id).execute()
+            results = (
+                PatronsSearch().filter("term", person_id=person_id).execute()
+            )
             if not len(results.hits.hits):
                 abort(404)
             patron = results.hits.hits[0]["_source"]
