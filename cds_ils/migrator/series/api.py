@@ -7,9 +7,10 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator API."""
-
+import json
 import logging
 import uuid
+from copy import deepcopy
 
 import click
 from elasticsearch import VERSION as ES_VERSION
@@ -17,10 +18,12 @@ from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
+from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
     SERIAL_RELATION
 from invenio_app_ils.series.api import Series
 from invenio_app_ils.series.search import SeriesSearch
+from invenio_db import db
 
 from cds_ils.migrator.errors import DocumentMigrationError, \
     MultipartMigrationError
@@ -56,7 +59,9 @@ def get_multipart_by_legacy_recid(recid):
         return Series.get_record_by_pid(result.hits[0].pid)
 
 
-def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
+def create_multipart_volumes(
+    pid, multipart_legacy_recid, migration_volumes, document_base_metadata
+):
     """Create multipart volume documents."""
     volumes = {}
     # Combine all volume data by volume number
@@ -66,75 +71,122 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
         if volume_number not in volumes:
             volumes[volume_number] = {}
         volume = volumes[volume_number]
-        for key in obj:
-            if key != "volume":
-                if key in volume:
-                    raise KeyError(
-                        'Duplicate key "{}" for multipart {}'.format(
-                            key, multipart_legacy_recid
+        if "isbn" in obj:
+            # the isbn can represent both a document and an eitem
+            if "isbns" not in volume:
+                volume["isbns"] = []
+            volume["isbns"].append({
+                "value": obj["isbn"],
+                "is_electronic": bool(obj["is_electronic"])
+            })
+            # TODO physical description
+        elif "barcode" in obj:
+            # the barcode represents an item
+            if "items" not in volume:
+                volume["items"] = []
+            volume["items"].append({
+                "barcode": obj["barcode"]
+            })
+        else:
+            # all other fields should be treated as
+            # additional metadata for the document
+            for key in obj:
+                if key != "volume":
+                    if key in volume:
+                        # abort in case of conflict
+                        raise KeyError(
+                            'Duplicate key "{}" for multipart {}'.format(
+                                key, multipart_legacy_recid
+                            )
                         )
-                    )
-                volume[key] = obj[key]
+                    volume[key] = obj[key]
 
     volume_numbers = iter(sorted(volumes.keys()))
 
-    # Re-use the current record for the first volume
-    # TODO review this - there are more cases of multiparts
-    first_volume = next(volume_numbers)
-    first = Document.get_record_by_pid(pid)
-    if "title" in volumes[first_volume]:
-        first["title"] = volumes[first_volume]["title"]
-        first["volume"] = first_volume
-    first["_migration"]["multipart_legacy_recid"] = multipart_legacy_recid
+    inherited_metadata = deepcopy(document_base_metadata)
+    inherited_metadata["_migration"]["multipart_legacy_recid"] = \
+        multipart_legacy_recid
+    inherited_metadata["authors"] = \
+        inherited_metadata["_migration"]["authors"] \
+        if "authors" in inherited_metadata["_migration"] else []
+    inherited_metadata["serial_title"] = inherited_metadata.get("title")
+
     # to be tested
-    if "legacy_recid" in first:
-        del first["legacy_recid"]
-    first.commit()
-    yield first
+    if "legacy_recid" in inherited_metadata:
+        del inherited_metadata["legacy_recid"]
 
     # Create new records for the rest
     for number in volume_numbers:
-        temp = first.copy()
-        temp["title"] = volumes[number]["title"]
+        volume = volumes[number]
+        temp = inherited_metadata.copy()
+        if "title" in volume and volume["title"]:
+            temp["title"] = volume["title"]
         temp["volume"] = number
+        # TODO possibly more fields to merge
+
         record_uuid = uuid.uuid4()
-        provider = DocumentIdProvider.create(
-            object_type="rec", object_uuid=record_uuid
-        )
-        temp["pid"] = provider.pid.pid_value
-        record = Document.create(temp, record_uuid)
-        record.commit()
-        yield record
+        try:
+            with db.session.begin_nested():
+                provider = DocumentIdProvider.create(
+                    object_type="rec", object_uuid=record_uuid
+                )
+                temp["pid"] = provider.pid.pid_value
+                record = Document.create(temp, record_uuid)
+                record.commit()
+            db.session.commit()
+            yield record
+        except IlsValidationError as e:
+            print("Validation error: {}"
+                  .format(str(e.original_exception.message)))
 
 
-def link_and_create_multipart_volumes():
+def link_and_create_multipart_volumes(source):
     """Link and create multipart volume records."""
     click.echo("Creating document volumes and multipart relations...")
-    search = DocumentSearch().filter("term", _migration__is_multipart=True)
-    for hit in search.scan():
-        if "legacy_recid" not in hit:
+    series = {}
+    for hit in SeriesSearch().scan():
+        serial_id = hit._migration.serial_id \
+            if "serial_id" in hit._migration else None
+        if serial_id:
+            series[serial_id] = hit.pid
+        elif "title" in hit:
+            series[hit.title] = hit.pid
+        else:
             continue
-        click.secho(
-            "Linking multipart {}...".format(hit.legacy_recid), fg="green"
-        )
-        multipart = get_multipart_by_legacy_recid(hit.legacy_recid)
-        documents = create_multipart_volumes(
-            hit.pid, hit.legacy_recid, hit._migration.volumes
-        )
+    for legacy_id, cds_record in json.load(source).items():
+        search = SeriesSearch()
+        pid = series.get(
+            cds_record["_migration"].get("serial_id", cds_record.get("title")))
+        if pid:
+            search = search.filter("term", pid=pid)
+        else:
+            print("No serial_id nor title")
+            continue
+        try:
+            hit = next(search.scan())
+            multipart = get_multipart_by_legacy_recid(hit.legacy_recid)
+            documents = create_multipart_volumes(
+                hit.pid,
+                hit.legacy_recid,
+                cds_record["_migration"]["volumes"],
+                cds_record
+            )
 
-        for document in documents:
-            if document and multipart:
-                click.echo(
-                    "Creating relations: {0} - {1}".format(
-                        multipart["pid"], document["pid"]
+            for document in documents:
+                if document and multipart:
+                    click.echo(
+                        "Creating relations: {0} - {1}".format(
+                            multipart["pid"], document["pid"]
+                        )
                     )
-                )
-                create_parent_child_relation(
-                    multipart,
-                    document,
-                    MULTIPART_MONOGRAPH_RELATION,
-                    document["volume"],
-                )
+                    create_parent_child_relation(
+                        multipart,
+                        document,
+                        MULTIPART_MONOGRAPH_RELATION,
+                        document["volume"],
+                    )
+        except StopIteration:
+            print('No matching could be done')
 
 
 def get_serials_by_child_recid(recid):

@@ -163,11 +163,12 @@ def relations():
 
 
 @relations.command()
+@click.argument("source", nargs=1, type=click.File())
 @with_appcontext
-def multipart():
+def multipart(source):
     """Create relations for migrated multiparts."""
     with commit():
-        link_and_create_multipart_volumes()
+        link_and_create_multipart_volumes(source)
     reindex_pidtype("docid")
     reindex_pidtype("serid")
 
