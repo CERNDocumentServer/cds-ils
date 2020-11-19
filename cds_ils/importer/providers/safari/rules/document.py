@@ -24,6 +24,7 @@ from cds_ils.importer.providers.utils import \
 @filter_list_values
 def recid(self, key, value):
     """Record Identifier."""
+    self["provider_recid"] = value
     return [{"scheme": "EBL", "value": value}]
 
 
@@ -106,12 +107,12 @@ def identifiers(self, key, value):
     return _identifiers
 
 
-@model.over("languages", "^041__")
+@model.over("languages", "^0410_")
 @for_each_value
 @out_strip
 def languages(self, key, value):
     """Translates languages fields."""
-    lang = clean_val("b", value, str).lower()
+    lang = clean_val("a", value, str).lower()
     try:
         return pycountry.languages.lookup(lang).alpha_2
     except (KeyError, AttributeError, LookupError):
@@ -162,6 +163,6 @@ def abstract(self, key, value):
 def copyrights(self, key, value):
     """Translate copyrights."""
     return {
-        "year": clean_val("g", value, str),
+        "year": clean_val("g", value, int),
         "statement": clean_val("f", value, str),
     }

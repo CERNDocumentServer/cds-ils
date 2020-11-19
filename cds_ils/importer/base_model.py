@@ -6,11 +6,11 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer base module."""
-from cds_dojson.marc21.models.books.base import CDSOverdoBookBase
+from cds_ils.importer.overdo import CdsIlsOverdo
 
 
-class Base(CDSOverdoBookBase):
+class Base(CdsIlsOverdo):
     """Base model conversion MARC21 to JSON."""
 
 
-model = Base(entry_point_group="cds_dojson.marc21.base")
+model = Base(entry_point_group="cds_ils.importer.base")

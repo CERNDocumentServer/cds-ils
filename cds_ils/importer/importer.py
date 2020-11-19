@@ -23,7 +23,12 @@ class Importer(object):
     EITEM_OPEN_ACCESS = True
     EITEM_URLS_LOGIN_REQUIRED = True
 
-    HELPER_METADATA_FIELDS = ("_eitem", "agency_code", "_serial")
+    HELPER_METADATA_FIELDS = (
+        "_eitem",
+        "agency_code",
+        "_serial",
+        "provider_recid",
+    )
 
     def __init__(self, json_data, metadata_provider):
         """Constructor."""
@@ -103,9 +108,10 @@ class Importer(object):
         document_indexer = current_app_ils.document_indexer
         series_indexer = current_app_ils.series_indexer
         eitem_indexer = current_app_ils.eitem_indexer
-        eitem_indexer.index(
-            self.eitem_importer.updated or self.eitem_importer.created
-        )
+
+        eitem = self.eitem_importer.updated or self.eitem_importer.created
+        if eitem:
+            eitem_indexer.index(eitem)
         document_indexer.index(self.created or self.updated)
         for series in self.series_list:
             series_indexer.index(series)
