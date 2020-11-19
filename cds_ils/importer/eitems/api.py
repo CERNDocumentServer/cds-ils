@@ -15,5 +15,4 @@ def get_eitems_for_document_by_provider(document_pid, provider):
     search = eitem_search.search_by_document_pid(
         document_pid=document_pid
     ).filter("term", created_by__value=provider)
-    result = search.execute()
-    return result
+    return search

@@ -25,6 +25,5 @@ class XMLRecordDumpLoader(object):
         timestamp, json_data = dump_model.dump()
 
         importer_class = cls.get_importer_class(provider)
-
         report = importer_class(json_data, provider).import_record()
         return report

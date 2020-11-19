@@ -21,7 +21,7 @@ from cds_ils.importer.errors import LossyConversion
 from cds_ils.importer.handlers import importer_exception_handler
 
 
-class XMLRecordDump(object):
+class XMLRecordToJson(object):
     """Handle record dump from marcxml."""
 
     def __init__(

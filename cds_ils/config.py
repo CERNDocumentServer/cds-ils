@@ -612,3 +612,22 @@ CDS_ILS_LDAP_URL = "ldap://xldap.cern.ch"
 CDS_ILS_SYNDETIC_CLIENT = "CHANGE_ME"
 #: EzProxy URL
 CDS_ILS_EZPROXY_URL = "https://ezproxy.cern.ch/login?url={url}"
+
+###############################################################################
+# CDS-ILS importer configuration
+###############################################################################
+
+CDS_ILS_IMPORTER_RECORD_TAG = "//*[local-name() = 'record']"
+
+CDS_ILS_IMPORTER_PROVIDERS = {
+    "cds": {
+        "priority": 1,
+        "agency_code": "SZeGeCERN",
+    },
+    "springer": {
+        "priority": 2,
+        "agency_code": "DE-He213",
+    },
+    "ebl": {"priority": 3, "agency_code": "MiAaPQ"},
+    "safari": {"priority": 4, "agency_code": "CaSebORM"},
+}

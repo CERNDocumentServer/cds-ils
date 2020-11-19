@@ -46,11 +46,37 @@ class SeriesImporter(object):
         """Perform before create metadata modification."""
         cleaned = deepcopy(json_series)
 
-        del cleaned["volume"]
+        if "volume" in cleaned:
+            del cleaned["volume"]
         # save the import source
         self._set_record_import_source(cleaned)
         cleaned["mode_of_issuance"] = "SERIAL"
         return cleaned
+
+    def _update_field_identifiers(self, matched_series, json_series):
+        """Update identifiers of a given series."""
+        existing_identifiers = matched_series["identifiers"]
+        new_identifiers = [
+            elem
+            for elem in json_series["identifiers"]
+            if elem not in existing_identifiers
+        ]
+
+        return existing_identifiers + new_identifiers
+
+    def update_series(self, matched_series, json_series):
+        """Update series record."""
+        matched_series["identifiers"] = self._update_field_identifiers(
+            matched_series, json_series
+        )
+        try:
+            matched_series.commit()
+            db.session.commit()
+        except IlsValidationError as e:
+            click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
+            click.secho(e.original_exception.message, fg="red")
+            db.session.rollback()
+            # raise e TODO handle the incorrect records in the logging
 
     def create_series(self, json_series):
         """Create series record."""
@@ -73,23 +99,6 @@ class SeriesImporter(object):
             click.secho(e.original_exception.message, fg="red")
             db.session.rollback()
             # raise e TODO handle the incorrect records in the logging
-
-    def _update_field_identifiers(self, matched_series, json_series):
-        """Update identifiers of a given series."""
-        existing_identifiers = matched_series["identifiers"]
-        new_identifiers = [
-            elem
-            for elem in json_series["identifiers"]
-            if elem not in existing_identifiers
-        ]
-
-        return existing_identifiers + new_identifiers
-
-    def update_series(self, matched_series, json_series):
-        """Update series record."""
-        matched_series["identifiers"] = self._update_field_identifiers(
-            matched_series, json_series
-        )
 
     def search_for_matching_series(self, json_series):
         """Find matching series."""
@@ -139,7 +148,6 @@ class SeriesImporter(object):
 
     def import_series(self, document):
         """Import series."""
-        series_indexer = current_app_ils.series_indexer
         series_class = current_app_ils.series_record_cls
         if self.json_data is None:
             return []
@@ -154,13 +162,13 @@ class SeriesImporter(object):
                 )
                 self.update_series(matching_series, json_series)
                 series.append(matching_series)
-                series_indexer.index(matching_series)
-                self.import_serial_relation(series, document, json_series)
+                self.import_serial_relation(
+                    matching_series, document, json_series
+                )
 
             elif len(matching_series_pids) == 0:
                 series_record = self.create_series(json_series)
                 series.append(series_record)
-                series_indexer.index(series_record)
                 self.import_serial_relation(
                     series_record, document, json_series
                 )
