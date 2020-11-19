@@ -15,8 +15,9 @@ from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
-from cds_ils.importer.documents.api import search_document_by_title_authors, \
-    search_documents_by_doi, search_documents_by_isbn
+from cds_ils.importer.documents.api import fuzzy_search_document, \
+    search_document_by_title_authors, search_documents_by_doi, \
+    search_documents_by_isbn
 
 
 class DocumentImporter(object):
@@ -59,14 +60,14 @@ class DocumentImporter(object):
         # Reserve record identifier, create record and recid pid in one
         # operation.
         record_uuid = uuid.uuid4()
-        provider = DocumentIdProvider.create(
-            object_type="rec",
-            object_uuid=record_uuid,
-        )
-        cleaned_json["pid"] = provider.pid.pid_value
-
         try:
-            document = document_class.create(cleaned_json, record_uuid)
+            with db.session.begin_nested():
+                provider = DocumentIdProvider.create(
+                    object_type="rec",
+                    object_uuid=record_uuid,
+                )
+                cleaned_json["pid"] = provider.pid.pid_value
+                document = document_class.create(cleaned_json, record_uuid)
             db.session.commit()
             return document
         except IlsValidationError as e:
@@ -97,7 +98,13 @@ class DocumentImporter(object):
             else:
                 matched_document[field] = self.json_data[field]
 
-        matched_document.commit()
+        try:
+            matched_document.commit()
+            db.session.commit()
+        except IlsValidationError as e:
+            click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
+            click.secho(e.original_exception.message, fg="red")
+            db.session.rollback()
 
     def search_for_matching_documents(self):
         """Find matching documents."""
@@ -111,10 +118,6 @@ class DocumentImporter(object):
             identifier["value"]
             for identifier in self.json_data.get("identifiers", [])
             if identifier["scheme"] == "DOI"
-        ]
-
-        authors = [
-            author["full_name"] for author in self.json_data.get("authors", [])
         ]
 
         matches = []
@@ -132,11 +135,43 @@ class DocumentImporter(object):
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
 
-        # check by title and authors, exact matching
-        search = search_document_by_title_authors(
-            self.json_data["title"], authors
-        )
-        results = search.scan()
-        matches += [x.pid for x in results if x.pid not in matches]
+        is_part_of_serial = self.json_data.get("_serial", None)
+        title = self.json_data.get("title", None)
+
+        if not is_part_of_serial and title:
+            # check by title and authors, exact matching
+            authors = [
+                author["full_name"]
+                for author in self.json_data.get("authors", [])
+            ]
+            subtitle = None
+            subtitle_obj = [
+                alt_title
+                for alt_title in self.json_data.get("alternative_titles", [])
+                if alt_title["type"] == "SUBTITLE"
+            ]
+            if subtitle_obj:
+                subtitle = subtitle_obj[0]["value"]
+
+            search = search_document_by_title_authors(
+                title, authors, subtitle=subtitle
+            )
+            results = search.scan()
+            matches += [x.pid for x in results if x.pid not in matches]
 
         return matches
+
+    def fuzzy_match_documents(self):
+        """Fuzzy search documents."""
+        is_part_of_serial = self.json_data.get("_serial", None)
+        title = self.json_data.get("title", None)
+
+        if is_part_of_serial or not title:
+            return []
+        authors = [
+            author["full_name"] for author in self.json_data.get("authors", [])
+        ]
+
+        fuzzy_results = fuzzy_search_document(title, authors).scan()
+
+        return fuzzy_results

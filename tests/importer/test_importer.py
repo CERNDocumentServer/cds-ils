@@ -20,7 +20,7 @@ def test_modify_documents(importer_test_data):
     report = importer.import_record()
     assert report["updated"]
 
-    updated_document = document_cls.get_record_by_pid(report["updated"])
+    updated_document = document_cls.get_record_by_pid(report["updated"]["pid"])
     # wait for indexing
     time.sleep(1)
 
@@ -55,7 +55,7 @@ def test_import_documents(app, db):
     report = importer.import_record()
     assert report["created"]
 
-    document = document_cls.get_record_by_pid(report["created"])
+    document = document_cls.get_record_by_pid(report["created"]["pid"])
     time.sleep(1)
     search = eitem_search_cls().search_by_document_pid(
         document_pid=document["pid"]
@@ -97,12 +97,12 @@ def test_replace_eitems_by_provider_priority(importer_test_data):
     }
 
     ProviderImporter = Importer
-    ProviderImporter.EITEMS_DELETE_LOWER_PRIORITY_PROVIDERS = True
+    ProviderImporter.IS_PROVIDER_PRIORITY_SENSITIVE = True
     importer = ProviderImporter(json_data[1], "springer")
     report = importer.import_record()
     assert report["updated"]
 
-    updated_document = document_cls.get_record_by_pid(report["updated"])
+    updated_document = document_cls.get_record_by_pid(report["updated"]["pid"])
     # wait for indexing
     time.sleep(1)
 
@@ -136,11 +136,11 @@ def test_add_document_to_serial(app, db):
     assert report["created"]
     assert report["series"]
 
-    created_document = document_cls.get_record_by_pid(report["created"])
+    created_document = document_cls.get_record_by_pid(report["created"]["pid"])
 
     series_list = []
     for series in report["series"]:
-        series_list.append(series_cls.get_record_by_pid(series))
+        series_list.append(series_cls.get_record_by_pid(series["pid"]))
 
     assert series_list[0]["title"] == "Advances in Nuclear Physics ;"
     assert series_list[0]["identifiers"] == [
@@ -150,4 +150,8 @@ def test_add_document_to_serial(app, db):
     assert (
         created_document["relations_extra_metadata"]["serial"][0]["pid_value"]
         == series_list[0]["pid"]
+    )
+    assert (
+        created_document["relations_extra_metadata"]["serial"][0]["volume"]
+        == "26"
     )

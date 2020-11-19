@@ -14,8 +14,8 @@ from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
 from cds_ils.importer.parse_xml import get_records_list
-from cds_ils.importer.XMLRecordDump import XMLRecordDump
 from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
+from cds_ils.importer.XMLRecordToJson import XMLRecordToJson
 
 records_logger = logging.getLogger("records_errored")
 
@@ -23,7 +23,7 @@ records_logger = logging.getLogger("records_errored")
 @shared_task()
 def process_dump(data, provider, source_type):
     """Process record dump."""
-    recorddump = XMLRecordDump(
+    recorddump = XMLRecordToJson(
         data,
         source_type=source_type,
     )

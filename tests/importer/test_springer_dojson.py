@@ -84,6 +84,7 @@ def test_springer_transformation(app):
                 "subjects": [
                     {"scheme": "LoC", "value": "QC770-798"},
                     {"scheme": "LoC", "value": "QC702.7.H42"},
+                    {"scheme": "Dewey", "value": "539.7092"},
                 ],
                 "table_of_content": [
                     "The Spin Structure of the Nucleon",

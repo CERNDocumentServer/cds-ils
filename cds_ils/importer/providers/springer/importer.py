@@ -15,4 +15,4 @@ class SpringerImporter(Importer):
 
     # ATTENTION: this provider has swapped order of ind1= ind2= in the XML
 
-    EITEMS_DELETE_LOWER_PRIORITY_PROVIDERS = True
+    IS_PROVIDER_PRIORITY_SENSITIVE = True

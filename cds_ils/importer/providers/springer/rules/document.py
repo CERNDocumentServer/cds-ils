@@ -183,7 +183,7 @@ def subjects_loc(self, key, value):
     return _subjects
 
 
-@model.over("subjects", "^082_4")
+@model.over("subjects", "(^082_4)|(^08204)")
 def subjects_dewey(self, key, value):
     """Translates subject classification."""
     _subjects = self.get("subjects", [])
@@ -204,8 +204,10 @@ def edition(self, key, value):
 @out_strip
 def number_of_pages(self, key, value):
     """Translate number of pages."""
-    numbers = re.findall(r"\d+", clean_val("a", value, str))
-    return numbers[0]
+    pages = clean_val("a", value, str)
+    if pages:
+        numbers = re.findall(r"\d+", pages)
+        return numbers[0] if numbers else None
 
 
 @model.over("_serial", "^4901_")
@@ -218,10 +220,14 @@ def serial(self, key, value):
     if issn_value:
         identifiers = [{"scheme": "ISSN", "value": issn_value}]
 
+    volume = clean_val("v", value, str)
+    if volume:
+        volume = re.findall(r"\d+", volume)
+
     return {
         "title": clean_val("a", value, str, req=True),
-        "identifiers": None,
-        "volume": re.findall(r"\d+", clean_val("v", value, str))[0],
+        "identifiers": identifiers,
+        "volume": volume[0] if volume else None,
     }
 
 
