@@ -22,7 +22,7 @@ def importer():
 @click.option(
     "--provider",
     "-p",
-    type=click.Choice(["springer", "cds", "ebl"]),
+    type=click.Choice(["springer", "cds", "ebl", "safari"]),
     help="Choose the provider",
 )
 @with_appcontext

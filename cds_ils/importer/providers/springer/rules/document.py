@@ -25,6 +25,7 @@ from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role
 @filter_list_values
 def recid(self, key, value):
     """Record Identifier."""
+    self["provider_recid"] = value
     return [{"scheme": "SPRINGER", "value": value}]
 
 

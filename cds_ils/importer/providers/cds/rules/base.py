@@ -36,13 +36,14 @@ from .utils import extract_parts, is_excluded
 @model.over("legacy_recid", "^001")
 def recid(self, key, value):
     """Record Identifier."""
+    self["provider_recid"] = value
     return int(value)
 
 
 @model.over("agency_code", "^003")
 def agency_code(self, key, value):
     """Control number identifier."""
-    return "SzGeCERN"
+    return value
 
 
 @model.over("created_by", "^859__")

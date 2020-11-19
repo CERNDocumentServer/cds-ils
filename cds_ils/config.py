@@ -622,7 +622,7 @@ CDS_ILS_IMPORTER_RECORD_TAG = "//*[local-name() = 'record']"
 CDS_ILS_IMPORTER_PROVIDERS = {
     "cds": {
         "priority": 1,
-        "agency_code": "SZeGeCERN",
+        "agency_code": "SzGeCERN",
     },
     "springer": {
         "priority": 2,

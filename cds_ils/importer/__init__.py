@@ -9,4 +9,4 @@
 
 from cds_dojson.overdo import OverdoBase
 
-marc21 = OverdoBase(entry_point_models="cds_ils.marc21.models")
+marc21 = OverdoBase(entry_point_models="cds_ils.importer.models")

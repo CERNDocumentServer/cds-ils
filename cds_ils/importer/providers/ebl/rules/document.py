@@ -25,6 +25,7 @@ from cds_ils.importer.providers.utils import rreplace
 @filter_list_values
 def recid(self, key, value):
     """Record Identifier."""
+    self["provider_recid"] = value
     return [{"scheme": "EBL", "value": value}]
 
 
@@ -181,15 +182,19 @@ def number_of_pages(self, key, value):
 @for_each_value
 def serial(self, key, value):
     """Translate serial."""
+    issn_value = clean_val("x", value, str)
+    identifiers = None
+    if issn_value:
+        identifiers = [{"scheme": "ISSN", "value": issn_value}]
+
     volume = clean_val("v", value, str)
     if volume:
-        volume = re.findall(r"\d+", volume)[0]
+        volume = re.findall(r"\d+", volume)
+
     return {
         "title": clean_val("a", value, str, req=True),
-        "identifiers": [
-            {"scheme": "ISSN", "value": clean_val("x", value, str)}
-        ],
-        "volume": volume,
+        "identifiers": identifiers,
+        "volume": volume[0] if volume else None,
     }
 
 

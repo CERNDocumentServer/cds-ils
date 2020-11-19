@@ -7,8 +7,8 @@
 
 """CDS-ILS EBL Importer."""
 
-from cds_ils.importer.base import Base
-from cds_ils.importer.base import model as model_base
+from cds_ils.importer.base_model import Base
+from cds_ils.importer.base_model import model as model_base
 from cds_ils.importer.providers.ebl.ignore_fields import EBL_IGNORE_FIELDS
 
 
@@ -19,32 +19,9 @@ class EBLModel(Base):
 
     __ignore_keys__ = EBL_IGNORE_FIELDS
 
-    _defaults = {"document_type": "BOOK"}
-
-    def do(
-        self,
-        blob,
-        ignore_missing=True,
-        exception_handlers=None,
-        init_fields=None,
-    ):
-        """Set schema after translation depending on the model."""
-        json = {}
-        # set default values
-        json.update(self._defaults)
-
-        # import fields from xml
-        json.update(
-            super(EBLModel, self).do(
-                blob=blob,
-                ignore_missing=ignore_missing,
-                exception_handlers=exception_handlers,
-            )
-        )
-
-        return json
+    _default_fields = {"document_type": "BOOK"}
 
 
 model = EBLModel(
-    bases=(model_base,), entry_point_group="cds_ils.marc21.document"
+    bases=(model_base,), entry_point_group="cds_ils.importer.document"
 )
