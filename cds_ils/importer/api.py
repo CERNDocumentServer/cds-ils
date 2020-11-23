@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer API module."""
+import json
 import logging
 
 import click
@@ -50,6 +51,9 @@ def import_record(data, provider, source_type=None, eager=False):
 
 def import_from_xml(sources, source_type, provider, eager=True):
     """Load xml file."""
+    records = []
+    # TODO: To be removed
+    file_name = '/tmp/my_file.json'
     for idx, source in enumerate(sources, 1):
         click.echo(
             "({}/{}) Importing documents in {}...".format(
@@ -78,6 +82,12 @@ def import_from_xml(sources, source_type, provider, eager=True):
                     ),
                     fg="blue",
                 )
+                records.append(report)
+                # TODO: To be removed
+                f = open(file_name, 'w+')
+                f.writelines([json.dumps(records)])
+                f.close()
+
             except LossyConversion as e:
                 continue
             except IlsValidationError as e:
@@ -93,3 +103,5 @@ def import_from_xml(sources, source_type, provider, eager=True):
                     "@FILE: {0} ERROR: {1}".format(source.name, str(e))
                 )
                 raise e
+
+    return records

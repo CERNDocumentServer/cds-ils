@@ -631,3 +631,7 @@ CDS_ILS_IMPORTER_PROVIDERS = {
     "ebl": {"priority": 3, "agency_code": "MiAaPQ"},
     "safari": {"priority": 4, "agency_code": "CaSebORM"},
 }
+# TODO: Update ?
+IMPORTER_UPLOADS_PATH = "/tmp"
+
+IMPORTER_ALLOWED_EXTENSIONS = "XML"
