@@ -17,6 +17,8 @@ import {
   HomeHeadline,
 } from './overridden/frontsite/Home/HomeContent';
 import { Slogan } from './overridden/frontsite/Home/Slogan';
+import { SideBarMenuItem } from './overridden/backoffice/Sidebar/SideBarMenuItem';
+import { ImporterRoute } from './overridden/routes/ImporterRoute';
 
 export const overriddenCmps = {
   'Backoffice.PatronDetails.Metadata': PatronMetadata,
@@ -34,4 +36,6 @@ export const overriddenCmps = {
   'RequestForPatronMessage.DeliveryIcon': DeliveryIcon,
   'LoanAvailability.NotAvailable': NotAvailable,
   DocumentRequestForm: DocumentRequestFormFields,
+  'Backoffice.CustomRoute': ImporterRoute,
+  'Backoffice.Sidebar.CustomMenuItem': SideBarMenuItem,
 };
