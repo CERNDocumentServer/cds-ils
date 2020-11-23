@@ -10,7 +10,14 @@ const DropdownItems = () => {
   return (
     <>
       <Dropdown.Item as="a" href="https://library.web.cern.ch/resources/remote">
-        External Online Resources
+        Remote access to electronic resources
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item
+        as="a"
+        href="https://scientific-info.cern/search-and-read/online-resources"
+      >
+        CERN Library online resources
       </Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item as={Link} to={getStaticPageByName('faq').route}>
