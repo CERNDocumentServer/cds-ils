@@ -9,7 +9,8 @@
 
 from invenio_access import action_factory
 from invenio_access.permissions import Permission
-from invenio_app_ils.permissions import backoffice_access_action
+from invenio_app_ils.permissions import backoffice_access_action, \
+    backoffice_permission
 from invenio_app_ils.permissions import \
     views_permissions_factory as ils_views_permissions_factory
 
@@ -29,4 +30,6 @@ def views_permissions_factory(action):
     """Override ILS views permissions factory."""
     if action == "retrieve-patron-loans":
         return retrieve_patron_loans_permission()
+    elif action == "document-importer":
+        return backoffice_permission()
     return ils_views_permissions_factory(action)

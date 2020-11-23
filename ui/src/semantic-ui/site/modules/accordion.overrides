@@ -1,3 +1,16 @@
 /*******************************
         User Overrides
 *******************************/
+
+.backoffice{
+  .ui.accordion.importer{
+    &.styled{
+      box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15), 0px 0px 0px 1px rgba(34, 36, 38, 0.15);
+      >.content {
+        &.active{
+          margin-bottom: 0em;
+        }
+      }
+    }
+  }
+}
