@@ -78,9 +78,14 @@ setup(
             "fixtures = cds_ils.cli:fixtures",
             "covers = cds_ils.cli:covers",
         ],
-        "invenio_db.models": ["cds_ils = cds_ils.ldap.models"],
+        "invenio_db.models": [
+            "cds_ils_ldap = cds_ils.ldap.models",
+            "cds_ils_importer = cds_ils.importer.models",
+        ],
         "invenio_admin.views": [
-            "invenio_ldap_sync = cds_ils.ldap.admin:ldap_sync"
+            "cds_ils_ldap_sync = cds_ils.ldap.admin:ldap_sync",
+            "cds_ils_importer_tasks = cds_ils.importer.admin:importer_tasks",
+            "cds_ils_records = cds_ils.importer.admin:importer_records",
         ],
         "invenio_base.api_apps": ["cds_ils = cds_ils.ext:CdsIls"],
         "invenio_base.apps": ["cds_ils_app = cds_ils.ext:CdsIls"],

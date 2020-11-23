@@ -11,6 +11,7 @@
 import click
 from flask import current_app
 from flask.cli import with_appcontext
+from invenio_db import db
 
 from .api import delete_users as ldap_delete_users
 from .api import import_users as ldap_import_users
@@ -39,6 +40,7 @@ def update_users():
         result = ldap_update_users()
         log.set_succeeded(*result)
     except Exception as e:
+        db.session.rollback()
         current_app.logger.exception(e)
         log.set_failed(e)
 

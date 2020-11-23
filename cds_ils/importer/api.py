@@ -6,15 +6,14 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer API module."""
-import json
 import logging
 
-import click
 from celery import shared_task
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
 from cds_ils.importer.errors import LossyConversion
+from cds_ils.importer.models import ImporterTaskEntry, ImporterTaskLog
 from cds_ils.importer.parse_xml import get_records_list
 from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
 from cds_ils.importer.XMLRecordToJson import XMLRecordToJson
@@ -49,59 +48,48 @@ def import_record(data, provider, source_type=None, eager=False):
         process_dump.delay(data, provider, source_type=source_type)
 
 
-def import_from_xml(sources, source_type, provider, eager=True):
-    """Load xml file."""
-    records = []
-    # TODO: To be removed
-    file_name = '/tmp/my_file.json'
-    for idx, source in enumerate(sources, 1):
-        click.echo(
-            "({}/{}) Importing documents in {}...".format(
-                idx, len(sources), source.name
-            )
-        )
+def import_from_xml(log_id, source_path, source_type, provider):
+    """Load a singular xml file."""
+    log = ImporterTaskLog.query.filter_by(id=log_id).first()
+    entry_data = None
+    try:
+        with open(source_path) as source:
+            records_list = list(get_records_list(source))
 
-        i = 0
-        for record in get_records_list(source):
-            try:
-                click.secho("Processing record {}".format(i))
-                i += 1
-                report = import_record(
-                    record, provider, source_type=source_type, eager=True
-                )
-                click.secho(
-                    "Created: {}\n "
-                    "Updated: "
-                    "{}\n "
-                    "Ambiguous matches {}\n "
-                    "Fuzzy matches {}\n".format(
-                        report["created"],
-                        report["updated"],
-                        report["ambiguous_documents"],
-                        report["fuzzy"],
-                    ),
-                    fg="blue",
-                )
-                records.append(report)
-                # TODO: To be removed
-                f = open(file_name, 'w+')
-                f.writelines([json.dumps(records)])
-                f.close()
+            # update the entries count now that we know it
+            log.entries_count = len(records_list)
+            db.session.commit()
 
-            except LossyConversion as e:
-                continue
-            except IlsValidationError as e:
-                records_logger.error(
-                    "@FILE: {0} FATAL: {1}".format(
-                        source.name,
-                        str(e.original_exception.message),
+            for i, record in enumerate(records_list):
+                entry_data = dict(
+                    import_id=log.id,
+                    entry_index=i,
+                )
+                try:
+                    report = import_record(record, provider,
+                                           source_type=source_type,
+                                           eager=True)
+                except LossyConversion as e:
+                    ImporterTaskEntry.create_failure(entry_data, e)
+                    continue
+                except IlsValidationError as e:
+                    records_logger.error(
+                        "@FILE TASK: {0} FATAL: {1}".format(
+                            log_id,
+                            str(e.original_exception.message),
+                        )
                     )
-                )
-                continue
-            except Exception as e:
-                records_logger.error(
-                    "@FILE: {0} ERROR: {1}".format(source.name, str(e))
-                )
-                raise e
+                    ImporterTaskEntry.create_failure(entry_data, e)
+                    continue
 
-    return records
+                ImporterTaskEntry.create_success(entry_data, report)
+    except Exception as e:
+        records_logger.error(
+            "@FILE TASK: {0} ERROR: {1}".format(log_id, str(e))
+        )
+        if entry_data:
+            ImporterTaskEntry.create_failure(entry_data, e)
+        log.set_failed(e)
+        raise e
+
+    log.set_succeeded()

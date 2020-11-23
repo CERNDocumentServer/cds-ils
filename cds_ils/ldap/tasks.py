@@ -11,6 +11,7 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app
+from invenio_db import db
 
 from .api import update_users
 from .models import LdapSynchronizationLog
@@ -28,5 +29,6 @@ def synchronize_users_task():
         result = update_users()
         log.set_succeeded(*result)
     except Exception as e:
+        db.session.rollback()
         current_app.logger.exception(e)
         log.set_failed(e)
