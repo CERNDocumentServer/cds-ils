@@ -1,25 +1,15 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of CERN Document Server.
-# Copyright (C) 2017, 2018 CERN.
+# Copyright (C) 2020 CERN.
 #
-# Invenio is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-#
-# Invenio is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Invenio; if not, write to the Free Software Foundation, Inc.,
-# 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-"""Book values mapping."""
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
+
+"""CDS-ILS MARCXML to JSON fields values mapping."""
+
 from __future__ import unicode_literals
 
-from cds_dojson.marc21.fields.books.errors import UnexpectedValue
+from cds_ils.importer.errors import UnexpectedValue
 
 DOCUMENT_TYPE = {
     "PROCEEDINGS": ["PROCEEDINGS", "42", "43"],

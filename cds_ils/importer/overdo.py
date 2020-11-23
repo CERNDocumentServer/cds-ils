@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2020 CERN.
+#
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
+
+"""CDS-ILS Overdo module."""
+
 from cds_dojson.overdo import Overdo
 from dojson._compat import iteritems
 from dojson.errors import IgnoreKey, MissingRule

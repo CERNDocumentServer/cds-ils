@@ -8,14 +8,13 @@
 """CDS-ILS Springer Importer rules."""
 import re
 
-from cds_dojson.marc21.fields.books.errors import UnexpectedValue
-from cds_dojson.marc21.fields.utils import clean_val, filter_list_values, \
-    out_strip
 from dojson.errors import IgnoreKey
 from dojson.utils import filter_values, for_each_value, force_list
 from invenio_app_ils.documents.api import Document
 
-from cds_ils.importer.errors import ManualImportRequired
+from cds_ils.importer.errors import ManualImportRequired, UnexpectedValue
+from cds_ils.importer.providers.cds.rules.utils import clean_val, \
+    filter_list_values, out_strip
 from cds_ils.importer.providers.springer.springer import model
 from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role
 

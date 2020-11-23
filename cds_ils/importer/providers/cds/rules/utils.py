@@ -1,26 +1,19 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of CERN Document Server.
-# Copyright (C) 2017, 2018, 2019 CERN.
+# Copyright (C) 2020 CERN.
 #
-# Invenio is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-#
-# Invenio is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Invenio; if not, write to the Free Software Foundation, Inc.,
-# 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-"""Book utils."""
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
 
+"""CDS-ILS MARCXML rules utils."""
+import functools
 import re
+from datetime import date, timedelta
 
-from cds_dojson.marc21.fields.books.errors import MissingRequiredField
+from dojson.errors import IgnoreKey
+
+from cds_ils.importer.errors import ManualImportRequired, \
+    MissingRequiredField, UnexpectedValue
 
 MAX_PAGES_NUMBER = 8192
 
@@ -125,3 +118,161 @@ def extract_volume_info(value):
             volume=int(result.group(5)),
         )
     return None
+
+
+def related_url(value):
+    """Builds related records urls."""
+    return '{0}{1}'.format('https://cds.cern.ch/record/', value)
+
+
+def clean_pages_range(pages_subfield, value):
+    """Builds pages dictionary."""
+    page_regex = r'\d+(?:[\-‐‑‒–—―⁻₋−﹘﹣－]*\d*)$'
+    pages_val = clean_val(pages_subfield, value, str, regex_format=page_regex)
+    if pages_val:
+        pages = re.split(r'[\-‐‑‒–—―⁻₋−﹘﹣－]+', pages_val)
+        if len(pages) == 1:
+            result = {'page_start': int(pages[0])}
+            return result
+        else:
+            result = {'page_start': int(pages[0]),
+                      'page_end': int(pages[1])}
+            return result
+
+
+def clean_str(to_clean, regex_format, req, transform=None):
+    """Cleans string marcxml values."""
+    if regex_format:
+        pattern = re.compile(regex_format)
+        match = pattern.match(to_clean)
+        if not match:
+            raise UnexpectedValue
+    try:
+        cleaned = to_clean.strip()
+    except AttributeError:
+        raise UnexpectedValue
+    if not cleaned and req:
+        raise MissingRequiredField
+    if transform and hasattr(cleaned, transform):
+        cleaned = getattr(cleaned, transform)()
+    return cleaned
+
+
+def clean_val(subfield, value, var_type, req=False, regex_format=None,
+              default=None, manual=False, transform=None):
+    """
+    Tests values using common rules.
+
+    :param subfield: marcxml subfield indicator
+    :param value: mxrcxml value
+    :param var_type: expected type for value to be cleaned
+    :param req: specifies if the value is required in the end schema
+    :param regex_format: specifies if the value should have a pattern
+    :param default: if value is missing and required it outputs default
+    :param manual: if the value should be cleaned manually durign the migration
+    :param transform: string transform function
+    :return: cleaned output value
+    """
+    to_clean = value.get(subfield)
+    if manual and to_clean:
+        raise ManualImportRequired
+    if req and to_clean is None:
+        if default:
+            return default
+        raise MissingRequiredField
+    if to_clean is not None:
+        try:
+            if var_type is str:
+                return clean_str(to_clean, regex_format, req, transform)
+            elif var_type is bool:
+                return bool(to_clean)
+            elif var_type is int:
+                return int(to_clean)
+            else:
+                raise NotImplementedError
+        except ValueError:
+            raise UnexpectedValue(subfield=subfield)
+        except TypeError:
+            raise UnexpectedValue(subfield=subfield)
+
+
+def clean_email(value):
+    """Cleans the email field."""
+    if value:
+        email = value.strip().replace(' [CERN]', '@cern.ch'). \
+            replace('[CERN]', '@cern.ch')
+        return email
+
+
+def get_week_start(year, week):
+    """Translates cds book yearweek format to starting date."""
+    d = date(year, 1, 1)
+    if d.weekday() > 3:
+        d = d + timedelta(7 - d.weekday())
+    else:
+        d = d - timedelta(d.weekday())
+    dlt = timedelta(days=(week - 1) * 7)
+    return d + dlt
+
+
+def replace_in_result(phrase, replace_with, key=None):
+    """Replaces string values in list with given string."""
+
+    def the_decorator(fn_decorated):
+        def proxy(*args, **kwargs):
+            res = fn_decorated(*args, **kwargs)
+            if res:
+                if not key:
+                    return [k.replace(phrase, replace_with).strip()
+                            for k in res]
+                else:
+                    return [dict((k, v.replace(phrase, replace_with).strip()
+                                  if k == key else v
+                                  )
+                                 for k, v in elem.items()) for elem in res]
+            return res
+
+        return proxy
+
+    return the_decorator
+
+
+def filter_list_values(f):
+    """Remove None and blank string values from list of dictionaries."""
+
+    @functools.wraps(f)
+    def wrapper(self, key, value, **kwargs):
+        out = f(self, key, value)
+        if out:
+            clean_list = [dict((k, v) for k, v in elem.items()
+                               if v) for elem in out if elem]
+            clean_list = [elem for elem in clean_list if elem]
+            if not clean_list:
+                raise IgnoreKey(key)
+            return clean_list
+        else:
+            raise IgnoreKey(key)
+
+    return wrapper
+
+
+def out_strip(fn_decorated):
+    """Decorator cleaning output values of trailing and following spaces."""
+
+    def proxy(self, key, value, **kwargs):
+        res = fn_decorated(self, key, value, **kwargs)
+        if not res:
+            raise IgnoreKey(key)
+        if isinstance(res, str):
+            # the value is not checked for empty strings here because clean_val
+            # does the job, it will be None caught before
+            return res.strip()
+        elif isinstance(res, list):
+            cleaned = [elem.strip() for elem in res if elem]
+            if not cleaned:
+                raise IgnoreKey(key)
+            return cleaned
+        else:
+            return res
+
+    return proxy

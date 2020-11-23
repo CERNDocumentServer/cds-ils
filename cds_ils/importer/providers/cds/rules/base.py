@@ -4,7 +4,7 @@
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
-"""Books fields."""
+"""CDS-ILS MARCXML Base fields."""
 
 from __future__ import absolute_import, print_function, unicode_literals
 
@@ -12,24 +12,23 @@ import datetime
 import re
 
 import pycountry
-from cds_dojson.marc21.fields.books.errors import MissingRequiredField, \
-    UnexpectedValue
-from cds_dojson.marc21.fields.books.utils import extract_volume_number
-from cds_dojson.marc21.fields.books.values_mapping import ACQUISITION_METHOD, \
-    ARXIV_CATEGORIES, COLLECTION, DOCUMENT_TYPE, EXTERNAL_SYSTEM_IDENTIFIERS, \
-    EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, MATERIALS, MEDIUM_TYPES, \
-    SUBJECT_CLASSIFICATION_EXCEPTIONS, mapping
-from cds_dojson.marc21.fields.utils import ManualMigrationRequired, \
-    build_contributor_books, clean_email, clean_pages_range, clean_val, \
-    filter_list_values, get_week_start, out_strip, related_url, \
-    replace_in_result
 from dateutil import parser
 from dateutil.parser import ParserError
 from dojson.errors import IgnoreKey
 from dojson.utils import filter_values, flatten, for_each_value, force_list
 
+from cds_ils.importer.errors import ManualImportRequired, \
+    MissingRequiredField, UnexpectedValue
 from cds_ils.importer.providers.cds.cds import model
+from cds_ils.importer.providers.cds.rules.utils import clean_email, \
+    clean_pages_range, clean_val, extract_volume_number, filter_list_values, \
+    get_week_start, out_strip, replace_in_result
+from cds_ils.importer.providers.cds.rules.values_mapping import \
+    ACQUISITION_METHOD, ARXIV_CATEGORIES, COLLECTION, DOCUMENT_TYPE, \
+    EXTERNAL_SYSTEM_IDENTIFIERS, EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, \
+    MATERIALS, MEDIUM_TYPES, SUBJECT_CLASSIFICATION_EXCEPTIONS, mapping
 
+from ...utils import build_ils_contributor
 from .utils import extract_parts, is_excluded
 
 
@@ -146,18 +145,18 @@ def document_type(self, key, value):
             raise UnexpectedValue(subfield="a")
 
         if val_a and val_b and (val_a != val_b != _doc_type):
-            raise ManualMigrationRequired(
+            raise ManualImportRequired(
                 subfield="a or b - " "inconsistent doc type"
             )
         if val_a:
             if _doc_type and _doc_type != val_a:
-                raise ManualMigrationRequired(
+                raise ManualImportRequired(
                     subfield="a" "inconsistent doc type"
                 )
             _doc_type = val_a
         if val_b:
             if _doc_type and _doc_type != val_a:
-                raise ManualMigrationRequired(
+                raise ManualImportRequired(
                     subfield="b" "inconsistent doc type"
                 )
             _doc_type = val_b
@@ -169,7 +168,7 @@ def document_type(self, key, value):
 def authors(self, key, value):
     """Translates the authors field."""
     _authors = self.get("authors", [])
-    item = build_contributor_books(value)
+    item = build_ils_contributor(value)
     if item and item not in _authors:
         _authors.append(item)
     try:
@@ -346,7 +345,7 @@ def related_records(self, key, value):
         )
         _migration.update({"related": _related, "has_related": True})
         return _migration
-    except ManualMigrationRequired as e:
+    except ManualImportRequired as e:
         if key == "775__":
             e.subfield = "b or c"
         else:
@@ -443,7 +442,7 @@ def isbns(self, key, value):
             "scheme": "ISBN",
         }
         if not isbn["value"]:
-            raise ManualMigrationRequired(subfield="a or z")
+            raise ManualImportRequired(subfield="a or z")
         if subfield_u:
             volume = re.search(r"(\(*v[.| ]*\d+.*\)*)", subfield_u)
 
@@ -452,7 +451,7 @@ def isbns(self, key, value):
                 subfield_u = subfield_u.replace(volume, "").strip()
                 existing_volume = self.get("volume")
                 if existing_volume:
-                    raise ManualMigrationRequired(subfield="u")
+                    raise ManualImportRequired(subfield="u")
                 # TODO volume --> when splitting to series
                 self["volume"] = volume
             if subfield_u.upper() in MEDIUM_TYPES:
@@ -499,7 +498,7 @@ def alternative_identifiers(self, key, value):
             self["identifiers"] = dois(self, key, value)
             raise IgnoreKey("alternative_identifiers")
         elif field_type and field_type.lower() == "asin":
-            indentifier_entry.update({"value": sub_a, "scheme": "ASIN"})
+            raise IgnoreKey("alternative_identifiers")
         else:
             raise UnexpectedValue(subfield="2")
     if key == "035__":
@@ -641,7 +640,8 @@ def arxiv_eprints(self, key, value):
             duplicated = [
                 elem
                 for i, elem in enumerate(_alternative_identifiers)
-                if elem["value"] == eprint_id and elem["scheme"] == "arXiv"
+                if elem["value"] == eprint_id and elem["scheme"].lower()
+                == "arxiv"
             ]
             category = check_category("c", v)
             if not duplicated:

@@ -1,33 +1,23 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of CERN Document Server.
-# Copyright (C) 2017, 2018, 2019  CERN.
+# Copyright (C) 2020 CERN.
 #
-# Invenio is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-#
-# Invenio is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Invenio; if not, write to the Free Software Foundation, Inc.,
-# 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-"""Standards fields."""
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
+
+"""CDS-ILS MARCXML Standard rules."""
+
 from __future__ import unicode_literals
 
-from cds_dojson.marc21.fields.books.errors import UnexpectedValue
-from cds_dojson.marc21.fields.books.utils import extract_parts, is_excluded
-from cds_dojson.marc21.fields.utils import clean_val, filter_list_values, \
-    out_strip
-from cds_dojson.marc21.models.books.standard import model
 from dojson.errors import IgnoreKey
 
+from cds_ils.importer.errors import UnexpectedValue
+from cds_ils.importer.providers.cds.models.standard import model
+from cds_ils.importer.providers.cds.rules.utils import clean_val, \
+    extract_parts, filter_list_values, is_excluded, out_strip
 
-@model.over("alternative_titles", "^246__")
+
+@model.over("alternative_titles", "^246__", override=True)
 @filter_list_values
 def title_translations(self, key, value):
     """Translates title translations."""
