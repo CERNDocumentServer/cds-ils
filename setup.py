@@ -90,6 +90,7 @@ setup(
         ],
         "invenio_base.api_blueprints": [
             "cds_ils_patron_loans = cds_ils.patrons.views:create_patron_loans_blueprint",
+            "cds_ils_legacy = cds_ils.literature.views:legacy_blueprint",
             "cds_ils_logout = cds_ils.authentication.views:cern_oauth_blueprint",
         ],
         "invenio_config.module": ["cds_ils = cds_ils.config"],

@@ -15,10 +15,10 @@ import uuid
 
 import click
 import requests
-from invenio_app_ils.documents.api import Document
 from invenio_app_ils.documents.indexer import DocumentIndexer
 from invenio_app_ils.eitems.api import EItem, EItemIdProvider
 from invenio_app_ils.eitems.indexer import EItemIndexer
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_files_rest.models import Bucket, ObjectVersion
 
@@ -127,6 +127,7 @@ def process_files_from_legacy():
         # try not to kill legacy server
         time.sleep(3)
         # make sure the document is in DB not only ES
+        Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 
@@ -191,6 +192,7 @@ def migrate_external_links():
 
     for hit in search.scan():
         # make sure the document is in DB not only ES
+        Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 
@@ -213,6 +215,7 @@ def migrate_ezproxy_links():
     click.echo("Found {} documents with ezproxy links.".format(search.count()))
     for hit in search.scan():
         # make sure the document is in DB not only ES
+        Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 
@@ -236,6 +239,7 @@ def migrate_ebl_links():
 
     for hit in search.scan():
         # make sure the document is in DB not only ES
+        Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 

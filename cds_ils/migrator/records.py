@@ -18,8 +18,9 @@ from cds_dojson.marc21.fields.books.errors import ManualMigrationRequired, \
     MissingRequiredField, UnexpectedValue
 from cds_dojson.marc21.utils import create_record
 from flask import current_app
-from invenio_app_ils.documents.api import Document, DocumentIdProvider
+from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_migrator.records import RecordDump, RecordDumpLoader
 from invenio_migrator.utils import disable_timestamp
@@ -30,6 +31,7 @@ from cds_ils.migrator.errors import LossyConversion
 from cds_ils.migrator.handlers import migration_exception_handler
 from cds_ils.migrator.utils import clean_created_by_field, process_fireroles, \
     update_access
+from cds_ils.minters import legacy_recid_minter
 
 cli_logger = logging.getLogger("migrator")
 
@@ -275,8 +277,9 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
         timestamp, json_data = dump.revisions[-1]
         json_data["pid"] = provider.pid.pid_value
         json_data = clean_created_by_field(json_data)
-
+        legacy_recid_minter(json_data["legacy_recid"], record_uuid)
         try:
+            Document = current_app_ils.document_record_cls
             document = Document.create(json_data, record_uuid)
             document.model.created = dump.created.replace(tzinfo=None)
             document.model.updated = timestamp.replace(tzinfo=None)

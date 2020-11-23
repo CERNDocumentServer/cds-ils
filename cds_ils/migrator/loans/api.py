@@ -13,7 +13,6 @@ import logging
 
 import click
 from flask import current_app
-from invenio_app_ils.documents.api import Document
 from invenio_app_ils.patrons.api import SystemAgent
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
@@ -62,6 +61,7 @@ def import_loans_from_json(dump_file):
             # additional check if the loan refers to the same document
             # as it is already attached to the item
             document_pid = item.get("document_pid")
+            Document = current_app_ils.document_record_cls
             document = Document.get_record_by_pid(document_pid)
             if record["legacy_document_id"] is None:
                 records_logger.error(

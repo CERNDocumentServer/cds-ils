@@ -13,7 +13,6 @@ import logging
 
 import click
 from elasticsearch_dsl import Q
-from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
 from invenio_app_ils.errors import IlsValidationError
 from invenio_migrator.cli import _loadrecord
@@ -84,37 +83,6 @@ def import_documents_from_dump(sources, source_type, eager, include):
                                 item["recid"], str(e)
                             )
                         )
-
-
-def get_document_by_legacy_recid(legacy_recid):
-    """Search documents by its legacy recid."""
-    search = DocumentSearch().query(
-        "bool", filter=[Q("term", legacy_recid=legacy_recid)]
-    )
-    result = search.execute()
-    hits_total = result.hits.total.value
-    if hits_total < 1:
-        click.secho(
-            "no document found with legacy recid {}".format(legacy_recid),
-            fg="red",
-        )
-        raise DocumentMigrationError(
-            "no document found with legacy recid {}".format(legacy_recid)
-        )
-    elif hits_total > 1:
-        click.secho(
-            "no document found with legacy recid {}".format(legacy_recid),
-            fg="red",
-        )
-        raise DocumentMigrationError(
-            "found more than one document with recid {}".format(legacy_recid)
-        )
-    else:
-        click.secho(
-            "! document found with legacy recid {}".format(legacy_recid),
-            fg="green",
-        )
-        return Document.get_record_by_pid(result.hits[0].pid)
 
 
 def get_all_documents_with_files():

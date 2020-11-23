@@ -8,13 +8,14 @@
 """Invenio App ILS Patron Loans Information views."""
 
 from flask import jsonify
-from invenio_app_ils.documents.api import Document
 from invenio_app_ils.locations.api import Location
+from invenio_app_ils.proxies import current_app_ils
 
 
 def serialize_on_loan_book_information(loan):
     """Serialize loan information."""
     location = Location.get_record_by_pid(loan["transaction_location_pid"])
+    Document = current_app_ils.document_record_cls
     document = Document.get_record_by_pid(loan["document_pid"])
     return dict(
         barcode=loan["item"]["barcode"],
@@ -28,6 +29,7 @@ def serialize_on_loan_book_information(loan):
 def serialize_loan_request_book_information(loan):
     """Serialize loan information."""
     location = Location.get_record_by_pid(loan["transaction_location_pid"])
+    Document = current_app_ils.document_record_cls
     document = Document.get_record_by_pid(loan["document_pid"])
     return dict(
         request_start_date=loan["start_date"],

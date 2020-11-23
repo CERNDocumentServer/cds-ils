@@ -45,6 +45,7 @@ from invenio_records_rest.utils import deny_all
 from marshmallow.fields import Bool, List
 
 from .circulation.utils import circulation_cds_extension_max_count
+from .documents.api import Document
 from .literature.covers import build_cover_urls
 from .patrons.api import Patron
 from .patrons.permissions import views_permissions_factory
@@ -360,6 +361,7 @@ JSONSCHEMAS_SCHEMAS = [
 # RECORDS REST
 ###############################################################################
 RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
+RECORDS_REST_ENDPOINTS[DOCUMENT_PID_TYPE]["record_class"] = Document
 RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE][
     "create_permission_factory_imp"
 ] = deny_all

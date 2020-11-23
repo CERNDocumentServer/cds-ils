@@ -15,8 +15,9 @@ import click
 from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from flask import current_app
-from invenio_app_ils.documents.api import Document, DocumentIdProvider
+from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.documents.search import DocumentSearch
+from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
     SERIAL_RELATION
 from invenio_app_ils.series.api import Series
@@ -81,6 +82,7 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
     # Re-use the current record for the first volume
     # TODO review this - there are more cases of multiparts
     first_volume = next(volume_numbers)
+    Document = current_app_ils.document_record_cls
     first = Document.get_record_by_pid(pid)
     if "title" in volumes[first_volume]:
         first["title"] = volumes[first_volume]["title"]
@@ -102,6 +104,7 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
             object_type="rec", object_uuid=record_uuid
         )
         temp["pid"] = provider.pid.pid_value
+        Document = current_app_ils.document_record_cls
         record = Document.create(temp, record_uuid)
         record.commit()
         yield record
@@ -181,6 +184,7 @@ def link_documents_and_serials():
                 )
 
     click.echo("Creating serial relations...")
+    Document = current_app_ils.document_record_cls
     link_records_and_serial(
         Document, DocumentSearch().filter("term", _migration__has_serial=True)
     )
@@ -214,6 +218,7 @@ def validate_serial_records():
                 )
             )
         for relation in relations:
+            Document = current_app_ils.document_record_cls
             child = Document.get_record_by_pid(
                 relation["pid"], pid_type=relation["pid_type"]
             )
@@ -260,6 +265,7 @@ def validate_multipart_records():
                 "(expected {})".format(multipart["pid"], len(relations), count)
             )
         for relation in relations:
+            Document = current_app_ils.document_record_cls
             child = Document.get_record_by_pid(
                 relation["pid"], pid_type=relation["pid_type"]
             )

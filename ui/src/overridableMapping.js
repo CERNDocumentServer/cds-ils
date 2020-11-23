@@ -15,6 +15,7 @@ import {
   HomeContent,
   HomeHeadline,
 } from './overridden/frontsite/Home/HomeContent';
+import { LegacyDocumentRoute } from './overridden/frontsite/Routes/LegacyRoute';
 import { Slogan } from './overridden/frontsite/Home/Slogan';
 
 export const overriddenCmps = {
@@ -31,5 +32,6 @@ export const overriddenCmps = {
   'LoanListEntry.DeliveryIcon': DeliveryIcon,
   'LoanMetadata.DeliveryIcon': DeliveryIcon,
   'RequestForPatronMessage.DeliveryIcon': DeliveryIcon,
+  'Frontsite.route': LegacyDocumentRoute,
   DocumentRequestForm: DocumentRequestFormFields,
 };
