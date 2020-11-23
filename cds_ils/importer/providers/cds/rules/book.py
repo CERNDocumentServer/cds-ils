@@ -1,37 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of CERN Document Server.
-# Copyright (C) 2017, 2018 CERN.
+# Copyright (C) 2020 CERN.
 #
-# Invenio is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-#
-# Invenio is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Invenio; if not, write to the Free Software Foundation, Inc.,
-# 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-"""Books fields."""
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
+
+"""CDS-ILS MARCXML book rules."""
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-from cds_dojson.marc21.fields.books.errors import ManualMigrationRequired, \
-    MissingRequiredField, UnexpectedValue
-from cds_dojson.marc21.fields.books.utils import extract_parts, \
-    extract_volume_number, is_excluded
-from cds_dojson.marc21.fields.utils import clean_val, filter_list_values, \
-    out_strip
 from dojson.errors import IgnoreKey
-from dojson.utils import filter_values, for_each_value
 
-from cds_ils.importer.providers.cds.cds import model
+from cds_ils.importer.errors import MissingRequiredField, UnexpectedValue
+from cds_ils.importer.providers.cds.models.book import model
 
 from .base import alternative_titles as alternative_titles_base
+from .utils import clean_val, extract_parts, extract_volume_number, \
+    filter_list_values, is_excluded, out_strip
 
 
 @model.over("alternative_titles", "(^246__)|(^242__)")

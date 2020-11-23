@@ -60,14 +60,14 @@ def test_safari_transformation(app):
                 "authors": [
                     {"full_name": "Falcone, Paul,", "roles": ["AUTHOR"]}
                 ],
-                'copyrights': [{'year': 2010}],
+                "copyrights": [{"year": 2010}],
                 "edition": "2nd edition",
                 "identifiers": [
                     {"scheme": "ISBN", "value": "9780814415467"},
                     {"scheme": "ISBN", "value": "9780814415474"},
                 ],
-                'languages': ['en'],
-                'provider_recid': '9780814415467',
+                "languages": ["en"],
+                "provider_recid": "9780814415467",
                 "imprint": {"date": "2010", "publisher": "AMACOM"},
                 "number_of_pages": "1",
                 "publication_year": "2010",

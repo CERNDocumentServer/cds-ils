@@ -114,21 +114,33 @@ setup(
         'cds_ils.importer.base': [
             'base = cds_ils.importer.providers.rules.base',
         ],
-        'cds_ils.importer.cds.document': [
-            'book = cds_ils.importer.providers.cds.rules.book',
-            'standard = cds_ils.importer.providers.cds.rules.standard',
-        ],
         'cds_ils.importer.models': [
-            'cds_document = cds_ils.importer.providers.cds.cds:model',
+            'cds_book = cds_ils.importer.providers.cds.models.book:model',
+            'cds_standard = cds_ils.importer.providers.cds.models.standard:model',
             'springer_document = cds_ils.importer.providers.springer.springer:model',
             'ebl_document = cds_ils.importer.providers.ebl.ebl:model',
             'safari_document = cds_ils.importer.providers.safari.safari:model',
+            'ils_serial = cds_ils.importer.providers.cds.models.serial:model',
+            'ils_multipart = cds_ils.importer.providers.cds.models.multipart:model',
+            'ils_journal = cds_ils.importer.providers.cds.models.journal:model',
+        ],
+        'cds_ils.importer.cds.base': [
+            'base = cds_ils.importer.providers.cds.rules.base',
+        ],
+        'cds_ils.importer.cds.document': [
+            'book = cds_ils.importer.providers.cds.rules.book',
+            'standard = cds_ils.importer.providers.cds.rules.standard',
         ],
         'cds_ils.importer.document': [
             'cds = cds_ils.importer.providers.cds.rules.book',
             'springer = cds_ils.importer.providers.springer.rules.document',
             'ebl = cds_ils.importer.providers.ebl.rules.document',
             'safari = cds_ils.importer.providers.safari.rules.document',
+        ],
+        'cds_ils.importer.series': [
+            'serial = cds_ils.importer.providers.cds.rules.serial',
+            'multipart = cds_ils.importer.providers.cds.rules.multipart',
+            'journal = cds_ils.importer.providers.cds.rules.journal',
         ],
         # migrator
         'cds_ils.migrator.base': [

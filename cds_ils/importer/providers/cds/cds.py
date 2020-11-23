@@ -10,7 +10,6 @@ from copy import deepcopy
 
 from cds_ils.importer.base_model import Base
 from cds_ils.importer.base_model import model as model_base
-from cds_ils.importer.providers.cds.ignore_fields import CDS_IGNORE_FIELDS
 
 
 def get_helper_dict():
@@ -35,23 +34,18 @@ def get_helper_dict():
         eitems_ebl=[],
         eitems_has_ebl=False,
         related=[],
+        items=[],
+        electronic_items=[],
+        relation_previous=None,
+        relation_next=None,
     )
-
     return deepcopy(_helper_dict)
 
 
 class CDSBase(Base):
     """Translation Index for CDS Books."""
 
-    __query__ = "003:SzGeCERN -980:DELETED"
-
-    __schema__ = "/schemas/documents/document-v1.0.0.json"
-
-    __ignore_keys__ = CDS_IGNORE_FIELDS
-
-    _default_fields = {"_migration": {**get_helper_dict()}}
-
 
 model = CDSBase(
-    bases=(model_base,), entry_point_group="cds_ils.importer.document"
+    bases=(model_base,), entry_point_group="cds_ils.importer.cds.base"
 )

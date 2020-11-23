@@ -9,10 +9,11 @@
 
 import re
 
-from cds_dojson.marc21.fields.books.errors import UnexpectedValue
-from cds_dojson.marc21.fields.utils import clean_val
 from dojson.utils import force_list
 from six import iteritems
+
+from cds_ils.importer.errors import UnexpectedValue
+from cds_ils.importer.providers.cds.rules.utils import clean_val
 
 
 def rreplace(s, phrase, replace_with):
