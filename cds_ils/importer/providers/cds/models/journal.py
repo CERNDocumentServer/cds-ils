@@ -58,7 +58,9 @@ class CDSJournal(CdsIlsOverdo):
         "785__i",  # label of relation continued by
         "785__t",  # title of relation continued by
         "85641y",
-        "866__g" "866__x" "933__a",
+        "866__g",
+        "866__x",
+        "933__a",
         "962__n",
         "960__a",
         "960__c",
@@ -69,7 +71,6 @@ class CDSJournal(CdsIlsOverdo):
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__
     _default_fields = {
         "_migration": {
-            "is_multipart": False,
             "has_related": False,
             "record_type": "journal",
             "volumes": [],

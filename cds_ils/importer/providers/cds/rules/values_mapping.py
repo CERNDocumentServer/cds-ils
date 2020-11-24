@@ -30,6 +30,7 @@ COLLECTION = {
 }
 
 ACQUISITION_METHOD = {
+    # possible user types (created_by.type/created_by.value)
     "user": ["H", "R"],
     "batchuploader": ["N", "M"],
     "migration": ["migration"],

@@ -17,12 +17,22 @@ from cds_ils.importer.errors import ManualImportRequired, \
 
 MAX_PAGES_NUMBER = 8192
 
-RE_STR_VOLUME_NUMBER = r"(v(ol(ume)?)?|part|p|pt|t)[\s\.]*(\d+)"
+RE_STR_VOLUME_PREFIX = r"(?:(?:[Vv](?:ol(?:ume)?)?|[Pp]" \
+                       r"(?:art(?:ie)?|t)?|[Tt](?:eil)?|[Bb]d|" \
+                       r"[Tt]ome?|course|conference|fasc(?:icule)?" \
+                       r"|book|unit|suppl|Tafeln|Tomo)[\s\.]*)"
 
-RE_VOLUME_NUMBER = re.compile(RE_STR_VOLUME_NUMBER, re.IGNORECASE)
-RE_VOLUME_INFO = re.compile(
-    r"(.*?)\({}\)".format(RE_STR_VOLUME_NUMBER), re.IGNORECASE
+RE_STR_ROMAN_NUMERAL = r"(?:(?:IX|IV|V?I{1,3})|X{1,3}(?:IX|IV|V?I{0,3}))"
+RE_STR_VOLUME_SUFFIX = r"(\d{{1,4}}|\d\d?[a-zA-Z]|[a-zA-Z]\d|[A-H]|{})".format(
+    RE_STR_ROMAN_NUMERAL
 )
+RE_STR_VOLUME = r"(?:{}?{})".format(RE_STR_VOLUME_PREFIX, RE_STR_VOLUME_SUFFIX)
+RE_STR_SPECIAL = r"[^0-9A-Za-zÀ-ÿ\-/]"
+
+RE_VOLUME_NUMBER = re.compile(
+    r"(?:^|{}){}(?:$|{})".format(RE_STR_SPECIAL, RE_STR_VOLUME, RE_STR_SPECIAL)
+)
+RE_VOLUME_INFO = re.compile(r"(.*?)\({}\)".format(RE_STR_VOLUME))
 
 
 def is_excluded(value):
@@ -92,14 +102,15 @@ def extract_volume_number(
     value, search=False, raise_exception=False, subfield=None
 ):
     """Extract the volume number from a string, returns None if not matched."""
+    regex = RE_VOLUME_NUMBER
     if search:
-        func = RE_VOLUME_NUMBER.search
+        func = regex.search
     else:
-        func = RE_VOLUME_NUMBER.match
+        func = regex.match
 
     result = func(value.strip())
     if result:
-        return int(result.group(4))
+        return result.group(1)
 
     if raise_exception:
         raise MissingRequiredField(
@@ -115,7 +126,7 @@ def extract_volume_info(value):
     if result:
         return dict(
             description=result.group(1).strip(),
-            volume=int(result.group(5)),
+            volume=result.group(2),
         )
     return None
 

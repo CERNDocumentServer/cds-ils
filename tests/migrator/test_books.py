@@ -680,14 +680,14 @@ def test_authors(app):
                 "authors": [
                     {
                         "full_name": "Frampton, Paul H",
-                        "roles": ["editor"],
+                        "roles": ["EDITOR"],
                         "alternative_names": "Neubert, Matthias",
                     },
-                    {"full_name": "Glashow, Sheldon Lee", "roles": ["editor"]},
-                    {"full_name": "Van Dam, Hendrik", "roles": ["editor"]},
+                    {"full_name": "Glashow, Sheldon Lee", "roles": ["EDITOR"]},
+                    {"full_name": "Van Dam, Hendrik", "roles": ["EDITOR"]},
                     {
                         "full_name": "Seyfert, Paul",
-                        "roles": ["author"],
+                        "roles": ["AUTHOR"],
                         "affiliations": [{"name": "CERN"}],
                         "identifiers": [
                             {
@@ -700,7 +700,7 @@ def test_authors(app):
                     },
                     {
                         "full_name": "John Doe",
-                        "roles": ["author"],
+                        "roles": ["AUTHOR"],
                         "affiliations": [
                             {"name": "CERN"},
                             {"name": "Univ. Gent"},
@@ -708,7 +708,7 @@ def test_authors(app):
                     },
                     {
                         "full_name": "Jane Doe",
-                        "roles": ["author"],
+                        "roles": ["AUTHOR"],
                         "affiliations": [
                             {"name": "CERN"},
                             {"name": "Univ. Gent"},
@@ -734,9 +734,9 @@ def test_authors(app):
                 "authors": [
                     {
                         "full_name": "Frampton, Paul H",
-                        "roles": ["editor"],
+                        "roles": ["EDITOR"],
                     },
-                    {"full_name": "Glashow, Sheldon Lee", "roles": ["editor"]},
+                    {"full_name": "Glashow, Sheldon Lee", "roles": ["EDITOR"]},
                 ],
                 "other_authors": True,
             },
@@ -1747,7 +1747,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["en"],
+                "languages": ["EN"],
             },
         )
         check_transformation(
@@ -1757,7 +1757,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["en"],
+                "languages": ["EN"],
             },
         )
         check_transformation(
@@ -1767,7 +1767,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["fr"],
+                "languages": ["FR"],
             },
         )
         check_transformation(
@@ -1777,7 +1777,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["pl"],
+                "languages": ["PL"],
             },
         )
         check_transformation(
@@ -1787,7 +1787,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["de"],
+                "languages": ["DE"],
             },
         )
         with pytest.raises(UnexpectedValue):
@@ -1798,7 +1798,7 @@ def test_languages(app):
                 </datafield>
                 """,
                 {
-                    "languages": ["de"],
+                    "languages": ["DE"],
                 },
             )
 
@@ -1812,7 +1812,7 @@ def test_editions(app):
                 <subfield code="a">3rd ed.</subfield>
             </datafield>
             """,
-            {"edition": "3rd ed."},
+            {"edition": "3rd"},
         )
 
 
@@ -2326,12 +2326,12 @@ def test_alternative_titles_a(app):
                     {
                         "value": """Study of the impact of stacking on simple
                       hard diffraction events in CMS/LHC""",
-                        "language": "en",
+                        "language": "EN",
                         "type": "TRANSLATED_TITLE",
                     },
                     {
                         "value": "Subtitle/LHC",
-                        "language": "en",
+                        "language": "EN",
                         "type": "TRANSLATED_SUBTITLE",
                     },
                 ]
@@ -2793,8 +2793,8 @@ def test_volume_barcodes(app):
                     **get_helper_dict(),
                     **dict(
                         volumes=[
-                            dict(barcode="80-1209-8", volume=1),
-                            dict(barcode="B00004172", volume=1),
+                            dict(barcode="80-1209-8", volume="1"),
+                            dict(barcode="B00004172", volume="1"),
                         ],
                     ),
                 },
