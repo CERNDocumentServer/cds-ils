@@ -662,7 +662,7 @@ def languages(self, key, value):
     """Translates languages fields."""
     lang = clean_val("a", value, str).lower()
     try:
-        return pycountry.languages.lookup(lang).alpha_2
+        return pycountry.languages.lookup(lang).alpha_2.upper()
     except (KeyError, AttributeError, LookupError):
         raise UnexpectedValue(subfield="a")
 
@@ -764,7 +764,7 @@ def alternative_titles(self, key, value):
             {
                 "value": clean_val("a", value, str, req=True),
                 "type": "TRANSLATED_TITLE",
-                "language": "en",
+                "language": "EN",
             }
         )
     if "b" in value:
@@ -772,7 +772,7 @@ def alternative_titles(self, key, value):
             {
                 "value": clean_val("b", value, str, req=True),
                 "type": "TRANSLATED_SUBTITLE",
-                "language": "en",
+                "language": "EN",
             }
         )
     return _alternative_titles
@@ -782,7 +782,7 @@ def alternative_titles(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translates edition indicator field."""
-    return clean_val("a", value, str)
+    return clean_val("a", value, str).replace("ed.", "")
 
 
 @model.over("imprint", "^260__")
