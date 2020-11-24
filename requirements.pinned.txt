@@ -16,7 +16,7 @@ billiard==3.6.3.0
 bleach==3.2.1
 blinker==1.4
 cachelib==0.1.1
-cds-dojson @ git+https://github.com/CERNDocumentServer/cds-dojson@7da8f7af4fb5e278c97231d9ad18ab0fc5bb2a57
+cds-dojson==0.9.0
 celery==5.0.2
 certifi==2020.11.8
 cffi==1.14.3
@@ -99,7 +99,6 @@ invenio-pidstore==1.2.1
 invenio-query-parser==0.6.0
 invenio-queues==1.0.0a3
 invenio-records==1.3.2
-invenio-records-files==1.2.1
 invenio-records-rest==1.7.2
 invenio-rest==1.2.2
 invenio-search==1.3.1

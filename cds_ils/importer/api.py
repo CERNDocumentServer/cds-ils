@@ -13,6 +13,7 @@ from celery import shared_task
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
+from cds_ils.importer.errors import LossyConversion
 from cds_ils.importer.parse_xml import get_records_list
 from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
 from cds_ils.importer.XMLRecordToJson import XMLRecordToJson
@@ -55,9 +56,10 @@ def import_from_xml(sources, source_type, provider, eager=True):
                 idx, len(sources), source.name
             )
         )
-        try:
-            i = 0
-            for record in get_records_list(source):
+
+        i = 0
+        for record in get_records_list(source):
+            try:
                 click.secho("Processing record {}".format(i))
                 i += 1
                 report = import_record(
@@ -71,21 +73,23 @@ def import_from_xml(sources, source_type, provider, eager=True):
                     "Fuzzy matches {}\n".format(
                         report["created"],
                         report["updated"],
-                        report["ambiguous"],
+                        report["ambiguous_documents"],
                         report["fuzzy"],
                     ),
                     fg="blue",
                 )
-
-        except IlsValidationError as e:
-            records_logger.error(
-                "@FILE: {0} FATAL: {1}".format(
-                    source.name,
-                    str(e.original_exception.message),
+            except LossyConversion as e:
+                continue
+            except IlsValidationError as e:
+                records_logger.error(
+                    "@FILE: {0} FATAL: {1}".format(
+                        source.name,
+                        str(e.original_exception.message),
+                    )
                 )
-            )
-        except Exception as e:
-            records_logger.error(
-                "@FILE: {0} ERROR: {1}".format(source.name, str(e))
-            )
-            raise e
+                continue
+            except Exception as e:
+                records_logger.error(
+                    "@FILE: {0} ERROR: {1}".format(source.name, str(e))
+                )
+                raise e

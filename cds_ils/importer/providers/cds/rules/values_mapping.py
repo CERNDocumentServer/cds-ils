@@ -30,10 +30,9 @@ COLLECTION = {
 }
 
 ACQUISITION_METHOD = {
-    "user": ["H"],
+    "user": ["H", "R"],
     "batchuploader": ["N", "M"],
     "migration": ["migration"],
-    "r": "user",
 }
 
 MEDIUM_TYPES = [

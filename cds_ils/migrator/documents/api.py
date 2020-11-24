@@ -13,13 +13,12 @@ import logging
 
 import click
 from elasticsearch_dsl import Q
-from invenio_app_ils.documents.api import Document, DocumentIdProvider
+from invenio_app_ils.documents.api import Document
 from invenio_app_ils.documents.search import DocumentSearch
 from invenio_app_ils.errors import IlsValidationError
-from invenio_migrator.cli import _loadrecord
 
-from cds_ils.migrator.api import bulk_index_records, import_record, \
-    model_provider_by_rectype
+from cds_ils.migrator.api import bulk_index_records, \
+    import_document_from_dump, import_record, model_provider_by_rectype
 from cds_ils.migrator.errors import DocumentMigrationError
 
 migrated_logger = logging.getLogger("migrated_records")
@@ -66,7 +65,9 @@ def import_documents_from_dump(sources, source_type, eager, include):
                 click.echo('Processing document "{}"...'.format(item["recid"]))
                 if include is None or str(item["recid"]) in include:
                     try:
-                        _loadrecord(item, source_type, eager=eager)
+                        import_document_from_dump(
+                            item, source_type, eager=eager
+                        )
 
                         migrated_logger.warning(
                             "#RECID {0}: OK".format(item["recid"])

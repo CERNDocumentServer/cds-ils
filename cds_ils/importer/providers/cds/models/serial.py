@@ -9,6 +9,8 @@
 
 from __future__ import unicode_literals
 
+from copy import deepcopy
+
 from cds_ils.importer.overdo import CdsIlsOverdo
 from cds_ils.importer.providers.cds.ignore_fields import CDS_IGNORE_FIELDS
 
@@ -197,6 +199,19 @@ class CDSSerial(CdsIlsOverdo):
         "_migration": {"record_type": "serial", "children": []},
         "mode_of_issuance": "SERIAL",
     }
+
+    def do(
+        self,
+        blob,
+        ignore_missing=True,
+        exception_handlers=None,
+        init_fields=None,
+    ):
+        """Overwrite the do method."""
+        init_fields = deepcopy(self._default_fields)
+        return super().do(
+            blob, ignore_missing, exception_handlers, init_fields
+        )
 
 
 model = CDSSerial(bases=(), entry_point_group="cds_ils.importer.series")

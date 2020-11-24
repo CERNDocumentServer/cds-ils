@@ -42,9 +42,7 @@ install_requires = [
     "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a20",
     "sentry-sdk>=0.10.2",
     # migrator deps
-    "invenio-migrator==1.0.0a10",
-    "invenio-records-files",
-    "cds-dojson@git+https://github.com/CERNDocumentServer/cds-dojson@books",
+    "cds-dojson==0.9.0",
     "lxml>=3.5.0",
 ]
 
@@ -120,6 +118,8 @@ setup(
             'springer_document = cds_ils.importer.providers.springer.springer:model',
             'ebl_document = cds_ils.importer.providers.ebl.ebl:model',
             'safari_document = cds_ils.importer.providers.safari.safari:model',
+        ],
+        'cds_ils.importer.series_models': [
             'ils_serial = cds_ils.importer.providers.cds.models.serial:model',
             'ils_multipart = cds_ils.importer.providers.cds.models.multipart:model',
             'ils_journal = cds_ils.importer.providers.cds.models.journal:model',

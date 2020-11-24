@@ -87,7 +87,7 @@ class Importer(object):
         return {
             "created": self.created,
             "updated": self.updated,
-            "ambiguous": self.ambiguous_matches,
+            "ambiguous_documents": self.ambiguous_matches,
             "fuzzy": self.fuzzy_matches,
             "series": self.series_list,
             "created_eitem": self.eitem_importer.created,

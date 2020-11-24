@@ -9,15 +9,14 @@
 """CDS Migrator Records loader."""
 import datetime
 
-from cds_dojson.marc21.fields.books.errors import ManualMigrationRequired, \
-    MissingRequiredField, UnexpectedValue
 from cds_dojson.marc21.utils import create_record
 from flask import current_app
 from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
 
 from cds_ils.importer import marc21
-from cds_ils.importer.errors import LossyConversion
+from cds_ils.importer.errors import LossyConversion, ManualImportRequired, \
+    MissingRequiredField, UnexpectedValue
 from cds_ils.importer.handlers import importer_exception_handler
 
 
@@ -50,7 +49,7 @@ class XMLRecordToJson(object):
         exception_handlers = {
             UnexpectedValue: importer_exception_handler,
             MissingRequiredField: importer_exception_handler,
-            ManualMigrationRequired: importer_exception_handler,
+            ManualImportRequired: importer_exception_handler,
         }
 
         marc_record = create_record(self.data)
@@ -74,6 +73,7 @@ class XMLRecordToJson(object):
                     e.missing, marc_record
                 )
             )
+            raise e
         except Exception as e:
             current_app.logger.error(
                 "Impossible to convert to JSON {0} - {1}".format(

@@ -122,21 +122,20 @@ def extract_volume_info(value):
 
 def related_url(value):
     """Builds related records urls."""
-    return '{0}{1}'.format('https://cds.cern.ch/record/', value)
+    return "{0}{1}".format("https://cds.cern.ch/record/", value)
 
 
 def clean_pages_range(pages_subfield, value):
     """Builds pages dictionary."""
-    page_regex = r'\d+(?:[\-‐‑‒–—―⁻₋−﹘﹣－]*\d*)$'
+    page_regex = r"\d+(?:[\-‐‑‒–—―⁻₋−﹘﹣－]*\d*)$"
     pages_val = clean_val(pages_subfield, value, str, regex_format=page_regex)
     if pages_val:
-        pages = re.split(r'[\-‐‑‒–—―⁻₋−﹘﹣－]+', pages_val)
+        pages = re.split(r"[\-‐‑‒–—―⁻₋−﹘﹣－]+", pages_val)
         if len(pages) == 1:
-            result = {'page_start': int(pages[0])}
+            result = {"page_start": int(pages[0])}
             return result
         else:
-            result = {'page_start': int(pages[0]),
-                      'page_end': int(pages[1])}
+            result = {"page_start": int(pages[0]), "page_end": int(pages[1])}
             return result
 
 
@@ -158,8 +157,16 @@ def clean_str(to_clean, regex_format, req, transform=None):
     return cleaned
 
 
-def clean_val(subfield, value, var_type, req=False, regex_format=None,
-              default=None, manual=False, transform=None):
+def clean_val(
+    subfield,
+    value,
+    var_type,
+    req=False,
+    regex_format=None,
+    default=None,
+    manual=False,
+    transform=None,
+):
     """
     Tests values using common rules.
 
@@ -199,8 +206,11 @@ def clean_val(subfield, value, var_type, req=False, regex_format=None,
 def clean_email(value):
     """Cleans the email field."""
     if value:
-        email = value.strip().replace(' [CERN]', '@cern.ch'). \
-            replace('[CERN]', '@cern.ch')
+        email = (
+            value.strip()
+            .replace(" [CERN]", "@cern.ch")
+            .replace("[CERN]", "@cern.ch")
+        )
         return email
 
 
@@ -223,13 +233,22 @@ def replace_in_result(phrase, replace_with, key=None):
             res = fn_decorated(*args, **kwargs)
             if res:
                 if not key:
-                    return [k.replace(phrase, replace_with).strip()
-                            for k in res]
+                    return [
+                        k.replace(phrase, replace_with).strip() for k in res
+                    ]
                 else:
-                    return [dict((k, v.replace(phrase, replace_with).strip()
-                                  if k == key else v
-                                  )
-                                 for k, v in elem.items()) for elem in res]
+                    return [
+                        dict(
+                            (
+                                k,
+                                v.replace(phrase, replace_with).strip()
+                                if k == key
+                                else v,
+                            )
+                            for k, v in elem.items()
+                        )
+                        for elem in res
+                    ]
             return res
 
         return proxy
@@ -244,8 +263,11 @@ def filter_list_values(f):
     def wrapper(self, key, value, **kwargs):
         out = f(self, key, value)
         if out:
-            clean_list = [dict((k, v) for k, v in elem.items()
-                               if v) for elem in out if elem]
+            clean_list = [
+                dict((k, v) for k, v in elem.items() if v)
+                for elem in out
+                if elem
+            ]
             clean_list = [elem for elem in clean_list if elem]
             if not clean_list:
                 raise IgnoreKey(key)
