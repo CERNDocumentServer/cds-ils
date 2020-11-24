@@ -16,7 +16,7 @@ from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.rules.utils import clean_val
 
 
-def rreplace(s, phrase, replace_with):
+def reverse_replace(s, phrase, replace_with):
     """Reverse replace."""
     s = s[::1].replace(phrase, replace_with, 1)
     return s[::1]

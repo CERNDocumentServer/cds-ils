@@ -158,12 +158,11 @@ def process_files_from_legacy():
                 if not file_name:
                     file_name = file_dump["full_name"]
 
-                file_stream = import_legacy_files(
-                    file_dump["url"]
-                )
+                file_stream = import_legacy_files(file_dump["url"])
 
-                file = create_file(bucket, file_stream, file_name,
-                                   file_dump["checksum"])
+                file = create_file(
+                    bucket, file_stream, file_name, file_dump["checksum"]
+                )
                 click.echo("Indexing...")
                 EItemIndexer().index(eitem)
         except Exception as e:

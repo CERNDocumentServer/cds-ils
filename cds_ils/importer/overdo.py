@@ -16,7 +16,13 @@ from dojson.utils import GroupableOrderedDict
 class CdsIlsOverdo(Overdo):
     """Overwrite API of Overdo dojson class."""
 
-    def do(self, blob, ignore_missing=True, exception_handlers=None):
+    def do(
+        self,
+        blob,
+        ignore_missing=True,
+        exception_handlers=None,
+        init_fields=None,
+    ):
         """Translate blob values and instantiate new model instance.
 
         Raises ``MissingRule`` when no rule matched and ``ignore_missing``
@@ -44,8 +50,8 @@ class CdsIlsOverdo(Overdo):
 
         output = {}
 
-        if hasattr(self, "_default_fields"):
-            output.update(**self._default_fields)
+        if init_fields:
+            output.update(**init_fields)
 
         if self.index is None:
             self.build()

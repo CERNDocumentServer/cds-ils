@@ -9,6 +9,8 @@
 
 from __future__ import unicode_literals
 
+from copy import deepcopy
+
 from cds_ils.importer.overdo import CdsIlsOverdo
 from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.importer.providers.cds.cds import model as base_model
@@ -24,7 +26,7 @@ class CDSBook(CdsIlsOverdo):
         "(-980:STANDARD 980:BOOK) OR "
         "697C_:LEGSERLIB AND "
         "(-980__:DELETED -980__:MIGRATED -980__:STANDARD "
-        "-596__:MULTIVOLUMES -490__:/[a-zA-Z0-9]+/)"
+        "-596__:MULTIVOLUMES)"
     )
 
     __model_ignore_keys__ = {
@@ -35,6 +37,19 @@ class CDSBook(CdsIlsOverdo):
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__
 
     _default_fields = {"_migration": {**get_helper_dict()}}
+
+    def do(
+        self,
+        blob,
+        ignore_missing=True,
+        exception_handlers=None,
+        init_fields=None,
+    ):
+        """Overwrite the do method."""
+        init_fields = deepcopy(self._default_fields)
+        return super().do(
+            blob, ignore_missing, exception_handlers, init_fields
+        )
 
 
 model = CDSBook(

@@ -9,6 +9,8 @@
 
 from __future__ import unicode_literals
 
+from copy import deepcopy
+
 from cds_ils.importer.base_model import model as base_model
 from cds_ils.importer.overdo import CdsIlsOverdo
 
@@ -65,14 +67,31 @@ class CDSJournal(CdsIlsOverdo):
     }
 
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__
-    _default_fields = {"_migration": {'is_multipart': False,
-                                      'has_related': False,
-                                      'record_type': 'journal',
-                                      'volumes': [],
-                                      'items': [],
-                                      'electronic_items': [],
-                                      'relation_previous': None,
-                                      'relation_next': None, }}
+    _default_fields = {
+        "_migration": {
+            "is_multipart": False,
+            "has_related": False,
+            "record_type": "journal",
+            "volumes": [],
+            "items": [],
+            "electronic_items": [],
+            "relation_previous": None,
+            "relation_next": None,
+        }
+    }
+
+    def do(
+        self,
+        blob,
+        ignore_missing=True,
+        exception_handlers=None,
+        init_fields=None,
+    ):
+        """Overwrite the do method."""
+        init_fields = deepcopy(self._default_fields)
+        return super().do(
+            blob, ignore_missing, exception_handlers, init_fields
+        )
 
 
 model = CDSJournal(bases=(), entry_point_group="cds_ils.importer.series")

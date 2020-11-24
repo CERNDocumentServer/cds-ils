@@ -57,7 +57,6 @@ def created_by(self, key, value):
 def created(self, key, value):
     """Translates created information to fields."""
     _created_by = self.get("created_by", {})
-
     if key == "916__":
         if "s" in value:
             _created_by.update(
@@ -70,7 +69,7 @@ def created(self, key, value):
                 }
             )
             self["created_by"] = _created_by
-            date = clean_val("w", value, int, regex_format=r"\d{4}$")
+            date = clean_val("w", value, int, regex_format=r"\d{6}$")
             if date:
                 year, week = str(date)[:4], str(date)[4:]
                 date = get_week_start(int(year), int(week))
@@ -640,8 +639,8 @@ def arxiv_eprints(self, key, value):
             duplicated = [
                 elem
                 for i, elem in enumerate(_alternative_identifiers)
-                if elem["value"] == eprint_id and elem["scheme"].lower()
-                == "arxiv"
+                if elem["value"] == eprint_id
+                and elem["scheme"].lower() == "arxiv"
             ]
             category = check_category("c", v)
             if not duplicated:

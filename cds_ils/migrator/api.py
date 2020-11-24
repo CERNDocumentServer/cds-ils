@@ -13,6 +13,7 @@ import logging
 from contextlib import contextmanager
 
 import click
+from celery import shared_task
 from flask import current_app
 from invenio_app_ils.circulation.api import IlsCirculationLoanIdProvider
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
@@ -26,7 +27,9 @@ from invenio_circulation.api import Loan
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
 
-from cds_ils.migrator.records import CDSRecordDumpLoader
+from cds_ils.migrator.DocumentLoader import CDSDocumentDumpLoader
+from cds_ils.migrator.RecordLoader import CDSRecordDumpLoader
+from cds_ils.migrator.XMLRecordToJson import CDSRecordDump
 
 migrated_logger = logging.getLogger("migrated_records")
 
@@ -123,3 +126,31 @@ def import_record(dump, model, pid_provider, legacy_id_key="legacy_recid"):
         dump, model, pid_provider, legacy_id_key
     )
     return record
+
+
+def import_document_from_dump(data, source_type=None, eager=False):
+    """Import record from dump."""
+    source_type = source_type or "marcxml"
+    assert source_type in ["marcxml"]
+
+    if eager:
+        return process_document_dump(data, source_type)
+    else:
+        process_document_dump.delay(data, source_type)
+
+
+@shared_task()
+def process_document_dump(data, source_type=None):
+    """Migrate a document from a migration dump.
+
+    :param data: Dictionary for representing a single record and files.
+    """
+    recorddump = CDSRecordDump(
+        data,
+        source_type=source_type,
+    )
+    try:
+        CDSDocumentDumpLoader.create(recorddump)
+    except Exception as e:
+        db.session.rollback()
+        raise e

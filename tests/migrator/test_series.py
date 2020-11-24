@@ -17,8 +17,10 @@ from cds_ils.importer.providers.cds.models.multipart import \
     model as multipart_model
 from cds_ils.importer.providers.cds.models.serial import model as serial_model
 
-marcxml = ("""<collection xmlns="http://www.loc.gov/MARC21/slim">"""
-           """<record>{0}</record></collection>""")
+marcxml = (
+    """<collection xmlns="http://www.loc.gov/MARC21/slim">"""
+    """<record>{0}</record></collection>"""
+)
 
 
 def check_transformation(marcxml_body, json_body, model=None):
@@ -26,7 +28,8 @@ def check_transformation(marcxml_body, json_body, model=None):
     if model == multipart_model:
         model._default_fields = {
             "_migration": {"record_type": "multipart", "volumes": []},
-            "mode_of_issuance": "MULTIPART_MONOGRAPH", }
+            "mode_of_issuance": "MULTIPART_MONOGRAPH",
+        }
     else:
         model._default_fields = {
             "_migration": {"record_type": "serial", "children": []},
@@ -52,14 +55,11 @@ def test_serial(app):
             </datafield>
             """,
             {
-                'title':
-                    [
-                        'Esl and applied linguistics professional'
-                    ],
-                'mode_of_issuance': 'SERIAL',
-                '_migration': {'record_type': 'serial', 'children': []}
+                "title": ["Esl and applied linguistics professional"],
+                "mode_of_issuance": "SERIAL",
+                "_migration": {"record_type": "serial", "children": []},
             },
-            serial_model
+            serial_model,
         )
 
         check_transformation(
@@ -72,16 +72,14 @@ def test_serial(app):
             </datafield>
             """,
             {
-                'title':
-                    [
-                        'Springerbriefs in history'
-                        ' of science and technology'
-                    ],
-                'mode_of_issuance': 'SERIAL',
-                'identifiers': [{'scheme': 'ISSN', 'value': '2211-4564'}],
-                '_migration': {'record_type': 'serial', 'children': []}
+                "title": [
+                    "Springerbriefs in history" " of science and technology"
+                ],
+                "mode_of_issuance": "SERIAL",
+                "identifiers": [{"scheme": "ISSN", "value": "2211-4564"}],
+                "_migration": {"record_type": "serial", "children": []},
             },
-            serial_model
+            serial_model,
         )
 
         check_transformation(
@@ -94,16 +92,14 @@ def test_serial(app):
             </datafield>
             """,
             {
-                'title':
-                    [
-                        'Springerbriefs in history'
-                        ' of science and technology'
-                    ],
-                'mode_of_issuance': 'SERIAL',
-                'identifiers': [{'scheme': 'ISSN', 'value': '2211-4564'}],
-                '_migration': {'record_type': 'serial', 'children': []}
+                "title": [
+                    "Springerbriefs in history" " of science and technology"
+                ],
+                "mode_of_issuance": "SERIAL",
+                "identifiers": [{"scheme": "ISSN", "value": "2211-4564"}],
+                "_migration": {"record_type": "serial", "children": []},
             },
-            serial_model
+            serial_model,
         )
 
         with pytest.raises(MissingRule):
@@ -116,14 +112,13 @@ def test_serial(app):
                 </datafield>
                 """,
                 {
-                    'title':
-                        [
-                            'Springerbriefs in history'
-                            ' of science and technology'
-                        ],
-                    '_migration': {'record_type': 'serial', 'children': []}
+                    "title": [
+                        "Springerbriefs in history"
+                        " of science and technology"
+                    ],
+                    "_migration": {"record_type": "serial", "children": []},
                 },
-                serial_model
+                serial_model,
             )
 
 
@@ -152,24 +147,27 @@ def test_monograph(app):
             </datafield>
             """,
             {
-                'title': 'La fisica di Amaldi',
-                'alternative_titles': [
+                "title": "La fisica di Amaldi",
+                "alternative_titles": [
                     {
-                        'value': 'idee ed esperimenti : con CD-ROM',
-                        'type': 'SUBTITLE'
+                        "value": "idee ed esperimenti : con CD-ROM",
+                        "type": "SUBTITLE",
                     }
                 ],
-                'mode_of_issuance': 'MULTIPART_MONOGRAPH',
-                'number_of_volumes': '2',
-                '_migration': {'record_type': 'multipart', 'volumes': [
-                    {'title': 'Introduzione alla fisica meccanica',
-                     'volume': 1},
-                    {'title': 'Termologia, onde, relatività',
-                     'volume': 2}
-                ]}
-
+                "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                "number_of_volumes": "2",
+                "_migration": {
+                    "record_type": "multipart",
+                    "volumes": [
+                        {
+                            "title": "Introduzione alla fisica meccanica",
+                            "volume": 1,
+                        },
+                        {"title": "Termologia, onde, relatività", "volume": 2},
+                    ],
+                },
             },
-            multipart_model
+            multipart_model,
         )
 
         check_transformation(
@@ -187,20 +185,21 @@ def test_monograph(app):
             </datafield>
             """,
             {
-                'title': 'La fisica di Amaldi',
-                'alternative_titles': [
+                "title": "La fisica di Amaldi",
+                "alternative_titles": [
                     {
-                        'value': 'idee ed esperimenti : con CD-ROM',
-                        'type': 'SUBTITLE'
+                        "value": "idee ed esperimenti : con CD-ROM",
+                        "type": "SUBTITLE",
                     }
                 ],
-                'mode_of_issuance': 'MULTIPART_MONOGRAPH',
-                'number_of_volumes': '2',
-                '_migration': {'record_type': 'multipart', 'volumes': [
-                    {'title': 'Termologia, onde, relatività',
-                     'volume': 2}
-                ]}
-
+                "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                "number_of_volumes": "2",
+                "_migration": {
+                    "record_type": "multipart",
+                    "volumes": [
+                        {"title": "Termologia, onde, relatività", "volume": 2}
+                    ],
+                },
             },
             multipart_model,
         )
@@ -220,19 +219,20 @@ def test_monograph(app):
             </datafield>
             """,
             {
-                'title': 'La fisica di Amaldi',
-                'alternative_titles': [
+                "title": "La fisica di Amaldi",
+                "alternative_titles": [
                     {
-                        'value': 'idee ed esperimenti : con CD-ROM',
-                        'type': 'SUBTITLE'
+                        "value": "idee ed esperimenti : con CD-ROM",
+                        "type": "SUBTITLE",
                     }
                 ],
-                'mode_of_issuance': 'MULTIPART_MONOGRAPH',
-                '_migration': {'record_type': 'multipart', 'volumes': [
-                    {'title': 'Termologia, onde, relatività',
-                     'volume': 2}
-                ]}
-
+                "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                "_migration": {
+                    "record_type": "multipart",
+                    "volumes": [
+                        {"title": "Termologia, onde, relatività", "volume": 2}
+                    ],
+                },
             },
             multipart_model,
         )
@@ -253,19 +253,20 @@ def test_monograph(app):
 
             """,
             {
-                'title': 'La fisica di Amaldi',
-                'alternative_titles': [
+                "title": "La fisica di Amaldi",
+                "alternative_titles": [
                     {
-                        'value': 'idee ed esperimenti : con CD-ROM',
-                        'type': 'SUBTITLE'
+                        "value": "idee ed esperimenti : con CD-ROM",
+                        "type": "SUBTITLE",
                     }
                 ],
-                'mode_of_issuance': 'MULTIPART_MONOGRAPH',
-                '_migration': {'record_type': 'multipart', 'volumes': [
-                    {'title': 'Termologia, onde, relatività',
-                     'volume': 2}
-                ]}
-
+                "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                "_migration": {
+                    "record_type": "multipart",
+                    "volumes": [
+                        {"title": "Termologia, onde, relatività", "volume": 2}
+                    ],
+                },
             },
             multipart_model,
         )
@@ -288,17 +289,16 @@ def test_monograph(app):
                 </datafield>
                 """,
                 {
-                    'title': 'La fisica di Amaldi',
-                    'alternative_titles': [
-                        {'value': 'idee ed esperimenti : con CD-ROM',
-                         'type': 'SUBTITLE'}
+                    "title": "La fisica di Amaldi",
+                    "alternative_titles": [
+                        {
+                            "value": "idee ed esperimenti : con CD-ROM",
+                            "type": "SUBTITLE",
+                        }
                     ],
-                    'mode_of_issuance': 'MULTIPART_MONOGRAPH',
-                    'number_of_volumes': '2',
-                    '_migration': {'record_type': 'multipart', 'volumes': [
-
-                    ]}
-
+                    "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                    "number_of_volumes": "2",
+                    "_migration": {"record_type": "multipart", "volumes": []},
                 },
                 multipart_model,
             )
@@ -315,14 +315,16 @@ def test_monograph(app):
                 </datafield>
                 """,
                 {
-                    'title': 'La fisica di Amaldi',
-                    'alternative_titles': [
-                        {'value': 'idee ed esperimenti : con CD-ROM',
-                         'type': 'SUBTITLE'}
+                    "title": "La fisica di Amaldi",
+                    "alternative_titles": [
+                        {
+                            "value": "idee ed esperimenti : con CD-ROM",
+                            "type": "SUBTITLE",
+                        }
                     ],
-                    'mode_of_issuance': 'MULTIPART_MONOGRAPH',
-                    'number_of_volumes': '2',
-                    '_migration': {'record_type': 'multipart', 'volumes': []}
+                    "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                    "number_of_volumes": "2",
+                    "_migration": {"record_type": "multipart", "volumes": []},
                 },
                 multipart_model,
             )
@@ -380,69 +382,58 @@ def test_monograph_migration(app):
             </datafield>
             """,
             {
-                '_migration': {'volumes': [
-                    {
-                        'volume': 3,
-                        'isbn': '1108052819',
-                        'physical_description': 'print version, paperback',
-                        'is_electronic': False,
-                    },
-                    {
-                        'volume': 3,
-                        'isbn': '9781108052818',
-                        'physical_description':
-                            'print version, paperback',
-                        'is_electronic': False,
-                    },
-                    {
-                        'volume': 2,
-                        'isbn': '9781108052801',
-                        'physical_description':
-                            'print version, paperback',
-                        'is_electronic': False,
-                    },
-                    {
-                        'volume': 2,
-                        'isbn': '1108052800',
-                        'physical_description':
-                            'print version, paperback',
-                        'is_electronic': False,
-                    },
-                    {
-                        'volume': 1,
-                        'isbn': '9781108052795',
-                        'physical_description':
-                            'print version, paperback',
-                        'is_electronic': False,
-                    },
-                    {
-                        'volume': 1,
-                        'isbn': '1108052797',
-                        'physical_description':
-                            'print version, paperback',
-                        'is_electronic': False,
-                    },
-                    {
-                        'title': '1865-1874',
-                        'volume': 1
-                    },
-                    {
-                        'title': '1875-1881',
-                        'volume': 2
-                    },
-                    {
-                        'title': '1882-1905',
-                        'volume': 3
-                    },
-                ],
-                    'record_type': 'multipart',
+                "_migration": {
+                    "volumes": [
+                        {
+                            "volume": 3,
+                            "isbn": "1108052819",
+                            "physical_description": "print version, paperback",
+                            "is_electronic": False,
+                        },
+                        {
+                            "volume": 3,
+                            "isbn": "9781108052818",
+                            "physical_description": "print version, paperback",
+                            "is_electronic": False,
+                        },
+                        {
+                            "volume": 2,
+                            "isbn": "9781108052801",
+                            "physical_description": "print version, paperback",
+                            "is_electronic": False,
+                        },
+                        {
+                            "volume": 2,
+                            "isbn": "1108052800",
+                            "physical_description": "print version, paperback",
+                            "is_electronic": False,
+                        },
+                        {
+                            "volume": 1,
+                            "isbn": "9781108052795",
+                            "physical_description": "print version, paperback",
+                            "is_electronic": False,
+                        },
+                        {
+                            "volume": 1,
+                            "isbn": "1108052797",
+                            "physical_description": "print version, paperback",
+                            "is_electronic": False,
+                        },
+                        {"title": "1865-1874", "volume": 1},
+                        {"title": "1875-1881", "volume": 2},
+                        {"title": "1882-1905", "volume": 3},
+                    ],
+                    "record_type": "multipart",
                 },
-                'title': 'Wissenschaftliche Abhandlungen',
-                'mode_of_issuance': 'MULTIPART_MONOGRAPH',
-                'number_of_volumes': '3',
-                'identifiers': [{'scheme': 'ISBN', 'value': '9781108052825'}],
-                'physical_description': 'print version, paperback',
-            }, multipart_model)
+                "title": "Wissenschaftliche Abhandlungen",
+                "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                "number_of_volumes": "3",
+                "identifiers": [{"scheme": "ISBN", "value": "9781108052825"}],
+                "physical_description": "print version, paperback",
+            },
+            multipart_model,
+        )
 
 
 def test_monograph_invalid_volume_migration(app):
@@ -465,7 +456,9 @@ def test_monograph_invalid_volume_migration(app):
                 </subfield>
                 </datafield>
                 """,
-                {}, multipart_model)
+                {},
+                multipart_model,
+            )
 
 
 def test_monograph_invalid_volume_migration_no_description(app):
@@ -479,7 +472,9 @@ def test_monograph_invalid_volume_migration_no_description(app):
                 <subfield code="u">v.13</subfield>
                 </datafield>
                 """,
-                {}, multipart_model)
+                {},
+                multipart_model,
+            )
 
 
 def test_monograph_with_electronic_isbns(app):
@@ -519,42 +514,42 @@ def test_monograph_with_electronic_isbns(app):
             </datafield>
             """,
             {
-                'identifiers': [
-                    {'scheme': 'ISBN', 'value': '0817631852'},
-                    {'scheme': 'ISBN', 'value': '0817631879'},
-                    {'scheme': 'ISBN', 'value': '9780817631857'},
-                    {'scheme': 'ISBN', 'value': '9780817631871'},
-
+                "identifiers": [
+                    {"scheme": "ISBN", "value": "0817631852"},
+                    {"scheme": "ISBN", "value": "0817631879"},
+                    {"scheme": "ISBN", "value": "9780817631857"},
+                    {"scheme": "ISBN", "value": "9780817631871"},
                 ],
-                'mode_of_issuance': 'MULTIPART_MONOGRAPH',
-                '_migration': {
-                    'record_type': 'multipart',
-                    'volumes': [
+                "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                "_migration": {
+                    "record_type": "multipart",
+                    "volumes": [
                         {
-                            'is_electronic': False,
-                            'physical_description': 'print version',
-                            'volume': 2,
-                            'isbn': '0817631852'
+                            "is_electronic": False,
+                            "physical_description": "print version",
+                            "volume": 2,
+                            "isbn": "0817631852",
                         },
                         {
-                            'is_electronic': True,
-                            'physical_description': 'electronic version',
-                            'volume': 2,
-                            'isbn': '9781461239406'
+                            "is_electronic": True,
+                            "physical_description": "electronic version",
+                            "volume": 2,
+                            "isbn": "9781461239406",
                         },
                         {
-                            'is_electronic': True,
-                            'physical_description': 'electronic version',
-                            'volume': 1,
-                            'isbn': '9781461251545'
+                            "is_electronic": True,
+                            "physical_description": "electronic version",
+                            "volume": 1,
+                            "isbn": "9781461251545",
                         },
                         {
-                            'is_electronic': False,
-                            'physical_description': 'print version',
-                            'volume': 1,
-                            'isbn': '9781461295891'
+                            "is_electronic": False,
+                            "physical_description": "print version",
+                            "volume": 1,
+                            "isbn": "9781461295891",
                         },
                     ],
                 },
-            }, multipart_model
+            },
+            multipart_model,
         )
