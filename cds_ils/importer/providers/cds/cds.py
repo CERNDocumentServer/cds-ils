@@ -33,6 +33,7 @@ def get_helper_dict():
         eitems_has_external=False,
         eitems_ebl=[],
         eitems_has_ebl=False,
+        eitems_open_access=False,
         related=[],
         items=[],
         electronic_items=[],

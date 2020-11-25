@@ -51,7 +51,6 @@ CDS_IGNORE_FIELDS = {
     "536__a",  # founding info, dropped
     "536__c",
     "536__f",
-    "536__r",
     "540__b",
     "540__f",
     "595__z",

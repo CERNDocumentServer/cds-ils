@@ -383,6 +383,16 @@ def accelerator_experiments(self, key, value):
     return _extensions
 
 
+@model.over("_migration", "^536__")
+@out_strip
+def open_access(self, key, value):
+    """Translate open access field."""
+    if "r" in value:
+        self["_migration"]["eitems_open_access"] = True
+    else:
+        raise IgnoreKey("_migration")
+
+
 @model.over("urls", "^8564_")
 @filter_list_values
 @for_each_value

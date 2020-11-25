@@ -145,6 +145,8 @@ def link_and_create_multipart_volumes(source):
     click.echo("Creating document volumes and multipart relations...")
     series = {}
     for hit in SeriesSearch().scan():
+        if not hasattr(hit, '_migration'):
+            continue
         serial_id = hit._migration.serial_id \
             if "serial_id" in hit._migration else None
         if serial_id:
