@@ -34,10 +34,6 @@ class CDSRecordDumpLoader(object):
         cls, dump, model, pid_provider, legacy_id_key="legacy_recid"
     ):
         """Create a new record from dump."""
-        import ipdb
-
-        ipdb.set_trace()
-
         if legacy_id_key is None:
             legacy_id_key = "pid"
         try:

@@ -15,12 +15,18 @@ import click
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
-from invenio_pidstore.errors import PIDDoesNotExistError
-from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 from cds_ils.migrator.utils import clean_created_by_field
 
 cli_logger = logging.getLogger("migrator")
+
+
+def add_cover_metadata(json_data):
+    """Add first ISBN as to cover metadata."""
+    isbn_list = [identifier for identifier in json_data.get("identifiers", [])
+                 if identifier["scheme"] == "ISBN"]
+    if isbn_list:
+        json_data["cover_metadata"] = {'ISBN': isbn_list[0]}
 
 
 class CDSDocumentDumpLoader(object):
@@ -72,19 +78,20 @@ class CDSDocumentDumpLoader(object):
         """Create a new record from dump."""
         record_uuid = uuid.uuid4()
         try:
-            # with db.session.begin_nested():
-            provider = DocumentIdProvider.create(
-                object_type="rec",
-                object_uuid=record_uuid,
-            )
-            timestamp, json_data = dump.revisions[-1]
-            json_data["pid"] = provider.pid.pid_value
-            json_data = clean_created_by_field(json_data)
+            with db.session.begin_nested():
+                provider = DocumentIdProvider.create(
+                    object_type="rec",
+                    object_uuid=record_uuid,
+                )
+                timestamp, json_data = dump.revisions[-1]
+                json_data["pid"] = provider.pid.pid_value
+                json_data = clean_created_by_field(json_data)
+                add_cover_metadata(json_data)
 
-            document = Document.create(json_data, record_uuid)
-            document.model.created = dump.created.replace(tzinfo=None)
-            document.model.updated = timestamp.replace(tzinfo=None)
-            document.commit()
+                document = Document.create(json_data, record_uuid)
+                document.model.created = dump.created.replace(tzinfo=None)
+                document.model.updated = timestamp.replace(tzinfo=None)
+                document.commit()
             db.session.commit()
 
             return document

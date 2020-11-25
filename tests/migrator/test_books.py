@@ -2825,3 +2825,21 @@ def test_conference_info_multiple_series_number(app):
                 """,
                 dict(),
             )
+
+
+def test_open_access(app):
+    """Test public notes."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="536" ind1=" " ind2=" ">
+                <subfield code="r">x</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(),
+                    "eitems_open_access": True,
+                },
+            },
+        )

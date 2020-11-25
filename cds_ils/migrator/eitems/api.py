@@ -68,7 +68,10 @@ def create_eitem_with_bucket_for_document(document_pid):
 
 def create_eitem(document_pid, open_access=True):
     """Create eitem record."""
-    obj = {"document_pid": document_pid, "open_access": open_access}
+    obj = {"document_pid": document_pid,
+           "open_access": open_access,
+           "created_by": {"type": "script", "value": "migration"}
+           }
     record_uuid = uuid.uuid4()
     provider = EItemIdProvider.create(
         object_type="rec",
@@ -233,33 +236,44 @@ def migrate_ebl_links():
     search = get_documents_with_ebl_eitems()
     click.echo("Found {} documents with ebl links.".format(search.count()))
 
+    url_template = \
+        "http://ebookcentral.proquest.com/lib/cern/detail.action?docID={}"
+
     for hit in search.scan():
         # make sure the document is in DB not only ES
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 
         # find the ebl identifier
-        ebl_id = next(
-            (
-                x
-                for x in document["alternative_identifiers"]
-                if x["scheme"] == "EBL"
-            ),
-            None,
-        )
+        ebl_id_list = [x for x in document["alternative_identifiers"] if
+                       x["scheme"] == "EBL"]
+
+        if not ebl_id_list:
+            raise EItemMigrationError(
+                "Document {pid} has no EBL alternative identifier"
+                " while EBL ebook link was found".format(
+                    pid=document["pid"]
+                )
+            )
 
         for url in document["_migration"]["eitems_ebl"]:
+            matched_ebl_id = [ebl_id["value"] for ebl_id in
+                              ebl_id_list if ebl_id["value"] in url["value"]]
 
-            if not ebl_id:
+            if not matched_ebl_id:
                 raise EItemMigrationError(
-                    "Document {pid} has no EBL alternative identifier"
-                    " while EBL ebook link was found".format(
+                    "Document {pid} has different EBL identifier"
+                    " than the ID specified in the url parameters".format(
                         pid=document["pid"]
                     )
                 )
-
             eitem = create_eitem(document["pid"], open_access=False)
-            eitem["urls"] = [{"value": "EBL", "login_required": True}]
+            eitem["urls"] = [
+                {
+                    "value": url_template.format(matched_ebl_id[0]),
+                    "login_required": True
+                }
+            ]
             eitem.commit()
             EItemIndexer().index(eitem)
 
