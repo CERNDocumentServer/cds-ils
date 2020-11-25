@@ -1,213 +1,224 @@
 [
   {
-    "pid": "wb92a-x9s9A",
-    "title": "An eventful journey to unification of all the fundamental forces",
-    "authors": [
+    "files": [],
+    "collections": null,
+    "recid": 262146,
+    "record": [
       {
-        "full_name": "Delbourgo, Robert",
-        "roles": ["Author"]
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262146</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20160412074124.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9789810217297</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9789810220341</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9810217293</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9810220340</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262146</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179807CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">530.24</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">530.24</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">530.24</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Baez, John C</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Gauge fields, knots and gravity</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Singapore</subfield>\n    <subfield code=\"b\">World Scientific</subfield>\n    <subfield code=\"c\">1994</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">465 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"490\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Series on Knots and Everything</subfield>\n    <subfield code=\"v\">4</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">newqudc</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">General Theoretical Physics</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">electromagnetism</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">gauge fields</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">general relativity</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">knot theory, applications</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">quantum gravity</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Muniain, Javier P</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">530.24 BAE</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Depot 1, bldg. 2 (DE1)</subfield>\n    <subfield code=\"h\">530.24 BAE</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">h</subfield>\n    <subfield code=\"w\">200112</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20081126</subfield>\n    <subfield code=\"h\">1807</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179807CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0002</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2016-04-12T05:41:24+00:00"
       }
-    ],
-    "edition": "2",
-    "imprint": {
-      "date": "2020",
-      "place": "Hackensack, NJ",
-      "publisher": "World Scientific"
-    },
-    "abstract": "Book 2 of the Physics is arguably the best introduction to Aristotle's ideas, as well as being the most interesting and representative book in the whole of his corpus. It defines nature and distinguishes natural science from mathematics. It introduces the seminal idea of four causes, or four modes of explanation. It defines chance, but rejects a theory of chance and natural selection in favour of purpose in nature. Simplicius, writing in the sixth century AD, adds his own considerable contribution to this work. Seeing Aristotle's God as a Creator, he discusses how nature relates to soul, adds Stoic and Neoplatonist causes to Aristotle's list of four, and questions the likeness of cause to effect. He discusses missing a great evil or a great good by a hairsbreadth and considers whether animals act from reason or natural instinct. He also preserves a Posidonian discussion of mathematical astronomy.",
-    "languages": ["EN"],
-    "created_by": {
-      "type": "script",
-      "value": "demo"
-    },
-    "restricted": false,
-    "document_type": "BOOK",
-    "cover_metadata": {
-      "isbn": "9789811210143",
-      "urls": {}
-    },
-    "identifiers": [
-      {
-        "scheme": "ISBN",
-        "value": "9789811210143"
-      }
-    ],
-    "number_of_pages": "159",
-    "publication_year": "2020"
+    ]
   },
   {
-    "pid": "qaywb-gfe4B",
-    "title": "Introduction to cryptography",
-    "authors": [
+    "files": [],
+    "collections": null,
+    "recid": 230445,
+    "record": [
       {
-        "full_name": "Knebl, Helmut",
-        "roles": ["Author"]
+        "marcxml": "<record>\n  <controlfield tag=\"001\">230445</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20151106220034.0</controlfield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:230445</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0144796CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">621.391</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Data communication</subfield>\n    <subfield code=\"b\">fundamentals of baseband transmission</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Stroudburg, PA</subfield>\n    <subfield code=\"b\">Dowden, Hutchinson and Ross</subfield>\n    <subfield code=\"c\">1974</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">412 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"490\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Blenchmark Papers Electr. Eng. Comput. Sci.</subfield>\n    <subfield code=\"v\">9</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Engineering</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Franks, Lewis Embree</subfield>\n    <subfield code=\"e\">ed.</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Depot 1, bldg. 2 (DE1)</subfield>\n    <subfield code=\"h\">621.391 FRA</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">m</subfield>\n    <subfield code=\"w\">199203</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20100121</subfield>\n    <subfield code=\"h\">1533</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19920122</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000144796CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2015-11-06T21:00:34+00:00"
       }
-    ],
-    "imprint": {
-      "date": "2002",
-      "place": "Berlin",
-      "publisher": "Springer"
-    },
-    "languages": ["EN"],
-    "created_by": {
-      "type": "script",
-      "value": "demo"
-    },
-    "restricted": false,
-    "document_type": "BOOK",
-    "cover_metadata": {
-      "isbn": "",
-      "urls": {}
-    },
-    "number_of_pages": "310",
-    "publication_year": "2002"
+    ]
   },
   {
-    "pid": "kg26x-byc8C",
-    "title": "Sidelights on relativity",
-    "authors": [
+    "files": [],
+    "collections": null,
+    "recid": 262150,
+    "record": [
       {
-        "full_name": "Einstein, Albert",
-        "roles": ["Author"]
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262150</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20190725144000.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0306443856</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780306443855</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9781489912282</subfield>\n    <subfield code=\"b\">electronic version</subfield>\n    <subfield code=\"u\">electronic version</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"7\" ind2=\" \">\n    <subfield code=\"2\">DOI</subfield>\n    <subfield code=\"a\">10.1007/978-1-4899-1228-2</subfield>\n    <subfield code=\"q\">ebook</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262150</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179811CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">539.184</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Long-range Casimir forces</subfield>\n    <subfield code=\"b\">theory and recent experiments on atomic systems</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">New York, NY</subfield>\n    <subfield code=\"b\">Plenum</subfield>\n    <subfield code=\"c\">1993</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">357 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">ebook</subfield>\n  </datafield>\n  <datafield tag=\"490\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Finite systems and multiparticle dynamics</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">SPR201310</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Nuclear Physics</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">Casimir</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">Rydberg states</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">long-range interactions</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Micha, David A</subfield>\n    <subfield code=\"e\">ed.</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Levin, Frank S</subfield>\n    <subfield code=\"e\">ed.</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">539.18 LEV</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199441</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"e\">SPR</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179811CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2019-07-25T12:40:00+00:00"
       }
-    ],
-    "imprint": {
-      "date": "1983",
-      "place": "New York, NY",
-      "publisher": "Dover Publications"
-    },
-    "abstract": "This Dover edition, first published in 1983, is an unabridged and unaltered republication of the translation by G. B. Jeffrey, D.Sc., and W. Perret, Ph.D., first published by E. P. Dutton and Company, Publishers, N.Y., in 1922.",
-    "languages": ["EN"],
-    "created_by": {
-      "type": "script",
-      "value": "demo"
-    },
-    "restricted": false,
-    "document_type": "BOOK",
-    "cover_metadata": {
-      "isbn": "9780486245119",
-      "urls": {}
-    },
-    "identifiers": [
-      {
-        "scheme": "ISBN",
-        "value": "9780486245119"
-      }
-    ],
-    "number_of_pages": "56",
-    "publication_year": "1983"
+    ]
   },
   {
-    "pid": "44gt6-e6d0D",
-    "title": "Big Bang",
-    "authors": [
+    "files": [
       {
-        "full_name": "Jacob, Irene",
-        "roles": ["Author"]
+        "comment": null,
+        "status": "",
+        "version": 1,
+        "encoding": null,
+        "creation_date": "2014-08-15T16:27:10+00:00",
+        "bibdocid": 952822,
+        "mime": "application/pdf",
+        "full_name": "075030183X_TOC.pdf",
+        "superformat": ".pdf",
+        "recids_doctype": [[262151, "Additional", "075030183X_TOC.pdf"]],
+        "path": "/opt/cdsweb/var/data/files/g95/952822/content.pdf;1",
+        "size": 264367,
+        "license": {},
+        "modification_date": "2014-08-15T16:27:10+00:00",
+        "copyright": {},
+        "url": "http://cds.cern.ch/record/262151/files/075030183X_TOC.pdf",
+        "checksum": "a8b4bba8a2bbc6780cc7707387c4702f",
+        "description": "1. Table of contents",
+        "format": ".pdf",
+        "name": "075030183X_TOC",
+        "subformat": "",
+        "etag": "\"952822.pdf1\"",
+        "recid": 262151,
+        "flags": [],
+        "hidden": false,
+        "type": "Additional",
+        "full_path": "/opt/cdsweb/var/data/files/g95/952822/content.pdf;1"
       }
     ],
-    "imprint": {
-      "date": "2019",
-      "place": "Paris",
-      "publisher": "Albin Michel"
-    },
-    "abstract": "Ici, devant le deuil et la promesse de la vie, je me tiens et j'avance... Irène Jacob, l'inoubliable interprète de La Double vie de Véronique, rapproche deux évènements simultanés et essentiels : la disparition de son père, grand physicien, et la naissance d'un enfant. Ce texte subtil, sensible et tendre lui permet de revenir à ces deux moments où le miracle de la vie et l'infiniment grand se mêlent. La physique, le firmament à perte de vue, le big bang, les questions de la psychanalyse mais aussi la perception du temps, la brume des souvenirs ou les images à vif, les émotions, leurs manifestations explosives, le sommeil et les rêves irisent ce récit tout à la fois bouleversant et lumineux.",
-    "languages": ["EN"],
-    "created_by": {
-      "type": "script",
-      "value": "demo"
-    },
-    "restricted": false,
-    "document_type": "BOOK",
-    "cover_metadata": {
-      "isbn": "9782226442703",
-      "urls": {}
-    },
-    "identifiers": [
+    "collections": null,
+    "recid": 262151,
+    "record": [
       {
-        "scheme": "ISBN",
-        "value": "9782226442703"
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262151</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20151106220358.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">075030183X</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0750303255</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780750301831</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780750303255</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262151</subfield>\n    <subfield code=\"p\">cerncds:FULLTEXT</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179812CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">533.9</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Goldston, Robert J</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Introduction to plasma physics</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Bristol</subfield>\n    <subfield code=\"b\">IOP</subfield>\n    <subfield code=\"c\">1994</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">491 p. ; 2 diskettes</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"500\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Includes exercises</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Other Fields of Physics</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">plasma physics</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">textbook, university level</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Rutherford, Paul H</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">533.9 GOL</subfield>\n  </datafield>\n  <datafield tag=\"856\" ind1=\"4\" ind2=\" \">\n    <subfield code=\"s\">264367</subfield>\n    <subfield code=\"u\">http://cds.cern.ch/record/262151/files/075030183X_TOC.pdf</subfield>\n    <subfield code=\"y\">1. Table of contents</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199603</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179812CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2015-11-06T21:03:58+00:00"
       }
-    ],
-    "number_of_pages": "232",
-    "publication_year": "2019"
+    ]
   },
   {
-    "pid": "67186-5rs9E",
-    "title": "Using REDUCE in high energy physics",
-    "authors": [
+    "files": [],
+    "collections": null,
+    "recid": 262153,
+    "record": [
       {
-        "full_name": "Grozin, A G",
-        "roles": ["Author"]
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262153</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20151106220359.0</controlfield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Love, Alexander</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">539.1.01 BAI</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">530.24 BAI</subfield>\n  </datafield>\n  <datafield tag=\"490\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Graduate student series in physics</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179814CERCER</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179814CER</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">supergravity</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">superstring theories</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">supersymmetry</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">General Theoretical Physics</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">r</subfield>\n    <subfield code=\"w\">199733</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">322 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">539.145.263</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Supersymmetric gauge field theory and string theory</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Bristol</subfield>\n    <subfield code=\"b\">IOP</subfield>\n    <subfield code=\"c\">1994</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0750302674</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0750302682</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780750302678</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780750302685</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262153</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Bailin, David</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0003</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2015-11-06T21:03:59+00:00"
       }
-    ],
-    "imprint": {
-      "date": "2005",
-      "place": "Cambridge",
-      "publisher": "Cambridge University Press"
-    },
-    "abstract": "This is an abstract",
-    "languages": ["EN"],
-    "created_by": {
-      "type": "script",
-      "value": "demo"
-    },
-    "restricted": false,
-    "document_type": "BOOK",
-    "cover_metadata": {
-      "isbn": "9780521019521",
-      "urls": {}
-    },
-    "identifiers": [
-      {
-        "scheme": "ISBN",
-        "value": "9780521019521"
-      }
-    ],
-    "number_of_pages": "384",
-    "publication_year": "2005"
+    ]
   },
   {
-    "pid": "9bqas-spg3F",
-    "title": "Proceedings of the 23rd International Workshop on ECR Ion Sources",
-    "authors": [
+    "files": [],
+    "collections": null,
+    "recid": 262156,
+    "record": [
       {
-        "full_name": "Schaa, Volker R W",
-        "roles": ["editor"]
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262156</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20151106220359.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9789810216375</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9789810216382</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9810216378</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9810216386</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262156</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179817CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">537.312.62</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Physical properties of high temperature superconductors, 4</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Singapore</subfield>\n    <subfield code=\"b\">World Scientific</subfield>\n    <subfield code=\"c\">1994</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">573 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Other Fields of Physics</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">high temperature superconductivity</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">high temperature superconductors, infrared-active vibrations</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">isotope effect, experimental studies</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Ginsberg, Donald M</subfield>\n    <subfield code=\"e\">ed.</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">537.312.62 GIN</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199440</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179817CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2015-11-06T21:03:59+00:00"
       }
-    ],
-    "imprint": {
-      "date": "2019",
-      "place": "Geneva",
-      "publisher": "JACOW"
-    },
-    "languages": ["EN"],
-    "created_by": {
-      "type": "script",
-      "value": "demo"
-    },
-    "restricted": false,
-    "document_type": "PROCEEDING",
-    "cover_metadata": {
-      "isbn": "9783954501960",
-      "urls": {}
-    },
-    "identifiers": [
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 436909,
+    "record": [
       {
-        "scheme": "ISBN",
-        "value": "9783954501960"
+        "marcxml": "<record>\n  <controlfield tag=\"001\">436909</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20190517115447.0</controlfield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:436909</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">2186581CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">fre</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">349.21</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">341.12</subfield>\n  </datafield>\n  <datafield tag=\"110\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Organisation for Economic Cooperation and Development. Paris</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Statut, r\u00e8glement et instructions applicables aux agents de l'organisation</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Paris</subfield>\n    <subfield code=\"b\">OCDE</subfield>\n    <subfield code=\"c\">2018</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">ebook</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Legal Service Library</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BookUnit: LSL invent. 2008, Dina, ok</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Commerce, Economics, Social Science</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">OCDE</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">civil servant</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">international organization law</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">regulation</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">staff rules</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"694\" ind1=\" \" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">D 34 c</subfield>\n  </datafield>\n  <datafield tag=\"697\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">LEGSERLIB</subfield>\n  </datafield>\n  <datafield tag=\"856\" ind1=\"4\" ind2=\" \">\n    <subfield code=\"u\">http://www.oecd.org/fr/carrieres/Staff_Rules_Janvier_2018_a_imprimer.pdf</subfield>\n    <subfield code=\"y\">Full text</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">h</subfield>\n    <subfield code=\"w\">200019</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20080828</subfield>\n    <subfield code=\"h\">0841</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">20000509</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"b\">LEGSERLIB</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">002186581CER</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2019-05-17T09:54:47+00:00"
       }
-    ],
-    "conference_info": {
-      "year": 2018,
-      "dates": "10 - 14 Sep. 2018",
-      "place": "Catania",
-      "title": "23rd International Workshop on ECR Ion Sources",
-      "series": "International Workshop on ECR Ion Sources",
-      "country": "IT"
-    },
-    "number_of_pages": "43",
-    "publication_year": "2019"
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 262163,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262163</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20170721133225.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9789810218201</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9810218206</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262163</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179827CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">531.51</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">535.417</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Saulson, Peter R</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Fundamentals of interferometric gravitational wave detectors</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Singapore</subfield>\n    <subfield code=\"b\">World Scientific</subfield>\n    <subfield code=\"c\">1994</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">299 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Detectors and Experimental Techniques</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">gravitational waves, detection</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"775\" ind1=\" \" ind2=\" \">\n    <subfield code=\"b\">2nd ed.</subfield>\n    <subfield code=\"c\">2017</subfield>\n    <subfield code=\"w\">2257040</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">531.5 SAU</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199522</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179827CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2017-07-21T11:32:25+00:00"
+      }
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 262169,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262169</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20190725144000.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9789810216474</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9789812798732</subfield>\n    <subfield code=\"b\">electronic version</subfield>\n    <subfield code=\"c\">214 (NL)</subfield>\n    <subfield code=\"u\">electronic version</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9810216475</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262169</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179833CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">517.938</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Mira, Christian</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Chaotic dynamics in two-dimensional noninvertible maps</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Singapore</subfield>\n    <subfield code=\"b\">World Scientific</subfield>\n    <subfield code=\"c\">1996</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">607 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"490\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">World Scientific Series on Nonlinear Science Series A</subfield>\n    <subfield code=\"v\">20</subfield>\n  </datafield>\n  <datafield tag=\"505\" ind1=\" \" ind2=\" \">\n    <subfield code=\"t\">CONTENTS; PREFACE; CHAPTER 1  GENERALITIES ON DYNAMIC SYSTEMS AND MAPS; 1.1. Continuous Dynamic Systems and Discrete Dynamic Systems.; 1.2. Some Considerations on Maps and Some Definitions.; 1.3. Diffeomorphism and Noninvertible Maps. The Hadamard's Theorem.; 1.3.1. The Hadamard's Theorem.; 1.3.2. The Two Classes of Noninvertible Maps. Critical Manifolds.; 1.4. Imbedding of a Noninvertible Map into a Diffeomorphism with a Higher Dimension.; 1.5. The Valiron's Results.; 1.6. Consequences of the Valiron's Results.; 1.7. Some Definitions and Properties.; 1.8. Maps and the Schroder's Equatioa</subfield>\n  </datafield>\n  <datafield tag=\"505\" ind1=\" \" ind2=\" \">\n    <subfield code=\"t\">1.8.1. Generalities.1.8.2. Basin boundary, singular points and the Schroeder's equation.; 1.8.3. One-dimensional noninveriible maps and chaotic behaviours. Generalization of Chebyshev's polynomials.; 1.8.4. One-dimensional noninvertible maps. Properties of generalized Chebyshev's polynomials.; 1.8.5. One-dimensional noninvertible maps. Examples of functions HK giving rise to chaotic behaviors.; 1.8.6. Generalization to m-dimensional noninvertible maps m > 1.; CHAPTER 2  ONE-DIMENSIONAL NONINVERTIBLE MAPS; 2.1. Introduction.; 2.2. Critical points. Properties.; 2.2.1. Definitions.</subfield>\n  </datafield>\n  <datafield tag=\"505\" ind1=\" \" ind2=\" \">\n    <subfield code=\"t\">2.2.2. Different determinations of the inverse map.2.2.3. Folding of the real line. Definition of preimages. Generalities.; 2.3. Some Properties of One-Dimensional Maps.; 2.4. Other Definitions.; 2.5. Maps Defined by a Function with only one Extremum. Rotation Sequences and Boxes in Files Structures.; 2.5.1. Rotation sequences.; 2.5.2. Diffeomorphism of the circle. Fractal \"\"boxes in files\"\" bifurcation structure.; 2.5.3. Quadratic algebraic rotation numbers.; 2.6. Maps Defined by a Function With Only One Extremum. Fractal \"\"Box-Within-a-Box\"\" Bifurcation Structure; 2.6.1. Generalities.</subfield>\n  </datafield>\n  <datafield tag=\"505\" ind1=\" \" ind2=\" \">\n    <subfield code=\"t\">2.6.2. Properties and fundamental bifurcations of unimodal noninvertible maps.2.6.3. Succinct description of the \"\"box-within-a-box\"\" bifurcations structure.; 2.6.4. Accumulation points of boxes.; 2.6.5. Generalizations; 2.7. Maps Defined by a Function With Two Extrema; 2.8. Basins and Their Bifurcations.; 2.8.1. Generalities.; 2.8.2. Simply connected basin.; 2.8.3. Nonconnected basin with finite boundary. Bifurcation.; 2.8.4. First type of basin with an infinite (fractal) boundary. Chaotic transient. Bifurcation.</subfield>\n  </datafield>\n  <datafield tag=\"505\" ind1=\" \" ind2=\" \">\n    <subfield code=\"t\">2.8.5. Second type of basin with an infinite (fractal) boundary. Fuzzy boundary. Bifurcation.2.8.6. Remarks.; 2.9. Properties of Continuous Piecewise Linear Maps.; 2.10. Properties of Piecewise Continuous Maps.; 2.10.1. General considerations.; 2.10.2. Remark.; 2.10.3. Piecewise linear maps with only one discontinuity point.; 2.10.4. Maps with several points of discontinuity.; CHAPTER 3  TWO-DIMENSIONAL NONINVERTIBLE MAPS. PROPERTIES OF CRITICAL CURVES; 3.1. Introduction.; 3.2. Critical curves. Types of Noninvertible Maps.; 3.2.1. Critical curves and inverses of a noninvertible map.</subfield>\n  </datafield>\n  <datafield tag=\"505\" ind1=\" \" ind2=\" \">\n    <subfield code=\"t\">3.2.2. Types of noninvertible maps with critical curves. Their symbolic representation.</subfield>\n  </datafield>\n  <datafield tag=\"520\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">This book is essentially devoted to complex properties (Phase plane structure and bifurcations) of two-dimensional noninvertible maps, i.e. maps having either a non-unique inverse, or no real inverse, according to the plane point. They constitute models of sets of discrete dynamical systems encountered in Engineering (Control, Signal Processing, Electronics), Physics, Economics, Life Sciences. Compared to the studies made in the one-dimensional case, the two-dimensional situation remained a long time in an underdeveloped state. It is only since these last years that the interest for this resea</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">EBLlink deleted</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">General Theoretical Physics</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">complex systems</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Barugola, Alexandra</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Cathala, Jean-Claude</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Gardini, Laura</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Depot 1, bldg. 2 (DE1)</subfield>\n    <subfield code=\"h\">517.93 MIR</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199648</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20080516</subfield>\n    <subfield code=\"h\">1608</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179833CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2019-07-25T12:40:00+00:00"
+      }
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 262170,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262170</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20200806100254.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521387736</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521387736</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262170</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179834CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">523.03</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Longair, Malcolm S</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">High energy astrophysics</subfield>\n  </datafield>\n  <datafield tag=\"246\" ind1=\" \" ind2=\" \">\n    <subfield code=\"n\">v.1</subfield>\n    <subfield code=\"p\">Particles, photons and their detection</subfield>\n  </datafield>\n  <datafield tag=\"246\" ind1=\" \" ind2=\" \">\n    <subfield code=\"n\">v.2</subfield>\n    <subfield code=\"p\">Stars, the galaxy and the interstellar medium</subfield>\n  </datafield>\n  <datafield tag=\"250\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">2nd ed.</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Cambridge</subfield>\n    <subfield code=\"b\">Cambridge Univ. Press</subfield>\n    <subfield code=\"c\">1992</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">2 v</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">gift: Kienzle-Focacci, Maria-Novella</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">MULTIVOLUMES</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Particle Physics</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">cosmic rays</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">ionisation iosses</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">neutrino telescopes</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">solar wind</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"775\" ind1=\" \" ind2=\" \">\n    <subfield code=\"w\">1368238</subfield>\n    <subfield code=\"b\">3rd ed.</subfield>\n    <subfield code=\"c\">2011</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Depot 1, bldg. 2 (DE1)</subfield>\n    <subfield code=\"h\">523 LON</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">523 LON</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">r</subfield>\n    <subfield code=\"w\">200339</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0008</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179834CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2020-08-06T08:02:54+00:00"
+      }
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 262171,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262171</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20200806100254.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521344026</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521348692</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521344029</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521348690</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262171</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179835CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">524</subfield>\n  </datafield>\n  <datafield tag=\"088\" ind1=\" \" ind2=\" \">\n    <subfield code=\"n\">v.1</subfield>\n    <subfield code=\"x\">B00000548</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">B\u00f6hm-Vitense, Erika</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Introduction to stellar astrophysics</subfield>\n  </datafield>\n  <datafield tag=\"246\" ind1=\" \" ind2=\" \">\n    <subfield code=\"n\">v.1</subfield>\n    <subfield code=\"p\">Basic stellar observations and data</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Cambridge</subfield>\n    <subfield code=\"b\">Cambridge Univ. Press</subfield>\n    <subfield code=\"c\">1989</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">244 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"500\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Includes exercises</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">MULTIVOLUMES</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Astrophysics and Astronomy</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">astronomy</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">star</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">textbook, university level</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">524 BOH</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199430</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179835CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2020-08-06T08:02:54+00:00"
+      }
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 262172,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262172</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20200806100254.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521344034</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521348706</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521344036</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521348706</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262172</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179836CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">524</subfield>\n  </datafield>\n  <datafield tag=\"088\" ind1=\" \" ind2=\" \">\n    <subfield code=\"n\">v.2</subfield>\n    <subfield code=\"x\">B00000549</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">B\u00f6hm-Vitense, Erika</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Introduction to stellar astrophysics</subfield>\n  </datafield>\n  <datafield tag=\"246\" ind1=\" \" ind2=\" \">\n    <subfield code=\"n\">v.2</subfield>\n    <subfield code=\"p\">Stellar atmospheres</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Cambridge</subfield>\n    <subfield code=\"b\">Cambridge Univ. Press</subfield>\n    <subfield code=\"c\">1989</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">249 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"500\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Includes exercises</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">MULTIVOLUMES</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Astrophysics and Astronomy</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">stellar atmosphere</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">textbook, university level</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">524 BOH</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199430</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179836CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2020-08-06T08:02:54+00:00"
+      }
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 262173,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262173</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20200806100254.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521344042</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521348714</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521344043</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521348713</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262173</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179837CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">524</subfield>\n  </datafield>\n  <datafield tag=\"088\" ind1=\" \" ind2=\" \">\n    <subfield code=\"n\">v.3</subfield>\n    <subfield code=\"x\">B00000550</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">B\u00f6hm-Vitense, Erika</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Introduction to stellar astrophysics</subfield>\n  </datafield>\n  <datafield tag=\"246\" ind1=\" \" ind2=\" \">\n    <subfield code=\"n\">v.3</subfield>\n    <subfield code=\"p\">Stellar structure and evolution</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Cambridge</subfield>\n    <subfield code=\"b\">Cambridge Univ. Press</subfield>\n    <subfield code=\"c\">1992</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">285 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"500\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Includes exercises</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">MULTIVOLUMES</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Astrophysics and Astronomy</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">star</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">textbook, university level</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">524 BOH</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199430</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179837CER</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2020-08-06T08:02:54+00:00"
+      }
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 262174,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262174</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20151106220359.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521264472</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521269946</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521264471</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521269940</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262174</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179838CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">539.1</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">539.142</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Jelley, Nicholas Alfred</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Fundamentals of nuclear physics</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Cambridge</subfield>\n    <subfield code=\"b\">Cambridge Univ. Press</subfield>\n    <subfield code=\"c\">1990</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">278 p</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n  <datafield tag=\"500\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Includes exercises</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Nuclear Physics</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">nuclear models</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">radioactivity</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">textbook, undergraduate level</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN Central Library</subfield>\n    <subfield code=\"h\">539.1 JEL</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">r</subfield>\n    <subfield code=\"w\">200320</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0002</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179838CER</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2015-11-06T21:03:59+00:00"
+      }
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 262176,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">262176</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20170526112219.0</controlfield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0521412501</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">052142352X</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521412506</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780521423526</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:262176</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"035\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0179840CERCER</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"080\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">524.8</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Narlikar, Jayant Vishnu</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Introduction to cosmology</subfield>\n  </datafield>\n  <datafield tag=\"250\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">2nd ed.</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Cambridge</subfield>\n    <subfield code=\"b\">Cambridge Univ. Press</subfield>\n    <subfield code=\"c\">1993</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">415 p</subfield>\n  </datafield>\n  <datafield tag=\"500\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Includes exercises</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Astrophysics and Astronomy</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">galaxies</subfield>\n  </datafield>\n  <datafield tag=\"653\" ind1=\"1\" ind2=\" \">\n    <subfield code=\"9\">CERN</subfield>\n    <subfield code=\"a\">textbook, university level</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"775\" ind1=\" \" ind2=\" \">\n    <subfield code=\"b\">1st ed.</subfield>\n    <subfield code=\"c\">1983</subfield>\n    <subfield code=\"w\">106740</subfield>\n  </datafield>\n  <datafield tag=\"775\" ind1=\" \" ind2=\" \">\n    <subfield code=\"b\">3rd ed.</subfield>\n    <subfield code=\"c\">2002</subfield>\n    <subfield code=\"w\">2265960</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">n</subfield>\n    <subfield code=\"w\">199435</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"961\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">20070811</subfield>\n    <subfield code=\"h\">0112</subfield>\n    <subfield code=\"l\">CER01</subfield>\n    <subfield code=\"x\">19940425</subfield>\n  </datafield>\n  <datafield tag=\"963\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">PUBLIC</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"964\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0001</subfield>\n  </datafield>\n  <datafield tag=\"970\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">000179840CER</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2017-05-26T09:22:19+00:00"
+      }
+    ]
+  },
+  {
+    "files": [],
+    "collections": null,
+    "recid": 2621473,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">2621473</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20190517115433.0</controlfield>\n  <datafield tag=\"775\" ind1=\" \" ind2=\" \">\n    <subfield code=\"b\">3rd ed.</subfield>\n    <subfield code=\"c\">1975</subfield>\n    <subfield code=\"w\">429076</subfield>\n  </datafield>\n  <datafield tag=\"775\" ind1=\" \" ind2=\" \">\n    <subfield code=\"b\">5th ed.</subfield>\n    <subfield code=\"c\">2001</subfield>\n    <subfield code=\"w\">444094</subfield>\n  </datafield>\n  <datafield tag=\"852\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">CERN LSL Library</subfield>\n    <subfield code=\"h\">341.1 SAN</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">h</subfield>\n    <subfield code=\"w\">201823</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Bowett's law of international institutions</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"697\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">LEGSERLIB</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"b\">LEGSERLIB</subfield>\n  </datafield>\n  <datafield tag=\"700\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Klein, Pierre</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">London</subfield>\n    <subfield code=\"b\">Sweet and Maxwell</subfield>\n    <subfield code=\"c\">2009</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">619 p</subfield>\n  </datafield>\n  <datafield tag=\"520\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Bowett's Law of International Institutions is the leading introduction to this complex, important and growing area of international law, with increasing significance for developments at the national level. Covering all the major global, regional and judicial institutions and all international organisations that regulate aspects of development and providing an introductory overview of the law of international organisations, including international courts and tribunals as a whole. The book offers a basic framework, insights into some of the more essential issues, and indications of where to find more detail. Bowett's is essential reading for students of international law and international relations and will also be of considerable interest to lawyers practising in the area.</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">9780421964907</subfield>\n    <subfield code=\"u\">print version, paperback</subfield>\n  </datafield>\n  <datafield tag=\"020\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">0421964901</subfield>\n    <subfield code=\"u\">print version, paperback</subfield>\n  </datafield>\n  <datafield tag=\"024\" ind1=\"8\" ind2=\" \">\n    <subfield code=\"a\">oai:cds.cern.ch:2621473</subfield>\n    <subfield code=\"p\">cerncds:BOOK</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">341.1</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Commerce, Economics, Social Science</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Legal Service Library</subfield>\n  </datafield>\n  <datafield tag=\"250\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">6th ed.</subfield>\n  </datafield>\n  <datafield tag=\"100\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Sands, Philippe</subfield>\n  </datafield>\n  <datafield tag=\"340\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">paper</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2019-05-17T09:54:33+00:00"
+      }
+    ]
   }
 ]

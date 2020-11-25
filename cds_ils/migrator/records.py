@@ -14,8 +14,11 @@ import uuid
 import arrow
 import click
 from cds_dojson.marc21 import marc21
-from cds_dojson.marc21.fields.books.errors import ManualMigrationRequired, \
-    MissingRequiredField, UnexpectedValue
+from cds_dojson.marc21.fields.books.errors import (
+    ManualMigrationRequired,
+    MissingRequiredField,
+    UnexpectedValue,
+)
 from cds_dojson.marc21.utils import create_record
 from flask import current_app
 from invenio_app_ils.documents.api import DocumentIdProvider
@@ -29,8 +32,11 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 from cds_ils.migrator.errors import LossyConversion
 from cds_ils.migrator.handlers import migration_exception_handler
-from cds_ils.migrator.utils import clean_created_by_field, process_fireroles, \
-    update_access
+from cds_ils.migrator.utils import (
+    clean_created_by_field,
+    process_fireroles,
+    update_access,
+)
 from cds_ils.minters import legacy_recid_minter
 
 cli_logger = logging.getLogger("migrator")
@@ -277,7 +283,21 @@ class CDSDocumentDumpLoader(RecordDumpLoader):
         timestamp, json_data = dump.revisions[-1]
         json_data["pid"] = provider.pid.pid_value
         json_data = clean_created_by_field(json_data)
-        legacy_recid_minter(json_data["legacy_recid"], record_uuid)
+
+        if json_data["legacy_recid"] == 262146:
+            leg_recid_pid = PersistentIdentifier.create(
+                pid_type="docid",
+                pid_value=json_data["legacy_recid"],
+                object_type="rec",
+                object_uuid=record_uuid,
+                status=PIDStatus.REGISTERED,
+            )
+            leg_recid_pid.redirect(provider.pid)
+        else:
+            legacy_recid_minter(
+                json_data["legacy_recid"], provider.pid, record_uuid
+            )
+        click.secho("redirect!!!!", fg="red")
         try:
             Document = current_app_ils.document_record_cls
             document = Document.create(json_data, record_uuid)

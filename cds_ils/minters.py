@@ -12,12 +12,14 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from cds_ils.documents.api import DOCUMENT_LEGACY_PID_TYPE
 
 
-def legacy_recid_minter(legacy_recid, uuid):
+def legacy_recid_minter(legacy_recid, pid, uuid):
     """Legacy_recid minter."""
-    PersistentIdentifier.create(
+    leg_recid_pid = PersistentIdentifier.create(
+        # pid_type="docid",
         pid_type=DOCUMENT_LEGACY_PID_TYPE,
         pid_value=legacy_recid,
         object_type="rec",
         object_uuid=uuid,
         status=PIDStatus.REGISTERED,
     )
+    leg_recid_pid.redirect(pid)
