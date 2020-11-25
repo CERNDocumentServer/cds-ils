@@ -17,9 +17,14 @@ import click
 from celery import shared_task
 from elasticsearch_dsl import Q
 from flask import current_app
+from invenio_app_ils.acquisition.api import Order, OrderIdProvider, Vendor, \
+    VendorIdProvider
 from invenio_app_ils.circulation.api import IlsCirculationLoanIdProvider
+from invenio_app_ils.document_requests.api import DocumentRequest, \
+    DocumentRequestIdProvider
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
-from invenio_app_ils.ill.api import Library, LibraryIdProvider
+from invenio_app_ils.ill.api import BorrowingRequest, \
+    BorrowingRequestIdProvider, Library, LibraryIdProvider
 from invenio_app_ils.internal_locations.api import InternalLocation, \
     InternalLocationIdProvider
 from invenio_app_ils.items.api import Item, ItemIdProvider
@@ -87,8 +92,15 @@ def model_provider_by_rectype(rectype):
         return Item, ItemIdProvider
     elif rectype == "loan":
         return Loan, IlsCirculationLoanIdProvider
-    else:
-        raise ValueError("Unknown rectype: {}".format(rectype))
+    elif rectype == "vendor":
+        return Vendor, VendorIdProvider
+    elif rectype == "borrowing-request":
+        return BorrowingRequest, BorrowingRequestIdProvider
+    elif rectype == "acq-order":
+        return Order, OrderIdProvider
+    elif rectype == "document-request":
+        return DocumentRequest, DocumentRequestIdProvider
+    raise ValueError("Unknown rectype: {}".format(rectype))
 
 
 def import_parents_from_file(dump_file, rectype, include):

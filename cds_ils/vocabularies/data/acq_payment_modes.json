@@ -8,5 +8,10 @@
     "type": "acq_payment_mode",
     "key": "INTERNAL_PURCHASE_REQUISITION",
     "text": "Internal Purchase Requisition"
+  },
+  {
+    "type": "acq_payment_mode",
+    "key": "MIGRATED_UNKNOWN",
+    "text": "Migrated/Unknown"
   }
 ]

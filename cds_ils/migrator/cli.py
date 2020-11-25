@@ -13,12 +13,17 @@ from logging import FileHandler
 import click
 from flask.cli import with_appcontext
 
+from cds_ils.migrator.acquisition.orders import import_orders_from_json
+from cds_ils.migrator.acquisition.vendors import import_vendors_from_json
 from cds_ils.migrator.api import commit, import_parents_from_file, \
     reindex_pidtype
+from cds_ils.migrator.document_requests.api import \
+    import_document_requests_from_json
 from cds_ils.migrator.documents.api import import_documents_from_dump, \
     import_documents_from_record_file
 from cds_ils.migrator.eitems.api import migrate_ebl_links, \
     migrate_external_links, migrate_ezproxy_links, process_files_from_legacy
+from cds_ils.migrator.ill.api import import_ill_borrowing_requests_from_json
 from cds_ils.migrator.internal_locations.api import \
     import_internal_locations_from_json
 from cds_ils.migrator.items.api import import_items_from_json
@@ -27,6 +32,7 @@ from cds_ils.migrator.patrons.api import import_users_from_json
 from cds_ils.migrator.series.api import link_and_create_multipart_volumes, \
     link_documents_and_serials, validate_multipart_records, \
     validate_serial_records
+from cds_ils.migrator.utils import create_migration_records
 
 
 @click.group()
@@ -125,7 +131,7 @@ def internal_locations(source, include):
 )
 @with_appcontext
 def items(source, include, skip_indexing):
-    """Migrate documents from CDS legacy."""
+    """Migrate items from CDS legacy."""
     import_items_from_json(source, include=include)
     if not skip_indexing:
         reindex_pidtype("pitmid")
@@ -133,9 +139,71 @@ def items(source, include, skip_indexing):
 
 @migration.command()
 @click.argument("source", type=click.File("r"), nargs=-1)
+@click.option(
+    "--include",
+    "-i",
+    help="Comma-separated list of legacy vendor ids to include in the import",
+    default=None,
+)
+@with_appcontext
+def vendors(source, include):
+    """Migrate vendors from CDS legacy."""
+    with commit():
+        import_vendors_from_json(source, include=include)
+
+
+@migration.command()
+@click.argument("source", type=click.File("r"), nargs=-1)
+@with_appcontext
+def document_requests(source):
+    """Migrate document requests from CDS legacy."""
+    with commit():
+        import_document_requests_from_json(source)
+
+
+@migration.command()
+@click.argument("source", type=click.File("r"), nargs=-1)
+@click.option(
+    "--include",
+    "-i",
+    help="Comma-separated list of legacy vendor ids to include in the import",
+    default=None,
+)
+@with_appcontext
+def borrowing_requests(source, include):
+    """Migrate borrowing requests from CDS legacy."""
+    with commit():
+        import_ill_borrowing_requests_from_json(source, include=include)
+
+
+@migration.command()
+@click.argument("source", type=click.File("r"), nargs=-1)
+@click.option(
+    "--include",
+    "-i",
+    help="Comma-separated list of legacy acquisition ids to include",
+    default=None,
+)
+@with_appcontext
+def acquisition_orders(source, include):
+    """Migrate acquisition orders and document requests from CDS legacy."""
+    with commit():
+        import_orders_from_json(source, include=include)
+
+
+@migration.command()
+@click.argument("source", type=click.File("r"), nargs=-1)
+@with_appcontext
+def create_records(source):
+    """Creae necessary records for required properties."""
+    create_migration_records()
+
+
+@migration.command()
+@click.argument("source", type=click.File("r"), nargs=-1)
 @with_appcontext
 def borrowers(source):
-    """Migrate documents from CDS legacy."""
+    """Migrate borrowers from CDS legacy."""
     import_users_from_json(source)
 
 
@@ -143,7 +211,7 @@ def borrowers(source):
 @click.argument("source", type=click.File("r"), nargs=-1)
 @with_appcontext
 def loans(source):
-    """Migrate documents from CDS legacy."""
+    """Migrate loans from CDS legacy."""
     import_loans_from_json(source)
     reindex_pidtype("loanid")
 
@@ -152,7 +220,7 @@ def loans(source):
 @click.argument("source", type=click.File("r"), nargs=-1)
 @with_appcontext
 def loan_requests(source):
-    """Migrate documents from CDS legacy."""
+    """Migrate loan_requests from CDS legacy."""
     import_loans_from_json(source)
     reindex_pidtype("loanid")
 

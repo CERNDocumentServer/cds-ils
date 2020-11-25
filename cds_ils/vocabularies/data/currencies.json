@@ -10,6 +10,11 @@
     "text": "Euro"
   },
   {
+    "key": "GBP",
+    "type": "currencies",
+    "text": "Pound sterling"
+  },
+  {
     "key": "USD",
     "type": "currencies",
     "text": "US Dollar"

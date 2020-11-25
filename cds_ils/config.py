@@ -337,7 +337,7 @@ MIGRATOR_RECORDS_DUMP_CLS = "cds_ils.migrator.records:CDSRecordDump"
 # JSONSchemas
 ###############################################################################
 #: Hostname used in URLs for local JSONSchemas.
-JSONSCHEMAS_HOST = "cds-ils.cern.ch"
+JSONSCHEMAS_HOST = "cds-ils.web.cern.ch"
 
 # whitelist schemas for migration
 JSONSCHEMAS_SCHEMAS = [
