@@ -11,6 +11,7 @@ import {
   RightMenuItemMobile,
 } from './overridden/components/Menu';
 import { DocumentRequestFormFields } from './overridden/frontsite/DocumentRequest/DocumentRequestForm';
+import { NotAvailable } from './overridden/frontsite/Document/DocumentDetails/DocumentCirculation/NotAvailable';
 import {
   HomeContent,
   HomeHeadline,
@@ -31,5 +32,6 @@ export const overriddenCmps = {
   'LoanListEntry.DeliveryIcon': DeliveryIcon,
   'LoanMetadata.DeliveryIcon': DeliveryIcon,
   'RequestForPatronMessage.DeliveryIcon': DeliveryIcon,
+  'LoanAvailability.NotAvailable': NotAvailable,
   DocumentRequestForm: DocumentRequestFormFields,
 };
