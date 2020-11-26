@@ -13,12 +13,12 @@ import logging
 
 import click
 from elasticsearch_dsl import Q
-from invenio_app_ils.documents.search import DocumentSearch
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 
 from cds_ils.migrator.api import bulk_index_records, \
     import_document_from_dump, import_record, model_provider_by_rectype
+from cds_ils.migrator.errors import DocumentMigrationError
 
 migrated_logger = logging.getLogger("migrated_records")
 records_logger = logging.getLogger("records_errored")
@@ -86,9 +86,73 @@ def import_documents_from_dump(sources, source_type, eager, include):
                         )
 
 
+def get_document_by_barcode(barcode, legacy_recid):
+    document_class = current_app_ils.document_record_cls
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.query(
+        "query_string", query='_migration.items.barcode:"{}"'.format(barcode)
+    )
+
+    result = search.execute()
+    hits_total = result.hits.total.value
+
+    if hits_total == 1:
+        click.secho(
+            "! document found with item barcode {}".format(barcode),
+            fg="green",
+        )
+        return document_class.get_record_by_pid(result.hits[0].pid)
+
+    else:
+        click.secho(
+            "no document found with barcode {}".format(barcode),
+            fg="red",
+        )
+        raise DocumentMigrationError(
+            "found more than one document with barcode {}".format(barcode)
+        )
+
+
+def get_document_by_legacy_recid(legacy_recid):
+    """Search documents by its legacy recid."""
+    document_class = current_app_ils.document_record_cls
+    document_search = current_app_ils.document_search_cls()
+
+    search = document_search.query(
+        "bool", filter=[Q("term", legacy_recid=legacy_recid)]
+    )
+    result = search.execute()
+    hits_total = result.hits.total.value
+
+    if hits_total == 1:
+        click.secho(
+            "! document found with legacy recid {}".format(legacy_recid),
+            fg="green",
+        )
+        return document_class.get_record_by_pid(result.hits[0].pid)
+
+    elif hits_total == 0:
+        click.secho(
+            "no document found with legacy recid {}".format(legacy_recid),
+            fg="red",
+        )
+        raise DocumentMigrationError(
+            "no document found with legacy recid {}".format(legacy_recid)
+        )
+    else:
+        click.secho(
+            "no document found with legacy recid {}".format(legacy_recid),
+            fg="red",
+        )
+        raise DocumentMigrationError(
+            "found more than one document with recid {}".format(legacy_recid)
+        )
+
+
 def get_all_documents_with_files():
     """Return all documents with files to be migrated."""
-    search = DocumentSearch().filter(
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.filter(
         "bool",
         filter=[
             Q("term", _migration__has_files=True),
@@ -99,7 +163,8 @@ def get_all_documents_with_files():
 
 def get_documents_with_proxy_eitems():
     """Return documents with eitems behind proxy to be migrated."""
-    search = DocumentSearch().filter(
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.filter(
         "bool",
         filter=[
             Q("term", _migration__eitems_has_proxy=True),
@@ -110,7 +175,8 @@ def get_documents_with_proxy_eitems():
 
 def get_documents_with_ebl_eitems():
     """Return documents with eitems from EBL provider to be migrated."""
-    search = DocumentSearch().filter(
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.filter(
         "bool",
         filter=[
             Q("term", _migration__eitems_has_ebl=True),
@@ -121,7 +187,8 @@ def get_documents_with_ebl_eitems():
 
 def get_documents_with_external_eitems():
     """Return documents with eitems from external providers to be migrated."""
-    search = DocumentSearch().filter(
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.filter(
         "bool",
         filter=[
             Q("term", _migration__eitems_has_external=True),

@@ -30,6 +30,11 @@ from cds_ils.migrator.patrons.api import get_user_by_legacy_id
 logger = logging.getLogger("migrator")
 
 
+def pick(obj, *keys):
+    """Pick and return only the specified keys."""
+    return {k: obj.get(k) for k in obj.keys() if k in keys}
+
+
 def process_fireroles(fireroles):
     """Extract firerole definitions."""
     rigths = set()
@@ -148,6 +153,7 @@ def clean_item_record(record):
     clean_description_field(record)
     record["shelf"] = record["location"]
     record["medium"] = "PAPER"  # requested as default value
+    record["created_by"] = {"type": "script", "value": "migration"}
     del record["location"]
     del record["id_bibrec"]
     del record["id_crcLIBRARY"]

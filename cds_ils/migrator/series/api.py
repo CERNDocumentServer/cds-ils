@@ -7,7 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator API."""
-
+import json
 import logging
 import uuid
 from copy import deepcopy
@@ -18,99 +18,130 @@ from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.proxies import current_app_ils
+from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
+    SERIAL_RELATION
+from invenio_app_ils.series.api import SERIES_PID_TYPE, Series
 from invenio_app_ils.series.api import Series
 from invenio_app_ils.series.search import SeriesSearch
+from invenio_db import db
+from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 from cds_ils.migrator.errors import DocumentMigrationError, \
     MultipartMigrationError
+from cds_ils.migrator.relations.api import create_parent_child_relation
+from cds_ils.migrator.utils import pick
 
 lt_es7 = ES_VERSION[0] < 7
 migrated_logger = logging.getLogger("migrated_documents")
+records_logger = logging.getLogger("records_errored")
 
 
-def get_multipart_by_legacy_recid(legacy_recid):
-    """Search series by its legacy recid."""
+def clean_document_json_for_multipart(json_record, include_keys=None):
+    if not include_keys:
+        include_keys = []
+    cleaned_multipart_json = pick(
+        json_record,
+        "mode_of_issuance",
+        "_migration",
+        "physical_description",
+        "identifiers",
+        "languages",
+        "internal_notes",
+        "note",
+        "title",
+        "urls",
+        *include_keys
+    )
+    cleaned_multipart_json["authors"] = [
+        author["full_name"] for author in json_record.get("authors")
+    ]
+    return cleaned_multipart_json
+
+
+def exclude_multipart_fields(json_record, exclude_keys=None):
+    cleaned = deepcopy(json_record)
+    multipart_fields = ["mode_of_issuance"]
+    if exclude_keys:
+        multipart_fields += exclude_keys
+    for field in multipart_fields:
+        if field in cleaned:
+            del cleaned[field]
+    return cleaned
+
+
+def get_multipart_by_multipart_id(multipart_id):
+    """Search multiparts by its legacy recid."""
     series_search = current_app_ils.series_search_cls()
-    series_class = current_app_ils.series_record_cls
     search = series_search.query(
-        "bool", filter=[Q("term", legacy_recid=legacy_recid)]
+        "bool",
+        match=[
+            Q("term", mode_of_issuance="MULTIPART_MONOGRAPH"),
+            Q("term", _migration__multipart_id=multipart_id),
+        ],
     )
     result = search.execute()
     hits_total = result.hits.total.value
-
     if hits_total == 1:
+        return Series.get_record_by_pid(result.hits[0].pid)
+    if hits_total == 0:
         click.secho(
-            "! series found with legacy recid {}".format(legacy_recid),
-            fg="green",
-        )
-        return series_class.get_record_by_pid(result.hits[0].pid)
-
-    elif hits_total == 0:
-        click.secho(
-            "no series found with legacy recid {}".format(legacy_recid),
-            fg="red",
-        )
-        raise MultipartMigrationError(
-            "no series found with legacy recid {}".format(legacy_recid)
+            "no multipart found with id {}".format(multipart_id), fg="red"
         )
     else:
-        click.secho(
-            "found more than one series with recid {}".format(legacy_recid),
-            fg="red",
-        )
         raise MultipartMigrationError(
-            "found more than one series with recid {}".format(legacy_recid)
+            "found more than one multipart with recid {}".format(multipart_id)
         )
 
 
-def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
-    """Create multipart volume documents."""
-    document_cls = current_app_ils.document_record_cls
-    volumes = {}
-    # Combine all volume data by volume number
-    click.echo("Creating volume for {}...".format(multipart_legacy_recid))
-    for obj in migration_volumes:
-        volume_number = obj["volume"]
-        if volume_number not in volumes:
-            volumes[volume_number] = {}
-        volume = volumes[volume_number]
-        for key in obj:
-            if key != "volume":
-                if key in volume:
-                    raise KeyError(
-                        'Duplicate key "{}" for multipart {}'.format(
-                            key, multipart_legacy_recid
-                        )
-                    )
-                volume[key] = obj[key]
+def replace_fields_in_volume(document_json_template, volume_json, json_record):
+    # clean the template
+    document_json_template["_migration"]["items"] = []
+    document_json_template["_migration"]["legacy_recid"] = json_record[
+        "legacy_recid"
+    ]
+    if "urls" in document_json_template:
+        del document_json_template["urls"]
+    if "identifiers" in document_json_template:
+        del document_json_template["identifiers"]
+    document_json_template["title"] = json_record.get("title")
 
-    volume_numbers = iter(sorted(volumes.keys()))
+    current_volume_index = volume_json.get("volume")
+    volume_title = volume_json.get("title")
 
-    # Re-use the current record for the first volume
-    # TODO review this - there are more cases of multiparts
-    first_volume = next(volume_numbers)
-    first = document_cls.get_record_by_pid(pid)
-    if "title" in volumes[first_volume]:
-        first["title"] = volumes[first_volume]["title"]
-        first["volume"] = first_volume
-    first["_migration"]["multipart_legacy_recid"] = multipart_legacy_recid
-    # to be tested
-    if "legacy_recid" in first:
-        del first["legacy_recid"]
+    # additional info for each volume
+    volumes_items_list = json_record["_migration"]["items"]
+    volumes_identifiers_list = json_record["_migration"]["volumes_identifiers"]
+    volumes_urls_list = json_record["_migration"]["volumes_urls"]
 
-    # Create new records for the rest
-    for number in volume_numbers:
-        temp = deepcopy(first)
-        temp["title"] = volumes[number]["title"]
-        temp["volume"] = number
-        record_uuid = uuid.uuid4()
-        provider = DocumentIdProvider.create(
-            object_type="rec", object_uuid=record_uuid
-        )
-        temp["pid"] = provider.pid.pid_value
-        record = document_cls.create(temp, record_uuid)
-        record.commit()
-        yield record
+    if volume_title:
+        document_json_template["title"] = volume_title
+
+    # split items per volume
+    volume_items = [
+        item
+        for item in volumes_items_list
+        if item.get("volume") == current_volume_index
+    ]
+    if volume_items:
+        document_json_template["_migration"]["items"] = volume_items
+
+    # split urls per volume
+    volume_urls = [
+        url
+        for url in volumes_urls_list
+        if url.get("volume") == current_volume_index
+    ]
+    if volume_urls:
+        document_json_template["urls"] = volume_urls
+
+    # split identifiers per volume
+    volume_identifiers = [
+        identifier
+        for identifier in volumes_identifiers_list
+        if identifier.get("volume") == current_volume_index
+    ]
+    if volume_identifiers:
+        document_json_template["identifiers"] = volume_identifiers
 
 
 def get_serials_by_child_recid(recid):

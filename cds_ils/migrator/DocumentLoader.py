@@ -24,10 +24,13 @@ cli_logger = logging.getLogger("migrator")
 
 def add_cover_metadata(json_data):
     """Add first ISBN as to cover metadata."""
-    isbn_list = [identifier for identifier in json_data.get("identifiers", [])
-                 if identifier["scheme"] == "ISBN"]
+    isbn_list = [
+        identifier
+        for identifier in json_data.get("identifiers", [])
+        if identifier["scheme"] == "ISBN"
+    ]
     if isbn_list:
-        json_data["cover_metadata"] = {'ISBN': isbn_list[0]}
+        json_data["cover_metadata"] = {"ISBN": isbn_list[0]}
 
 
 class CDSDocumentDumpLoader(object):

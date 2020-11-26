@@ -24,9 +24,15 @@ from .utils import clean_val, extract_parts, extract_volume_info, \
 from .values_mapping import MATERIALS, mapping
 
 
-def _insert_volume(_migration, volume_number, volume_obj):
+def _insert_volume(_migration, volume_number, volume_obj, field_key="volumes"):
     """Find or create the corresponding volume, and insert the attribute."""
-    volumes = _migration["volumes"]
+    assert field_key in [
+        "volumes",
+        "items",
+        "volumes_identifiers",
+        "volumes_urls",
+    ]
+    volumes = _migration[field_key]
     volume_obj = deepcopy(volume_obj)
     volume_obj["volume"] = volume_number
     volumes.append(volume_obj)
@@ -46,48 +52,45 @@ def isbns(self, key, value):
     val_b = clean_val("b", value, str)
 
     if val_u:
-        volume_info = extract_volume_info(val_u)
         # if set found it means that the isbn is for the whole multipart
         set_search = re.search(r"(.*?)\(set\.*\)", val_u)
-        if volume_info:
-            # if we have volume there it means that the ISBN is of the volume
-            volume_obj = {
-                "isbn": clean_val("a", value, str),
-                "physical_description": volume_info["description"].strip(),
-                "is_electronic": val_b is not None,
-            }
-            _insert_volume(_migration, volume_info["volume"], volume_obj)
-            raise IgnoreKey("identifiers")
         if set_search:
             self["physical_description"] = set_search.group(1).strip()
             isbn = {"scheme": "ISBN", "value": val_a}
             return isbn if isbn not in _identifiers else None
-        if not volume_info:
-            # Try to find a volume number
-            volume_number = extract_volume_number(val_u)
-            if volume_number:
-                # volume, but without description
-                volume_obj = {
-                    "isbn": clean_val("a", value, str),
-                    "is_electronic": val_b is not None,
-                }
-                _insert_volume(_migration, volume_number, volume_obj)
-                raise IgnoreKey("identifiers")
-            elif extract_volume_number(val_u, search=True):
-                raise UnexpectedValue(
-                    subfield="u",
-                    message=" found volume but failed to parse description",
+
+        # try to extract volume description
+        volume_info = extract_volume_info(val_u)
+        physical_description = None
+        if volume_info:
+            physical_description = volume_info["description"].strip()
+
+        # extract volume number
+        volume_number = extract_volume_number(val_u, search=True)
+        if volume_number:
+            volume_obj = {
+                "isbn": clean_val("a", value, str),
+                "is_electronic": val_b is not None,
+            }
+            if physical_description:
+                volume_obj.update(
+                    {"physical_description": physical_description}
                 )
-            else:
-                self["physical_description"] = val_u
-                isbn = {"scheme": "ISBN", "value": val_a}
-                return isbn if isbn not in _identifiers else None
-        if not set_search and not volume_info:
+            _insert_volume(
+                _migration,
+                volume_number,
+                volume_obj,
+                field_key="volumes_identifiers",
+            )
+        else:
+            # if no volume number, then the physical
+            # description and id belongs to the multipart
             self["physical_description"] = val_u
             isbn = {"scheme": "ISBN", "value": val_a}
             return isbn if isbn not in _identifiers else None
     elif not val_u and val_a:
-        # if I dont have volume info but only isbn
+        # if no volume info but only isbn,
+        # it belongs to the multipart
         isbn = {"scheme": "ISBN", "value": val_a}
         return isbn if isbn not in _identifiers else None
     else:
@@ -122,7 +125,12 @@ def dois(self, key, value):
                 ),
                 "source": doi["source"],
             }
-            _insert_volume(_migration, volume_info["volume"], volume_obj)
+            _insert_volume(
+                _migration,
+                volume_info["volume"],
+                volume_obj,
+                field_key="volumes_identifiers",
+            )
         else:
             if re.match(r".* \(.*\)", val_q):
                 raise UnexpectedValue(
@@ -166,7 +174,12 @@ def barcode(self, key, value):
             volume_number = extract_volume_number(
                 val_n, raise_exception=True, subfield="n"
             )
-            _insert_volume(_migration, volume_number, {"barcode": val_x})
+            _insert_volume(
+                _migration,
+                volume_number,
+                {"barcode": val_x},
+                field_key="items",
+            )
         elif val_x:
             raise MissingRequiredField(
                 subfield="n", message=" this record is missing a volume number"
@@ -179,27 +192,7 @@ def barcode(self, key, value):
     raise IgnoreKey("barcode")
 
 
-@model.over("authors", "(^100__)|(^700__)", override=True)
-def authors(self, key, value):
-    """Translates the authors field."""
-    _migration = self["_migration"]
-    _authors = _migration.get("authors", [])
-    item = build_ils_contributor(value)
-    if item and item not in _authors:
-        _authors.append(item)
-    try:
-        if "u" in value:
-            other = ["et al.", "et al"]
-            val_u = list(force_list(value.get("u")))
-            if [i for i in other if i in val_u]:
-                _migration["other_authors"] = True
-    except UnexpectedValue:
-        pass
-    _migration["authors"] = _authors
-    return list(map(lambda author: author["full_name"], _authors))
-
-
-@model.over("title", "^245__")
+@model.over("title", "^245__", override=True)
 @out_strip
 def title(self, key, value):
     """Translates book series title."""
@@ -213,20 +206,25 @@ def title(self, key, value):
     return clean_val("a", value, str)
 
 
-@model.over("_migration", "^246__")
-def migration(self, key, value):
+@model.over("alternative_titles", "^246__", override=True)
+def volumes_titles(self, key, value):
     """Translates volumes titles."""
-    _series_title = self.get("title", None)
 
     volume_title = self.get("title", None)
 
     _migration = self["_migration"]
+    _migration["is_multipart"] = True
+    _alternative_titles = self.get("alternative_titles", [])
 
     for v in force_list(value):
         # check if it is a multipart monograph
         val_n = clean_val("n", v, str)
         val_p = clean_val("p", v, str)
         val_y = clean_val("y", v, str)
+
+        val_a = clean_val("a", v, str)
+        val_b = clean_val("b", v, str)
+
         if not val_n and not val_p:
             raise UnexpectedValue(
                 subfield="n", message=" this record is probably not a series"
@@ -255,14 +253,29 @@ def migration(self, key, value):
                         subfield="y", message=" unrecognized publication year"
                     )
             _insert_volume(_migration, volume_number, obj)
+        if val_a:
+            _alternative_titles.append(
+                {
+                    "value": val_a,
+                    "type": "ALTERNATIVE_TITLE",
+                }
+            )
+        if val_b:
+            _alternative_titles.append(
+                {
+                    "value": val_b,
+                    "type": "SUBTITLE",
+                }
+            )
+        if _alternative_titles:
+            return _alternative_titles
+        raise IgnoreKey("alternative_titles")
     if not volume_title:
         raise MissingRequiredField(
             subfield="a", message=" this record is missing a main title"
         )
 
-    # series created
-
-    return _migration
+    raise IgnoreKey("alternative_titles")
 
 
 @model.over("number_of_volumes", "^300__", override=True)
@@ -283,23 +296,23 @@ def number_of_volumes(self, key, value):
     raise IgnoreKey("number_of_volumes")
 
 
-@model.over("multivolume_record_format", "^596__")
-def multivolume_record_format(self, key, value):
-    """Multivolume kind."""
+@model.over("multivolume_record", "^596__")
+def multivolume_record(self, key, value):
+    """Mark record with many volumes inside."""
     val_a = clean_val("a", value, str)
     _migration = self["_migration"]
     if val_a == "MULTIVOLUMES-1":
-        parsed = True
-    elif val_a == "MULTIVOLUMES-X" or val_a == "MULTIVOLUMES-x":
         parsed = False
+    elif val_a == "MULTIVOLUMES-X" or val_a == "MULTIVOLUMES-x":
+        parsed = True
     elif val_a == "MULTIVOLUMES-MANUAL":
         raise Exception("This record should not be migrated!")
     else:
         raise UnexpectedValue(
             subfield="a", message=" unrecognized migration multipart tag"
         )
-    _migration["multivolume_record_format"] = parsed
-    raise IgnoreKey("multivolume_record_format")
+    _migration["multivolume_record"] = parsed
+    raise IgnoreKey("multivolume_record")
 
 
 @model.over("multipart_id", "^597__")
@@ -322,8 +335,6 @@ def urls(self, key, value):
     volume_info = extract_volume_info(sub_y) if sub_y else None
 
     if volume_info:
-        # url for a specific volume
-        # TODO?
         description = volume_info["description"]
         volume_number = volume_info["volume"]
         if description != "ebook":
@@ -332,7 +343,9 @@ def urls(self, key, value):
             "url": sub_u,
             "description": description,
         }
-        _insert_volume(_migration, volume_info["volume"], volume_obj)
+        _insert_volume(
+            _migration, volume_number, volume_obj, field_key="volumes_urls"
+        )
         raise IgnoreKey("urls")
     else:
         return urls_base(self, key, value)

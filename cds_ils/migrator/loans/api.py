@@ -29,6 +29,7 @@ records_logger = logging.getLogger("records_errored")
 def import_loans_from_json(dump_file):
     """Imports loan objects from JSON."""
     dump_file = dump_file[0]
+    document_class = current_app_ils.document_record_cls
     loans = []
     (
         default_location_pid_value,
@@ -61,12 +62,11 @@ def import_loans_from_json(dump_file):
             # additional check if the loan refers to the same document
             # as it is already attached to the item
             document_pid = item.get("document_pid")
-            Document = current_app_ils.document_record_cls
-            document = Document.get_record_by_pid(document_pid)
+
+            document = document_class.get_record_by_pid(document_pid)
             if record["legacy_document_id"] is None:
                 records_logger.error(
-                    "LOAN: {0}, ERROR: document_legacy_recid {1} not found."
-                    .format(
+                    "LOAN: {0}, ERROR: document_legacy_recid {1} not found.".format(
                         record["legacy_id"], record["legacy_document_id"]
                     )
                 )

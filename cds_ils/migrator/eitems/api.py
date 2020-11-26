@@ -68,10 +68,11 @@ def create_eitem_with_bucket_for_document(document_pid):
 
 def create_eitem(document_pid, open_access=True):
     """Create eitem record."""
-    obj = {"document_pid": document_pid,
-           "open_access": open_access,
-           "created_by": {"type": "script", "value": "migration"}
-           }
+    obj = {
+        "document_pid": document_pid,
+        "open_access": open_access,
+        "created_by": {"type": "script", "value": "migration"},
+    }
     record_uuid = uuid.uuid4()
     provider = EItemIdProvider.create(
         object_type="rec",
@@ -239,8 +240,9 @@ def migrate_ebl_links():
     search = get_documents_with_ebl_eitems()
     click.echo("Found {} documents with ebl links.".format(search.count()))
 
-    url_template = \
+    url_template = (
         "http://ebookcentral.proquest.com/lib/cern/detail.action?docID={}"
+    )
 
     for hit in search.scan():
         # make sure the document is in DB not only ES
@@ -249,20 +251,24 @@ def migrate_ebl_links():
         click.echo("Processing document {}...".format(document["pid"]))
 
         # find the ebl identifier
-        ebl_id_list = [x for x in document["alternative_identifiers"] if
-                       x["scheme"] == "EBL"]
+        ebl_id_list = [
+            x
+            for x in document["alternative_identifiers"]
+            if x["scheme"] == "EBL"
+        ]
 
         if not ebl_id_list:
             raise EItemMigrationError(
                 "Document {pid} has no EBL alternative identifier"
-                " while EBL ebook link was found".format(
-                    pid=document["pid"]
-                )
+                " while EBL ebook link was found".format(pid=document["pid"])
             )
 
         for url in document["_migration"]["eitems_ebl"]:
-            matched_ebl_id = [ebl_id["value"] for ebl_id in
-                              ebl_id_list if ebl_id["value"] in url["value"]]
+            matched_ebl_id = [
+                ebl_id["value"]
+                for ebl_id in ebl_id_list
+                if ebl_id["value"] in url["value"]
+            ]
 
             if not matched_ebl_id:
                 raise EItemMigrationError(
@@ -275,7 +281,7 @@ def migrate_ebl_links():
             eitem["urls"] = [
                 {
                     "value": url_template.format(matched_ebl_id[0]),
-                    "login_required": True
+                    "login_required": True,
                 }
             ]
             eitem.commit()

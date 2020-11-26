@@ -14,9 +14,11 @@ import click
 from flask.cli import with_appcontext
 from invenio_app_ils.errors import RecordRelationsError
 
+from cds_ils.migrator.api import commit, import_multipart_from_file, \
+    import_serial_from_file, reindex_pidtype
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
 from cds_ils.migrator.acquisition.vendors import import_vendors_from_json
-from cds_ils.migrator.api import commit, import_parents_from_file, \
+from cds_ils.migrator.api import commit, \
     reindex_pidtype
 from cds_ils.migrator.document_requests.api import \
     import_document_requests_from_json
@@ -87,21 +89,21 @@ def documents(sources, source_type, include, skip_indexing):
 
 
 @migration.command()
-@click.argument("rectype", nargs=1, type=str)
 @click.argument("source", nargs=1, type=click.File())
-@click.option(
-    "--include",
-    "-i",
-    help="Comma-separated list of legacy recids (for multiparts) or serial "
-    "titles to include in the import",
-    default=None,
-)
 @with_appcontext
-def parents(rectype, source, include):
-    """Migrate parents serials or multiparts from dumps."""
+def serial(source, rectype="serial"):
+    """Migrate serials from json file."""
     click.echo("Migrating {}s...".format(rectype))
-    with commit():
-        import_parents_from_file(source, rectype=rectype, include=include)
+    import_serial_from_file(source, rectype=rectype)
+
+
+@migration.command()
+@click.argument("source", nargs=1, type=click.File())
+@with_appcontext
+def multipart(source, rectype="multipart"):
+    """Migrate multiparts from json file."""
+    click.echo("Migrating {}s...".format(rectype))
+    import_multipart_from_file(source, rectype=rectype)
 
 
 @migration.command()
@@ -122,19 +124,13 @@ def internal_locations(source, include):
 @migration.command()
 @click.argument("source", type=click.File("r"), nargs=-1)
 @click.option(
-    "--include",
-    "-i",
-    help="Comma-separated list of legacy recids to include in the import",
-    default=None,
-)
-@click.option(
     "--skip-indexing",
     is_flag=True,
 )
 @with_appcontext
-def items(source, include, skip_indexing):
-    """Migrate items from CDS legacy."""
-    import_items_from_json(source, include=include)
+def items(source, skip_indexing):
+    """Migrate documents from CDS legacy."""
+    import_items_from_json(source)
     if not skip_indexing:
         reindex_pidtype("pitmid")
 
@@ -217,17 +213,6 @@ def loan_requests(source):
 @migration.group()
 def relations():
     """Migrate relations group."""
-
-
-@relations.command()
-@click.argument("source", nargs=1, type=click.File())
-@with_appcontext
-def multipart(source):
-    """Create relations for migrated multiparts."""
-    with commit():
-        link_and_create_multipart_volumes(source)
-    reindex_pidtype("docid")
-    reindex_pidtype("serid")
 
 
 @relations.command()
