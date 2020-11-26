@@ -139,17 +139,11 @@ def items(source, include, skip_indexing):
 
 @migration.command()
 @click.argument("source", type=click.File("r"), nargs=-1)
-@click.option(
-    "--include",
-    "-i",
-    help="Comma-separated list of legacy vendor ids to include in the import",
-    default=None,
-)
 @with_appcontext
-def vendors(source, include):
+def vendors(source):
     """Migrate vendors from CDS legacy."""
     with commit():
-        import_vendors_from_json(source, include=include)
+        import_vendors_from_json(source)
 
 
 @migration.command()
@@ -163,17 +157,11 @@ def document_requests(source):
 
 @migration.command()
 @click.argument("source", type=click.File("r"), nargs=-1)
-@click.option(
-    "--include",
-    "-i",
-    help="Comma-separated list of legacy vendor ids to include in the import",
-    default=None,
-)
 @with_appcontext
-def borrowing_requests(source, include):
+def borrowing_requests(source):
     """Migrate borrowing requests from CDS legacy."""
     with commit():
-        import_ill_borrowing_requests_from_json(source, include=include)
+        import_ill_borrowing_requests_from_json(source)
 
 
 @migration.command()
@@ -192,9 +180,8 @@ def acquisition_orders(source, include):
 
 
 @migration.command()
-@click.argument("source", type=click.File("r"), nargs=-1)
 @with_appcontext
-def create_records(source):
+def create_records():
     """Creae necessary records for required properties."""
     create_migration_records()
 

@@ -13,8 +13,6 @@ import logging
 
 import click
 from elasticsearch_dsl import Q
-from invenio_app_ils.items.api import Item
-from invenio_app_ils.items.search import ItemSearch
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
@@ -107,7 +105,7 @@ def import_items_from_json(dump_file, include, rectype="item"):
 
 def get_item_by_barcode(barcode):
     """Retrieve item object by barcode."""
-    search = ItemSearch().query(
+    search = current_app_ils.item_search_cls().query(
         "bool",
         filter=[
             Q("term", barcode=barcode),
@@ -125,4 +123,6 @@ def get_item_by_barcode(barcode):
             "found more than one item with barcode {}".format(barcode)
         )
     else:
-        return Item.get_record_by_pid(result.hits[0].pid)
+        return current_app_ils.item_record_cls.get_record_by_pid(
+            result.hits[0].pid
+        )

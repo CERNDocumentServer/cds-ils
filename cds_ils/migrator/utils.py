@@ -7,7 +7,10 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS Migrator Records utils."""
+import datetime
 import json
+import logging
+import uuid
 
 from flask import current_app
 from invenio_accounts.models import User
@@ -15,14 +18,16 @@ from invenio_app_ils.acquisition.api import VENDOR_PID_TYPE
 from invenio_app_ils.acquisition.proxies import current_ils_acq
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
 from invenio_app_ils.ill.api import LIBRARY_PID_TYPE
-from invenio_app_ils.ill.indexer import LibraryIndexer
 from invenio_app_ils.ill.proxies import current_ils_ill
 from invenio_app_ils.proxies import current_app_ils
-from invenio_pidstore.errors import PIDAlreadyExists
+from invenio_db import db
+from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 from cds_ils.cli import mint_record_pid
 from cds_ils.migrator.errors import ItemMigrationError
 from cds_ils.migrator.patrons.api import get_user_by_legacy_id
+
+logger = logging.getLogger("migrator")
 
 
 def process_fireroles(fireroles):
@@ -188,19 +193,13 @@ def get_acq_ill_notes(record):
     if not notes:
         return result
 
-    try:
-        if json.loads(notes):
-            result += "library notes: {0}\n".format(notes.strip())
-    except json.decoder.JSONDecodeError:
-        # At this point if we failed to parse json, we have notes as string
-        result += "library notes: {0}\n".format(notes.strip())
-
+    result += "library notes: {0}\n".format(notes.strip())
     return result
 
 
 def get_cost(record):
     """Parse CDS cost string to extract currency and value."""
-    SUPPORTED_CURRENCIES = ["EUR", "USD", "GBP", "CHF"]
+    SUPPORTED_CURRENCIES = ["EUR", "USD", "GBP", "CHF", "YEN"]
     # NOTE: We will try to extract and migrate only the most common case, which
     # comes to the form "EUR 88.40". If it comes in any other form will
     # store it in notes.
@@ -209,7 +208,7 @@ def get_cost(record):
         [currency, value] = record.get("cost").split(" ")
         if currency.upper() in SUPPORTED_CURRENCIES:
             return {"currency": currency.upper(), "value": float(value)}
-    except Exception:
+    except ValueError:
         # We don't care, we will check again at get_acq_ill_notes()
         pass
 
@@ -219,8 +218,8 @@ def get_patron_pid(record):
     user = get_user_by_legacy_id(record["id_crcBORROWER"])
     if not user:
         # user was deleted, fallback to the AnonymousUser
-        anonym = current_app.config["ILS_PATRON_ANONYMOUS_CLASS"](-2).dumps()
-        patron_pid = anonym["id"]
+        anonym = current_app.config["ILS_PATRON_ANONYMOUS_CLASS"]
+        patron_pid = str(anonym.id)
     else:
         patron_pid = user.pid
     return str(patron_pid)
@@ -230,6 +229,20 @@ MIGRATION_DOCUMENT_PID = "DOCPID-44444"
 MIGRATION_LIBRARY_PID = "LIBPID-44444"
 MIGRATION_VENDOR_PID = "VENPID-44444"
 
+
+def mint_migration_records(pid_type, pid_field, data):
+    """Minter for migration records."""
+    record_uuid = uuid.uuid4()
+    PersistentIdentifier.create(
+        pid_type=pid_type,
+        pid_value=data[pid_field],
+        object_type="rec",
+        object_uuid=record_uuid,
+        status=PIDStatus.REGISTERED,
+    )
+    return record_uuid
+
+
 def get_migration_document_pid():
     """Get the PID of the dedicated migration document."""
     return current_app_ils.document_record_cls.get_record_by_pid(
@@ -238,6 +251,7 @@ def get_migration_document_pid():
 
 
 def create_document():
+    """Create migration document."""
     data = {
         "pid": MIGRATION_DOCUMENT_PID,
         "title": "Migrated Unknown Document",
@@ -246,13 +260,15 @@ def create_document():
         "document_type": "BOOK",
         "restricted": True,
         "notes": """This document is used whenever we document information
-        is requierd and not provided, in order to migrate data from CDS.
+        is required and not provided, in order to migrate data from CDS.
         """
     }
-    doc = current_app_ils.document_record_cls.create(data)
-    mint_record_pid(DOCUMENT_PID_TYPE, "pid", doc)
+    record_uuid = mint_migration_records(DOCUMENT_PID_TYPE, "pid", data)
+    doc = current_app_ils.document_record_cls.create(data, record_uuid)
+    db.session.commit()
     current_app_ils.document_indexer.index(doc)
     return doc
+
 
 def create_library():
     """Create migration library."""
@@ -264,10 +280,11 @@ def create_library():
         legacy ID 0 in CDS Acquisition and ILL data.
         """
     }
-    library = current_ils_ill.library_record_cls.create(data)
-    mint_record_pid(LIBRARY_PID_TYPE, "pid", library)
-    indexer = LibraryIndexer()
-    indexer.index(library)
+
+    record_uuid = mint_migration_records(LIBRARY_PID_TYPE, "pid", data)
+    library = current_ils_ill.library_record_cls.create(data, record_uuid)
+    db.session.commit()
+    current_ils_ill.library_indexer.index(library)
     return library
 
 
@@ -281,15 +298,26 @@ def create_vendor():
         in CDS Acquisition and ILL data.
         """
     }
-    vendor = current_ils_acq.vendor_record_cls.create(data)
-    mint_record_pid(VENDOR_PID_TYPE, "pid", vendor)
+
+    record_uuid = mint_migration_records(VENDOR_PID_TYPE, "pid", data)
+    vendor = current_ils_acq.vendor_record_cls.create(data, record_uuid)
+    db.session.commit()
     current_ils_acq.vendor_indexer.index(vendor)
     return vendor
 
 
 def create_migration_records():
-    for func in [create_document, create_vendor, create_library]:
-        try:
-            func()
-        except PIDAlreadyExists:
-            pass
+    """Create migration records."""
+    create_document()
+    create_vendor()
+    create_library()
+
+
+def get_date(value):
+    """Strips time and validates that string can be converted to date."""
+    date_only = value.split("T")[0]
+    try:
+        datetime.datetime.strptime(date_only, "%Y-%m-%d")
+    except ValueError:
+        logger.error("{0} is not a valid date".format(date_only))
+    return date_only

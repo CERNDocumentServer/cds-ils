@@ -58,7 +58,7 @@ from cds_ils.migrator.api import bulk_index_records, import_record, \
     model_provider_by_rectype
 from cds_ils.migrator.errors import AcqOrderError, ItemMigrationError
 from cds_ils.migrator.items.api import get_item_by_barcode
-from cds_ils.migrator.utils import get_acq_ill_notes, get_cost, \
+from cds_ils.migrator.utils import get_acq_ill_notes, get_cost, get_date, \
     get_migration_document_pid, get_patron_pid
 
 DEFAULT_ITEM_MEDIUM = "ELECTRONIC"
@@ -172,7 +172,7 @@ def migrate_order(record):
 
     order_date = record["request_date"]
     if order_date:
-        new_order.update(order_date=order_date.split("T")[0])
+        new_order.update(order_date=get_date(order_date))
 
     vendor_pid = get_vendor_pid_by_legacy_id(record["id_crcLIBRARY"])
     new_order.update(vendor_pid=vendor_pid)
@@ -185,12 +185,12 @@ def migrate_order(record):
     expected_delivery_date = record.get("expected_date")
     if expected_delivery_date:
         new_order.update(
-            expected_delivery_date=expected_delivery_date.split("T")[0]
+            expected_delivery_date=get_date(expected_delivery_date)
         )
 
     received_date = record.get("arrival_date")
     if received_date:
-        new_order.update(received_date=received_date.split("T")[0])
+        new_order.update(received_date=get_date(received_date))
 
     notes = get_acq_ill_notes(record)
     if notes:
@@ -202,15 +202,11 @@ def migrate_order(record):
 def import_orders_from_json(dump_file, include=None):
     """Imports orders from JSON data files."""
     dump_file = dump_file[0]
-    include_ids = None if include is None else include.split(",")
 
     click.echo("Importing acquisition orders ..")
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
         for record in input_data:
-            if not (include_ids is None or record["legacy_id"] in include_ids):
-                continue
-
             model, provider = model_provider_by_rectype("acq-order")
             ils_record = import_record(
                 migrate_order(record),
@@ -220,6 +216,5 @@ def import_orders_from_json(dump_file, include=None):
             )
 
             ils_records.append(ils_record)
-            ils_record.commit()
         db.session.commit()
     bulk_index_records(ils_records)

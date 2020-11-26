@@ -55,6 +55,8 @@ class Patron(ILSPatron):
 class AnonymousPatron(ILSAnonymousPatron):
     """Anonymous patron record class."""
 
+    id = -2
+
     def _add_extra_info(self, dump):
         """Add extra info when dumping."""
         dump.update(

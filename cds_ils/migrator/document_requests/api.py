@@ -58,6 +58,5 @@ def import_document_requests_from_json(dump_file):
                 legacy_id_key="legacy_id",
             )
             ils_records.append(ils_record)
-            ils_record.commit()
         db.session.commit()
     bulk_index_records(ils_records)

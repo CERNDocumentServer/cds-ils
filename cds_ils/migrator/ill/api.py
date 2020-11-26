@@ -55,14 +55,14 @@ import json
 import click
 from elasticsearch_dsl import Q
 from invenio_app_ils.ill.api import Library
-from invenio_app_ils.ill.search import LibrarySearch
+from invenio_app_ils.ill.proxies import current_ils_ill
 from invenio_db import db
 
 from cds_ils.migrator.api import bulk_index_records, import_record, \
     model_provider_by_rectype
 from cds_ils.migrator.errors import BorrowingRequestError, ItemMigrationError
 from cds_ils.migrator.items.api import get_item_by_barcode
-from cds_ils.migrator.utils import get_acq_ill_notes, get_cost, \
+from cds_ils.migrator.utils import get_acq_ill_notes, get_cost, get_date, \
     get_migration_document_pid, get_patron_pid
 
 
@@ -85,7 +85,7 @@ def get_status(record):
 
 def get_library_by_legacy_id(legacy_id):
     """Search for library by legacy id."""
-    search = LibrarySearch().query(
+    search = current_ils_ill.library_search_cls().query(
         "bool", filter=[Q("term", legacy_id=legacy_id)]
     )
     result = search.execute()
@@ -99,7 +99,9 @@ def get_library_by_legacy_id(legacy_id):
             "found more than one library with legacy id {}".format(legacy_id)
         )
     else:
-        return Library.get_record_by_pid(result.hits[0].pid)
+        return current_ils_ill.library_record_cls.get_record_by_pid(
+            result.hits[0].pid
+        )
 
 
 def get_type(record):
@@ -141,20 +143,20 @@ def migrate_to_ils(record):
     expected_delivery_date = record.get("expected_date")
     if expected_delivery_date:
         new_record.update(
-            expected_delivery_date=expected_delivery_date.split("T")[0]
+            expected_delivery_date=get_date(expected_delivery_date)
         )
 
     received_date = record.get("arrival_date")
     if received_date:
-        new_record.update(received_date=received_date.split("T")[0])
+        new_record.update(received_date=get_date(received_date))
 
     request_date = record.get("request_date")
     if request_date:
-        new_record.update(request_date=request_date.split("T")[0])
+        new_record.update(request_date=get_date(request_date))
 
     due_date = record.get("due_date")
     if due_date:
-        new_record.update(due_date=due_date.split("T")[0])
+        new_record.update(due_date=get_date(due_date))
 
     total = get_cost(record)
     if total:
@@ -171,19 +173,15 @@ def migrate_to_ils(record):
     return new_record
 
 
-def import_ill_borrowing_requests_from_json(dump_file, include=None):
+def import_ill_borrowing_requests_from_json(dump_file):
     """Imports borrowing requests from JSON data files."""
     dump_file = dump_file[0]
     model, provider = model_provider_by_rectype("borrowing-request")
-    include_ids = None if include is None else include.split(",")
 
     click.echo("Importing borrowing requests ..")
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
         for record in input_data:
-            if not (include_ids is None or record["legacy_id"] in include_ids):
-                continue
-
             ils_record = import_record(
                 migrate_to_ils(record),
                 model,
@@ -191,6 +189,5 @@ def import_ill_borrowing_requests_from_json(dump_file, include=None):
                 legacy_id_key="legacy_id",
             )
             ils_records.append(ils_record)
-            ils_record.commit()
         db.session.commit()
     bulk_index_records(ils_records)
