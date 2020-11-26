@@ -117,10 +117,9 @@ def model_provider_by_rectype(rectype):
 
 
 def import_multivolume(json_record):
+    """Import multivolume type of multipart."""
     series_cls, series_pid_provider = model_provider_by_rectype("multipart")
     document_cls, document_pid_provider = model_provider_by_rectype("document")
-    document_indexer = current_app_ils.document_indexer
-    series_indexer = current_app_ils.series_indexer
 
     # build multipart dict - leave the legacy_recid attached
     multipart_json = clean_document_json_for_multipart(
@@ -171,12 +170,9 @@ def import_multivolume(json_record):
             volume.get("volume"),
         )
 
-        document_indexer.index(document_record)
-
-    series_indexer.index(multipart_record)
-
 
 def import_multipart(json_record):
+    """Import multipart record."""
     multipart_record = None
     multipart_id = json_record["_migration"].get("multipart_id")
     series_cls, series_pid_provider = model_provider_by_rectype("multipart")
@@ -217,17 +213,10 @@ def import_multipart(json_record):
         volumes[0]["volume"],
     )
 
-    document_indexer = current_app_ils.document_indexer
-    series_indexer = current_app_ils.series_indexer
-
-    document_indexer.index(document_record)
-    series_indexer.index(multipart_record)
-
 
 def import_multipart_from_file(dump_file, rectype):
     """Load parent records from file."""
     with click.progressbar(json.load(dump_file).items()) as bar:
-        records = []
         for key, legacy_record in bar:
             click.echo(
                 'Importing parent "{0}({1})"...'.format(
@@ -255,8 +244,6 @@ def import_multipart_from_file(dump_file, rectype):
                         legacy_record["legacy_recid"], str(e)
                     )
                 )
-    # Index all new parent records
-    bulk_index_records(records)
 
 
 def import_serial_from_file(dump_file, rectype):

@@ -209,7 +209,6 @@ def title(self, key, value):
 @model.over("alternative_titles", "^246__", override=True)
 def volumes_titles(self, key, value):
     """Translates volumes titles."""
-
     volume_title = self.get("title", None)
 
     _migration = self["_migration"]

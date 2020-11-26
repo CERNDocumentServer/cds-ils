@@ -37,6 +37,7 @@ records_logger = logging.getLogger("records_errored")
 
 
 def clean_document_json_for_multipart(json_record, include_keys=None):
+    """Clean json to multipart form."""
     if not include_keys:
         include_keys = []
     cleaned_multipart_json = pick(
@@ -59,6 +60,7 @@ def clean_document_json_for_multipart(json_record, include_keys=None):
 
 
 def exclude_multipart_fields(json_record, exclude_keys=None):
+    """Exclude multipart fields from document json."""
     cleaned = deepcopy(json_record)
     multipart_fields = ["mode_of_issuance"]
     if exclude_keys:
@@ -94,6 +96,7 @@ def get_multipart_by_multipart_id(multipart_id):
 
 
 def replace_fields_in_volume(document_json_template, volume_json, json_record):
+    """Replace values of volume json template with new data."""
     # clean the template
     document_json_template["_migration"]["items"] = []
     document_json_template["_migration"]["legacy_recid"] = json_record[
@@ -146,7 +149,9 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
 
 def get_serials_by_child_recid(recid):
     """Search serials by children recid."""
-    search = SeriesSearch().query(
+    series_search = current_app_ils.series_search_cls()
+    series_class = current_app_ils.series_record_cls
+    search = series_search.query(
         "bool",
         filter=[
             Q("term", mode_of_issuance="SERIAL"),
@@ -154,7 +159,7 @@ def get_serials_by_child_recid(recid):
         ],
     )
     for hit in search.scan():
-        yield Series.get_record_by_pid(hit.pid)
+        yield series_class.get_record_by_pid(hit.pid)
 
 
 def get_migrated_volume_by_serial_title(record, title):

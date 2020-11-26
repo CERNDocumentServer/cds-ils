@@ -235,28 +235,58 @@ def migrate_ezproxy_links():
         DocumentIndexer().index(document)
 
 
+def create_ebl_eitem(url, ebl_id_list, document):
+    """Create eitem record for given migration url and document."""
+    eitem_indexer = current_app_ils.eitem_indexer
+    url_template = (
+        "https://ebookcentral.proquest.com/lib/cern/detail.action?docID={}"
+    )
+
+    # match document EBL ID with the one stored in url to validate
+    matched_ebl_id = [
+        ebl_id["value"]
+        for ebl_id in ebl_id_list
+        if ebl_id["value"] in url["value"]
+    ]
+
+    if not matched_ebl_id:
+        raise EItemMigrationError(
+            "Document {pid} has different EBL identifier"
+            " than the ID specified in the url parameters".format(
+                pid=document["pid"]
+            )
+        )
+    eitem = create_eitem(document["pid"], open_access=False)
+    eitem["urls"] = [
+        {
+            "value": url_template.format(matched_ebl_id[0]),
+            "login_required": True,
+        }
+    ]
+    eitem.commit()
+    eitem_indexer.index(eitem)
+
+
 def migrate_ebl_links():
     """Migrate external links from documents."""
+    document_class = current_app_ils.document_record_cls
+
     search = get_documents_with_ebl_eitems()
     click.echo("Found {} documents with ebl links.".format(search.count()))
 
-    url_template = (
-        "http://ebookcentral.proquest.com/lib/cern/detail.action?docID={}"
-    )
-
     for hit in search.scan():
         # make sure the document is in DB not only ES
-        Document = current_app_ils.document_record_cls
-        document = Document.get_record_by_pid(hit.pid)
+        document = document_class.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 
-        # find the ebl identifier
+        # find the ebl identifier in document identifiers
         ebl_id_list = [
             x
             for x in document["alternative_identifiers"]
             if x["scheme"] == "EBL"
         ]
 
+        # validate identifier
         if not ebl_id_list:
             raise EItemMigrationError(
                 "Document {pid} has no EBL alternative identifier"
@@ -264,28 +294,7 @@ def migrate_ebl_links():
             )
 
         for url in document["_migration"]["eitems_ebl"]:
-            matched_ebl_id = [
-                ebl_id["value"]
-                for ebl_id in ebl_id_list
-                if ebl_id["value"] in url["value"]
-            ]
-
-            if not matched_ebl_id:
-                raise EItemMigrationError(
-                    "Document {pid} has different EBL identifier"
-                    " than the ID specified in the url parameters".format(
-                        pid=document["pid"]
-                    )
-                )
-            eitem = create_eitem(document["pid"], open_access=False)
-            eitem["urls"] = [
-                {
-                    "value": url_template.format(matched_ebl_id[0]),
-                    "login_required": True,
-                }
-            ]
-            eitem.commit()
-            EItemIndexer().index(eitem)
+            create_ebl_eitem(url, ebl_id_list, document)
 
         document["_migration"]["eitems_has_ebl"] = False
         document.commit()

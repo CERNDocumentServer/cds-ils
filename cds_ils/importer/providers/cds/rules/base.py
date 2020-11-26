@@ -389,7 +389,10 @@ def accelerator_experiments(self, key, value):
 @model.over("_migration", "^536__")
 @out_strip
 def open_access(self, key, value):
-    """Translate open access field."""
+    """Translate open access field.
+
+    If the field is present, then the eitems of this record have open access
+    """
     if "r" in value:
         self["_migration"]["eitems_open_access"] = True
     else:

@@ -66,7 +66,8 @@ def import_loans_from_json(dump_file):
             document = document_class.get_record_by_pid(document_pid)
             if record["legacy_document_id"] is None:
                 records_logger.error(
-                    "LOAN: {0}, ERROR: document_legacy_recid {1} not found.".format(
+                    "LOAN: {0}, ERROR: document_legacy_recid {1} not found."
+                    .format(
                         record["legacy_id"], record["legacy_document_id"]
                     )
                 )

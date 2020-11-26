@@ -87,6 +87,7 @@ def import_documents_from_dump(sources, source_type, eager, include):
 
 
 def get_document_by_barcode(barcode, legacy_recid):
+    """Return document from barcode search."""
     document_class = current_app_ils.document_record_cls
     document_search = current_app_ils.document_search_cls()
     search = document_search.query(

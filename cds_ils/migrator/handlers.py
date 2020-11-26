@@ -24,7 +24,8 @@ def migration_exception_handler(exc, output, key, value, **kwargs):
     :return:
     """
     logger.error(
-        "#RECID: #{0} - {1}  MARC FIELD: *{2}*, input value: {3}, -> {4}, ".format(
+        "#RECID: #{0} - {1}  MARC FIELD: *{2}*, input value: {3}, -> {4}, "
+        .format(
             output["legacy_recid"], exc.message, key, value, output
         )
     )
