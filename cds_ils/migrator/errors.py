@@ -29,6 +29,10 @@ class DocumentMigrationError(CdsIlsMigrationException):
     """Raised for multipart migration errors."""
 
 
+class SeriesMigrationError(CdsIlsMigrationException):
+    """Raised for multipart migration errors."""
+
+
 class MultipartMigrationError(CdsIlsMigrationException):
     """Raised for multipart migration errors."""
 

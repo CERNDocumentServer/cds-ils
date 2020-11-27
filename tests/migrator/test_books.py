@@ -1071,7 +1071,7 @@ def test_related_record(app):
                     "related": [
                         {
                             "related_recid": "748392",
-                            "relation_type": "Test text",
+                            "relation_type": "edition",
                         }
                     ],
                 },

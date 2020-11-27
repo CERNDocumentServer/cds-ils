@@ -7,62 +7,62 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator API."""
-import json
+
 import logging
 import uuid
-from copy import deepcopy
 
 import click
 from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from flask import current_app
-from invenio_app_ils.documents.api import DocumentIdProvider
-from invenio_app_ils.documents.search import DocumentSearch
-from invenio_app_ils.errors import IlsValidationError
+from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.proxies import current_app_ils
-from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
-    SERIAL_RELATION
 from invenio_app_ils.series.api import Series
 from invenio_app_ils.series.search import SeriesSearch
-from invenio_db import db
 
 from cds_ils.migrator.errors import DocumentMigrationError, \
     MultipartMigrationError
-from cds_ils.migrator.relations.api import create_parent_child_relation
 
 lt_es7 = ES_VERSION[0] < 7
 migrated_logger = logging.getLogger("migrated_documents")
 
 
-def get_multipart_by_legacy_recid(recid):
-    """Search multiparts by its legacy recid."""
-    search = SeriesSearch().query(
-        "bool",
-        filter=[
-            Q("term", mode_of_issuance="MULTIPART_MONOGRAPH"),
-            Q("term", legacy_recid=recid),
-        ],
+def get_multipart_by_legacy_recid(legacy_recid):
+    """Search series by its legacy recid."""
+    series_search = current_app_ils.series_search_cls()
+    series_class = current_app_ils.series_record_cls
+    search = series_search.query(
+        "bool", filter=[Q("term", legacy_recid=legacy_recid)]
     )
     result = search.execute()
     hits_total = result.hits.total.value
-    if not result.hits or hits_total < 1:
+
+    if hits_total == 1:
         click.secho(
-            "no multipart found with legacy recid {}".format(recid), fg="red"
+            "! series found with legacy recid {}".format(legacy_recid),
+            fg="green",
         )
-        # TODO uncomment with cleaner data
-        # raise MultipartMigrationError(
-        #     'no multipart found with legacy recid {}'.format(recid))
-    elif hits_total > 1:
+        return series_class.get_record_by_pid(result.hits[0].pid)
+
+    elif hits_total == 0:
+        click.secho(
+            "no series found with legacy recid {}".format(legacy_recid),
+            fg="red",
+        )
         raise MultipartMigrationError(
-            "found more than one multipart with recid {}".format(recid)
+            "no series found with legacy recid {}".format(legacy_recid)
         )
     else:
-        return Series.get_record_by_pid(result.hits[0].pid)
+        click.secho(
+            "found more than one series with recid {}".format(legacy_recid),
+            fg="red",
+        )
+        raise MultipartMigrationError(
+            "found more than one series with recid {}".format(legacy_recid)
+        )
 
 
-def create_multipart_volumes(
-    pid, multipart_legacy_recid, migration_volumes, document_base_metadata
-):
+def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
     """Create multipart volume documents."""
     volumes = {}
     # Combine all volume data by volume number
@@ -72,124 +72,43 @@ def create_multipart_volumes(
         if volume_number not in volumes:
             volumes[volume_number] = {}
         volume = volumes[volume_number]
-        if "isbn" in obj:
-            # the isbn can represent both a document and an eitem
-            if "isbns" not in volume:
-                volume["isbns"] = []
-            volume["isbns"].append({
-                "value": obj["isbn"],
-                "is_electronic": bool(obj["is_electronic"])
-            })
-            # TODO physical description
-        elif "barcode" in obj:
-            # the barcode represents an item
-            if "items" not in volume:
-                volume["items"] = []
-            volume["items"].append({
-                "barcode": obj["barcode"]
-            })
-        else:
-            # all other fields should be treated as
-            # additional metadata for the document
-            for key in obj:
-                if key != "volume":
-                    if key in volume:
-                        # abort in case of conflict
-                        raise KeyError(
-                            'Duplicate key "{}" for multipart {}'.format(
-                                key, multipart_legacy_recid
-                            )
+        for key in obj:
+            if key != "volume":
+                if key in volume:
+                    raise KeyError(
+                        'Duplicate key "{}" for multipart {}'.format(
+                            key, multipart_legacy_recid
                         )
-                    volume[key] = obj[key]
+                    )
+                volume[key] = obj[key]
 
     volume_numbers = iter(sorted(volumes.keys()))
 
-    inherited_metadata = deepcopy(document_base_metadata)
-    inherited_metadata["_migration"]["multipart_legacy_recid"] = \
-        multipart_legacy_recid
-    inherited_metadata["authors"] = \
-        inherited_metadata["_migration"]["authors"] \
-        if "authors" in inherited_metadata["_migration"] else []
-    inherited_metadata["serial_title"] = inherited_metadata.get("title")
-
+    # Re-use the current record for the first volume
+    # TODO review this - there are more cases of multiparts
+    first_volume = next(volume_numbers)
+    first = Document.get_record_by_pid(pid)
+    if "title" in volumes[first_volume]:
+        first["title"] = volumes[first_volume]["title"]
+        first["volume"] = first_volume
+    first["_migration"]["multipart_legacy_recid"] = multipart_legacy_recid
     # to be tested
-    if "legacy_recid" in inherited_metadata:
-        del inherited_metadata["legacy_recid"]
+    if "legacy_recid" in first:
+        del first["legacy_recid"]
 
     # Create new records for the rest
     for number in volume_numbers:
-        volume = volumes[number]
-        temp = inherited_metadata.copy()
-        if "title" in volume and volume["title"]:
-            temp["title"] = volume["title"]
+        temp = first.copy()
+        temp["title"] = volumes[number]["title"]
         temp["volume"] = number
-        # TODO possibly more fields to merge
-
         record_uuid = uuid.uuid4()
-        try:
-            with db.session.begin_nested():
-                provider = DocumentIdProvider.create(
-                    object_type="rec", object_uuid=record_uuid
-                )
-                temp["pid"] = provider.pid.pid_value
-                record = Document.create(temp, record_uuid)
-                record.commit()
-            db.session.commit()
-            yield record
-        except IlsValidationError as e:
-            print("Validation error: {}"
-                  .format(str(e.original_exception.message)))
-
-
-def link_and_create_multipart_volumes(source):
-    """Link and create multipart volume records."""
-    click.echo("Creating document volumes and multipart relations...")
-    series = {}
-    for hit in SeriesSearch().scan():
-        if not hasattr(hit, '_migration'):
-            continue
-        serial_id = hit._migration.serial_id \
-            if "serial_id" in hit._migration else None
-        if serial_id:
-            series[serial_id] = hit.pid
-        elif "title" in hit:
-            series[hit.title] = hit.pid
-        else:
-            continue
-    for legacy_id, cds_record in json.load(source).items():
-        search = SeriesSearch()
-        pid = series.get(
-            cds_record["_migration"].get("serial_id", cds_record.get("title")))
-        if pid:
-            search = search.filter("term", pid=pid)
-        else:
-            print("No serial_id nor title")
-            continue
-        try:
-            hit = next(search.scan())
-            multipart = get_multipart_by_legacy_recid(hit.legacy_recid)
-            documents = create_multipart_volumes(
-                hit.pid,
-                hit.legacy_recid,
-                cds_record["_migration"]["volumes"],
-                cds_record
-            )
-
-            for document in documents:
-                if document and multipart:
-                    click.echo(
-                        "Creating relations: {0} - {1}".format(
-                            multipart["pid"], document["pid"]
-                        )
-                    )
-                    create_parent_child_relation(
-                        multipart,
-                        document,
-                        MULTIPART_MONOGRAPH_RELATION,
-                        document["volume"],
-                    )
-        except StopIteration:
-            print('No matching could be done')
+        provider = DocumentIdProvider.create(
+            object_type="rec", object_uuid=record_uuid
+        )
+        temp["pid"] = provider.pid.pid_value
+        record = Document.create(temp, record_uuid)
+        record.commit()
+        yield record
 
 
 def get_serials_by_child_recid(recid):
@@ -214,41 +133,6 @@ def get_migrated_volume_by_serial_title(record, title):
         'Unable to find volume number in record {} by title "{}"'.format(
             record["pid"], title
         )
-    )
-
-
-def link_documents_and_serials():
-    """Link documents/multiparts and serials."""
-
-    def link_records_and_serial(record_cls, search):
-        for hit in search.scan():
-            # Skip linking if the hit doesn't have a legacy recid since it
-            # means it's a volume of a multipart
-            if "legacy_recid" not in hit:
-                continue
-            record = record_cls.get_record_by_pid(hit.pid)
-            for serial in get_serials_by_child_recid(hit.legacy_recid):
-                volume = get_migrated_volume_by_serial_title(
-                    record, serial["title"]
-                )
-                create_parent_child_relation(
-                    serial, record, SERIAL_RELATION, volume
-                )
-
-    click.echo("Creating serial relations...")
-    Document = current_app_ils.document_record_cls
-    link_records_and_serial(
-        Document, DocumentSearch().filter("term", _migration__has_serial=True)
-    )
-    link_records_and_serial(
-        Series,
-        SeriesSearch().filter(
-            "bool",
-            filter=[
-                Q("term", mode_of_issuance="MULTIPART_MONOGRAPH"),
-                Q("term", _migration__has_serial=True),
-            ],
-        ),
     )
 
 

@@ -127,3 +127,14 @@ def get_documents_with_external_eitems():
         ],
     )
     return search
+
+
+def search_documents_with_siblings_relations():
+    """Return documents with siblings relations."""
+    search = DocumentSearch().filter(
+        "bool",
+        filter=[
+            Q("term", _migration__has_related=True),
+        ],
+    )
+    return search
