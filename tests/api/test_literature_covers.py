@@ -7,7 +7,7 @@
 
 """Tests for literature covers."""
 
-from invenio_app_ils.documents.api import Document
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
 from cds_ils.literature.covers import build_cover_urls, \
@@ -20,6 +20,7 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
 
     def _restore(original):
         """Restore the record to the original metadata."""
+        Document = current_app_ils.document_record_cls
         doc = Document.get_record_by_pid(original["pid"])
         doc.clear()
         doc.update(original)
@@ -35,6 +36,7 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
         db.session.commit()
 
         pick_identifier_with_cover(app, record=doc)
+        Document = current_app_ils.document_record_cls
         doc = Document.get_record_by_pid(doc["pid"])
         assert "cover_metadata" not in doc
 
@@ -46,6 +48,7 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
         db.session.commit()
 
         pick_identifier_with_cover(app, record=doc)
+        Document = current_app_ils.document_record_cls
         doc = Document.get_record_by_pid(doc["pid"])
         assert "cover_metadata" not in doc
 
@@ -62,6 +65,7 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
         db.session.commit()
 
         pick_identifier_with_cover(app, record=doc)
+        Document = current_app_ils.document_record_cls
         doc = Document.get_record_by_pid(doc["pid"])
         assert doc["cover_metadata"] == dict(ISBN="valid-isbn")
 
@@ -80,6 +84,7 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
         db.session.commit()
 
         pick_identifier_with_cover(app, record=doc)
+        Document = current_app_ils.document_record_cls
         doc = Document.get_record_by_pid(doc["pid"])
         assert "cover_metadata" not in doc
 
@@ -98,10 +103,12 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
         db.session.commit()
 
         pick_identifier_with_cover(app, record=doc)
+        Document = current_app_ils.document_record_cls
         doc = Document.get_record_by_pid(doc["pid"])
         assert doc["cover_metadata"] == dict(ISBN="valid-isbn")
 
     dict_rec = testdata["documents"][0]
+    Document = current_app_ils.document_record_cls
     doc = Document.get_record_by_pid(dict_rec["pid"])
     test_no_identifiers_no_previous_cover(doc)
 

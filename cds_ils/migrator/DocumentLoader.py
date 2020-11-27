@@ -17,6 +17,7 @@ from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
 from cds_ils.migrator.utils import clean_created_by_field
+from cds_ils.minters import legacy_recid_minter
 
 cli_logger = logging.getLogger("migrator")
 
@@ -86,6 +87,7 @@ class CDSDocumentDumpLoader(object):
                 timestamp, json_data = dump.revisions[-1]
                 json_data["pid"] = provider.pid.pid_value
                 json_data = clean_created_by_field(json_data)
+                legacy_recid_minter(json_data["legacy_recid"], record_uuid)
                 add_cover_metadata(json_data)
 
                 document = Document.create(json_data, record_uuid)

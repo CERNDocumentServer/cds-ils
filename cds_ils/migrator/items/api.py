@@ -15,11 +15,13 @@ import click
 from elasticsearch_dsl import Q
 from invenio_app_ils.items.api import Item
 from invenio_app_ils.items.search import ItemSearch
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
+from invenio_pidstore.errors import PIDDoesNotExistError
 
+from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record, model_provider_by_rectype
-from cds_ils.migrator.documents.api import get_document_by_legacy_recid
-from cds_ils.migrator.errors import DocumentMigrationError, ItemMigrationError
+from cds_ils.migrator.errors import ItemMigrationError
 from cds_ils.migrator.internal_locations.api import \
     get_internal_location_by_legacy_recid
 from cds_ils.migrator.utils import clean_item_record
@@ -51,10 +53,11 @@ def import_items_from_json(dump_file, include, rectype="item"):
 
                 # find document
                 try:
-                    record["document_pid"] = get_document_by_legacy_recid(
-                        record["id_bibrec"]
+                    Document = current_app_ils.document_record_cls
+                    record["document_pid"] = get_record_by_legacy_recid(
+                        Document, record["id_bibrec"]
                     ).pid.pid_value
-                except DocumentMigrationError:
+                except PIDDoesNotExistError:
                     error_logger.error(
                         "ITEM: {0} ERROR: Document {1} not found".format(
                             record["barcode"], record["id_bibrec"]
