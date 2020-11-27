@@ -94,6 +94,7 @@ setup(
         ],
         "invenio_base.api_blueprints": [
             "cds_ils_patron_loans = cds_ils.patrons.views:create_patron_loans_blueprint",
+            "cds_ils_legacy = cds_ils.literature.views:legacy_blueprint",
             "cds_ils_logout = cds_ils.authentication.views:cern_oauth_blueprint",
             "cds_ils_importer = cds_ils.importer.views:create_importer_blueprint",
         ],
@@ -115,42 +116,45 @@ setup(
             "ebl = cds_ils.importer.providers.ebl.importer:EBLImporter",
             "safari = cds_ils.importer.providers.safari.importer:SafariImporter",
         ],
-        'cds_ils.importer.base': [
-            'base = cds_ils.importer.providers.rules.base',
+        "cds_ils.importer.base": [
+            "base = cds_ils.importer.providers.rules.base",
         ],
-        'cds_ils.importer.models': [
-            'cds_book = cds_ils.importer.providers.cds.models.book:model',
-            'cds_standard = cds_ils.importer.providers.cds.models.standard:model',
-            'springer_document = cds_ils.importer.providers.springer.springer:model',
-            'ebl_document = cds_ils.importer.providers.ebl.ebl:model',
-            'safari_document = cds_ils.importer.providers.safari.safari:model',
+        "cds_ils.importer.models": [
+            "cds_book = cds_ils.importer.providers.cds.models.book:model",
+            "cds_standard = cds_ils.importer.providers.cds.models.standard:model",
+            "springer_document = cds_ils.importer.providers.springer.springer:model",
+            "ebl_document = cds_ils.importer.providers.ebl.ebl:model",
+            "safari_document = cds_ils.importer.providers.safari.safari:model",
         ],
-        'cds_ils.importer.series_models': [
-            'ils_serial = cds_ils.importer.providers.cds.models.serial:model',
-            'ils_multipart = cds_ils.importer.providers.cds.models.multipart:model',
-            'ils_journal = cds_ils.importer.providers.cds.models.journal:model',
+        "cds_ils.importer.series_models": [
+            "ils_serial = cds_ils.importer.providers.cds.models.serial:model",
+            "ils_multipart = cds_ils.importer.providers.cds.models.multipart:model",
+            "ils_journal = cds_ils.importer.providers.cds.models.journal:model",
         ],
-        'cds_ils.importer.cds.base': [
-            'base = cds_ils.importer.providers.cds.rules.base',
+        "cds_ils.importer.cds.base": [
+            "base = cds_ils.importer.providers.cds.rules.base",
         ],
-        'cds_ils.importer.cds.document': [
-            'book = cds_ils.importer.providers.cds.rules.book',
-            'standard = cds_ils.importer.providers.cds.rules.standard',
+        "cds_ils.importer.cds.document": [
+            "book = cds_ils.importer.providers.cds.rules.book",
+            "standard = cds_ils.importer.providers.cds.rules.standard",
         ],
-        'cds_ils.importer.document': [
-            'cds = cds_ils.importer.providers.cds.rules.book',
-            'springer = cds_ils.importer.providers.springer.rules.document',
-            'ebl = cds_ils.importer.providers.ebl.rules.document',
-            'safari = cds_ils.importer.providers.safari.rules.document',
+        "cds_ils.importer.document": [
+            "cds = cds_ils.importer.providers.cds.rules.book",
+            "springer = cds_ils.importer.providers.springer.rules.document",
+            "ebl = cds_ils.importer.providers.ebl.rules.document",
+            "safari = cds_ils.importer.providers.safari.rules.document",
         ],
-        'cds_ils.importer.series': [
-            'serial = cds_ils.importer.providers.cds.rules.serial',
-            'multipart = cds_ils.importer.providers.cds.rules.multipart',
-            'journal = cds_ils.importer.providers.cds.rules.journal',
+        "cds_ils.importer.series": [
+            "serial = cds_ils.importer.providers.cds.rules.serial",
+            "multipart = cds_ils.importer.providers.cds.rules.multipart",
+            "journal = cds_ils.importer.providers.cds.rules.journal",
         ],
         # migrator
-        'cds_ils.migrator.base': [
-            'base = cds_ils.importer.providers.cds.rules.base',
+        "cds_ils.migrator.base": [
+            "base = cds_ils.importer.providers.cds.rules.base",
+        ],
+        "invenio_pidstore.minters": [
+            "lrecid = cds_ils.minters:legacy_recid_minter",
         ],
     },
     extras_require=extras_require,

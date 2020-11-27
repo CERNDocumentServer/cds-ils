@@ -16,6 +16,7 @@ import {
   HomeContent,
   HomeHeadline,
 } from './overridden/frontsite/Home/HomeContent';
+import { LegacyRecordRoute } from './overridden/frontsite/Routes/LegacyRoute';
 import { Slogan } from './overridden/frontsite/Home/Slogan';
 import { SideBarMenuItem } from './overridden/backoffice/Sidebar/SideBarMenuItem';
 import { ImporterRoute } from './overridden/routes/ImporterRoute';
@@ -35,6 +36,7 @@ export const overriddenCmps = {
   'LoanMetadata.DeliveryIcon': DeliveryIcon,
   'RequestForPatronMessage.DeliveryIcon': DeliveryIcon,
   'LoanAvailability.NotAvailable': NotAvailable,
+  'Frontsite.route': LegacyRecordRoute,
   DocumentRequestForm: DocumentRequestFormFields,
   'Backoffice.CustomRoute': ImporterRoute,
   'Backoffice.Sidebar.CustomMenuItem': SideBarMenuItem,

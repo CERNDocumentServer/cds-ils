@@ -42,6 +42,7 @@ recursive-include cds_ils *.gitkeep
 recursive-include cds_ils *.po *.pot *.mo
 recursive-include cds_ils *.json *.html *.js *.scss
 recursive-include cds_ils *.png *.jpg *.svg
+recursive-include cds_ils *.py
 recursive-include docker *.cfg *.conf *.crt *.ini *.key *.pem *.sh
 recursive-include tests *.json
 recursive-include tests *.py
