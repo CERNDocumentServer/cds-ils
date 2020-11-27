@@ -84,6 +84,13 @@ class EItemImporter(object):
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
             click.secho(e.original_exception.message, fg="red")
 
+    def _delete_existing_record(self, existing_eitem):
+        eitem_indexer = current_app_ils.eitem_indexer
+        existing_eitem.delete(force=True)
+        db.session.commit()
+        eitem_indexer.delete(existing_eitem)
+        return existing_eitem
+
     def _report_ambiguous_records(self, multiple_results):
         eitem_cls = current_app_ils.eitem_record_cls
 
@@ -159,6 +166,25 @@ class EItemImporter(object):
             self.created = self.create_eitem(matched_document)
         if self.is_provider_priority_sensitive:
             self._replace_lower_priority_eitems(matched_document)
+
+    def delete_eitems(self, matched_document):
+        """Deltes eitems for a given document."""
+        eitem_cls = current_app_ils.eitem_record_cls
+        document_pid = matched_document["pid"]
+
+        # get eitems for current provider
+        search = get_eitems_for_document_by_provider(
+            document_pid, self.metadata_provider
+        )
+        results = search.scan()
+        hits_total = search.count()
+
+        if hits_total > 0:
+            record = [result for result in results][0]
+            existing_eitem = eitem_cls.get_record_by_pid(record["pid"])
+            self.deleted_list.append(
+                self._delete_existing_record(existing_eitem)
+            )
 
     def create_eitem(self, new_document):
         """Update eitems for given document."""

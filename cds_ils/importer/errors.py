@@ -21,6 +21,26 @@ class LossyConversion(DoJSONException):
         super().__init__(*args, **kwargs)
 
 
+class RecordNotDeletable(DoJSONException):
+    """Record is not marked as deletable."""
+
+    def __init__(self, *args, **kwargs):
+        """Exception custom initialisation."""
+        self.message = "Record is not marked as deletable"
+        super().__init__(*args, **kwargs)
+
+
+class ProviderNotAllowedDeletion(DoJSONException):
+    """Provider is not allowed to delete records."""
+
+    def __init__(self, *args, **kwargs):
+        """Exception custom initialisation."""
+        self.provider = kwargs.pop("provider", None)
+        self.message = "This provider {0} is not allowed to delete records"\
+            .format(self.provider)
+        super().__init__(*args, **kwargs)
+
+
 class CDSImporterException(DoJSONException):
     """CDSDoJSONException class."""
 

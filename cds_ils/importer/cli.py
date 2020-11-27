@@ -12,7 +12,8 @@ from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
 from cds_ils.importer.api import import_record, records_logger
-from cds_ils.importer.errors import LossyConversion
+from cds_ils.importer.errors import LossyConversion, \
+    ProviderNotAllowedDeletion, RecordNotDeletable
 from cds_ils.importer.models import ImporterAgent, ImporterMode, \
     ImporterTaskEntry, ImporterTaskLog
 from cds_ils.importer.parse_xml import get_records_list
@@ -28,16 +29,24 @@ def importer():
 @click.option(
     "--provider",
     "-p",
+    required=True,
     type=click.Choice(["springer", "cds", "ebl", "safari"]),
     help="Choose the provider",
 )
+@click.option(
+    "--mode",
+    "-m",
+    required=True,
+    type=click.Choice(["create", "delete"]),
+    help="Choose the mode",
+)
 @with_appcontext
-def import_from_file(sources, provider, source_type="marcxml"):
+def import_from_file(sources, provider, mode, source_type="marcxml"):
     """Import from file command."""
-    import_from_xml(sources, source_type, provider)
+    import_from_xml(sources, provider, mode, source_type)
 
 
-def import_from_xml(sources, source_type, provider, eager=True):
+def import_from_xml(sources, provider, mode, source_type, eager=True):
     """Load xml files."""
     for idx, source in enumerate(sources, 1):
         click.echo(
@@ -67,10 +76,12 @@ def import_from_xml(sources, source_type, provider, eager=True):
 
                 try:
                     report = import_record(
-                        record, provider, source_type=source_type, eager=True
+                        record, provider, mode,
+                        source_type=source_type, eager=True
                     )
-                except LossyConversion as e:
-                    click.secho("Lossy conversion detected", fg="red")
+                except (LossyConversion, RecordNotDeletable,
+                        ProviderNotAllowedDeletion) as e:
+                    click.secho("Failed to import entry", fg="red")
                     ImporterTaskEntry.create_failure(entry_data, e)
                     continue
 

@@ -53,7 +53,10 @@ class XMLRecordToJson(object):
         }
 
         marc_record = create_record(self.data)
-
+        if "d" in marc_record.get("leader"):
+            is_deletable = True
+        else:
+            is_deletable = False
         try:
 
             # MARCXML -> JSON fields translation
@@ -65,7 +68,7 @@ class XMLRecordToJson(object):
 
             if missing:
                 raise LossyConversion(missing=missing)
-            return dt, val
+            return dt, val, is_deletable
 
         except LossyConversion as e:
             current_app.logger.error(

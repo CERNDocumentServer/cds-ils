@@ -9,10 +9,12 @@
 import logging
 
 from celery import shared_task
+from flask import current_app
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
-from cds_ils.importer.errors import LossyConversion
+from cds_ils.importer.errors import LossyConversion, \
+    ProviderNotAllowedDeletion, RecordNotDeletable
 from cds_ils.importer.models import ImporterTaskEntry, ImporterTaskLog
 from cds_ils.importer.parse_xml import get_records_list
 from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
@@ -22,14 +24,14 @@ records_logger = logging.getLogger("records_errored")
 
 
 @shared_task()
-def process_dump(data, provider, source_type):
+def process_dump(data, provider, mode, source_type):
     """Process record dump."""
     recorddump = XMLRecordToJson(
         data,
         source_type=source_type,
     )
     try:
-        report = XMLRecordDumpLoader.process(recorddump, provider)
+        report = XMLRecordDumpLoader.process(recorddump, provider, mode)
         db.session.commit()
         return report
     except Exception as e:
@@ -37,18 +39,22 @@ def process_dump(data, provider, source_type):
         raise e
 
 
-def import_record(data, provider, source_type=None, eager=False):
+def import_record(data, provider, mode, source_type=None, eager=False):
     """Import record from dump."""
     source_type = source_type or "marcxml"
     assert source_type in ["marcxml"]
 
+    if provider not in current_app.config[
+        "CDS_ILS_IMPORTER_PROVIDERS_ALLOWED_TO_DELETE_RECORDS"
+    ] and mode == 'delete':
+        raise ProviderNotAllowedDeletion(provider=provider)
     if eager:
-        return process_dump(data, provider, source_type=source_type)
+        return process_dump(data, provider, mode, source_type=source_type)
     else:
-        process_dump.delay(data, provider, source_type=source_type)
+        process_dump.delay(data, provider, mode, source_type=source_type)
 
 
-def import_from_xml(log_id, source_path, source_type, provider):
+def import_from_xml(log_id, source_path, source_type, provider, mode):
     """Load a single xml file."""
     log = ImporterTaskLog.query.filter_by(id=log_id).first()
     entry_data = None
@@ -66,10 +72,11 @@ def import_from_xml(log_id, source_path, source_type, provider):
                     entry_index=i,
                 )
                 try:
-                    report = import_record(record, provider,
+                    report = import_record(record, provider, mode,
                                            source_type=source_type,
                                            eager=True)
-                except LossyConversion as e:
+                except (LossyConversion, RecordNotDeletable,
+                        ProviderNotAllowedDeletion) as e:
                     ImporterTaskEntry.create_failure(entry_data, e)
                     continue
                 except IlsValidationError as e:

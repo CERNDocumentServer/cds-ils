@@ -25,7 +25,7 @@ export class ImportedDocuments extends React.Component {
   componentDidMount() {
     const idVar = setInterval(
       () => this.checkForData(idVar),
-      invenioConfig.IMPORTER.refreshValue
+      invenioConfig.IMPORTER.fetchTaskStatusIntervalSecs
     );
     // eslint-disable-next-line react/no-did-mount-set-state
     this.intervalId = idVar;
