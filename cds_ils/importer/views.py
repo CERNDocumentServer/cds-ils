@@ -110,9 +110,10 @@ def create_importer_blueprint(app):
     @need_permissions("document-importer")
     def importer(provider, mode):
         @copy_current_request_context
-        def import_from_xml_background(log_id, file, source_type, provider):
+        def import_from_xml_background(log_id, file, source_type,
+                                       provider, mode):
             """Acts as a proxy to pass the current context to the function."""
-            import_from_xml(log_id, file, source_type, provider)
+            import_from_xml(log_id, file, source_type, provider, mode)
 
         def create_import_task(source_path, original_filename, source_type,
                                provider, mode):
@@ -131,7 +132,7 @@ def create_importer_blueprint(app):
             ))
 
             t = Thread(target=import_from_xml_background,
-                       args=(log.id, source_path, source_type, provider))
+                       args=(log.id, source_path, source_type, provider, mode))
             t.start()
 
             return log.id

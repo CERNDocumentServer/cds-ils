@@ -4,6 +4,7 @@ import { Item, Grid, Message } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
 import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
+import _get from 'lodash/get';
 
 const displayLinkToDocument = (e, index = 0) => {
   return (
@@ -90,6 +91,7 @@ ReportDetailsMiddleColumn.propTypes = {
 };
 
 const ReportDetailsRightColumn = ({ report }) => {
+  const deletedEitemsCount = _get(report, 'deleted_eitems.length', 0);
   return (
     <>
       <Item.Description>
@@ -106,9 +108,7 @@ const ReportDetailsRightColumn = ({ report }) => {
       </Item.Description>
       <Item.Description>
         <label>Deleted eitems: </label>
-        {!_isEmpty(report.deleted_eitems)
-          ? report.deleted_eitems.map(e => e)
-          : 'No'}
+        {deletedEitemsCount}
       </Item.Description>
     </>
   );

@@ -103,6 +103,12 @@ class Importer(object):
         self.series_list = self.series_importer.import_series(matched_document)
         self.updated = matched_document
 
+    def delete_records(self, matched_document):
+        """Deletes eitems records."""
+        self.eitem_importer.delete_eitems(matched_document)
+        if self.eitem_importer.deleted_list:
+            self.updated = matched_document
+
     def index_all_records(self):
         """Index imported records."""
         document_indexer = current_app_ils.document_indexer
@@ -139,4 +145,21 @@ class Importer(object):
             self.created = document
             self.series_list = self.series_importer.import_series(document)
             self.index_all_records()
+        return self.import_summary()
+
+    def delete_record(self):
+        """Deletes the eitems of the record."""
+        self._validate_provider()
+
+        # finds the exact match, update records
+        matched_document = self._match_document()
+
+        if matched_document:
+            self.delete_records(matched_document)
+            return self.import_summary()
+
+        # finds the multiple matches or fuzzy matches, does not create new doc
+        # requires manual intervention, to avoid duplicates
+        if self.ambiguous_matches or self.fuzzy_matches:
+            return self.import_summary()
         return self.import_summary()

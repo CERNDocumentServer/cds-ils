@@ -157,6 +157,6 @@ export const config = {
       { key: 'create', text: 'Create', value: 'create' },
       { key: 'delete', text: 'Delete', value: 'delete' },
     ],
-    refreshValue: 5000,
+    fetchTaskStatusIntervalSecs: 5000,
   },
 };
