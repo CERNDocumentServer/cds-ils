@@ -217,7 +217,13 @@ def import_users():
                   .format(ldap_user_get(ldap_user, "employeeID")),
                   file=sys.stderr)
             continue
+
         email = ldap_user_get_email(ldap_user)
+
+        if not email.endswith("@cern.ch"):
+            print("Not a CERN email {}, skipping.".format(email))
+            continue
+
         if User.query.filter_by(email=email).count() > 0:
             print(
                 "User with email {} already imported, skipping.".format(email)
@@ -297,15 +303,27 @@ def update_users():
     ldap_users_emails = set()
     ldap_users_map = {}
     for ldap_user in ldap_users:
+        # check if email exists in the user data
         if "mail" not in ldap_user:
             _log_info(
                 log_uuid,
                 "missing_email",
                 dict(employee_id=ldap_user_get(ldap_user, "employeeID")),
-                is_error=True,
             )
             continue
+
         email = ldap_user_get_email(ldap_user)
+
+        # check if email not ending with cern.ch. It should never happen
+        # for primary accounts
+        if not email.endswith("@cern.ch"):
+            _log_info(
+                log_uuid,
+                "not_cern_email",
+                dict(email=email),
+            )
+            continue
+
         if email not in ldap_users_emails:
             ldap_person_id = ldap_user_get(ldap_user, "employeeID")
             ldap_users_map[ldap_person_id] = ldap_user
