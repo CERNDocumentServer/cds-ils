@@ -25,8 +25,16 @@ cds-ils user-testing import-demo-data --are-items --path $ITEMS_PATH  --verbose
 # cds-ils migration internal-locations /eos/media/cds/test/books/migration/records/tmp/libraries.json
 # cds-ils migration items /eos/media/cds/test/books/migration/records/tmp/items_0.json
 # cds-ils migration borrowers /eos/media/cds/test/books/migration/records/tmp/active_users.json
+# cds-ils migration vendors /eos/media/cds/test/books/migration/records/tmp/acq_vendors_0.json
+
+# NOTE: create-records crated necesary document, library and vendor records,
+# which used to fill the required properties of data that need to be migrated.
+# cds-ils migration create-records
+
+# cds-ils migration document-requests /eos/media/cds/test/books/migration/records/tmp/doc_requests_0.json
+# cds-ils migration borrowing-requests /eos/media/cds/test/books/migration/records/tmp/ill_requests_0.json
+# cds-ils migration acquisition-orders /eos/media/cds/test/books/migration/records/tmp/acq_orders_0.json
 
 # create eitems from document files
 # invenio migration eitems-files
 # invenio migration eitems-providers
-

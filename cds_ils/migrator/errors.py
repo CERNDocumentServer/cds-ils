@@ -55,3 +55,15 @@ class EItemMigrationError(CdsIlsMigrationException):
 
 class FileMigrationError(CdsIlsMigrationException):
     """Raised for File migration errors."""
+
+
+class BorrowingRequestError(CdsIlsMigrationException):
+    """Raised for borrowing request migration errors."""
+
+
+class AcqOrderError(CdsIlsMigrationException):
+    """Raised for acquisition order migration errors."""
+
+
+class VendorError(CdsIlsMigrationException):
+    """Raised for vendor migration errors."""

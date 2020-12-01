@@ -33,7 +33,7 @@ from invenio_app_ils.ill.api import can_item_circulate, \
     circulation_default_loan_duration
 from invenio_app_ils.literature.api import LITERATURE_PID_TYPE
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE
-from invenio_app_ils.patrons.api import PATRON_PID_TYPE, AnonymousPatron
+from invenio_app_ils.patrons.api import PATRON_PID_TYPE
 from invenio_app_ils.permissions import authenticated_user_permission, \
     backoffice_permission, loan_extend_circulation_permission, \
     patron_owner_permission
@@ -46,7 +46,7 @@ from marshmallow.fields import Bool, List
 
 from .circulation.utils import circulation_cds_extension_max_count
 from .literature.covers import build_cover_urls
-from .patrons.api import Patron
+from .patrons.api import AnonymousPatron, Patron
 from .patrons.permissions import views_permissions_factory
 
 
