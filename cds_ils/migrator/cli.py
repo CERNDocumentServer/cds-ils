@@ -14,12 +14,10 @@ import click
 from flask.cli import with_appcontext
 from invenio_app_ils.errors import RecordRelationsError
 
-from cds_ils.migrator.api import commit, import_multipart_from_file, \
-    import_serial_from_file, reindex_pidtype
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
 from cds_ils.migrator.acquisition.vendors import import_vendors_from_json
-from cds_ils.migrator.api import commit, \
-    reindex_pidtype
+from cds_ils.migrator.api import commit, import_multipart_from_file, \
+    import_serial_from_file, reindex_pidtype
 from cds_ils.migrator.document_requests.api import \
     import_document_requests_from_json
 from cds_ils.migrator.documents.api import import_documents_from_dump, \

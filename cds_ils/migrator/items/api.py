@@ -19,7 +19,6 @@ from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record, model_provider_by_rectype
-from cds_ils.migrator.errors import ItemMigrationError
 from cds_ils.migrator.documents.api import get_document_by_barcode, \
     get_document_by_legacy_recid
 from cds_ils.migrator.errors import DocumentMigrationError, ItemMigrationError

@@ -20,19 +20,16 @@ from invenio_app_ils.acquisition.api import Order, OrderIdProvider, Vendor, \
 from invenio_app_ils.circulation.api import IlsCirculationLoanIdProvider
 from invenio_app_ils.document_requests.api import DocumentRequest, \
     DocumentRequestIdProvider
-from invenio_app_ils.documents.api import Document, DocumentIdProvider
+from invenio_app_ils.documents.api import DocumentIdProvider
+from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.ill.api import BorrowingRequest, \
     BorrowingRequestIdProvider, Library, LibraryIdProvider
-from invenio_app_ils.errors import IlsValidationError
-from invenio_app_ils.ill.api import Library, LibraryIdProvider
-from invenio_app_ils.internal_locations.api import InternalLocation, \
-    InternalLocationIdProvider
-from invenio_app_ils.items.api import Item, ItemIdProvider
+from invenio_app_ils.internal_locations.api import InternalLocationIdProvider
+from invenio_app_ils.items.api import ItemIdProvider
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION
-from invenio_app_ils.series.api import Series, SeriesIdProvider
+from invenio_app_ils.series.api import SeriesIdProvider
 from invenio_base.app import create_cli
-from invenio_circulation.api import Loan
 from invenio_circulation.proxies import current_circulation
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
