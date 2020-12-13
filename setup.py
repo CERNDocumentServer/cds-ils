@@ -59,9 +59,9 @@ setup(
     version=version,
     description=__doc__,
     long_description=readme + "\n\n" + history,
-    keywords="cds-ils Invenio",
+    keywords="CDS-ILS InvenioILS Invenio",
     license="MIT",
-    author="`Invenio ILS flavor <http://github.com/inveniosoftware/invenio-app-ils>`.",
+    author="CERN CDS Team",
     author_email="cds.support@cern.ch",
     url="https://github.com/CERNDocumentServer/cds-ils",
     packages=packages,
@@ -109,7 +109,6 @@ setup(
             "retrieve_patron_loans_access_action = "
             "cds_ils.patrons.permissions:retrieve_patron_loans_access_action"
         ],
-        # importer
         "cds_ils.importers": [
             "cds = cds_ils.importer.providers.cds.importer:CDSImporter",
             "springer = cds_ils.importer.providers.springer.importer:SpringerImporter",
@@ -149,7 +148,6 @@ setup(
             "multipart = cds_ils.importer.providers.cds.rules.multipart",
             "journal = cds_ils.importer.providers.cds.rules.journal",
         ],
-        # migrator
         "cds_ils.migrator.base": [
             "base = cds_ils.importer.providers.cds.rules.base",
         ],
