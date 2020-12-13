@@ -463,15 +463,15 @@ def update_users():
     invenio_users = remap_invenio_users(log_func)
 
     # STEP 1 - update Invenio users with info from LDAP
-    ldap_users_map, invenio_users_updated_count = update_invenio_users_from_ldap(
+    ldap_users_map, invenio_users_updated = update_invenio_users_from_ldap(
         invenio_users, ldap_users_map, log_func
     )
 
     # STEP 2 - import any new LDAP user not in Invenio yet
-    invenio_users_added_count = 0
+    invenio_users_added = 0
     new_ldap_users = ldap_users_map.values()
     if new_ldap_users:
-        invenio_users_added_count = import_new_ldap_users(
+        invenio_users_added = import_new_ldap_users(
             new_ldap_users, log_func
         )
 
@@ -481,8 +481,8 @@ def update_users():
 
     return (
         ldap_users_count,
-        invenio_users_updated_count,
-        invenio_users_added_count,
+        invenio_users_updated,
+        invenio_users_added,
     )
 
 

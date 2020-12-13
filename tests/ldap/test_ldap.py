@@ -18,13 +18,8 @@ from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
 
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
-from cds_ils.ldap.api import (
-    LdapUserImporter,
-    _delete_invenio_user,
-    import_users,
-    ldap_user_get,
-    update_users,
-)
+from cds_ils.ldap.api import LdapUserImporter, _delete_invenio_user, \
+    import_users, ldap_user_get, update_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 
 
