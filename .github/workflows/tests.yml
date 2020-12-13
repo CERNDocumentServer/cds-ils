@@ -42,6 +42,9 @@ jobs:
       SEARCH: ${{ matrix.search-service }}
       EXTRAS: all
     steps:
+      - name: Install ldap dependencies
+        run: sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
+
       - name: Checkout
         uses: actions/checkout@v2
 
