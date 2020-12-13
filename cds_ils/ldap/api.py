@@ -307,7 +307,7 @@ def update_users():
         if "mail" not in ldap_user:
             _log_info(
                 log_uuid,
-                "missing_email",
+                "user_skipped_missing_email",
                 dict(employee_id=ldap_user_get(ldap_user, "employeeID")),
             )
             continue
@@ -319,7 +319,7 @@ def update_users():
         if not email.endswith("@cern.ch"):
             _log_info(
                 log_uuid,
-                "not_cern_email",
+                "user_skipped_not_cern_email",
                 dict(email=email),
             )
             continue
@@ -431,6 +431,19 @@ def update_users():
     if new_ldap_users:
         importer = LdapUserImporter()
         for ldap_user in new_ldap_users:
+            # Check if email already exists in Invenio.
+            # Apparently, in some cases, there could be multiple LDAP users
+            # with different person id but same email.
+            email = ldap_user_get_email(ldap_user)
+            if User.query.filter_by(email=email).count() > 0:
+                ldap_person_id = ldap_user_get(ldap_user, "employeeID")
+                _log_info(
+                    log_uuid,
+                    "user_skipped_email_exists_different_person_id",
+                    dict(email=email, person_id=ldap_person_id),
+                )
+                continue
+
             user_id = importer.import_user(ldap_user)
 
             email = ldap_user_get_email(ldap_user)
@@ -465,6 +478,9 @@ def update_users():
 
 def delete_users(dry_run=True):
     """Delete users that are still in the DB but not in LDAP."""
+    # disabled at the moment because LDAP fetch is not reliable.
+    # It happened that it returned much less users and many were automatically
+    # deleted.
     raise NotImplementedError("not yet tested properly")
 
     invenio_users_deleted_count = 0
