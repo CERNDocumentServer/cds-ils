@@ -136,15 +136,24 @@ def test_update_users(app, db, testdata, mocker):
             "displayName": [b"Name"],
             "department": [b"Department"],
             "uidNumber": [b"777"],
-            # missing email
+            # missing email, should be skipped
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00777"],
+        },
+        {
+            "displayName": [b"Name"],
+            "department": [b"Department"],
+            "uidNumber": [b"999"],
+            # wrong email, should be skipped
+            "mail": [b"ldap.user999@test.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00999"],
         },
         {
             "displayName": [b"Nothing changed"],
             "department": [b"Same department"],
             "uidNumber": [b"333"],
-            # same email, different employee ID, should be skipped
+            # same email as 333, different employee ID, should be skipped
             "mail": [b"ldap.user333@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"9152364"],
@@ -190,12 +199,15 @@ def test_update_users(app, db, testdata, mocker):
 
     current_search.flush_and_refresh(index="*")
 
-    assert n_ldap == 6
-    assert n_updated == 1
-    assert n_added == 2
+    assert n_ldap == 8
+    assert n_updated == 1  # 00222
+    assert n_added == 2  # 00111, 00555
 
     invenio_users = User.query.all()
-    assert len(invenio_users) == 6  # 5 from LDAP, 1 was already in test data
+    # 1 is already in test data
+    # 3 in the prepared data
+    # 2 newly added from LDAP
+    assert len(invenio_users) == 6
 
     patrons_search = PatronsSearch()
 

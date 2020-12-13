@@ -12,6 +12,7 @@ import json
 import sys
 import time
 import uuid
+from functools import partial
 
 import ldap
 from flask import current_app
@@ -213,9 +214,12 @@ def import_users():
     importer = LdapUserImporter()
     for ldap_user in ldap_users:
         if "mail" not in ldap_user:
-            print("User with employee ID {} does not have an email"
-                  .format(ldap_user_get(ldap_user, "employeeID")),
-                  file=sys.stderr)
+            print(
+                "User with employee ID {} does not have an email".format(
+                    ldap_user_get(ldap_user, "employeeID")
+                ),
+                file=sys.stderr,
+            )
             continue
 
         email = ldap_user_get_email(ldap_user)
@@ -277,109 +281,91 @@ def _log_info(log_uuid, action, extra=dict(), is_error=False):
 
 def update_users():
     """Sync LDAP users with local users in the DB."""
-    log_uuid = str(uuid.uuid4())
-    start_time = time.time()
 
-    patron_cls = current_app_ils.patron_cls
-    patron_indexer = PatronBaseIndexer()
+    def get_ldap_users(log_func):
+        """Create and return a map of all LDAP users."""
+        # get all CERN users from LDAP
+        ldap_client = LdapClient()
+        ldap_users = ldap_client.get_primary_accounts()
+        ldap_users_count = len(ldap_users)
 
-    invenio_users_updated_count = 0
-    invenio_users_added_count = 0
+        log_func("ldap_users_fetched", dict(users_fetched=ldap_users_count))
 
-    # get all CERN users from LDAP
-    ldap_client = LdapClient()
-    ldap_users = ldap_client.get_primary_accounts()
+        ldap_users_emails = set()
+        ldap_users_map = {}
+        for ldap_user in ldap_users:
+            # check if email exists in the user data
+            if "mail" not in ldap_user:
+                log_func(
+                    "ldap_user_skipped_missing_email",
+                    dict(employee_id=ldap_user_get(ldap_user, "employeeID")),
+                )
+                continue
 
-    _log_info(
-        log_uuid,
-        "users_fetched_from_ldap",
-        dict(users_fetched=len(ldap_users)),
-    )
+            email = ldap_user_get_email(ldap_user)
 
-    if not ldap_users:
-        return 0, 0, 0
+            # check if email not ending with cern.ch. It should never happen
+            # for primary accounts
+            if not email.endswith("@cern.ch"):
+                log_func("ldap_user_skipped_not_cern_email", dict(email=email))
+                continue
 
-    # create a map by employeeID for fast lookup
-    ldap_users_emails = set()
-    ldap_users_map = {}
-    for ldap_user in ldap_users:
-        # check if email exists in the user data
-        if "mail" not in ldap_user:
-            _log_info(
-                log_uuid,
-                "user_skipped_missing_email",
-                dict(employee_id=ldap_user_get(ldap_user, "employeeID")),
-            )
-            continue
+            if email not in ldap_users_emails:
+                ldap_person_id = ldap_user_get(ldap_user, "employeeID")
+                ldap_users_map[ldap_person_id] = ldap_user
+                ldap_users_emails.add(email)
 
-        email = ldap_user_get_email(ldap_user)
+        log_func("ldap_users_cached")
+        return ldap_users_count, ldap_users_map, ldap_users_emails
 
-        # check if email not ending with cern.ch. It should never happen
-        # for primary accounts
-        if not email.endswith("@cern.ch"):
-            _log_info(
-                log_uuid,
-                "user_skipped_not_cern_email",
-                dict(email=email),
-            )
-            continue
-
-        if email not in ldap_users_emails:
-            ldap_person_id = ldap_user_get(ldap_user, "employeeID")
-            ldap_users_map[ldap_person_id] = ldap_user
-            ldap_users_emails.add(email)
-
-    _log_info(
-        log_uuid,
-        "users_cached",
-    )
-    remote_accounts = RemoteAccount.query.all()
-    _log_info(
-        log_uuid,
-        "users_fetched_from_invenio",
-        dict(users_fetched=len(remote_accounts)),
-    )
-
-    # get all Invenio remote accounts and prepare a list with needed info
-    invenio_users = []
-    for remote_account in remote_accounts:
-        invenio_users.append(
-            dict(
-                remote_account_id=remote_account.id,
-                remote_account_person_id=remote_account.extra_data[
-                    "person_id"
-                ],
-                remote_account_department=remote_account.extra_data.get(
-                    "department"
-                ),
-                user_id=remote_account.user_id,
-            )
+    def remap_invenio_users(log_func):
+        """Create and return a list of all Invenio users."""
+        remote_accounts = RemoteAccount.query.all()
+        log_func(
+            "invenio_users_fetched", dict(users_fetched=len(remote_accounts))
         )
-    _log_info(
-        log_uuid,
-        "invenio_users_prepared",
-    )
 
-    # STEP 1
-    # iterate on all Invenio users first, to update outdated info from LDAP
-    # or delete users if not found in LDAP.
-    #
-    # Note: cannot iterate on the db query here, because when a user is
-    # deleted, db session will expire, causing a DetachedInstanceError when
-    # fetching the user on the next iteration
-    for invenio_user in invenio_users:
-        # use `dict.pop` to remove from `ldap_users_map` the users found
-        # in Invenio, so the remaining will be the ones to be added later on
-        ldap_user = ldap_users_map.pop(
-            invenio_user["remote_account_person_id"], None
-        )
-        if ldap_user:
+        # get all Invenio remote accounts and prepare a list with needed info
+        invenio_users = []
+        for remote_account in remote_accounts:
+            invenio_users.append(
+                dict(
+                    remote_account_id=remote_account.id,
+                    remote_account_person_id=remote_account.extra_data[
+                        "person_id"
+                    ],
+                    remote_account_department=remote_account.extra_data.get(
+                        "department"
+                    ),
+                    user_id=remote_account.user_id,
+                )
+            )
+        log_func("invenio_users_cached")
+        return invenio_users
+
+    def update_invenio_users_from_ldap(
+        invenio_users, ldap_users_map, log_func
+    ):
+        """Iterate on all Invenio users to update outdated info from LDAP."""
+        updated_count = 0
+
+        # Note: cannot iterate on the db query here, because when a user is
+        # deleted, db session will expire, causing a DetachedInstanceError when
+        # fetching the user on the next iteration
+        for invenio_user in invenio_users:
+            # use `dict.pop` to remove from `ldap_users_map` the users found
+            # in Invenio, so the remaining will be the ones to be added
+            # later on
+            ldap_user = ldap_users_map.pop(
+                invenio_user["remote_account_person_id"], None
+            )
+            if not ldap_user:
+                continue
+
             # the imported LDAP user is already in the Invenio db
             ldap_user_display_name = ldap_user_get(ldap_user, "displayName")
             user_id = invenio_user["user_id"]
-            user_profile = UserProfile.query.filter_by(
-                user_id=user_id
-            ).one()
+            user_profile = UserProfile.query.filter_by(user_id=user_id).one()
             invenio_full_name = user_profile.full_name
 
             ldap_user_department = ldap_user_get(ldap_user, "department")
@@ -404,8 +390,7 @@ def update_users():
                     ldap_user=ldap_user,
                 )
 
-                _log_info(
-                    log_uuid,
+                log_func(
                     "department_updated",
                     dict(
                         user_id=invenio_user["user_id"],
@@ -417,29 +402,27 @@ def update_users():
                 # re-index modified patron
                 patron_indexer.index(patron_cls(invenio_user["user_id"]))
 
-                invenio_users_updated_count += 1
+                updated_count += 1
 
-    db.session.commit()
-    _log_info(
-        log_uuid,
-        "invenio_users_updated_and_deleted",
-    )
+        db.session.commit()
+        log_func("invenio_users_updated_from_ldap", dict(count=updated_count))
 
-    # STEP 2
-    # Import any new LDAP user not in Invenio yet, the remaining
-    new_ldap_users = ldap_users_map.values()
-    if new_ldap_users:
+        return ldap_users_map, updated_count
+
+    def import_new_ldap_users(new_ldap_users, log_func):
+        """Import any new LDAP user not in Invenio yet."""
         importer = LdapUserImporter()
+        added_count = 0
         for ldap_user in new_ldap_users:
             # Check if email already exists in Invenio.
             # Apparently, in some cases, there could be multiple LDAP users
             # with different person id but same email.
             email = ldap_user_get_email(ldap_user)
-            if User.query.filter_by(email=email).count() > 0:
+            email_exists = User.query.filter_by(email=email).count() > 0
+            if email_exists:
                 ldap_person_id = ldap_user_get(ldap_user, "employeeID")
-                _log_info(
-                    log_uuid,
-                    "user_skipped_email_exists_different_person_id",
+                log_func(
+                    "ldap_user_skipped_email_exists_different_person_id",
                     dict(email=email, person_id=ldap_person_id),
                 )
                 continue
@@ -448,29 +431,56 @@ def update_users():
 
             email = ldap_user_get_email(ldap_user)
             employee_id = ldap_user_get(ldap_user, "employeeID")
-            _log_info(
-                log_uuid,
-                "user_added",
+            log_func(
+                "invenio_user_added",
                 dict(email=email, employee_id=employee_id),
             )
 
             # index newly added patron
             patron_indexer.index(patron_cls(user_id))
 
-            invenio_users_added_count += 1
+            added_count += 1
 
-    db.session.commit()
-    _log_info(
-        log_uuid,
-        "invenio_users_created",
+        db.session.commit()
+        log_func("import_new_users_done", dict(count=added_count))
+
+        return added_count
+
+    log_uuid = str(uuid.uuid4())
+    log_func = partial(_log_info, log_uuid)
+    start_time = time.time()
+
+    patron_cls = current_app_ils.patron_cls
+    patron_indexer = PatronBaseIndexer()
+
+    ldap_users_count, ldap_users_map, ldap_users_emails = get_ldap_users(
+        log_func
     )
+
+    if not ldap_users_emails:
+        return 0, 0, 0
+
+    invenio_users = remap_invenio_users(log_func)
+
+    # STEP 1 - update Invenio users with info from LDAP
+    ldap_users_map, invenio_users_updated_count = update_invenio_users_from_ldap(
+        invenio_users, ldap_users_map, log_func
+    )
+
+    # STEP 2 - import any new LDAP user not in Invenio yet
+    invenio_users_added_count = 0
+    new_ldap_users = ldap_users_map.values()
+    if new_ldap_users:
+        invenio_users_added_count = import_new_ldap_users(
+            new_ldap_users, log_func
+        )
 
     total_time = time.time() - start_time
 
-    _log_info(log_uuid, "task_completed", dict(time=total_time))
+    log_func("task_completed", dict(time=total_time))
 
     return (
-        len(ldap_users),
+        ldap_users_count,
         invenio_users_updated_count,
         invenio_users_added_count,
     )
