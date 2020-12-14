@@ -12,16 +12,14 @@ from logging import FileHandler
 
 import click
 from flask.cli import with_appcontext
-from invenio_app_ils.errors import RecordRelationsError
 
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
 from cds_ils.migrator.acquisition.vendors import import_vendors_from_json
-from cds_ils.migrator.api import commit, import_multipart_from_file, \
+from cds_ils.migrator.api import commit, import_documents_from_dump, \
+    import_documents_from_record_file, import_multipart_from_file, \
     import_serial_from_file, reindex_pidtype
 from cds_ils.migrator.document_requests.api import \
     import_document_requests_from_json
-from cds_ils.migrator.documents.api import import_documents_from_dump, \
-    import_documents_from_record_file
 from cds_ils.migrator.eitems.api import migrate_ebl_links, \
     migrate_external_links, migrate_ezproxy_links, process_files_from_legacy
 from cds_ils.migrator.ill.api import import_ill_borrowing_requests_from_json
@@ -30,8 +28,8 @@ from cds_ils.migrator.internal_locations.api import \
 from cds_ils.migrator.items.api import import_items_from_json
 from cds_ils.migrator.loans.api import import_loans_from_json
 from cds_ils.migrator.patrons.api import import_users_from_json
-from cds_ils.migrator.relations.api import link_and_create_multipart_volumes, \
-    link_documents_and_serials, migrate_siblings_relation
+from cds_ils.migrator.relations.api import link_documents_and_serials, \
+    migrate_siblings_relation
 from cds_ils.migrator.series.api import validate_multipart_records, \
     validate_serial_records
 from cds_ils.migrator.utils import create_migration_records

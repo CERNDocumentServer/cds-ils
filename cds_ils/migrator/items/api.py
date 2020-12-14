@@ -30,6 +30,49 @@ migrated_logger = logging.getLogger("migrated_records")
 error_logger = logging.getLogger("records_errored")
 
 
+def set_internal_location_pid(record):
+    """Set internal location pid for item."""
+    # find internal location
+    int_loc_pid_value = get_internal_location_by_legacy_recid(
+        record["id_crcLIBRARY"]
+    ).pid.pid_value
+
+    record["internal_location_pid"] = int_loc_pid_value
+
+
+def set_document_pid(record):
+    """Set document pid for item."""
+    document_cls = current_app_ils.document_record_cls
+
+    # find document
+    record["document_pid"] = None
+    try:
+
+        record["document_pid"] = get_record_by_legacy_recid(
+            document_cls, record["id_bibrec"]
+        ).pid.pid_value
+    except DocumentMigrationError:
+        error_logger.error(
+            "ITEM: {0} ERROR: Document {1} not found".format(
+                record["barcode"], record["id_bibrec"]
+            )
+        )
+        record["document_pid"] = None
+        # try to match by barcodes in volumes of the multiparts
+    if not record["document_pid"]:
+        try:
+            record["document_pid"] = get_document_by_barcode(
+                record["barcode"], record["id_bibrec"]
+            ).pid.pid_value
+        except PIDDoesNotExistError as e:
+            error_logger.error(
+                "ITEM: {0} ERROR: Document {1} not found".format(
+                    record["barcode"], record["id_bibrec"]
+                )
+            )
+            raise e
+
+
 def import_items_from_json(dump_file, rectype="item"):
     """Load items from json file."""
     dump_file = dump_file[0]
@@ -43,39 +86,12 @@ def import_items_from_json(dump_file, rectype="item"):
                 )
             )
 
-            int_loc_pid_value = get_internal_location_by_legacy_recid(
-                record["id_crcLIBRARY"]
-            ).pid.pid_value
+            set_internal_location_pid(record)
 
-            record["internal_location_pid"] = int_loc_pid_value
-
-            # find document
-            record["document_pid"] = None
             try:
-                Document = current_app_ils.document_record_cls
-                record["document_pid"] = get_record_by_legacy_recid(
-                    Document, record["id_bibrec"]
-                ).pid.pid_value
-            except DocumentMigrationError:
-                error_logger.error(
-                    "ITEM: {0} ERROR: Document {1} not found".format(
-                        record["barcode"], record["id_bibrec"]
-                    )
-                )
-                record["document_pid"] = None
-            # try to match by barcodes in volumes of the multiparts
-            if not record["document_pid"]:
-                try:
-                    record["document_pid"] = get_document_by_barcode(
-                        record["barcode"], record["id_bibrec"]
-                    ).pid.pid_value
-                except PIDDoesNotExistError:
-                    error_logger.error(
-                        "ITEM: {0} ERROR: Document {1} not found".format(
-                            record["barcode"], record["id_bibrec"]
-                        )
-                    )
-                    continue
+                set_document_pid(record)
+            except PIDDoesNotExistError:
+                continue
 
             # clean the item JSON
             try:

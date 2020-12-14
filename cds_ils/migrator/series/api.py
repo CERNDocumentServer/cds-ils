@@ -7,28 +7,19 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator API."""
-import json
 import logging
-import uuid
 from copy import deepcopy
 
 import click
 from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from flask import current_app
-from invenio_app_ils.documents.api import Document, DocumentIdProvider
 from invenio_app_ils.proxies import current_app_ils
-from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
-    SERIAL_RELATION
-from invenio_app_ils.series.api import SERIES_PID_TYPE, Series
 from invenio_app_ils.series.api import Series
 from invenio_app_ils.series.search import SeriesSearch
-from invenio_db import db
-from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 from cds_ils.migrator.errors import DocumentMigrationError, \
     MultipartMigrationError
-from cds_ils.migrator.relations.api import create_parent_child_relation
 from cds_ils.migrator.utils import pick
 
 lt_es7 = ES_VERSION[0] < 7
@@ -74,6 +65,7 @@ def exclude_multipart_fields(json_record, exclude_keys=None):
 def get_multipart_by_multipart_id(multipart_id):
     """Search multiparts by its legacy recid."""
     series_search = current_app_ils.series_search_cls()
+    series_cls = current_app_ils.series_record_cls
     search = series_search.query(
         "bool",
         match=[
@@ -84,7 +76,7 @@ def get_multipart_by_multipart_id(multipart_id):
     result = search.execute()
     hits_total = result.hits.total.value
     if hits_total == 1:
-        return Series.get_record_by_pid(result.hits[0].pid)
+        return series_cls.get_record_by_pid(result.hits[0].pid)
     if hits_total == 0:
         click.secho(
             "no multipart found with id {}".format(multipart_id), fg="red"
@@ -183,6 +175,8 @@ def validate_serial_records():
     """
 
     def validate_serial_relation(serial, recids):
+        document_cls = current_app_ils.document_record_cls
+
         relations = serial.relations.get().get("serial", [])
         if len(recids) != len(relations):
             click.echo(
@@ -192,8 +186,8 @@ def validate_serial_records():
                 )
             )
         for relation in relations:
-            Document = current_app_ils.document_record_cls
-            child = Document.get_record_by_pid(
+
+            child = document_cls.get_record_by_pid(
                 relation["pid"], pid_type=relation["pid_type"]
             )
             if "legacy_recid" in child and child["legacy_recid"] not in recids:
@@ -203,7 +197,9 @@ def validate_serial_records():
                 )
 
     titles = set()
-    search = SeriesSearch().filter("term", mode_of_issuance="SERIAL")
+    series_search = current_app_ils.series_search_cls()
+
+    search = series_search.filter("term", mode_of_issuance="SERIAL")
     for serial_hit in search.scan():
         # Store titles and check for duplicates
         if "title" in serial_hit:
@@ -230,6 +226,7 @@ def validate_multipart_records():
     """
 
     def validate_multipart_relation(multipart, volumes):
+        document_cls = current_app_ils.document_record_cls
         relations = multipart.relations.get().get("multipart_monograph", [])
         titles = [volume["title"] for volume in volumes if "title" in volume]
         count = len(set(v["volume"] for v in volumes))
@@ -239,8 +236,8 @@ def validate_multipart_records():
                 "(expected {})".format(multipart["pid"], len(relations), count)
             )
         for relation in relations:
-            Document = current_app_ils.document_record_cls
-            child = Document.get_record_by_pid(
+
+            child = document_cls.get_record_by_pid(
                 relation["pid"], pid_type=relation["pid_type"]
             )
             if child["title"] not in titles:
