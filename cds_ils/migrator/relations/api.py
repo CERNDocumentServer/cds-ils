@@ -15,13 +15,14 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild, \
     RecordRelationsSiblings
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
-    SERIAL_RELATION, SIBLINGS_RELATION_TYPES, Relation
+    SERIAL_RELATION, Relation
 from invenio_db import db
 
-from cds_ils.migrator.documents.api import get_document_by_legacy_recid, \
+from cds_ils.literature.api import get_record_by_legacy_recid
+from cds_ils.migrator.documents.api import \
     search_documents_with_siblings_relations
 from cds_ils.migrator.errors import DocumentMigrationError, \
-    MultipartMigrationError, SeriesMigrationError
+    MultipartMigrationError
 from cds_ils.migrator.series.api import create_multipart_volumes, \
     get_migrated_volume_by_serial_title, get_multipart_by_legacy_recid, \
     get_serials_by_child_recid
@@ -66,8 +67,8 @@ def migrate_siblings_relation():
         for relation in relations:
             related_sibling = None
             try:
-                related_sibling = get_document_by_legacy_recid(
-                    relation["related_recid"])
+                related_sibling = get_record_by_legacy_recid(
+                    document_class, relation["related_recid"])
             except DocumentMigrationError as e:
                 pass
 

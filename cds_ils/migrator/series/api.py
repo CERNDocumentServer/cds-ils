@@ -10,6 +10,7 @@
 
 import logging
 import uuid
+from copy import deepcopy
 
 import click
 from elasticsearch import VERSION as ES_VERSION
@@ -64,6 +65,7 @@ def get_multipart_by_legacy_recid(legacy_recid):
 
 def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
     """Create multipart volume documents."""
+    document_cls = current_app_ils.document_record_cls
     volumes = {}
     # Combine all volume data by volume number
     click.echo("Creating volume for {}...".format(multipart_legacy_recid))
@@ -87,7 +89,7 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
     # Re-use the current record for the first volume
     # TODO review this - there are more cases of multiparts
     first_volume = next(volume_numbers)
-    first = Document.get_record_by_pid(pid)
+    first = document_cls.get_record_by_pid(pid)
     if "title" in volumes[first_volume]:
         first["title"] = volumes[first_volume]["title"]
         first["volume"] = first_volume
@@ -98,7 +100,7 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
 
     # Create new records for the rest
     for number in volume_numbers:
-        temp = first.copy()
+        temp = deepcopy(first)
         temp["title"] = volumes[number]["title"]
         temp["volume"] = number
         record_uuid = uuid.uuid4()
@@ -106,7 +108,7 @@ def create_multipart_volumes(pid, multipart_legacy_recid, migration_volumes):
             object_type="rec", object_uuid=record_uuid
         )
         temp["pid"] = provider.pid.pid_value
-        record = Document.create(temp, record_uuid)
+        record = document_cls.create(temp, record_uuid)
         record.commit()
         yield record
 
