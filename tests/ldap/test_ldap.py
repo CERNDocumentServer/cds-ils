@@ -84,8 +84,8 @@ def test_import_users(app, db, testdata, mocker):
     assert RemoteAccount.query.filter(RemoteAccount.user_id == user.id).one()
 
 
-def test_sync_users(app, db, testdata, mocker):
-    """Test sync users with LDAP."""
+def test_update_users(app, db, testdata, mocker):
+    """Test update users with LDAP."""
     ldap_users = [
         {
             "displayName": [b"New user"],
@@ -93,7 +93,7 @@ def test_sync_users(app, db, testdata, mocker):
             "uidNumber": [b"111"],
             "mail": [b"ldap.user111@cern.ch"],
             "cernAccountType": [b"Primary"],
-            "employeeID": [b"111"],
+            "employeeID": [b"00111"],
         },
         {
             "displayName": [b"A new name"],
@@ -101,7 +101,7 @@ def test_sync_users(app, db, testdata, mocker):
             "uidNumber": [b"222"],
             "mail": [b"ldap.user222@cern.ch"],
             "cernAccountType": [b"Primary"],
-            "employeeID": [b"222"],
+            "employeeID": [b"00222"],
         },
         {
             "displayName": [b"Nothing changed"],
@@ -109,7 +109,7 @@ def test_sync_users(app, db, testdata, mocker):
             "uidNumber": [b"333"],
             "mail": [b"ldap.user333@cern.ch"],
             "cernAccountType": [b"Primary"],
-            "employeeID": [b"333"],
+            "employeeID": [b"00333"],
         },
         {
             "displayName": [b"Name 1"],
@@ -117,7 +117,7 @@ def test_sync_users(app, db, testdata, mocker):
             "uidNumber": [b"555"],
             "mail": [b"ldap.user555@cern.ch"],
             "cernAccountType": [b"Primary"],
-            "employeeID": [b"555"],
+            "employeeID": [b"00555"],
         },
         {
             "displayName": [b"Name 2"],
@@ -125,35 +125,48 @@ def test_sync_users(app, db, testdata, mocker):
             "uidNumber": [b"666"],
             "mail": [b"ldap.user555@cern.ch"],  # same email as 555
             "cernAccountType": [b"Primary"],
-            "employeeID": [b"666"],
+            "employeeID": [b"00666"],
         },
         {
             "displayName": [b"Name"],
             "department": [b"Department"],
             "uidNumber": [b"777"],
-            # missing email
+            # missing email, should be skipped
             "cernAccountType": [b"Primary"],
-            "employeeID": [b"777"],
+            "employeeID": [b"00777"],
+        },
+        {
+            "displayName": [b"Name"],
+            "department": [b"Department"],
+            "uidNumber": [b"999"],
+            # wrong email, should be skipped
+            "mail": [b"ldap.user999@test.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00999"],
+        },
+        {
+            "displayName": [b"Nothing changed"],
+            "department": [b"Same department"],
+            "uidNumber": [b"333"],
+            # same email as 333, different employee ID, should be skipped
+            "mail": [b"ldap.user333@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"9152364"],
         },
     ]
 
-    # mock LDAP response
-    mocker.patch(
-        "cds_ils.ldap.api.LdapClient.get_primary_accounts",
-        return_value=ldap_users,
-    )
-
     def _prepare():
         """Prepare data."""
+        importer = LdapUserImporter()
         # Prepare users in DB. Use `LdapUserImporter` to make it easy
         # create old users
         WILL_BE_UPDATED = deepcopy(ldap_users[1])
         WILL_BE_UPDATED["displayName"] = [b"Previous name"]
         WILL_BE_UPDATED["department"] = [b"Old department"]
-        LdapUserImporter().import_user(WILL_BE_UPDATED)
+        importer.import_user(WILL_BE_UPDATED)
 
         WILL_NOT_CHANGE = deepcopy(ldap_users[2])
-        LdapUserImporter().import_user(WILL_NOT_CHANGE)
+        importer.import_user(WILL_NOT_CHANGE)
 
         # create a user that does not exist anymore in LDAP, but will not
         # be deleted for safety
@@ -163,28 +176,39 @@ def test_sync_users(app, db, testdata, mocker):
             "uidNumber": [b"444"],
             "mail": [b"ldap.user444@cern.ch"],
             "cernAccountType": [b"Primary"],
-            "employeeID": [b"444"],
+            "employeeID": [b"00444"],
         }
-        LdapUserImporter().import_user(COULD_BE_DELETED)
+        importer.import_user(COULD_BE_DELETED)
         db.session.commit()
         reindex_patrons()
 
     _prepare()
 
+    # mock LDAP response
+    mocker.patch(
+        "cds_ils.ldap.api.LdapClient.get_primary_accounts",
+        return_value=ldap_users,
+    )
+
     n_ldap, n_updated, n_added = update_users()
 
     current_search.flush_and_refresh(index="*")
 
-    assert n_ldap == 6
-    assert n_updated == 1
-    assert n_added == 2
+    assert n_ldap == 8
+    assert n_updated == 1  # 00222
+    assert n_added == 2  # 00111, 00555
 
     invenio_users = User.query.all()
-    assert len(invenio_users) == 6  # 5 from LDAP, 1 was already in test data
+    # 1 is already in test data
+    # 3 in the prepared data
+    # 2 newly added from LDAP
+    assert len(invenio_users) == 6
 
     patrons_search = PatronsSearch()
 
-    def check_existence(expected_email, expected_name, expected_department):
+    def check_existence(
+        expected_email, expected_name, expected_department, expected_person_id
+    ):
         """Assert exist in DB and ES."""
         # check if saved in DB
         user = User.query.filter_by(email=expected_email).one()
@@ -192,6 +216,7 @@ def test_sync_users(app, db, testdata, mocker):
         assert up.full_name == expected_name
         ra = RemoteAccount.query.filter_by(user_id=user.id).one()
         assert ra.extra_data["department"] == expected_department
+        assert ra.extra_data["person_id"] == expected_person_id
 
         # check if indexed correctly
         results = patrons_search.filter("term", id=user.id).execute()
@@ -199,14 +224,21 @@ def test_sync_users(app, db, testdata, mocker):
         patron_hit = [r for r in results][0]
         assert patron_hit["email"] == expected_email
         assert patron_hit["department"] == expected_department
+        assert patron_hit["person_id"] == expected_person_id
 
-    check_existence("ldap.user111@cern.ch", "New user", "A department")
-    check_existence("ldap.user222@cern.ch", "A new name", "A new department")
     check_existence(
-        "ldap.user333@cern.ch", "Nothing changed", "Same department"
+        "ldap.user111@cern.ch", "New user", "A department", "00111"
     )
-    check_existence("ldap.user444@cern.ch", "old user left CERN", "Department")
-    check_existence("ldap.user555@cern.ch", "Name 1", "Department 1")
+    check_existence(
+        "ldap.user222@cern.ch", "A new name", "A new department", "00222"
+    )
+    check_existence(
+        "ldap.user333@cern.ch", "Nothing changed", "Same department", "00333"
+    )
+    check_existence(
+        "ldap.user444@cern.ch", "old user left CERN", "Department", "00444"
+    )
+    check_existence("ldap.user555@cern.ch", "Name 1", "Department 1", "00555")
 
 
 def test_log_table(app):
