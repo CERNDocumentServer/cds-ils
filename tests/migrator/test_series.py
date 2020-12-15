@@ -278,45 +278,45 @@ def test_monograph(app):
             },
             multipart_model,
         )
-
-        check_transformation(
-            """
-            <datafield tag="245" ind1=" " ind2=" ">
-                <subfield code="a">La fisica di Amaldi</subfield>
-                <subfield code="b">idee ed esperimenti : con CD-ROM</subfield>
-            </datafield>
-            <datafield tag="246" ind1=" " ind2=" ">
-                <subfield code="a">v.2</subfield>
-                <subfield code="b">Termologia, onde, relatività</subfield>
-            </datafield>
-            <datafield tag="300" ind1=" " ind2=" ">
-                <subfield code="a">2 v. ; 2 CD-ROM suppl</subfield>
-            </datafield>
-            """,
-            {
-                "title": "La fisica di Amaldi",
-                "alternative_titles": [
-                    {
-                        "value": "idee ed esperimenti : con CD-ROM",
-                        "type": "SUBTITLE",
+        with pytest.raises(UnexpectedValue):
+            check_transformation(
+                """
+                <datafield tag="245" ind1=" " ind2=" ">
+                    <subfield code="a">La fisica di Amaldi</subfield>
+                    <subfield code="b">idee ed esperimenti : con CD-ROM</subfield>
+                </datafield>
+                <datafield tag="246" ind1=" " ind2=" ">
+                    <subfield code="a">v.2</subfield>
+                    <subfield code="b">Termologia, onde, relatività</subfield>
+                </datafield>
+                <datafield tag="300" ind1=" " ind2=" ">
+                    <subfield code="a">2 v. ; 2 CD-ROM suppl</subfield>
+                </datafield>
+                """,
+                {
+                    "title": "La fisica di Amaldi",
+                    "alternative_titles": [
+                        {
+                            "value": "idee ed esperimenti : con CD-ROM",
+                            "type": "SUBTITLE",
+                        },
+                        {"type": "ALTERNATIVE_TITLE", "value": "v.2"},
+                        {
+                            "type": "SUBTITLE",
+                            "value": "Termologia, onde, relatività",
+                        },
+                    ],
+                    "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                    "number_of_volumes": "2",
+                    "_migration": {
+                        **get_helper_dict(),
+                        "is_multipart": False,
+                        "record_type": "multipart",
+                        "volumes": [],
                     },
-                    {"type": "ALTERNATIVE_TITLE", "value": "v.2"},
-                    {
-                        "type": "SUBTITLE",
-                        "value": "Termologia, onde, relatività",
-                    },
-                ],
-                "mode_of_issuance": "MULTIPART_MONOGRAPH",
-                "number_of_volumes": "2",
-                "_migration": {
-                    **get_helper_dict(),
-                    "is_multipart": False,
-                    "record_type": "multipart",
-                    "volumes": [],
                 },
-            },
-            multipart_model,
-        )
+                multipart_model,
+            )
 
         with pytest.raises(MissingRequiredField):
             check_transformation(
@@ -404,7 +404,7 @@ def test_monograph_migration(app):
             {
                 "_migration": {
                     **get_helper_dict(),
-                    "volumes": [
+                    "volumes_identifiers": [
                         {
                             "volume": "3",
                             "isbn": "1108052819",
@@ -441,6 +441,8 @@ def test_monograph_migration(app):
                             "physical_description": "print version, paperback",
                             "is_electronic": False,
                         },
+                    ],
+                    "volumes": [
                         {"title": "1865-1874", "volume": "1"},
                         {"title": "1875-1881", "volume": "2"},
                         {"title": "1882-1905", "volume": "3"},
@@ -460,25 +462,54 @@ def test_monograph_migration(app):
 
 def test_monograph_invalid_volume_migration(app):
     with app.app_context():
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="020" ind1=" " ind2=" ">
-                <subfield code="a">9788808175366</subfield>
-                <subfield code="u">print version, paperback (v.1)</subfield>
-                </datafield>
-                <datafield tag="020" ind1=" " ind2=" ">
-                <subfield code="a">9788808247049</subfield>
-                <subfield code="u">print version, paperback (v.2)</subfield>
-                </datafield>
-                <datafield tag="020" ind1=" " ind2=" ">
-                <subfield code="a">9788808047038</subfield>
-                <subfield code="u">print version, paperback (v.2, CD-ROM)</subfield>
-                </datafield>
-                """,
-                {},
-                multipart_model,
-            )
+        check_transformation(
+            """
+            <datafield tag="020" ind1=" " ind2=" ">
+            <subfield code="a">9788808175366</subfield>
+            <subfield code="u">print version, paperback (v.1)</subfield>
+            </datafield>
+            <datafield tag="020" ind1=" " ind2=" ">
+            <subfield code="a">9788808247049</subfield>
+            <subfield code="u">print version, paperback (v.2)</subfield>
+            </datafield>
+            <datafield tag="020" ind1=" " ind2=" ">
+            <subfield code="a">9788808047038</subfield>
+            <subfield code="u">print version, paperback (v.2, CD-ROM)</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(),
+                    "record_type": "multipart",
+                    "volumes_identifiers": [
+                        {
+                            "is_electronic": False,
+                            "isbn": "9788808175366",
+                            "physical_description": "print "
+                            "version, "
+                            "paperback",
+                            "volume": "1",
+                        },
+                        {
+                            "is_electronic": False,
+                            "isbn": "9788808247049",
+                            "physical_description": "print "
+                            "version, "
+                            "paperback",
+                            "volume": "2",
+                        },
+                        {
+                            "is_electronic": False,
+                            "isbn": "9788808047038",
+                            "volume": "2",
+                        },
+                    ],
+                    "volumes_urls": [],
+                },
+                "mode_of_issuance": "MULTIPART_MONOGRAPH",
+            },
+            multipart_model,
+        )
 
 
 def test_monograph_volume_migration_no_description(app):
@@ -495,7 +526,7 @@ def test_monograph_volume_migration_no_description(app):
                 "_migration": {
                     **get_helper_dict(),
                     "record_type": "multipart",
-                    "volumes": [
+                    "volumes_identifiers": [
                         {
                             "is_electronic": False,
                             "isbn": "1560810726",
@@ -556,7 +587,7 @@ def test_monograph_with_electronic_isbns(app):
                 "_migration": {
                     **get_helper_dict(),
                     "record_type": "multipart",
-                    "volumes": [
+                    "volumes_identifiers": [
                         {
                             "is_electronic": False,
                             "physical_description": "print version",
@@ -603,7 +634,7 @@ def test_monograph_volume_migration_doi(app):
                 "_migration": {
                     **get_helper_dict(),
                     "record_type": "multipart",
-                    "volumes": [
+                    "volumes_identifiers": [
                         {
                             "doi": "10.1007/978-3-030-49613-5",
                             "material": "ebook",
@@ -632,7 +663,7 @@ def test_monograph_volume_barcode(app):
                 "_migration": {
                     **get_helper_dict(),
                     "record_type": "multipart",
-                    "volumes": [{"barcode": "73-0089-0", "volume": "A"}],
+                    "items": [{"barcode": "73-0089-0", "volume": "A"}],
                 },
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
             },
@@ -654,7 +685,7 @@ def test_monograph_volume_url(app):
                 "_migration": {
                     **get_helper_dict(),
                     "record_type": "multipart",
-                    "volumes": [
+                    "volumes_urls": [
                         {
                             "description": "ebook",
                             "url": "https://cds.cern.ch/auth.py?r=EBLIB_P_1890382",
@@ -685,7 +716,7 @@ def test_monograph_legacy_representation(app):
                     **get_helper_dict(),
                     "record_type": "multipart",
                     "multipart_id": "Vol965",
-                    "multivolume_record_format": True,
+                    "multivolume_record": False,
                 },
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
             },
@@ -735,16 +766,15 @@ def test_monograph_series_authors(app):
                 "_migration": {
                     **get_helper_dict(),
                     "record_type": "multipart",
-                    "authors": [
-                        {"full_name": "Mehra, Jagdish", "roles": ["AUTHOR"]},
-                        {
-                            "full_name": "Rechenberg, Helmut",
-                            "roles": ["AUTHOR"],
-                        },
-                    ],
                 },
+                "authors": [
+                    {"full_name": "Mehra, Jagdish", "roles": ["AUTHOR"]},
+                    {
+                        "full_name": "Rechenberg, Helmut",
+                        "roles": ["AUTHOR"],
+                    },
+                ],
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
-                "authors": ["Mehra, Jagdish", "Rechenberg, Helmut"],
             },
             multipart_model,
         )

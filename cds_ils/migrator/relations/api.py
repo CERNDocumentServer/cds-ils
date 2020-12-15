@@ -23,8 +23,7 @@ from cds_ils.migrator.documents.api import \
     search_documents_with_siblings_relations
 from cds_ils.migrator.errors import DocumentMigrationError, \
     MultipartMigrationError
-from cds_ils.migrator.series.api import create_multipart_volumes, \
-    get_migrated_volume_by_serial_title, get_multipart_by_legacy_recid, \
+from cds_ils.migrator.series.api import get_migrated_volume_by_serial_title, \
     get_serials_by_child_recid
 
 
@@ -58,6 +57,7 @@ def create_sibling_child_relation(first, second, relation_type):
 def migrate_siblings_relation():
     """Create siblings relations."""
     document_class = current_app_ils.document_record_cls
+    series_class = current_app_ils.series_record_cls
 
     search = search_documents_with_siblings_relations()
     results = search.scan()
@@ -75,7 +75,8 @@ def migrate_siblings_relation():
             # try to find sibling in series
             if related_sibling is None:
                 try:
-                    related_sibling = get_multipart_by_legacy_recid(
+                    related_sibling = get_record_by_legacy_recid(
+                        series_class,
                         relation["related_recid"])
                 except MultipartMigrationError as e:
                     continue
@@ -98,38 +99,6 @@ def migrate_siblings_relation():
                         e.description, fg="red"
                     )
                     continue
-
-
-def link_and_create_multipart_volumes():
-    """Link and create multipart volume records."""
-    click.echo("Creating document volumes and multipart relations...")
-    document_search = current_app_ils.document_search_cls()
-
-    search = document_search.filter("term", _migration__is_multipart=True)
-    for hit in search.scan():
-        if "legacy_recid" not in hit:
-            continue
-        click.secho(
-            "Linking multipart {}...".format(hit.legacy_recid), fg="green"
-        )
-        multipart = get_multipart_by_legacy_recid(hit.legacy_recid)
-        documents = create_multipart_volumes(
-            hit.pid, hit.legacy_recid, hit._migration.volumes
-        )
-
-        for document in documents:
-            if document and multipart:
-                click.echo(
-                    "Creating relations: {0} - {1}".format(
-                        multipart["pid"], document["pid"]
-                    )
-                )
-                create_parent_child_relation(
-                    multipart,
-                    document,
-                    MULTIPART_MONOGRAPH_RELATION,
-                    document["volume"],
-                )
 
 
 def link_documents_and_serials():

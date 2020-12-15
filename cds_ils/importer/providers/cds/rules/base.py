@@ -389,7 +389,10 @@ def accelerator_experiments(self, key, value):
 @model.over("_migration", "^536__")
 @out_strip
 def open_access(self, key, value):
-    """Translate open access field."""
+    """Translate open access field.
+
+    If the field is present, then the eitems of this record have open access
+    """
     if "r" in value:
         self["_migration"]["eitems_open_access"] = True
     else:
@@ -934,45 +937,21 @@ def alternative_titles_doc(self, key, value):
     if key == "242__":
         _alternative_titles += alternative_titles(self, key, value)
     elif key == "246__":
-        if ("n" in value and "p" not in value) or (
-            "n" not in value and "p" in value
-        ):
-            raise MissingRequiredField(subfield="n or p")
-
-        if "p" in value:
-            _migration = self.get("_migration", {})
-            if "volumes" not in _migration:
-                _migration["volumes"] = []
-
-            val_n = clean_val("n", value, str)
-            _migration["volumes"].append(
+        if "a" in value:
+            _alternative_titles.append(
                 {
-                    "volume": extract_volume_number(
-                        val_n, raise_exception=True
-                    ),
-                    "title": clean_val("p", value, str),
+                    "value": clean_val("a", value, str, req=True),
+                    "type": "ALTERNATIVE_TITLE",
                 }
             )
-            _migration["is_multipart"] = True
-            _migration["record_type"] = "multipart"
-            self["_migration"] = _migration
-            raise IgnoreKey("alternative_titles")
-        else:
-            if "a" in value:
-                _alternative_titles.append(
-                    {
-                        "value": clean_val("a", value, str, req=True),
-                        "type": "ALTERNATIVE_TITLE",
-                    }
-                )
-            if "b" in value:
-                _alternative_titles.append(
-                    {
-                        "value": clean_val("b", value, str, req=True),
-                        "type": "SUBTITLE",
-                    }
-                )
-            return _alternative_titles
+        if "b" in value:
+            _alternative_titles.append(
+                {
+                    "value": clean_val("b", value, str, req=True),
+                    "type": "SUBTITLE",
+                }
+            )
+        return _alternative_titles
 
 
 @model.over("number_of_pages", "^300__")  # item

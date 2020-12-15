@@ -19,7 +19,9 @@ from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record, model_provider_by_rectype
-from cds_ils.migrator.errors import ItemMigrationError
+from cds_ils.migrator.documents.api import get_document_by_barcode, \
+    get_document_by_legacy_recid
+from cds_ils.migrator.errors import DocumentMigrationError, ItemMigrationError
 from cds_ils.migrator.internal_locations.api import \
     get_internal_location_by_legacy_recid
 from cds_ils.migrator.utils import clean_item_record
@@ -28,12 +30,54 @@ migrated_logger = logging.getLogger("migrated_records")
 error_logger = logging.getLogger("records_errored")
 
 
-def import_items_from_json(dump_file, include, rectype="item"):
+def set_internal_location_pid(record):
+    """Set internal location pid for item."""
+    # find internal location
+    int_loc_pid_value = get_internal_location_by_legacy_recid(
+        record["id_crcLIBRARY"]
+    ).pid.pid_value
+
+    record["internal_location_pid"] = int_loc_pid_value
+
+
+def set_document_pid(record):
+    """Set document pid for item."""
+    document_cls = current_app_ils.document_record_cls
+
+    # find document
+    record["document_pid"] = None
+    try:
+
+        record["document_pid"] = get_record_by_legacy_recid(
+            document_cls, record["id_bibrec"]
+        ).pid.pid_value
+    except DocumentMigrationError:
+        error_logger.error(
+            "ITEM: {0} ERROR: Document {1} not found".format(
+                record["barcode"], record["id_bibrec"]
+            )
+        )
+        record["document_pid"] = None
+        # try to match by barcodes in volumes of the multiparts
+    if not record["document_pid"]:
+        try:
+            record["document_pid"] = get_document_by_barcode(
+                record["barcode"], record["id_bibrec"]
+            ).pid.pid_value
+        except PIDDoesNotExistError as e:
+            error_logger.error(
+                "ITEM: {0} ERROR: Document {1} not found".format(
+                    record["barcode"], record["id_bibrec"]
+                )
+            )
+            raise e
+
+
+def import_items_from_json(dump_file, rectype="item"):
     """Load items from json file."""
     dump_file = dump_file[0]
     model, provider = model_provider_by_rectype(rectype)
 
-    include_ids = None if include is None else include.split(",")
     with click.progressbar(json.load(dump_file)) as bar:
         for record in bar:
             click.echo(
@@ -41,66 +85,50 @@ def import_items_from_json(dump_file, include, rectype="item"):
                     record["barcode"], rectype
                 )
             )
-            if include_ids is None or record["barcode"] in include_ids:
 
-                int_loc_pid_value = get_internal_location_by_legacy_recid(
-                    record["id_crcLIBRARY"]
-                ).pid.pid_value
+            set_internal_location_pid(record)
 
-                record["internal_location_pid"] = int_loc_pid_value
+            try:
+                set_document_pid(record)
+            except PIDDoesNotExistError:
+                continue
 
-                # find document
-                try:
-                    Document = current_app_ils.document_record_cls
-                    record["document_pid"] = get_record_by_legacy_recid(
-                        Document, record["id_bibrec"]
-                    ).pid.pid_value
-                except PIDDoesNotExistError:
-                    error_logger.error(
-                        "ITEM: {0} ERROR: Document {1} not found".format(
-                            record["barcode"], record["id_bibrec"]
-                        )
+            # clean the item JSON
+            try:
+                clean_item_record(record)
+            except ItemMigrationError as e:
+                click.secho(str(e), fg="red")
+                error_logger.error(
+                    "ITEM: {0} ERROR: {1}".format(record["barcode"], str(e))
+                )
+                continue
+            try:
+                # check if the item already there
+                item = get_item_by_barcode(record["barcode"])
+                if item:
+                    click.secho(
+                        "Item {0}) already exists with pid: {1}".format(
+                            record["barcode"], item.pid
+                        ),
+                        fg="blue",
                     )
                     continue
-
-                # clean the item JSON
+            except ItemMigrationError:
                 try:
-                    clean_item_record(record)
-                except ItemMigrationError as e:
-                    click.secho(str(e), fg="red")
+                    import_record(
+                        record, model, provider, legacy_id_key="barcode"
+                    )
+                    db.session.commit()
+                    migrated_logger.warning(
+                        "ITEM: {0} OK".format(record["barcode"])
+                    )
+                except Exception as e:
                     error_logger.error(
                         "ITEM: {0} ERROR: {1}".format(
                             record["barcode"], str(e)
                         )
                     )
-                    continue
-                try:
-                    # check if the item already there
-                    item = get_item_by_barcode(record["barcode"])
-                    if item:
-                        click.secho(
-                            "Item {0}) already exists with pid: {1}".format(
-                                record["barcode"], item.pid
-                            ),
-                            fg="blue",
-                        )
-                        continue
-                except ItemMigrationError:
-                    try:
-                        import_record(
-                            record, model, provider, legacy_id_key="barcode"
-                        )
-                        db.session.commit()
-                        migrated_logger.warning(
-                            "ITEM: {0} OK".format(record["barcode"])
-                        )
-                    except Exception as e:
-                        error_logger.error(
-                            "ITEM: {0} ERROR: {1}".format(
-                                record["barcode"], str(e)
-                            )
-                        )
-                        db.session.rollback()
+                    db.session.rollback()
 
 
 def get_item_by_barcode(barcode):

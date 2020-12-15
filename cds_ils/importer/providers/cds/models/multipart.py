@@ -50,8 +50,8 @@ class CDSMultipart(CdsIlsOverdo):
 
 model = CDSMultipart(
     bases=(
-        books_base,
         cds_base,
+        books_base,
     ),
     entry_point_group="cds_ils.importer.series",
 )

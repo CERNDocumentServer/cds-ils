@@ -17,6 +17,8 @@ def get_helper_dict():
     _helper_dict = dict(
         record_type="document",
         volumes=[],
+        volumes_identifiers=[],
+        volumes_urls=[],
         serials=[],
         has_serial=False,
         is_multipart=False,
