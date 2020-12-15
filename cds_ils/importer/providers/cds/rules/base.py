@@ -16,6 +16,7 @@ from dateutil import parser
 from dateutil.parser import ParserError
 from dojson.errors import IgnoreKey
 from dojson.utils import filter_values, flatten, for_each_value, force_list
+from invenio_app_ils.relations.api import EDITION_RELATION, OTHER_RELATION
 
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
@@ -320,7 +321,6 @@ def publication_additional(self, key, value):
     return _publication_info
 
 
-# cleaning data, later
 @model.over("_migration", "(^775__)|(^787__)")
 @out_strip
 def related_records(self, key, value):
@@ -330,12 +330,15 @@ def related_records(self, key, value):
     """
     _migration = self["_migration"]
     _related = _migration["related"]
-    relation_type = "other"
+    relation_type = OTHER_RELATION.name
     try:
         if key == "775__" and "b" in value:
-            relation_type = clean_val("b", value, str)
+            relation_edition = clean_val("b", value, str)
+            if relation_edition:
+                relation_type = EDITION_RELATION.name
         if key == "787__" and "i" in value:
             clean_val("i", value, str, manual=True)
+
         _related.append(
             {
                 "related_recid": clean_val("w", value, str, req=True),

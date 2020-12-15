@@ -15,6 +15,7 @@ import click
 from elasticsearch_dsl import Q
 from invenio_app_ils.documents.search import DocumentSearch
 from invenio_app_ils.errors import IlsValidationError
+from invenio_app_ils.proxies import current_app_ils
 
 from cds_ils.migrator.api import bulk_index_records, \
     import_document_from_dump, import_record, model_provider_by_rectype
@@ -124,6 +125,18 @@ def get_documents_with_external_eitems():
         "bool",
         filter=[
             Q("term", _migration__eitems_has_external=True),
+        ],
+    )
+    return search
+
+
+def search_documents_with_siblings_relations():
+    """Return documents with siblings relations."""
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.filter(
+        "bool",
+        filter=[
+            Q("term", _migration__has_related=True),
         ],
     )
     return search
