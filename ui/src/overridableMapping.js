@@ -36,8 +36,8 @@ export const overriddenCmps = {
   'LoanMetadata.DeliveryIcon': DeliveryIcon,
   'RequestForPatronMessage.DeliveryIcon': DeliveryIcon,
   'LoanAvailability.NotAvailable': NotAvailable,
-  'Frontsite.route': LegacyRecordRoute,
+  'FrontSite.CustomRoute': LegacyRecordRoute,
   DocumentRequestForm: DocumentRequestFormFields,
-  'Backoffice.CustomRoute': ImporterRoute,
+  'BackOfficeRoutesSwitch.CustomRoute': ImporterRoute,
   'Backoffice.Sidebar.CustomMenuItem': SideBarMenuItem,
 };

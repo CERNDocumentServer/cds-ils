@@ -12,7 +12,7 @@ import { legacyApi } from '../../../api/legacy/legacy';
 
 export const LegacyRecordRoute = ({ ...props }) => {
   return (
-    <Switch>
+    <>
       <Route
         exact
         path={CdsFrontSiteRoutes.legacyRecordDetails}
@@ -21,7 +21,7 @@ export const LegacyRecordRoute = ({ ...props }) => {
       <Route>
         <NotFound />
       </Route>
-    </Switch>
+    </>
   );
 };
 
