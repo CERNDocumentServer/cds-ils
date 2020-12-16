@@ -83,26 +83,24 @@ class CDSDocumentDumpLoader(object):
         record_uuid = uuid.uuid4()
         try:
 
-            db.session.begin_nested()
-            provider = DocumentIdProvider.create(
-                object_type="rec",
-                object_uuid=record_uuid,
-            )
-            timestamp, json_data = dump.revisions[-1]
-            json_data["pid"] = provider.pid.pid_value
-            json_data = clean_created_by_field(json_data)
-            legacy_recid_minter(json_data["legacy_recid"], record_uuid)
-            add_cover_metadata(json_data)
+            with db.session.begin_nested():
+                provider = DocumentIdProvider.create(
+                    object_type="rec",
+                    object_uuid=record_uuid,
+                )
+                timestamp, json_data = dump.revisions[-1]
+                json_data["pid"] = provider.pid.pid_value
+                json_data = clean_created_by_field(json_data)
+                legacy_recid_minter(json_data["legacy_recid"], record_uuid)
+                add_cover_metadata(json_data)
 
-            document = Document.create(json_data, record_uuid)
-            document.model.created = dump.created.replace(tzinfo=None)
-            document.model.updated = timestamp.replace(tzinfo=None)
-            document.commit()
+                document = Document.create(json_data, record_uuid)
+                document.model.created = dump.created.replace(tzinfo=None)
+                document.model.updated = timestamp.replace(tzinfo=None)
+                document.commit()
             db.session.commit()
-
             return document
         except IlsValidationError as e:
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
             click.secho(e.original_exception.message, fg="red")
-            db.session.rollback()
             raise e
