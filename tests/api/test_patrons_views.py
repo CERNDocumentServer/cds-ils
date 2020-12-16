@@ -38,12 +38,11 @@ def test_patron_loans_view(app, patron1, testdata, client):
 
     assert resp.status_code == 200
 
-    expected_books_on_loan = [
+    expected_literatures_on_loan = [
         {
             "barcode": "123456789-3",
+            "start_date": "2018-06-28",
             "end_date": "2018-07-28",
-            "library": "Main Library",
-            "location": "Route de Meyrin",
             "title": "Prairie Fires: The American Dreams of "
                      "Laura Ingalls Wilder",
         }
@@ -52,14 +51,12 @@ def test_patron_loans_view(app, patron1, testdata, client):
         {
             "request_start_date": "2018-06-28",
             "request_end_date": "2018-07-28",
-            "library": "Main Library",
-            "location": "Route de Meyrin",
             "title": "The Gulf: The Making of An American Sea",
         }
     ]
     data = resp.json
-    assert data["books_on_loan"] == expected_books_on_loan
-    assert data["loan_requests"] == expected_loan_requests
+    assert data["on_loan"] == expected_literatures_on_loan
+    assert data["requests"] == expected_loan_requests
 
     # test extra_info
     assert patron.extra_info
