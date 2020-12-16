@@ -82,21 +82,22 @@ class CDSDocumentDumpLoader(object):
         """Create a new record from dump."""
         record_uuid = uuid.uuid4()
         try:
-            with db.session.begin_nested():
-                provider = DocumentIdProvider.create(
-                    object_type="rec",
-                    object_uuid=record_uuid,
-                )
-                timestamp, json_data = dump.revisions[-1]
-                json_data["pid"] = provider.pid.pid_value
-                json_data = clean_created_by_field(json_data)
-                legacy_recid_minter(json_data["legacy_recid"], record_uuid)
-                add_cover_metadata(json_data)
 
-                document = Document.create(json_data, record_uuid)
-                document.model.created = dump.created.replace(tzinfo=None)
-                document.model.updated = timestamp.replace(tzinfo=None)
-                document.commit()
+            db.session.begin_nested()
+            provider = DocumentIdProvider.create(
+                object_type="rec",
+                object_uuid=record_uuid,
+            )
+            timestamp, json_data = dump.revisions[-1]
+            json_data["pid"] = provider.pid.pid_value
+            json_data = clean_created_by_field(json_data)
+            legacy_recid_minter(json_data["legacy_recid"], record_uuid)
+            add_cover_metadata(json_data)
+
+            document = Document.create(json_data, record_uuid)
+            document.model.created = dump.created.replace(tzinfo=None)
+            document.model.updated = timestamp.replace(tzinfo=None)
+            document.commit()
             db.session.commit()
 
             return document
