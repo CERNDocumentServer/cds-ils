@@ -50,9 +50,10 @@ class CDSRecordDump(object):
         self.revisions = []
 
         if self.latest_only:
-            self.revisions.append(self.data["record"][0])
+            self.revisions.append(
+                self._prepare_revision(self.data["record"][0]))
         else:
-            self.revisions = self.data["record"]
+            self.revisions = self._prepare_revision(self.data["record"])
 
     def prepare_files(self):
         """Get files from data dump."""

@@ -82,7 +82,6 @@ class CDSDocumentDumpLoader(object):
         """Create a new record from dump."""
         record_uuid = uuid.uuid4()
         try:
-
             with db.session.begin_nested():
                 provider = DocumentIdProvider.create(
                     object_type="rec",
