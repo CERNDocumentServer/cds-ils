@@ -156,6 +156,9 @@ def create_userprofile_for(email, username, full_name):
         profile.full_name = full_name
         db.session.add(profile)
         db.session.commit()
+        click.secho("User profile created for {}".format(email), fg="green")
+    else:
+        click.secho("ERROR: user {} does not exist".format(email), fg="red")
 
 
 @fixtures.command()
