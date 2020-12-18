@@ -30,7 +30,7 @@ def add_cover_metadata(json_data):
         if identifier["scheme"] == "ISBN"
     ]
     if isbn_list:
-        json_data["cover_metadata"] = {"ISBN": isbn_list[0]}
+        json_data["cover_metadata"] = {"ISBN": isbn_list[0]["value"]}
 
 
 class CDSDocumentDumpLoader(object):
