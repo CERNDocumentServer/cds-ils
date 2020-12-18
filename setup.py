@@ -125,6 +125,10 @@ setup(
             "ebl_document = cds_ils.importer.providers.ebl.ebl:model",
             "safari_document = cds_ils.importer.providers.safari.safari:model",
         ],
+        "cds_ils.migrator.models": [
+            "cds_book = cds_ils.importer.providers.cds.models.book:model",
+            "cds_standard = cds_ils.importer.providers.cds.models.standard:model",
+        ],
         "cds_ils.importer.series_models": [
             "ils_serial = cds_ils.importer.providers.cds.models.serial:model",
             "ils_multipart = cds_ils.importer.providers.cds.models.multipart:model",

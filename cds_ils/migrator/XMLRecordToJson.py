@@ -13,9 +13,9 @@ import arrow
 from cds_dojson.marc21.utils import create_record
 from flask import current_app
 
-from cds_ils.importer import marc21
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
+from cds_ils.migrator import migrator_marc21
 from cds_ils.migrator.errors import LossyConversion
 from cds_ils.migrator.handlers import migration_exception_handler
 
@@ -30,7 +30,7 @@ class CDSRecordDump(object):
         data,
         source_type="marcxml",
         latest_only=True,
-        dojson_model=marc21,
+        dojson_model=migrator_marc21,
     ):
         """Initialize."""
         self.data = data
@@ -104,6 +104,4 @@ class CDSRecordDump(object):
                 raise e
         else:
             val = data["json"]
-
-            # Calculate the _access key
             return dt, val
