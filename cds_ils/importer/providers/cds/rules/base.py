@@ -819,7 +819,7 @@ def imprint(self, key, value):
         "date": clean_val("c", value, str, req=True),
         "place": clean_val("a", value, str),
         "publisher": clean_val("b", value, str),
-        "reprint_date": reprint,
+        "reprint": reprint,
     }
 
 

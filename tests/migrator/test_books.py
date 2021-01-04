@@ -1834,7 +1834,7 @@ def test_imprint(app):
                     "place": "Sydney",
                     "publisher": "Allen & Unwin",
                     "date": "2013",
-                    "reprint_date": "2015",
+                    "reprint": "2015",
                 },
             },
         )
