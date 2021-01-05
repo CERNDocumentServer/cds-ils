@@ -104,6 +104,7 @@ setup(
             "cds_ils_tasks = cds_ils.literature.tasks",
             "cds_ils_ldap_tasks = cds_ils.ldap.tasks",
             "cds_ils_mail_tasks = cds_ils.mail.tasks",
+            "cds_ils_importer_tasks = cds_ils.importer.tasks",
         ],
         "invenio_i18n.translations": ["messages = cds_ils"],
         "invenio_access.actions": [

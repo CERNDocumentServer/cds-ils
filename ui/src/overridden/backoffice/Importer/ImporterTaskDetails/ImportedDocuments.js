@@ -1,13 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Accordion, Button, Header, Icon, Message } from 'semantic-ui-react';
+import {
+  Accordion,
+  Button,
+  Divider,
+  Header,
+  Icon,
+  Message,
+} from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
+import { CdsBackOfficeRoutes } from '../../../routes/BackofficeUrls';
 import { ReportDetails } from './ReportDetails';
 import { Link } from 'react-router-dom';
 import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
 import { DocumentIcon } from '@inveniosoftware/react-invenio-app-ils';
-import { importerApi } from '../../api/importer';
+import { importerApi } from '../../../api/importer';
 import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
 
 export class ImportedDocuments extends React.Component {
@@ -17,41 +25,24 @@ export class ImportedDocuments extends React.Component {
       activeIndex: -1,
       importCompleted: false,
       data: null,
-      intervalId: null,
       isLoading: true,
     };
   }
 
   componentDidMount() {
-    const idVar = setInterval(
-      () => this.checkForData(idVar),
+    const { taskId } = this.props;
+    this.intervalId = setInterval(
+      () => this.checkForData(taskId),
       invenioConfig.IMPORTER.fetchTaskStatusIntervalSecs
     );
-    // eslint-disable-next-line react/no-did-mount-set-state
-    this.intervalId = idVar;
-    this.checkForData(idVar);
-    window.addEventListener('beforeunload', this.onCloseWarning);
+    this.checkForData(taskId);
   }
 
   componentWillUnmount = () => {
-    const { intervalId } = this.state;
-    this.onCloseWarning &&
-      window.removeEventListener('beforeunload', this.onCloseWarning);
-    this.intervalId && clearInterval(intervalId);
+    this.intervalId && clearInterval(this.intervalId);
   };
 
-  onCloseWarning = e => {
-    const { isLoading } = this.state;
-    if (isLoading) {
-      const confirmationMessage =
-        'Importing in progress. Are you sure you want to leave?';
-
-      (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-      return confirmationMessage; //Webkit, Safari, Chrome
-    }
-  };
-
-  checkForData = async idVar => {
+  checkForData = async () => {
     const { importCompleted, data } = this.state;
     const { taskId } = this.props;
 
@@ -78,7 +69,7 @@ export class ImportedDocuments extends React.Component {
         });
       }
     } else {
-      this.intervalId && clearInterval(idVar);
+      this.intervalId && clearInterval(this.intervalId);
     }
   };
 
@@ -103,37 +94,42 @@ export class ImportedDocuments extends React.Component {
   };
 
   renderResultsHeader = () => {
-    const { cleanData } = this.props;
     const { data, isLoading } = this.state;
     return (
       <>
-        {isLoading || !data ? (
+        <Button
+          className="default-margin-top"
+          labelPosition="left"
+          icon="left arrow"
+          content="Import other files"
+          loading={!data}
+          disabled={!data}
+          as={Link}
+          to={CdsBackOfficeRoutes.importerCreate}
+        />
+        <Divider hidden />
+        {!data ? (
           <>
             <Icon loading name="circle notch" />
-            Importing literatures... This may take a while.
+            Fetching status...
+          </>
+        ) : isLoading ? (
+          <>
+            <Icon name="circle notch" loading aria-label="Import in progress" />
+            Importing literatures... This may take a while. You may leave the
+            page, the process will continue in background.
           </>
         ) : data.state === 'SUCCEEDED' ? (
           <>
-            <Icon name="check" />
-            Literatures imported succesfully.
+            <Icon name="check circle" color="green" aria-label="Completed" />
+            Literatures imported successfully.
           </>
         ) : (
           <>
-            <Icon name="close" />
+            <Icon name="times circle" color="red" aria-label="Failed" />
             Literatures import failed.
           </>
         )}
-        <div>
-          <Button
-            className="default-margin-top"
-            labelPosition="left"
-            loading={isLoading}
-            disabled={isLoading}
-            icon="left arrow"
-            onClick={() => cleanData()}
-            content="Import other files"
-          />
-        </div>
       </>
     );
   };
@@ -156,7 +152,6 @@ export class ImportedDocuments extends React.Component {
                 active={activeIndex === index}
                 index={index}
                 onClick={this.handleClick}
-                color="red"
               >
                 <Icon name="dropdown" />
                 {!_isEmpty(document) ? (
@@ -170,7 +165,7 @@ export class ImportedDocuments extends React.Component {
                 ) : importSuccess ? (
                   'No document created or updated'
                 ) : (
-                  'Error on importing this record'
+                  <span className="danger">Error on importing this record</span>
                 )}
               </Accordion.Title>
               <Accordion.Content active={activeIndex === index}>
@@ -216,6 +211,5 @@ export class ImportedDocuments extends React.Component {
 }
 
 ImportedDocuments.propTypes = {
-  cleanData: PropTypes.func.isRequired,
-  taskId: PropTypes.number.isRequired,
+  taskId: PropTypes.string.isRequired,
 };

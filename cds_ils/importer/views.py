@@ -10,17 +10,16 @@
 import json
 import os
 import uuid
-from threading import Thread
 
 import arrow
-from flask import Blueprint, abort, copy_current_request_context, request
+from flask import Blueprint, abort, request
 from invenio_app_ils.permissions import need_permissions
 from webargs import fields
 from webargs.flaskparser import use_kwargs
 
-from cds_ils.importer.api import import_from_xml
 from cds_ils.importer.models import ImporterAgent, ImporterMode, \
     ImporterTaskEntry, ImporterTaskLog
+from cds_ils.importer.tasks import import_from_xml_task
 
 
 def create_importer_blueprint(app):
@@ -39,6 +38,23 @@ def create_importer_blueprint(app):
         unique_filename = uuid.uuid4().hex
         ext = filename.rsplit(".", 1)[1]
         return unique_filename + "." + ext
+
+    def dump_log(log):
+        """Dumps a database log entry."""
+        obj = {
+            "id": log.id,
+            "state": log.status.value,  # enum value
+            "start_time": arrow.get(log.start_time).isoformat(),
+            "end_time": (arrow.get(log.end_time).isoformat()
+                         if log.end_time else None),
+            "original_filename": log.original_filename,
+            "provider": log.provider,  # string
+            "mode": log.mode.value,  # enum value
+            "source_type": log.source_type,  # string
+        }
+        if log.entries_count:
+            obj["total_entries"] = log.entries_count
+        return obj
 
     @blueprint.errorhandler(413)
     def payload_too_large(error):
@@ -61,19 +77,8 @@ def create_importer_blueprint(app):
                 .filter(ImporterTaskEntry.entry_index >= next_entry) \
                 .order_by(ImporterTaskEntry.entry_index.asc()) \
                 .all()
-            obj = {
-                "id": log_id,
-                "state": log.status.value,  # enum value
-                "start_time": arrow.get(log.start_time).isoformat(),
-                "end_time": arrow.get(log.end_time).isoformat() \
-                if log.end_time else None,
-                "original_filename": log.original_filename,
-                "provider": log.provider,  # string
-                "mode": log.mode.value,  # enum value
-                "source_type": log.source_type,  # string
-            }
+            obj = dump_log(log)
             if log.entries_count:
-                obj["total_entries"] = log.entries_count
                 obj["loaded_entries"] = children_entries_query.count()
             reports = []
             for entry in entries:
@@ -102,19 +107,13 @@ def create_importer_blueprint(app):
             obj["reports"] = reports
             return obj
         else:
-            return 404
+            abort(404, "Task not found")
 
     @blueprint.route("/importer", methods=["POST"])
     @use_kwargs({"provider": fields.Str(required=True)})
     @use_kwargs({"mode": fields.Str(required=True)})
     @need_permissions("document-importer")
     def importer(provider, mode):
-        @copy_current_request_context
-        def import_from_xml_background(log_id, file, source_type,
-                                       provider, mode):
-            """Acts as a proxy to pass the current context to the function."""
-            import_from_xml(log_id, file, source_type, provider, mode)
-
         def create_import_task(source_path, original_filename, source_type,
                                provider, mode):
             """Creates a task and returns its associated identifier."""
@@ -131,9 +130,9 @@ def create_importer_blueprint(app):
                 original_filename=original_filename,
             ))
 
-            t = Thread(target=import_from_xml_background,
-                       args=(log.id, source_path, source_type, provider, mode))
-            t.start()
+            import_from_xml_task.apply_async((
+                log.id, source_path, source_type, provider, mode,
+            ))
 
             return log.id
 
@@ -168,5 +167,17 @@ def create_importer_blueprint(app):
                 abort(400, "That file extension is not allowed")
         else:
             abort(400, "Missing file")
+
+    @blueprint.route("/importer/list", methods=["GET"])
+    @need_permissions("document-importer")
+    def importer_list():
+        list_count = 10
+        logs = ImporterTaskLog.query \
+            .order_by(ImporterTaskLog.id.desc()) \
+            .limit(list_count).all()
+        array = []
+        for log in logs:
+            array.append(dump_log(log))
+        return {"results": array}
 
     return blueprint
