@@ -31,19 +31,20 @@ for name, reqs in extras_require.items():
     extras_require["all"].extend(reqs)
 
 install_requires = [
-    "iniconfig<1.1.0",  # remove when fixed on PyPi
     "Flask-BabelEx>=0.9.3",
     "uwsgi>=2.0",
     "uwsgitop>=0.11",
     "uwsgi-tools>=1.1.1",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
-    "invenio-oauthclient>=1.3.5,<1.4.0",
     "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a21",
     "sentry-sdk>=0.10.2",
     # migrator deps
     "cds-dojson==0.9.0",
     "lxml>=3.5.0",
+    # needed by legacy pip resolver
+    "invenio[base,auth,metadata,files]>=3.3.0,<3.4.0",
+    "celery>=4.3,<5.0.0",
 ]
 
 packages = find_packages()
