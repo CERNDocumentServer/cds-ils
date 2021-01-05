@@ -5,7 +5,7 @@ import {
   FrontSiteRoutes,
   recordToPidType,
 } from '@inveniosoftware/react-invenio-app-ils';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { legacyApi } from '../../../api/legacy/legacy';

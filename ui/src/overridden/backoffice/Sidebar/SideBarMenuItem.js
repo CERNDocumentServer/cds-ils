@@ -7,7 +7,9 @@ import { Link } from 'react-router-dom';
 export class SideBarMenuItem extends React.Component {
   render() {
     const { activePath } = this.props;
-    const importerActive = activePath.includes(CdsBackOfficeRoutes.importer);
+    const importerActive = activePath.includes(
+      CdsBackOfficeRoutes.importerCreate
+    );
 
     return (
       <Menu.Item>
@@ -16,7 +18,7 @@ export class SideBarMenuItem extends React.Component {
           <Menu.Item
             as={importerActive ? '' : Link}
             active={importerActive}
-            to={CdsBackOfficeRoutes.importer}
+            to={CdsBackOfficeRoutes.importerCreate}
           >
             Import
           </Menu.Item>

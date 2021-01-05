@@ -8,12 +8,22 @@
 """Admin panel for importer tasks."""
 import json
 
-from flask import Blueprint
+from flask import Blueprint, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_babelex import gettext as _
 from markupsafe import Markup
 
 from cds_ils.importer.models import ImporterTaskEntry, ImporterTaskLog
+
+
+def render_html_link(func):
+    """Generate a object formatter for links."""
+    def formatter(v, c, m, p):
+        text, link = func(m)
+        return Markup(
+            '<a href="{0}">{1}</a>'.format(link, text)
+        )
+    return formatter
 
 
 class ImporterTaskModelView(ModelView):
@@ -30,6 +40,21 @@ class ImporterTaskModelView(ModelView):
 
     column_default_sort = (ImporterTaskLog.id, True)
 
+    # Link to filter by import_id
+    column_formatters = dict(
+        records=render_html_link(
+            lambda o: ("Record updates",
+                       url_for("importertaskentry.index_view", flt0_0=o.id)),
+        )
+    )
+
+    column_details_list = [
+        *[c.key for c in ImporterTaskLog.__table__.columns], "records"
+    ]
+    column_list = column_details_list
+
+    column_filters = ("id",)
+
 
 def _json_checkbox_formatter(view, context, model, name):
     """JSON handler for details page."""
@@ -42,13 +67,21 @@ def _json_checkbox_formatter(view, context, model, name):
 def _json_code_formatter(view, context, model, name):
     """JSON handler for details page."""
     value = getattr(model, name)
-    return Markup("<pre>{0}</pre>") \
-        .format(json.dumps(value, indent=2, sort_keys=True)) if value \
+    return (
+        Markup("<pre>{0}</pre>").format(
+            json.dumps(value, indent=2, sort_keys=True)
+        )
+        if value
         else None
+    )
 
 
 class ImporterTaskEntryModelView(ModelView):
     """Invenio admin view for importer tasks."""
+
+    def is_visible(self):
+        """Hide the view from the menu."""
+        return False
 
     # Entries are read-only
     can_create = False
@@ -59,9 +92,8 @@ class ImporterTaskEntryModelView(ModelView):
 
     column_display_pk = True
 
-    column_default_sort = (
-        ImporterTaskEntry.import_id, ImporterTaskEntry.entry_index
-    )
+    column_default_sort = (ImporterTaskEntry.import_id,
+                           ImporterTaskEntry.entry_index)
 
     _json_object_columns = ["created_document", "created_eitem",
                             "updated_document", "updated_eitem", "series"]
@@ -70,7 +102,14 @@ class ImporterTaskEntryModelView(ModelView):
     _json_columns = [*_json_object_columns, *_json_array_columns]
 
     # display the id instead of __str__
-    _common_formatters = {"importer_task": lambda v, c, m, n: m.import_id}
+    _common_formatters = {
+        "importer_task": render_html_link(
+            lambda o: (o.import_id,
+                       url_for(
+                           "importertasklog.index_view", flt0_0=o.import_id
+                       )),
+        )
+    }
 
     column_formatters = {
         **_common_formatters,
@@ -81,6 +120,8 @@ class ImporterTaskEntryModelView(ModelView):
         **_common_formatters,
         **{col: _json_code_formatter for col in _json_columns},
     }
+
+    column_filters = ("import_id",)
 
 
 blueprint = Blueprint(
@@ -93,7 +134,7 @@ blueprint = Blueprint(
 importer_tasks = {
     "model": ImporterTaskLog,
     "modelview": ImporterTaskModelView,
-    "name": "Tasks",
+    "name": "Imports",
     "category": _("Importer"),
 }
 

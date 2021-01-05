@@ -17,8 +17,13 @@ const check = async (taskId, nextEntry = 0) => {
   );
 };
 
+const list = async () => {
+  return await http.get(`${importerURL}/list`);
+};
+
 export const importerApi = {
   check: check,
   createTask: createTask,
+  list: list,
   url: importerURL,
 };

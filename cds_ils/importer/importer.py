@@ -156,10 +156,5 @@ class Importer(object):
 
         if matched_document:
             self.delete_records(matched_document)
-            return self.import_summary()
 
-        # finds the multiple matches or fuzzy matches, does not create new doc
-        # requires manual intervention, to avoid duplicates
-        if self.ambiguous_matches or self.fuzzy_matches:
-            return self.import_summary()
         return self.import_summary()
