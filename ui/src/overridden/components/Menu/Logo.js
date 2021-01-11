@@ -14,7 +14,7 @@ export const Logo = ({ ...props }) => {
 export const LogoMobile = ({ ...props }) => {
   return (
     <h3>
-      <Link to="/" className="logo">
+      <Link to="/" className="logo media-font-size">
         CERN Library Catalogue
       </Link>
     </h3>
