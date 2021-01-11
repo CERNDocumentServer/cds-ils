@@ -1,18 +1,20 @@
 {% block subject %}
-InvenioILS: your literature request {{ request.pid }} has been declined.
+CERN Library: your request for "{{ request.title }}" has been declined.
 {% endblock %}
 
 {% block body_plain %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your literature request {{ request.pid }} has been declined because the literature you are looking for
-has not been found.
+your request for "{{ request.title }}" has been declined because the literature that you are looking for has not been found among our providers.
+
+Please let us know if another literature could fulfill your needs.
 {% endblock %}
 
 
 {% block body_html %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your literature request {{ request.pid }} has been declined because the literature you are looking for
-has not been found.
+your literature request for "{{ request.title }}" has been declined because the literature that you are looking for has not been found among our providers.
+
+Please let us know if another literature could fulfill your needs.
 {% endblock %}

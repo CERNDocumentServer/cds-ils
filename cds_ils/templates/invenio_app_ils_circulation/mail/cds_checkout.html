@@ -1,15 +1,27 @@
 {% block subject %}
-InvenioILS: your loan for "{{ document.title }}" has started.
+CERN Library: your loan for "{{ document.title }}" has started.
 {% endblock %}
 
 {% block body_plain %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your loan for "{{ document.full_title }}" has started. The due date is {{ loan.end_date }}.
+your loan for "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> has started.
+
+The due date is {{ loan.end_date }}.
+
+If you did not already pick up the book at the Library desk, be aware that:
+- if you requested a pick up at the Library, your book is ready. You can come to pick it up.
+- if you requested an internal mail delivery, your book has been sent. Delivery estimate is 2-3 working days.
 {% endblock %}
 
 {% block body_html %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your loan for "{{ document.full_title }}" has started. The due date is {{ loan.end_date }}.
+your loan for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has started.
+
+The due date is {{ loan.end_date }}.
+
+If you did not already pick up the book at the Library desk, be aware that:
+- if you requested a pick up at the Library, your book is ready. You can come to pick it up.
+- if you requested an internal mail delivery, your book has been sent. Delivery estimate is 2-3 working days.
 {% endblock %}

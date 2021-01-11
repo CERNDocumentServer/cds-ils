@@ -1,16 +1,16 @@
 {% block subject %}
-InvenioILS: you have cancelled your literature request {{ request.pid }}.
+CERN Library: you have cancelled your request "{{ request.title }}".
 {% endblock %}
 
 {% block body_plain %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-you have cancelled your literature request {{ request.pid }}.
+you have cancelled your request "{{ request.title }}".
 {% endblock %}
 
 
 {% block body_html %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-you have cancelled your literature request {{ request.pid }}.
+you have cancelled your request "{{ request.title }}".
 {% endblock %}

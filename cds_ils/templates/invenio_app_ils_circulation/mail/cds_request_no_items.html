@@ -1,17 +1,25 @@
 {% block subject %}
-InvenioILS: your loan request for "{{ document.title }}" has been registered.
+CERN Library: your loan request for "{{ document.title }}" has been registered.
 {% endblock %}
 
 {% block body_plain %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your loan request for "{{ document.full_title }}" has been registered. However, the are no available copies at the moment.
+your loan request for "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> has been registered. However, the are no available copies at the moment.
 We will notify you as soon as a copy will be available.
+
+We will do our best to fulfill your request in the best delay and notify you as soon as a copy will be available.
+
+In the meantime, you can check if the ebook version <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> is available.
 {% endblock %}
 
 {% block body_html %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your loan request for "{{ document.full_title }}" has been registered. However, the are no available copies at the moment.
+your loan request for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has been registered. However, the are no available copies at the moment.
 We will notify you as soon as a copy will be available.
+
+We will do our best to fulfill your request in the best delay and notify you as soon as a copy will be available.
+
+In the meantime, you can check if the <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">ebook version</a> is available.
 {% endblock %}

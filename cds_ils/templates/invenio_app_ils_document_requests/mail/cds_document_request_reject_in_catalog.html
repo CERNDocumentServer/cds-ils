@@ -1,18 +1,26 @@
 {% block subject %}
-InvenioILS: your literature request {{ request.pid }} has been declined.
+CERN Library: your request for "{{ request.title }}" has been declined.
 {% endblock %}
 
 {% block body_plain %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your literature request {{ request.pid }} has been declined because the literature you are looking for
-is already in the catalog.
+your request for "{{ request.title }}" has been declined because the item that you are looking for is already in the Library catalogue:
+<{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=request.document_pid) }}>
+
+You can either place a request to loan it or read the ebook.
+
+Please let us know if does not suit your needs.
 {% endblock %}
 
 
 {% block body_html %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your literature request {{ request.pid }} has been declined because the literature you are looking for
-is already in the catalog.
+your request for "{{ request.title }}" has been declined because the item that you are looking for is already in the Library catalogue:
+<a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=request.document_pid) }}">{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=request.document_pid) }}</a>
+
+You can either place a request to loan it or read the ebook.
+
+Please let us know if does not suit your needs.
 {% endblock %}

@@ -1,16 +1,20 @@
 {% block subject %}
-InvenioILS: your literature request {{ request.pid }} has been approved.
+CERN Library: your request for "{{ request.title }}" has been approved.
 {% endblock %}
 
 {% block body_plain %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-Your literature request {{ request.pid }} has been approved.
+Your request for "{{ request.title }}" has been approved and will be processed.
+
+The delivery estimate is 1-15 days. You will receive an email as soon as it has arrived.
 {% endblock %}
 
 
 {% block body_html %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-Your literature request {{ request.pid }} has been approved.
+Your request for "{{ request.title }}" has been approved and will be processed.
+
+The delivery estimate is 1-15 days. You will receive an email as soon as it has arrived.
 {% endblock %}
