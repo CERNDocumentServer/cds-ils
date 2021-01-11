@@ -1,21 +1,19 @@
 {% block subject %}
-InvenioILS: your loan for "{{ document.title }}" is overdue!
+CERN Library: your loan for "{{ document.title }}" is overdue!
 {% endblock %}
 
 {% block body_plain %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your loan on "{{ document.title }}" expired {{ days_ago }} days ago.
+your loan of "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> expired {{ days_ago }} days ago.
 
-You have reached the maximum period for loaning the literature. You are kindly requested
-to return it at the library or request an extension for your loan.
+You are kindly requested to return it at the Library or to extend it online in your profile page.
 {% endblock %}
 
 {% block body_html %}
-Dear {{ patron.email }},
+Dear {{ patron.name }},
 
-your loan on "{{ document.title }}" expired {{ days_ago }} days ago.
+your loan of <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> expired {{ days_ago }} days ago.
 
-You have reached the maximum period for loaning the literature. You are kindly requested
-to return it at the library or request an extension for your loan.
+You are kindly requested to return it at the Library or to extend it online in your profile page.
 {% endblock %}
