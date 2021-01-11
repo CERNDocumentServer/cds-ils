@@ -1,10 +1,11 @@
 import {
   FrontSiteRoutes,
   getStaticPageByName,
+  Media,
 } from '@inveniosoftware/react-invenio-app-ils';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Dropdown, Menu, Responsive } from 'semantic-ui-react';
+import { Dropdown, Menu } from 'semantic-ui-react';
 
 const DropdownItems = () => {
   return (
@@ -38,25 +39,25 @@ const DropdownItems = () => {
 export const RightMenuItem = () => {
   return (
     <Menu.Item>
-      <Responsive minWidth={Responsive.onlyTablet.minWidth}>
+      <Media greaterThanOrEqual="tablet">
         <Dropdown item text="Help" icon="caret down">
           <Dropdown.Menu>
             <DropdownItems />
           </Dropdown.Menu>
         </Dropdown>
-      </Responsive>
+      </Media>
     </Menu.Item>
   );
 };
 
 export const RightMenuItemMobile = () => {
   return (
-    <Responsive {...Responsive.onlyMobile}>
+    <Media at="mobile">
       <Dropdown item icon="help">
         <Dropdown.Menu>
           <DropdownItems />
         </Dropdown.Menu>
       </Dropdown>
-    </Responsive>
+    </Media>
   );
 };
