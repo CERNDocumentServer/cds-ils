@@ -97,6 +97,13 @@ def pages():
             content=page_data("contact.html"),
             template_name="invenio_pages/dynamic.html",
         ),
+        Page(
+            url="/guide/search",
+            title="Search guide",
+            description="Search guide",
+            content=page_data("search_guide.html"),
+            template_name="invenio_pages/dynamic.html",
+        ),
     ]
     with db.session.begin_nested():
         Page.query.delete()

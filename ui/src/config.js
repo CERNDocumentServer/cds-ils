@@ -6,6 +6,7 @@ export const config = {
       { name: 'terms', route: '/terms', apiURL: '2' },
       { name: 'faq', route: '/faq', apiURL: '3' },
       { name: 'contact', route: '/contact', apiURL: '4' },
+      { name: 'search-guide', route: '/guide/search', apiURL: '5' },
     ],
     ENABLE_LOCAL_ACCOUNT_LOGIN: false,
     OAUTH_PROVIDERS: {

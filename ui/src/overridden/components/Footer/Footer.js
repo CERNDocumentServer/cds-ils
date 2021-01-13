@@ -38,6 +38,11 @@ export const Footer = ({ ...props }) => {
                   <Link to={getStaticPageByName('faq').route}>F.A.Q.</Link>
                 </List.Item>
                 <List.Item>
+                  <Link to={getStaticPageByName('search-guide').route}>
+                    Search guide
+                  </Link>
+                </List.Item>
+                <List.Item>
                   <Link to={FrontSiteRoutes.documentRequestForm}>
                     Request new literature
                   </Link>

@@ -25,6 +25,10 @@ const DropdownItems = () => {
         F.A.Q.
       </Dropdown.Item>
       <Dropdown.Divider />
+      <Dropdown.Item as={Link} to={getStaticPageByName('search-guide').route}>
+        Search guide
+      </Dropdown.Item>
+      <Dropdown.Divider />
       <Dropdown.Item as={Link} to={getStaticPageByName('contact').route}>
         Ask a librarian
       </Dropdown.Item>
