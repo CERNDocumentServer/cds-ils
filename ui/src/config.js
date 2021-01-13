@@ -23,6 +23,11 @@ export const config = {
         className: '',
       },
     },
+    EMAILS_PREFILL: {
+      subjectPrefix: 'CERN Library:',
+      footer:
+        '\n\nKind regards,\nCERN Library\nLocation: building 52/1-052 on the Meyrin campus\nOpening hours:\n- Library is accessible 24/7.\n- Library desk (loans, returns, enquiries) and Bookshop: Monday - Friday, 8:30 a.m. - 6 p.m.\nEmail: library.desk@cern.ch',
+    },
     ENVIRONMENTS: [
       {
         name: 'dev',
