@@ -1,0 +1,674 @@
+<h2 id="cds-videos">CERN library catalogue</h2>
+
+<p>This guide explains how to perform search queries on the CERN library catalogue using easy to understand examples.</p>
+
+<h3>Simple search (one or multiple terms)</h3>
+
+<p><strong>Example:</strong> <a href="#"><code>dark matter</code></a></p>
+
+<p>Results will match records with the <em>terms</em> <code>dark</code> <em>or</em> <code>matter</code> in <em>any field</em>.
+
+<p>You can require <em>presence</em> of both terms using either the <code>+</code> or <code>AND</code> operator:</p>
+
+<p><strong>Examples:</strong> <a href="#"><code>+dark +matter</code></a> or <a href="#"><code>dark AND matter</code></a></p>
+
+<p>You can require <em>absence</em> of one or more terms using either the <code>-</code> or <code>NOT</code> operator:</p>
+
+<p><strong>Examples:</strong> <a href="#"><code>-dark +matter</code></a> or <a href="#"><code>NOT dark AND matter</code></a></p>
+
+
+<h3 id="phrasesearch">Phrase search</h3>
+
+<p><strong>Example:</strong> <a href="#"><code>"dark matter"</code></a></p>
+
+<p>Results will match records with the <em>phrase</em> <code>dark matter</code> in <em>any field</em>.</p>
+
+<h3 id="fieldsearch">Field search</h3>
+
+<p><strong>Example:</strong> <a href="#"><code>title:matter</code></a></p>
+
+<p>Results will match records with the <em>term</em> <code>matter</code> in the <em>field</em> <code>title</code>. If you want to search for multiple terms in the title you must <strong>group the terms</strong> using parenthesis:</p>
+
+<p><strong>Example:</strong> <a href="#"><code>title:(dark matter)</code></a></p>
+
+<p>See the field reference below for the full list of fields you can search.</p>
+
+<h3 id="combinedsimplephraseorfieldsearch">Combined simple, phrase or field search</h3>
+
+<p><strong>Example:</strong> <a href="#"><code>+title:"dark matter" -title:experiment</code></a> or <a href="#"><code>title:(-dark +matter)</code></a></p>
+
+<p>You can combine simple, phrase and field search to construct advanced search queries.</p>
+
+<h3 id="rangesearch">Range search</h3>
+
+<p><strong>Example:</strong> <a href="#"><code>publication_date:[2020 TO 2021]</code></a> (note, you must capitalize <code>TO</code>).</p>
+
+<p>Results will match any record with a publication date between 2020-01-01 and 2021-12-31 (both dates inclusive).</p>
+
+<p>Examples of other ranges:</p>
+
+<ul>
+<li><code>date:{* TO 2020}</code> - All days until 2020.</li>
+
+<li><code>date:[2020 TO *]</code> - All days from 2020.</li>
+
+</ul>
+
+<h3 id="phrasesearch">Examples of searches on literatures</h3>
+
+<h4>Identifiers</h4>
+
+<strong>Example:</strong>
+
+<ul>
+<li><a href="#"><code>"9814749133"</code></a> or <a href="#"><code>"9789814749138"</code></a> - ISBN 10 or 13</li>
+<li><a href="#"><code>"10.1016/j.physletb.2012.08.020"</code></a> - DOI</li>
+<li><a href="#"><code>"1745-2481"</code></a> - ISSN</li>
+</ul>
+
+<p>Results will match exactly the provided identifier.</p>
+
+<h4>Author and affiliation</h4>
+
+<strong>Example:</strong>
+
+<ul>
+<li><a href="#"><code>authors.full_name:(Albert Einstein)</code></a> - literature from a specific author</li>
+<li><a href="#"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
+</ul>
+
+<h4>Literature source</h4>
+
+<strong>Example:</strong>
+
+<ul>
+<li><a href="#"><code>conference_info.acronym:CHEP AND conference_info.year:2019</code></a> - conference papers from a particular year</li>
+<li><a href="#"><code>publication_info.journal_title:"Journal of High Energy Physics"</code></a> - publications in a journal</li>
+<li><a href="#"><code>imprint.date:2020</code></a> - imprint date, to disambiguate versions</li>
+</ul>
+
+<h3 id="rankingsorting">Ranking/Sorting</h3>
+
+<p>By default all searches are sorted according to an internal ranking algorithm that scores each match against your query. In both the user interface and REST API, it's possible to sort the results by:</p>
+
+<ul>
+<li>Recently added</li>
+<li>Most relevant</li>
+<li>Available copies</li>
+<li>Most loaned</li>
+<li>Publication year [oldest / newest]</li>
+<li>Title [A-Z / Z-A]</li>
+</ul>
+
+<h3 id="missingvalues">Missing values</h3>
+
+<p>It is possible to search for records that either are missing a value or have a value in a specific field using the <code>_exists_</code> and <code>_missing_</code> field names.</p>
+
+<p><strong>Example:</strong> <a href="#"><code>_missing_:location AND title.title:"Passport Big Bang"</code></a> (records with Passport Big Bang in the title without location)</p>
+
+<p><strong>Example:</strong> <a href="#"><code>_exists_:related_links</code></a> (all records with related links)</p>
+
+<h3 id="advancedconcepts">Advanced concepts</h3>
+
+<h4 id="boosting">Boosting</h4>
+
+<p>You can use the boost operator <code>^</code> when one term is more relevant than another. For instance, you can search for all records with the phrase <em>Dark matter</em> in either <em>title</em> or <em>description</em> field, but rank records with the phrase in the <em>title</em> field higher:</p>
+
+<p><strong>Example:</strong> <a href="#"><code>title:"dark matter"^5 description:"dark matter"</code></a></p>
+
+<p>Note: <code>^</code> is followed by a positive floating point number specifying the boost value compared to the default 1.
+
+<h4 id="fuzziness">Fuzziness</h4>
+
+<p>You can search for terms similar to but not exactly like your search term using the fuzzy operator <code>~</code>.</p>
+
+<p><strong>Example:</strong> <a href="#"><code>drak~</code></a></p>
+
+<p>Results will match records with terms similar to <code>drak</code> which would e.g. also match <code>dark</code>.</p>
+
+<h4 id="proximitysearches">Proximity searches</h4>
+
+<p>A phrase search like <code>"collision theory"</code> by default expect all terms in exactly the same order, and thus for instance would not match the record entitled <em>"Quantum collision theory"</em>, but not the record <em>"Theory of heavy ion collision physics in hadron therapy"</em>. A proximity search allows that the terms are not in the exact order and may include other terms inbetween. The degree of flexiblity is specified by an integer afterwards:</p>
+
+<p><strong>Example:</strong> <a href="#"><code>"collision theory"~10</code></a></p>
+
+<h4 id="wildcards">Wildcards</h4>
+
+<p>You can use wildcards in search terms to replace a single character (using <code>?</code> operator) or zero or more characters (using <code>*</code> operator).</p>
+
+<p><strong>Example:</strong> <a href="#"><code>title:(crab cavit*)</code></a></p>
+
+The result will match videos with title referring to cavities also in languages other than english.
+
+<p>Wildcard searches can be slow and should normally be avoided if possible.</p>
+
+<hr />
+
+<h2 id="fieldsreference">Fields reference</h2>
+
+<p>The table below lists the data type of each field. Below is a quick description
+of what each data type means and what is possible.</p>
+
+<ul>
+<li><strong>string</strong>: Field does not require exact match (example field: <code>title</code>).</li>
+
+<li><strong>string (exact)</strong>: Field requires exact match (example field: <code>title</code>).</li>
+
+<li><strong>CV</strong>: Controlled vocabularies but take only a specific list of values.</li>
+
+<li><strong>integer</strong>: A number (range queries possible).</li>
+
+<li><strong>datetime</strong>: An ISO8601 date or datetime, e.g. <code>2020-12-31</code> (range queries possible).</li>
+
+<li><strong>boolean</strong>: <code>true</code> or <code>false</code>.</li>
+</ul>
+
+<p>In case of multiple subfields, (<code>\*</code>) applies to all of them</p>
+
+<h3 id="fieldsreferencecommon">Common fields</h3>
+
+<table><thead><tr>
+<th align="left">Field name</th>
+<th align="left">Type</th>
+<th align="left">Notes</th></tr></thead>
+<tbody>
+
+<tr>
+  <td><code>abstract</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>alternative_abstracts</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>alternative_identifiers.\*</code></td>
+  <td>string</td>
+  <td>Identifiers: material, scheme, value</td>
+</tr>
+<tr>
+  <td><code>alternative_titles.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>alternative_titles.language</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>alternative_titles.source</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>alternative_titles.type</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>alternative_titles.value</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>created_by.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>created_by.type</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>created_by.value</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>edition</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>extensions</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>extensions_keywords.\*</code></td>
+  <td>string</td>
+  <td>key, value</td>
+</tr>
+<tr>
+  <td><code>extensions_texts.\*</code></td>
+  <td>string</td>
+  <td>key, value</td>
+</tr>
+<tr>
+  <td><code>extensions_longs.\*</code></td>
+  <td>string</td>
+  <td>key, value</td>
+</tr>
+<tr>
+  <td><code>extensions_dates.\*</code></td>
+  <td>string</td>
+  <td>key, value</td>
+</tr>
+<tr>
+  <td><code>extensions_booleans.\*</code></td>
+  <td>string</td>
+  <td>key, value</td>
+</tr>
+<tr>
+  <td><code>identifiers.\*</code></td>
+  <td>string</td>
+  <td>Identifiers: material, scheme, value</td>
+</tr>
+<tr>
+  <td><code>keywords.\*</code></td>
+  <td>string</td>
+  <td>Keywords: source, value</td>
+</tr>
+<tr>
+  <td><code>languages</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>note</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>pid</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_year</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>relation_types</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>relations.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>tags</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>title</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>updated_by.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>updated_by.type</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>updated_by.value</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>urls.\*</code></td>
+  <td>string</td>
+  <td>URLs: description, value</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="fieldsreferencedocuments">Documents</h3>
+
+<table><thead><tr>
+<th align="left">Field name</th>
+<th align="left">Type</th>
+<th align="left">Notes</th></tr></thead>
+<tbody>
+
+<tr>
+  <td><code>authors.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>authors.affiliations.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>authors.affiliations.identifiers.\*</code></td>
+  <td>string</td>
+  <td>Identifiers: scheme, value</td>
+</tr>
+<tr>
+  <td><code>authors.affiliations.name</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>authors.alternative_names</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>authors.full_name</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>authors.identifiers.\*</code></td>
+  <td>string</td>
+  <td>Identifiers: material, scheme, value</td>
+</tr>
+<tr>
+  <td><code>authors.roles</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>authors.type</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.active_loans</code></td>
+  <td>integer</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.can_circulate_items_count</code></td>
+  <td>integer</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.available_items_for_loan_count</code></td>
+  <td>integer</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.has_items_on_site</code></td>
+  <td>integer</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.next_available_date</code></td>
+  <td>date</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.overbooked</code></td>
+  <td>boolean</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.overdue_loans</code></td>
+  <td>integer</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.past_loans_count</code></td>
+  <td>integer</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>circulation.pending_loans</code></td>
+  <td>integer</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>curated</code></td>
+  <td>boolean</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>document_type</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>eitems.\*</code></td>
+  <td>string</td>
+  <td>E-Items</td>
+</tr>
+<tr>
+  <td><code>imprint.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>imprint.date</code></td>
+  <td>date</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>imprint.place</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>imprint.publisher</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>imprint.reprint</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>items.\*</code></td>
+  <td>string</td>
+  <td>Items</td>
+</tr>
+<tr>
+  <td><code>licenses.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>licenses.license.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>licenses.license.id</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>licenses.license.maintainer</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>licenses.license.status</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>licenses.license.title</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>licenses.license.url</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>licenses.material</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>number_of_pages</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>other_authors</code></td>
+  <td>boolean</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_info.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_info.artid</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_info.journal_issue</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_info.journal_title</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_info.journal_volume</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_info.note</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_info.pages</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publication_info.year</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>restricted</code></td>
+  <td>boolean</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>source</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>stock.mediums</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>subjects.\*</code></td>
+  <td>string</td>
+  <td>Subjects: scheme, value</td>
+</tr>
+<tr>
+  <td><code>table_of_content</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+
+</tbody>
+</table>
+
+
+<h3 id="fieldsreferenceseries">Series</h3>
+
+
+<table><thead><tr>
+<th align="left">Field name</th>
+<th align="left">Type</th>
+<th align="left">Notes</th></tr></thead>
+<tbody>
+
+<tr>
+  <td><code>abbreviated_title</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>access_urls.\*</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>access_urls.access_restriction</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>access_urls.description</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>access_urls.open_access</code></td>
+  <td>boolean</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>access_urls.value</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>authors</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>isbn</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>issn</code></td>
+  <td>string (exact)</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>mode_of_issuance</code></td>
+  <td>CV</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>publisher</code></td>
+  <td>string</td>
+  <td></td>
+</tr>
+
+</tbody>
+</table>
