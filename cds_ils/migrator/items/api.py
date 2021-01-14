@@ -18,13 +18,13 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
-from cds_ils.migrator.api import import_record, model_provider_by_rectype
-from cds_ils.migrator.documents.api import get_document_by_barcode, \
-    get_document_by_legacy_recid
+from cds_ils.migrator.api import import_record
+from cds_ils.migrator.documents.api import get_document_by_barcode
 from cds_ils.migrator.errors import DocumentMigrationError, ItemMigrationError
 from cds_ils.migrator.internal_locations.api import \
     get_internal_location_by_legacy_recid
-from cds_ils.migrator.utils import clean_item_record
+from cds_ils.migrator.items.utils import clean_item_record
+from cds_ils.migrator.utils import model_provider_by_rectype
 
 migrated_logger = logging.getLogger("migrated_records")
 error_logger = logging.getLogger("records_errored")

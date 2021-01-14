@@ -816,7 +816,7 @@ def imprint(self, key, value):
         raise UnexpectedValue(subfield="c")
     self["publication_year"] = str(date.date().year)
     return {
-        "date": clean_val("c", value, str, req=True),
+        "date": date.date().isoformat() if date else None,
         "place": clean_val("a", value, str),
         "publisher": clean_val("b", value, str),
         "reprint": reprint,

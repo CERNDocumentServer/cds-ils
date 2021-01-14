@@ -11,17 +11,17 @@ from __future__ import unicode_literals
 
 from copy import deepcopy
 
-from cds_ils.importer.base_model import model as base_model
 from cds_ils.importer.overdo import CdsIlsOverdo
 
-from ..cds import get_helper_dict
+from ..cds import model as cds_base
 from ..ignore_fields import CDS_IGNORE_FIELDS
+from .book import model as books_base
 
 
 class CDSJournal(CdsIlsOverdo):
     """Translation Index for CDS Books."""
 
-    __query__ = "003:SzGeCERN 980__:PERI -980__:DELETED -980__:MIGRATED"
+    __query__ = "980__:PERI -980__:DELETED -980__:MIGRATED"
 
     __model_ignore_keys__ = {
         "080__a",
@@ -78,6 +78,7 @@ class CDSJournal(CdsIlsOverdo):
             "electronic_items": [],
             "relation_previous": None,
             "relation_next": None,
+            "tags": []
         }
     }
 
@@ -95,4 +96,5 @@ class CDSJournal(CdsIlsOverdo):
         )
 
 
-model = CDSJournal(bases=(), entry_point_group="cds_ils.importer.series")
+model = CDSJournal(bases=(cds_base, books_base),
+                   entry_point_group="cds_ils.importer.series")

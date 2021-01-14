@@ -63,16 +63,13 @@ def exclude_multipart_fields(json_record, exclude_keys=None):
 
 
 def get_multipart_by_multipart_id(multipart_id):
-    """Search multiparts by its legacy recid."""
+    """Search multiparts by its identifier."""
     series_search = current_app_ils.series_search_cls()
     series_cls = current_app_ils.series_record_cls
+    # f.e. multipart id = vol234
     search = series_search.query(
-        "bool",
-        match=[
-            Q("term", mode_of_issuance="MULTIPART_MONOGRAPH"),
-            Q("term", _migration__multipart_id=multipart_id),
-        ],
-    )
+        "match", _migration__multipart_id=multipart_id
+    ).filter("match", mode_of_issuance="MULTIPART_MONOGRAPH")
     result = search.execute()
     hits_total = result.hits.total.value
     if hits_total == 1:
@@ -83,7 +80,7 @@ def get_multipart_by_multipart_id(multipart_id):
         )
     else:
         raise MultipartMigrationError(
-            "found more than one multipart with recid {}".format(multipart_id)
+            "found more than one multipart id {}".format(multipart_id)
         )
 
 

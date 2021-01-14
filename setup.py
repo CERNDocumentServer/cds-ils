@@ -131,10 +131,14 @@ setup(
             "cds_book = cds_ils.importer.providers.cds.models.book:model",
             "cds_standard = cds_ils.importer.providers.cds.models.standard:model",
         ],
-        "cds_ils.importer.series_models": [
+        "cds_ils.migrator.serial_model": [
             "ils_serial = cds_ils.importer.providers.cds.models.serial:model",
-            "ils_multipart = cds_ils.importer.providers.cds.models.multipart:model",
+        ],
+        "cds_ils.migrator.journal_model": [
             "ils_journal = cds_ils.importer.providers.cds.models.journal:model",
+        ],
+        "cds_ils.migrator.multipart_model": [
+            "ils_multipart = cds_ils.importer.providers.cds.models.multipart:model",
         ],
         "cds_ils.importer.cds.base": [
             "base = cds_ils.importer.providers.cds.rules.base",

@@ -17,10 +17,11 @@ from invenio_app_ils.patrons.api import SystemAgent
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
-from cds_ils.migrator.api import import_record, model_provider_by_rectype
+from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ItemMigrationError, LoanMigrationError
 from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.patrons.api import get_user_by_legacy_id
+from cds_ils.migrator.utils import model_provider_by_rectype
 
 migrated_logger = logging.getLogger("migrated_records")
 records_logger = logging.getLogger("records_errored")

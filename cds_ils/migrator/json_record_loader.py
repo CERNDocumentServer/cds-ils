@@ -19,7 +19,11 @@ cli_logger = logging.getLogger("migrator")
 
 
 class CDSRecordDumpLoader(object):
-    """Migrate a CDS records."""
+    """Migrate a CDS records.
+
+    This class is focused on migrating files from a json file (not MARC),
+    fe: ILLs, Acqs, Loans.
+    """
 
     @classmethod
     def create(cls, dump, model, pid_provider, legacy_id_key="legacy_recid"):

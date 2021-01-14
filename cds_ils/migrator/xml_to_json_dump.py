@@ -51,7 +51,8 @@ class CDSRecordDump(object):
 
         if self.latest_only:
             self.revisions.append(
-                self._prepare_revision(self.data["record"][0]))
+                self._prepare_revision(self.data["record"][0])
+            )
         else:
             self.revisions = self._prepare_revision(self.data["record"])
 

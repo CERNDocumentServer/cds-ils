@@ -24,9 +24,10 @@ import click
 from invenio_app_ils.acquisition.proxies import current_ils_acq
 from invenio_db import db
 
-from cds_ils.migrator.api import bulk_index_records, import_record, \
-    model_provider_by_rectype
+from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import VendorError
+from cds_ils.migrator.utils import bulk_index_records, \
+    model_provider_by_rectype
 
 
 def get_vendor_pid_by_legacy_id(legacy_id):

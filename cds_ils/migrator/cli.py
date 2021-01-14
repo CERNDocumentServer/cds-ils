@@ -15,9 +15,8 @@ from flask.cli import with_appcontext
 
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
 from cds_ils.migrator.acquisition.vendors import import_vendors_from_json
-from cds_ils.migrator.api import commit, import_documents_from_dump, \
-    import_documents_from_record_file, import_multipart_from_file, \
-    import_serial_from_file, reindex_pidtype
+from cds_ils.migrator.api import import_documents_from_dump
+from cds_ils.migrator.default_records import create_unknown_records
 from cds_ils.migrator.document_requests.api import \
     import_document_requests_from_json
 from cds_ils.migrator.eitems.api import migrate_ebl_links, \
@@ -32,7 +31,10 @@ from cds_ils.migrator.relations.api import link_documents_and_serials, \
     migrate_siblings_relation
 from cds_ils.migrator.series.api import validate_multipart_records, \
     validate_serial_records
-from cds_ils.migrator.utils import create_migration_records
+from cds_ils.migrator.series.series_import import import_serial_from_file, \
+    import_series_from_dump
+from cds_ils.migrator.series.xml_multipart_loader import CDSMultipartDumpLoader
+from cds_ils.migrator.utils import commit, reindex_pidtype
 
 
 @click.group()
@@ -70,36 +72,44 @@ def migration():
 @with_appcontext
 def documents(sources, source_type, include, skip_indexing):
     """Migrate documents from CDS legacy."""
-    if source_type == "migrator-kit":
-        import_documents_from_record_file(sources, include)
-    else:
-        import_documents_from_dump(
-            sources=sources,
-            source_type=source_type,
-            eager=True,
-            include=include,
-        )
+    import_documents_from_dump(
+        sources=sources,
+        source_type=source_type,
+        eager=True,
+        include=include,
+    )
     # We don't get the record back from _loadrecord so re-index all documents
     if not skip_indexing:
         reindex_pidtype("docid")
 
 
 @migration.command()
-@click.argument("source", nargs=1, type=click.File())
+@click.argument("sources", type=click.File("r"), nargs=-1)
 @with_appcontext
-def serial(source, rectype="serial"):
+def serial(sources, rectype="serial"):
     """Migrate serials from json file."""
     click.echo("Migrating {}s...".format(rectype))
-    import_serial_from_file(source, rectype=rectype)
+    import_serial_from_file(sources, rectype=rectype)
 
 
 @migration.command()
-@click.argument("source", nargs=1, type=click.File())
+@click.argument("sources", type=click.File("r"), nargs=-1)
 @with_appcontext
-def multipart(source, rectype="multipart"):
-    """Migrate multiparts from json file."""
+def multipart(sources, rectype="multipart"):
+    """Migrate multiparts from xml dump file."""
     click.echo("Migrating {}s...".format(rectype))
-    import_multipart_from_file(source, rectype=rectype)
+    import_series_from_dump(
+        sources, rectype=rectype, loader_class=CDSMultipartDumpLoader
+    )
+
+
+@migration.command()
+@click.argument("sources", type=click.File("r"), nargs=-1)
+@with_appcontext
+def journal(sources, rectype="journal"):
+    """Migrate journals from xml dump file."""
+    click.echo("Migrating {}s...".format(rectype))
+    import_series_from_dump(sources, rectype=rectype)
 
 
 @migration.command()
@@ -175,9 +185,9 @@ def acquisition_orders(source, include):
 
 @migration.command()
 @with_appcontext
-def create_records():
-    """Creae necessary records for required properties."""
-    create_migration_records()
+def create_unknown_reference_records():
+    """Create necessary records for required properties."""
+    create_unknown_records()
 
 
 @migration.command()
@@ -217,8 +227,6 @@ def serial():
     """Create relations for migrated serials."""
     with commit():
         link_documents_and_serials()
-    reindex_pidtype("docid")
-    reindex_pidtype("serid")
 
 
 @relations.command()
