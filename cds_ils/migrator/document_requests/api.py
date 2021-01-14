@@ -13,9 +13,9 @@ import json
 import click
 from invenio_db import db
 
-from cds_ils.migrator.api import bulk_index_records, import_record, \
-    model_provider_by_rectype
-from cds_ils.migrator.utils import get_acq_ill_notes, get_patron_pid
+from cds_ils.migrator.api import import_record
+from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
+    get_patron_pid, model_provider_by_rectype
 
 
 def migrate_document_request(record):

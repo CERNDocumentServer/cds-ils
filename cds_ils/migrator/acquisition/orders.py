@@ -54,12 +54,12 @@ import click
 from invenio_db import db
 
 from cds_ils.migrator.acquisition.vendors import get_vendor_pid_by_legacy_id
-from cds_ils.migrator.api import bulk_index_records, import_record, \
-    model_provider_by_rectype
+from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import AcqOrderError, ItemMigrationError
 from cds_ils.migrator.items.api import get_item_by_barcode
-from cds_ils.migrator.utils import get_acq_ill_notes, get_cost, get_date, \
-    get_migration_document_pid, get_patron_pid
+from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
+    get_cost, get_date, get_migration_document_pid, get_patron_pid, \
+    model_provider_by_rectype
 
 DEFAULT_ITEM_MEDIUM = "ELECTRONIC"
 LIBRARIAN_IDS = [

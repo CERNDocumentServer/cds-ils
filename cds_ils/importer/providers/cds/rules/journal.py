@@ -18,9 +18,10 @@ from .book import title as base_title
 from .utils import clean_val, filter_list_values, out_strip
 
 
-@model.over("legacy_recid", "^001")
+@model.over("legacy_recid", "^001", override=True)
 def recid(self, key, value):
     """Record Identifier."""
+    self["mode_of_issuance"] = "SERIAL"
     return int(value)
 
 

@@ -1824,7 +1824,7 @@ def test_imprint(app):
             <datafield tag="260" ind1=" " ind2=" ">
                 <subfield code="a">Sydney</subfield>
                 <subfield code="b">Allen &amp; Unwin</subfield>
-                <subfield code="c">2013</subfield>
+                <subfield code="c">2013-01-15</subfield>
                 <subfield code="g">2015</subfield>
             </datafield>
             """,
@@ -1833,7 +1833,7 @@ def test_imprint(app):
                 "imprint": {
                     "place": "Sydney",
                     "publisher": "Allen & Unwin",
-                    "date": "2013",
+                    "date": "2013-01-15",
                     "reprint": "2015",
                 },
             },

@@ -17,9 +17,10 @@ from invenio_app_ils.internal_locations.api import InternalLocation
 from invenio_app_ils.internal_locations.search import InternalLocationSearch
 from invenio_app_ils.proxies import current_app_ils
 
-from cds_ils.migrator.api import bulk_index_records, import_record, \
-    model_provider_by_rectype
+from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ItemMigrationError
+from cds_ils.migrator.utils import bulk_index_records, \
+    model_provider_by_rectype
 
 migrated_logger = logging.getLogger("migrated_documents")
 

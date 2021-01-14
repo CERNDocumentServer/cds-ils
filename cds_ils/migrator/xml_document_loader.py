@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2018-2020 CERN.
 #
 # cds-migrator-kit is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,25 +12,15 @@ import logging
 import uuid
 
 import click
-from invenio_app_ils.documents.api import Document, DocumentIdProvider
+from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
-from cds_ils.migrator.utils import clean_created_by_field
+from cds_ils.migrator.utils import add_cover_metadata, clean_created_by_field
 from cds_ils.minters import legacy_recid_minter
 
 cli_logger = logging.getLogger("migrator")
-
-
-def add_cover_metadata(json_data):
-    """Add first ISBN as to cover metadata."""
-    isbn_list = [
-        identifier
-        for identifier in json_data.get("identifiers", [])
-        if identifier["scheme"] == "ISBN"
-    ]
-    if isbn_list:
-        json_data["cover_metadata"] = {"ISBN": isbn_list[0]["value"]}
 
 
 class CDSDocumentDumpLoader(object):
@@ -80,6 +70,7 @@ class CDSDocumentDumpLoader(object):
     @classmethod
     def create_record(cls, dump):
         """Create a new record from dump."""
+        document_cls = current_app_ils.document_record_cls
         record_uuid = uuid.uuid4()
         try:
             with db.session.begin_nested():
@@ -93,7 +84,7 @@ class CDSDocumentDumpLoader(object):
                 legacy_recid_minter(json_data["legacy_recid"], record_uuid)
                 add_cover_metadata(json_data)
 
-                document = Document.create(json_data, record_uuid)
+                document = document_cls.create(json_data, record_uuid)
                 document.model.created = dump.created.replace(tzinfo=None)
                 document.model.updated = timestamp.replace(tzinfo=None)
                 document.commit()
