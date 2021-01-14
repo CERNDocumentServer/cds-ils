@@ -1,4 +1,4 @@
-<h2 id="cds-videos">CERN library catalogue</h2>
+<h2 id="cds-ils">CERN library catalogue</h2>
 
 <p>This guide explains how to perform search queries on the CERN library catalogue using easy to understand examples.</p>
 
@@ -48,9 +48,9 @@
 <p>Examples of other ranges:</p>
 
 <ul>
-<li><code>date:{* TO 2020}</code> - All days until 2020.</li>
+<li><code>publication_date:{* TO 2020}</code> - All days until 2020.</li>
 
-<li><code>date:[2020 TO *]</code> - All days from 2020.</li>
+<li><code>publication_date:[2020 TO *]</code> - All days from 2020.</li>
 
 </ul>
 
@@ -100,14 +100,6 @@
 <li>Title [A-Z / Z-A]</li>
 </ul>
 
-<h3 id="missingvalues">Missing values</h3>
-
-<p>It is possible to search for records that either are missing a value or have a value in a specific field using the <code>_exists_</code> and <code>_missing_</code> field names.</p>
-
-<p><strong>Example:</strong> <a href="#"><code>_missing_:location AND title.title:"Passport Big Bang"</code></a> (records with Passport Big Bang in the title without location)</p>
-
-<p><strong>Example:</strong> <a href="#"><code>_exists_:related_links</code></a> (all records with related links)</p>
-
 <h3 id="advancedconcepts">Advanced concepts</h3>
 
 <h4 id="boosting">Boosting</h4>
@@ -138,7 +130,7 @@
 
 <p><strong>Example:</strong> <a href="#"><code>title:(crab cavit*)</code></a></p>
 
-The result will match videos with title referring to cavities also in languages other than english.
+The result will match the literatures with title referring to cavities also in languages other than english.
 
 <p>Wildcard searches can be slow and should normally be avoided if possible.</p>
 
@@ -232,36 +224,6 @@ of what each data type means and what is possible.</p>
   <td><code>edition</code></td>
   <td>string</td>
   <td></td>
-</tr>
-<tr>
-  <td><code>extensions</code></td>
-  <td>string</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>extensions_keywords.\*</code></td>
-  <td>string</td>
-  <td>key, value</td>
-</tr>
-<tr>
-  <td><code>extensions_texts.\*</code></td>
-  <td>string</td>
-  <td>key, value</td>
-</tr>
-<tr>
-  <td><code>extensions_longs.\*</code></td>
-  <td>string</td>
-  <td>key, value</td>
-</tr>
-<tr>
-  <td><code>extensions_dates.\*</code></td>
-  <td>string</td>
-  <td>key, value</td>
-</tr>
-<tr>
-  <td><code>extensions_booleans.\*</code></td>
-  <td>string</td>
-  <td>key, value</td>
 </tr>
 <tr>
   <td><code>identifiers.\*</code></td>
