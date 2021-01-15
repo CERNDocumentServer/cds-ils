@@ -47,6 +47,7 @@ from marshmallow.fields import Bool, List
 from .circulation.utils import circulation_cds_extension_max_count
 from .literature.covers import build_cover_urls
 from .patrons.api import AnonymousPatron, Patron
+from .patrons.indexer import PatronIndexer
 from .patrons.permissions import views_permissions_factory
 
 
@@ -360,6 +361,7 @@ JSONSCHEMAS_SCHEMAS = [
 # RECORDS REST
 ###############################################################################
 RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
+RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["indexer_class"] = PatronIndexer
 RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE][
     "create_permission_factory_imp"
 ] = deny_all
@@ -639,3 +641,5 @@ CDS_ILS_IMPORTER_FILE_EXTENSIONS_ALLOWED = [".xml"]
 CDS_ILS_IMPORTER_PROVIDERS_ALLOWED_TO_DELETE_RECORDS = ["ebl", "safari"]
 
 RECORD_LEGACY_PID_TYPE = "lrecid"
+
+CDS_ILS_INDEX_LOCAL_ACCOUNTS = True

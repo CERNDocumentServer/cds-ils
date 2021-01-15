@@ -126,6 +126,27 @@ def patron1(app, db):
 
 
 @pytest.fixture()
+def patron2(app, db):
+    """Create a patron user without remote account."""
+    user = User(**dict(email="patron2@cern.ch", active=True))
+    db.session.add(user)
+    db.session.commit()
+
+    user_id = user.id
+
+    profile = UserProfile(
+        **dict(
+            user_id=user_id,
+            _displayname="id_" + str(user_id),
+            full_name="System User",
+        )
+    )
+    db.session.add(profile)
+    db.session.commit()
+    return user
+
+
+@pytest.fixture()
 def testdata(app, db, es_clear, patron1):
     """Create, index and return test data."""
     data = load_json_from_datadir("locations.json")
