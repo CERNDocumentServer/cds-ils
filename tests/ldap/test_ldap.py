@@ -11,8 +11,8 @@ from copy import deepcopy
 
 import pytest
 from invenio_accounts.models import User
-from invenio_app_ils.patrons.indexer import reindex_patrons
 from invenio_app_ils.patrons.search import PatronsSearch
+from invenio_app_ils.proxies import current_app_ils
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
@@ -180,7 +180,7 @@ def test_update_users(app, db, testdata, mocker):
         }
         importer.import_user(COULD_BE_DELETED)
         db.session.commit()
-        reindex_patrons()
+        current_app_ils.patron_indexer.reindex_patrons()
 
     _prepare()
 

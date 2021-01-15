@@ -19,7 +19,7 @@ from flask import current_app
 from invenio_accounts.models import User
 from invenio_app_ils.errors import AnonymizationActiveLoansError
 from invenio_app_ils.patrons.anonymization import anonymize_patron_data
-from invenio_app_ils.patrons.indexer import PatronBaseIndexer, reindex_patrons
+from invenio_app_ils.patrons.indexer import PatronBaseIndexer
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
@@ -244,7 +244,7 @@ def import_users():
     print("Users imported: {}".format(imported))
     print("Now re-indexing all patrons...")
 
-    reindex_patrons()
+    current_app_ils.patron_indexer.reindex_patrons()
 
     print("--- Finished in %s seconds ---" % (time.time() - start_time))
 
@@ -547,6 +547,6 @@ def delete_users(dry_run=True):
                 invenio_users_deleted_count += 1
 
     if not dry_run:
-        reindex_patrons()
+        current_app_ils.patron_indexer.reindex_patrons()
 
     return len(ldap_users), invenio_users_deleted_count
