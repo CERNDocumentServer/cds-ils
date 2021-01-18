@@ -16,6 +16,7 @@ invenio fixtures pages
 invenio fixtures location
 invenio fixtures vocabularies
 invenio fixtures demo-patrons
+cds-ils migration create-unknown-reference-records
 invenio files location --default ils /tmp/ils-files # (local)
 cds-ils user-testing import-demo-data --are-docs --path $DOCUMENTS_PATH --verbose
 cds-ils user-testing import-demo-data --are-items --path $ITEMS_PATH  --verbose

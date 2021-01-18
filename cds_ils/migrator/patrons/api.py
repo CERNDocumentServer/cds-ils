@@ -54,8 +54,11 @@ def import_users_from_json(dump_file):
                     user_id=user.id, client_id=client_id
                 )
                 extra_data = account.extra_data
+                if "legacy_id" in extra_data:
+                    del extra_data["legacy_id"]
                 # add legacy_id information
-                account.extra_data.update(legacy_id=record["id"], **extra_data)
+                account.extra_data.update(legacy_id=str(record["id"]),
+                                          **extra_data)
                 db.session.add(account)
                 patron = Patron(user.id)
                 PatronIndexer().index(patron)

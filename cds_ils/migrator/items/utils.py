@@ -63,8 +63,10 @@ def clean_description_field(record):
 
 def clean_item_record(record):
     """Clean the item record object."""
-    clean_circulation_restriction(record)
+    # Attention! order of cleaning matters,
+    # circulation restriction updates item status
     clean_item_status(record)
+    clean_circulation_restriction(record)
     clean_description_field(record)
     record["shelf"] = record["location"]
     record["medium"] = "PAPER"  # requested as default value

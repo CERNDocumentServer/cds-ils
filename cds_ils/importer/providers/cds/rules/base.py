@@ -16,7 +16,8 @@ from dateutil import parser
 from dateutil.parser import ParserError
 from dojson.errors import IgnoreKey
 from dojson.utils import filter_values, flatten, for_each_value, force_list
-from invenio_app_ils.relations.api import EDITION_RELATION, OTHER_RELATION
+from invenio_app_ils.relations.api import EDITION_RELATION, \
+    LANGUAGE_RELATION, OTHER_RELATION
 
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
@@ -333,12 +334,13 @@ def related_records(self, key, value):
     relation_type = OTHER_RELATION.name
     try:
         if key == "775__" and "b" in value:
-            relation_edition = clean_val("b", value, str)
-            if relation_edition:
+            relation_type_tag = clean_val("x", value, str)
+            if relation_type_tag.lower() == 'edition':
                 relation_type = EDITION_RELATION.name
+            elif relation_type_tag.lower() == 'language':
+                relation_type = LANGUAGE_RELATION.name
         if key == "787__" and "i" in value:
             clean_val("i", value, str, manual=True)
-
         _related.append(
             {
                 "related_recid": clean_val("w", value, str, req=True),

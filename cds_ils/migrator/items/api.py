@@ -51,7 +51,7 @@ def set_document_pid(record):
         record["document_pid"] = get_record_by_legacy_recid(
             document_cls, record["id_bibrec"]
         ).pid.pid_value
-    except DocumentMigrationError:
+    except PIDDoesNotExistError as e:
         error_logger.error(
             "ITEM: {0} ERROR: Document {1} not found".format(
                 record["barcode"], record["id_bibrec"]
@@ -64,7 +64,7 @@ def set_document_pid(record):
             record["document_pid"] = get_document_by_barcode(
                 record["barcode"], record["id_bibrec"]
             ).pid.pid_value
-        except PIDDoesNotExistError as e:
+        except DocumentMigrationError as e:
             error_logger.error(
                 "ITEM: {0} ERROR: Document {1} not found".format(
                     record["barcode"], record["id_bibrec"]
@@ -90,7 +90,9 @@ def import_items_from_json(dump_file, rectype="item"):
 
             try:
                 set_document_pid(record)
-            except PIDDoesNotExistError:
+            except DocumentMigrationError:
+                # there are items on the list which are not to be migrated
+                # if no document found
                 continue
 
             # clean the item JSON
