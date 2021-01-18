@@ -9,3 +9,4 @@
 invenio setup --skip-pages --skip-vocabularies --verbose
 invenio fixtures pages
 invenio fixtures vocabularies
+cds-ils migration create-unknown-reference-records

@@ -32,8 +32,8 @@ def migrate_document_request(record):
 
     if record["status"] == "proposal-put aside":
         state = "REJECTED"
-        reject_reason = record["library_notes"]
-        new_docreq.update(state=state, reject_reason=reject_reason)
+        new_docreq.update(state=state,
+                          reject_reason="OTHER")
 
     note = get_acq_ill_notes(record)
     if note:

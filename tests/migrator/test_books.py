@@ -1062,6 +1062,7 @@ def test_related_record(app):
                 <subfield code="b">Test text</subfield>
                 <subfield code="c">Random text</subfield>
                 <subfield code="w">748392</subfield>
+                <subfield code="x">language</subfield>
             </datafield>
             """,
             {
@@ -1071,7 +1072,7 @@ def test_related_record(app):
                     "related": [
                         {
                             "related_recid": "748392",
-                            "relation_type": "edition",
+                            "relation_type": "language",
                         }
                     ],
                 },

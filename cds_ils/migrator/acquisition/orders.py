@@ -49,6 +49,7 @@ proposal-received  -> "RECEIVED" It was doc request and resolved as acq order
 """
 
 import json
+import logging
 
 import click
 from invenio_db import db
@@ -60,6 +61,10 @@ from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
     get_cost, get_date, get_migration_document_pid, get_patron_pid, \
     model_provider_by_rectype
+
+migrated_logger = logging.getLogger("migrated_records")
+error_logger = logging.getLogger("records_errored")
+
 
 DEFAULT_ITEM_MEDIUM = "ELECTRONIC"
 LIBRARIAN_IDS = [
@@ -173,6 +178,8 @@ def migrate_order(record):
     order_date = record["request_date"]
     if order_date:
         new_order.update(order_date=get_date(order_date))
+    else:
+        new_order.update(order_date="1970-01-01")
 
     vendor_pid = get_vendor_pid_by_legacy_id(record["id_crcLIBRARY"])
     new_order.update(vendor_pid=vendor_pid)
@@ -208,12 +215,20 @@ def import_orders_from_json(dump_file, include=None):
         ils_records = []
         for record in input_data:
             model, provider = model_provider_by_rectype("acq-order")
-            ils_record = import_record(
-                migrate_order(record),
-                model,
-                provider,
-                legacy_id_key="legacy_id",
-            )
+            try:
+                ils_record = import_record(
+                    migrate_order(record),
+                    model,
+                    provider,
+                    legacy_id_key="legacy_id",
+                )
+            except Exception as e:
+                error_logger.error(
+                    "ORDER: {0} ERROR: {1}".format(
+                        record["legacy_id"], str(e)
+                    )
+                )
+                db.session.rollback()
 
             ils_records.append(ils_record)
         db.session.commit()
