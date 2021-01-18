@@ -28,7 +28,8 @@ from cds_ils.importer.providers.cds.rules.utils import clean_email, \
 from cds_ils.importer.providers.cds.rules.values_mapping import \
     ACQUISITION_METHOD, ARXIV_CATEGORIES, COLLECTION, DOCUMENT_TYPE, \
     EXTERNAL_SYSTEM_IDENTIFIERS, EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, \
-    MATERIALS, MEDIUM_TYPES, SUBJECT_CLASSIFICATION_EXCEPTIONS, mapping
+    MATERIALS, MEDIUM_TYPES, SERIAL, SUBJECT_CLASSIFICATION_EXCEPTIONS, \
+    mapping
 
 from ...utils import build_ils_contributor
 from .utils import extract_parts, is_excluded
@@ -106,23 +107,40 @@ def internal_notes(self, key, value):
     return _internal_notes
 
 
-# TODO convert to tags
-@model.over("_migration", "(^980__)|(^690C_)|(^697C_)")
+@model.over("tags", "(^980__)|(^690C_)|(^697C_)")
 @out_strip
-def collection(self, key, value):
-    """Translates collection field - WARNING - also document type field."""
-    _migration = self["_migration"]
-    _tags = _migration["tags"]
+def tags(self, key, value):
+    """Translates tag field - WARNING - also document type and serial field."""
+    _tags = self.get("tags", [])
     for v in force_list(value):
         result_a = mapping(COLLECTION, clean_val("a", v, str))
         result_b = mapping(COLLECTION, clean_val("b", v, str))
         if result_a:
             _tags.append(result_a) if result_a not in _tags else None
-            _migration["has_tags"] = True
         if result_b:
             _tags.append(result_b) if result_b not in _tags else None
-            _migration["has_tags"] = True
         if not result_a and not result_b:
+            special_serials(self, key, value)
+    return _tags
+
+
+@model.over("_migration", "^690C_")
+def special_serials(self, key, value):
+    """Translates serial fields."""
+    _migration = self["_migration"]
+    _serials = _migration["serials"]
+    for v in force_list(value):
+        result_a = mapping(SERIAL, clean_val("a", v, str))
+        if result_a:
+            _serials.append(
+                {
+                    "title": result_a,
+                    "volume": None,
+                    "issn": None,
+                }
+            ) if result_a not in _serials else None
+            _migration.update({"serials": _serials, "has_serial": True})
+        if not result_a:
             self["document_type"] = document_type(self, key, value)
             raise IgnoreKey("_migration")
     return _migration

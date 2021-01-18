@@ -22,7 +22,6 @@ def get_helper_dict():
         serials=[],
         has_serial=False,
         is_multipart=False,
-        has_tags=False,
         has_related=False,
         has_journal=False,
         tags=[],
