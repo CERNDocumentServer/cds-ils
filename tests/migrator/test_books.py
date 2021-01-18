@@ -238,8 +238,8 @@ def test_created(app):
         )
 
 
-def test_collections(app):
-    """Test collections."""
+def test_tags(app):
+    """Test tags."""
     with app.app_context():
         check_transformation(
             """
@@ -248,11 +248,7 @@ def test_collections(app):
             </datafield>
             """,
             {
-                "_migration": {
-                    **get_helper_dict(),
-                    "tags": ["LEGSERLIB"],
-                    "has_tags": True,
-                },
+                "tags": ["LEGAL_SERVICE_LIBRARY"],
             },
         )
         check_transformation(
@@ -262,11 +258,7 @@ def test_collections(app):
             </datafield>
             """,
             {
-                "_migration": {
-                    **get_helper_dict(),
-                    "tags": ["LEGSERLIB"],
-                    "has_tags": True,
-                },
+                "tags": ["LEGAL_SERVICE_LIBRARY"],
             },
         )
         check_transformation(
@@ -276,11 +268,7 @@ def test_collections(app):
             </datafield>
             """,
             {
-                "_migration": {
-                    **get_helper_dict(),
-                    "tags": ["LEGSERLIB"],
-                    "has_tags": True,
-                },
+                "tags": ["LEGAL_SERVICE_LIBRARY"],
             },
         )
         check_transformation(
@@ -290,11 +278,7 @@ def test_collections(app):
             </datafield>
             """,
             {
-                "_migration": {
-                    **get_helper_dict(),
-                    "tags": ["LEGSERLIBINTLAW"],
-                    "has_tags": True,
-                },
+                "tags": ["LEGSERLIBINTLAW"],
             },
         )
         check_transformation(
@@ -304,11 +288,7 @@ def test_collections(app):
             </datafield>
             """,
             {
-                "_migration": {
-                    **get_helper_dict(),
-                    "tags": ["BOOKSHOP"],
-                    "has_tags": True,
-                },
+                "tags": ["BOOKSHOP"],
             },
         )
         check_transformation(
@@ -318,11 +298,7 @@ def test_collections(app):
             </datafield>
             """,
             {
-                "_migration": {
-                    **get_helper_dict(),
-                    "tags": ["BOOKSHOP"],
-                    "has_tags": True,
-                },
+                "tags": ["BOOKSHOP"],
             },
         )
         check_transformation(
@@ -332,10 +308,62 @@ def test_collections(app):
             </datafield>
             """,
             {
+                "tags": ["LEGSERLIBLEGRES"],
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="690" ind1="C" ind2=" ">
+                <subfield code="a">BOOKSUGGESTION</subfield>
+                <subfield code="b">DIDACTICLIBRARY</subfield>
+            </datafield>
+             <datafield tag="697" ind1="C" ind2=" ">
+                <subfield code="b">PAULISCIENTIFICBOOK</subfield>
+            </datafield>
+            """,
+            {
+                "tags": ["BOOK_SUGGESTION", "DIDATIC_LIBRARY", "ARCHIVES"],
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="690" ind1="C" ind2=" ">
+                <subfield code="b">DIDACTICLIBRARY</subfield>
+            </datafield>
+            """,
+            {
+                "tags": ["DIDATIC_LIBRARY"],
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="697" ind1="C" ind2=" ">
+                <subfield code="b">PAULISCIENTIFICBOOK</subfield>
+            </datafield>
+            """,
+            {
+                "tags": ["ARCHIVES"],
+            },
+        )
+
+
+def test_serial(app):
+    """Test serial."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="690" ind1="C" ind2=" ">
+                <subfield code="a">DESIGN REPORT</subfield>
+            </datafield>
+            """,
+            {
                 "_migration": {
                     **get_helper_dict(),
-                    "tags": ["LEGSERLIBLEGRES"],
-                    "has_tags": True,
+                    "has_serial": True,
+                    "serials": [{"title": "DESIGN REPORT",
+                                 "volume": None,
+                                 "issn": None,
+                                 }],
                 },
             },
         )
@@ -414,7 +442,13 @@ def test_document_type(app):
                     <subfield code="a">21</subfield>
                 </datafield>
                 """,
-                {"document_type": "BOOK"},
+                {
+                     "_migration": {
+                        **get_helper_dict(),
+                        "tags": ["ENGLISH_BOOK_CLUB"],
+                     },
+                     "document_type": "BOOK"
+                },
             )
 
 
@@ -431,11 +465,7 @@ def test_document_type_collection(app):
             </datafield>
             """,
             {
-                "_migration": {
-                    **get_helper_dict(),
-                    "tags": ["LEGSERLIB"],
-                    "has_tags": True,
-                },
+                "tags": ["LEGAL_SERVICE_LIBRARY"],
                 "document_type": "BOOK",
             },
         )
@@ -449,11 +479,7 @@ def test_document_type_collection(app):
             </datafield>
             """,
             {
-                "_migration": {
-                    **get_helper_dict(),
-                    "tags": ["LEGSERLIB"],
-                    "has_tags": True,
-                },
+                "tags": ["LEGAL_SERVICE_LIBRARY"],
                 "document_type": "BOOK",
             },
         )
@@ -2871,4 +2897,198 @@ def test_open_access(app):
                     "eitems_open_access": True,
                 },
             },
+        )
+
+
+def test_record(app):
+    """Test real record: https://cds.cern.ch/record/2749387/export/xm?ln=en"""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="020" ind1=" " ind2=" ">
+                <subfield code="a">9789811590344</subfield>
+                <subfield code="b">electronic version</subfield>
+                <subfield code="u">electronic version</subfield>
+            </datafield>
+            <datafield tag="020" ind1=" " ind2=" ">
+                <subfield code="a">9789811590337</subfield>
+                <subfield code="u">print version</subfield>
+            </datafield>
+            <datafield tag="020" ind1=" " ind2=" ">
+                <subfield code="a">9789811590351</subfield>
+                <subfield code="u">print version</subfield>
+            </datafield>
+            <datafield tag="020" ind1=" " ind2=" ">
+                <subfield code="a">9789811590368</subfield>
+                <subfield code="u">print version</subfield>
+            </datafield>
+            <datafield tag="050" ind1=" " ind2="4">
+                <subfield code="a">QA313</subfield>
+            </datafield>
+            <datafield tag="082" ind1="0" ind2="4">
+                <subfield code="2">23</subfield>
+                <subfield code="a">515.39</subfield>
+            </datafield>
+            <datafield tag="082" ind1="0" ind2="4">
+                <subfield code="2">23</subfield>
+                <subfield code="a">515.48</subfield>
+            </datafield>
+            <datafield tag="245" ind1=" " ind2=" ">
+                <subfield code="a">Nonlinear dynamics, chaos, and complexity</subfield>
+                <subfield code="b">in memory of professor Valentin Afraimovich</subfield>
+            </datafield>
+            <datafield tag="490" ind1=" " ind2=" ">
+                <subfield code="a">Nonlinear physical science</subfield>
+                <subfield code="x">1867-8440</subfield>
+            </datafield>
+            <datafield tag="505" ind1="0" ind2=" ">
+                <subfield code="a">Professor Valentin Afraimovich -- The need for more integration between machine learning and neuroscience. Quasiperiodic Route to Transient Chaos in Vibroimpact System -- Modeling Ensembles of Nonlinear Dynamic Systems in Ultrawideb and Active Wireless Direct Chaotic Networks -- Verification of Biomedical Processes with Anomalous Diffusion, Transport and Interaction of Species -- Chaos-based communication using isochronal synchronization: considerations about the synchronization manifold.</subfield>
+            </datafield>
+            <datafield tag="520" ind1=" " ind2=" ">
+                <subfield code="a">This book demonstrates how mathematical methods and techniques can be used in synergy and create a new way of looking at complex systems. It becomes clear nowadays that the standard (graph-based) network approach, in which observable events and transportation hubs are represented by nodes and relations between them are represented by edges, fails to describe the important properties of complex systems, capture the dependence between their scales, and anticipate their future developments. Therefore, authors in this book discuss the new generalized theories capable to describe a complex nexus of dependences in multi-level complex systems and to effectively engineer their important functions. The collection of works devoted to the memory of Professor Valentin Afraimovich introduces new concepts, methods, and applications in nonlinear dynamical systems covering physical problems and mathematical modelling relevant to molecular biology, genetics, neurosciences, artificial intelligence as well as classic problems in physics, machine learning, brain and urban dynamics. The book can be read by mathematicians, physicists, complex systems scientists, IT specialists, civil engineers, data scientists, urban planners, and even musicians (with some mathematical background). .</subfield>
+            </datafield>
+            <datafield tag="595" ind1=" " ind2=" ">
+                <subfield code="a">Physics and astronomy</subfield>
+            </datafield>
+            <datafield tag="041" ind1=" " ind2=" ">
+                <subfield code="a">eng</subfield>
+            </datafield>
+            <datafield tag="595" ind1=" " ind2=" ">
+                <subfield code="a">SPR202101</subfield>
+            </datafield>
+            <datafield tag="653" ind1="1" ind2=" ">
+                <subfield code="9">SPR</subfield>
+                <subfield code="a">Vibration</subfield>
+            </datafield>
+            <datafield tag="653" ind1="1" ind2=" ">
+                <subfield code="9">SPR</subfield>
+                <subfield code="a">Dynamical systems</subfield>
+            </datafield>
+            <datafield tag="653" ind1="1" ind2=" ">
+                <subfield code="9">SPR</subfield>
+                <subfield code="a">Vibration, Dynamical Systems, Control</subfield>
+            </datafield>
+            <datafield tag="700" ind1=" " ind2=" ">
+                <subfield code="a">Volchenkov, Dimitri</subfield>
+                <subfield code="e">ed.</subfield>
+            </datafield>
+            <datafield tag="916" ind1=" " ind2=" ">
+                <subfield code="d">202101</subfield>
+                <subfield code="e">SPR</subfield>
+                <subfield code="s">n</subfield>
+                <subfield code="w">202101</subfield>
+            </datafield>
+            <datafield tag="690" ind1="C" ind2=" ">
+                <subfield code="a">BOOK</subfield>
+            </datafield>
+            <datafield tag="960" ind1=" " ind2=" ">
+                <subfield code="a">21</subfield>
+            </datafield>
+            <datafield tag="980" ind1=" " ind2=" ">
+                <subfield code="a">BOOK</subfield>
+            </datafield>
+            <datafield tag="024" ind1="7" ind2=" ">
+                <subfield code="2">DOI</subfield>
+                <subfield code="a">10.1007/978-981-15-9034-4</subfield>
+                <subfield code="q">ebook</subfield>
+            </datafield>
+            """,
+            {
+                "_created": "2021-01-04",
+                "_migration": {
+                    **get_helper_dict(),
+                    'has_serial': True,
+                    'serials': [
+                        {
+                            'issn': '1867-8440',
+                            'title': 'Nonlinear physical science',
+                            'volume': None
+                        }
+                    ],
+                },
+                "abstract": "This book demonstrates how mathematical methods "
+                            "and techniques can be used in synergy and create "
+                            "a new way of looking at complex systems. It "
+                            "becomes clear nowadays that the standard "
+                            "(graph-based) network approach, in which "
+                            "observable events and transportation hubs are "
+                            "represented by nodes and relations between them "
+                            "are represented by edges, fails to describe the "
+                            "important properties of complex systems, capture "
+                            "the dependence between their scales, and "
+                            "anticipate their future developments. Therefore, "
+                            "authors in this book discuss the new generalized "
+                            "theories capable to describe a complex nexus of "
+                            "dependences in multi-level complex systems and to"
+                            " effectively engineer their important functions. "
+                            "The collection of works devoted to the memory of "
+                            "Professor Valentin Afraimovich introduces new "
+                            "concepts, methods, and applications in nonlinear "
+                            "dynamical systems covering physical problems and "
+                            "mathematical modelling relevant to molecular "
+                            "biology, genetics, neurosciences, artificial "
+                            "intelligence as well as classic problems in "
+                            "physics, machine learning, brain and urban "
+                            "dynamics. The book can be read by mathematicians,"
+                            " physicists, complex systems scientists, IT "
+                            "specialists, civil engineers, data scientists, "
+                            "urban planners, and even musicians (with some "
+                            "mathematical background). .",
+                "alternative_titles": [
+                    {
+                        "type": "SUBTITLE",
+                        "value": "in memory of professor Valentin Afraimovich"
+                    }
+                ],
+                "authors": [{"full_name": "Volchenkov, Dimitri",
+                             "roles": ["EDITOR"]}],
+                "created_by": {"type": "batchuploader"},
+                "document_type": "BOOK",
+                "identifiers": [{"medium": "electronic version",
+                                 "scheme": "ISBN",
+                                 "value": "9789811590344"},
+                                {"medium": "print version",
+                                 "scheme": "ISBN",
+                                 "value": "9789811590337"},
+                                {"medium": "print version",
+                                 "scheme": "ISBN",
+                                 "value": "9789811590351"},
+                                {"medium": "print version",
+                                 "scheme": "ISBN",
+                                 "value": "9789811590368"},
+                                {"material": "ebook",
+                                 "scheme": "DOI",
+                                 "value": "10.1007/978-981-15-9034-4"}],
+                "internal_notes": [{"value": "Physics and astronomy"}],
+                "keywords": [{"source": "SPR",
+                              "value": "Vibration"},
+                             {"source": "SPR",
+                              "value": "Dynamical systems"},
+                             {"source": "SPR",
+                              "value": "Vibration, Dynamical Systems, Control"}],
+                "languages": ["EN"],
+                "source": "SPR",
+                "subjects": [{"scheme": "LoC",
+                              "value": "QA313"},
+                             {"scheme": "Dewey",
+                              "value": "515.39"},
+                             {"scheme": "Dewey",
+                              "value": "515.48"}],
+                "table_of_content": ['Professor Valentin Afraimovich',
+                                     'The need for more integration between '
+                                     'machine learning and neuroscience. '
+                                     'Quasiperiodic Route to Transient Chaos '
+                                     'in Vibroimpact System',
+                                     'Modeling Ensembles of Nonlinear Dynamic '
+                                     'Systems in Ultrawideb and Active '
+                                     'Wireless Direct Chaotic Networks',
+                                     'Verification of Biomedical Processes '
+                                     'with Anomalous Diffusion, Transport'
+                                     ' and Interaction of Species',
+                                     'Chaos-based communication using '
+                                     'isochronal synchronization: '
+                                     'considerations about the '
+                                     'synchronization manifold.'],
+                "title": "Nonlinear dynamics, chaos, and complexity",
+            }
         )

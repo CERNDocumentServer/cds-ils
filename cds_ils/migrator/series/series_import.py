@@ -15,7 +15,7 @@ import click
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
-from cds_ils.importer.api import import_record
+from cds_ils.migrator.api import import_record
 from cds_ils.migrator.series import journal_marc21, multipart_marc21, \
     serial_marc21
 from cds_ils.migrator.series.xml_series_loader import CDSSeriesDumpLoader

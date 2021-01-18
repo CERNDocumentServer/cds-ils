@@ -14,6 +14,7 @@ from invenio_app_ils.errors import RecordRelationsError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild, \
     RecordRelationsSequence, RecordRelationsSiblings
+from invenio_app_ils.records_relations.indexer import RecordRelationIndexer
 from invenio_app_ils.relations.api import OTHER_RELATION, \
     SEQUENCE_RELATION_TYPES, SERIAL_RELATION, SIBLINGS_RELATION_TYPES, \
     Relation
@@ -21,6 +22,8 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
+from cds_ils.migrator.default_records import MIGRATION_DESIGN_PID, \
+    MIGRATION_YELLOW_PID
 from cds_ils.migrator.documents.api import \
     search_documents_with_siblings_relations
 from cds_ils.migrator.series.api import get_migrated_volume_by_serial_title, \
@@ -39,6 +42,25 @@ def create_parent_child_relation(parent, child, relation_type, volume):
         relation_type=relation_type,
         volume=str(volume) if volume else None,
     )
+
+
+def check_for_special_series(record):
+    """Link documents and serials (DESIGN REPORT)."""
+    series_class = current_app_ils.series_record_cls
+    design_report = {"title": "DESIGN REPORT",
+                     "volume": None,
+                     "issn": None,
+                     }
+
+    def create_relation(pid):
+        serial = series_class.get_record_by_pid(pid)
+        create_parent_child_relation(
+            serial, record, SERIAL_RELATION, volume=None
+        )
+        RecordRelationIndexer().index(record, serial)
+
+    if design_report in record["_migration"]["serials"]:
+        create_relation(MIGRATION_DESIGN_PID)
 
 
 def create_sibling_relation(first, second, relation_type, **kwargs):
@@ -193,6 +215,7 @@ def link_documents_and_serials():
             if "legacy_recid" not in hit:
                 continue
             record = record_cls.get_record_by_pid(hit.pid)
+            check_for_special_series(record)
             for serial in get_serials_by_child_recid(hit.legacy_recid):
                 volume = get_migrated_volume_by_serial_title(
                     record, serial["title"]
@@ -200,6 +223,7 @@ def link_documents_and_serials():
                 create_parent_child_relation(
                     serial, record, SERIAL_RELATION, volume
                 )
+                RecordRelationIndexer().index(record, serial)
 
     def link_record_and_journal(record_cls, search):
         for hit in search.scan():
