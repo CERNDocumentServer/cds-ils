@@ -64,7 +64,9 @@ def test_import_users(app, db, testdata, mocker):
         "cds_ils.ldap.api.LdapClient.get_primary_accounts",
         return_value=ldap_users,
     )
-    mocker.patch("invenio_app_ils.patrons.indexer.reindex_patrons")
+    mocker.patch(
+        "invenio_app_ils.patrons.indexer.PatronIndexer.reindex_patrons"
+    )
 
     import_users()
 
