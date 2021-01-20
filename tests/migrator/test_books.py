@@ -1073,6 +1073,7 @@ def test_related_record(app):
                         {
                             "related_recid": "748392",
                             "relation_type": "language",
+                            "relation_description": None,
                         }
                     ],
                 },
@@ -1094,6 +1095,7 @@ def test_related_record(app):
                             {
                                 "related_recid": "7483924",
                                 "relation_type": "other",
+                                "relation_description": None,
                             }
                         ],
                     },
@@ -1113,8 +1115,14 @@ def test_related_record(app):
                     **get_helper_dict(),
                     "has_related": True,
                     "related": [
-                        {"related_recid": "7483924", "relation_type": "other"},
-                        {"related_recid": "748", "relation_type": "other"},
+                        {"related_recid": "7483924",
+                         "relation_type": "other",
+                         "relation_description": None,
+                         },
+                        {"related_recid": "748",
+                         "relation_type": "other",
+                         "relation_description": None,
+                         },
                     ],
                 },
             },

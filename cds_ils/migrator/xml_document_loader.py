@@ -12,11 +12,15 @@ import logging
 import uuid
 
 import click
+from flask import current_app
 from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
+from invenio_pidstore.errors import PIDAlreadyExists
+from sqlalchemy.exc import IntegrityError
 
+from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.utils import add_cover_metadata, clean_created_by_field
 from cds_ils.minters import legacy_recid_minter
 
@@ -72,18 +76,21 @@ class CDSDocumentDumpLoader(object):
         """Create a new record from dump."""
         document_cls = current_app_ils.document_record_cls
         record_uuid = uuid.uuid4()
+
+        timestamp, json_data = dump.revisions[-1]
+        json_data = clean_created_by_field(json_data)
+        add_cover_metadata(json_data)
+
         try:
             with db.session.begin_nested():
+                # checks if the document with this legacy_recid already exists
+                legacy_recid_minter(json_data["legacy_recid"], record_uuid)
+
                 provider = DocumentIdProvider.create(
                     object_type="rec",
                     object_uuid=record_uuid,
                 )
-                timestamp, json_data = dump.revisions[-1]
                 json_data["pid"] = provider.pid.pid_value
-                json_data = clean_created_by_field(json_data)
-                legacy_recid_minter(json_data["legacy_recid"], record_uuid)
-                add_cover_metadata(json_data)
-
                 document = document_cls.create(json_data, record_uuid)
                 document.model.created = dump.created.replace(tzinfo=None)
                 document.model.updated = timestamp.replace(tzinfo=None)
@@ -94,3 +101,16 @@ class CDSDocumentDumpLoader(object):
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
             click.secho(e.original_exception.message, fg="red")
             raise e
+        except PIDAlreadyExists as e:
+            allow_updates = \
+                current_app.config.get("CDS_ILS_MIGRATION_ALLOW_UPDATES")
+            if not allow_updates:
+                raise e
+            # update document if already exists with legacy_recid
+            document = get_record_by_legacy_recid(document_cls,
+                                                  json_data["legacy_recid"])
+            document.update(json_data)
+            document.model.updated = timestamp.replace(tzinfo=None)
+            document.commit()
+            db.session.commit()
+            return document
