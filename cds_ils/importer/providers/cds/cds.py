@@ -39,8 +39,6 @@ def get_helper_dict():
         related=[],
         items=[],
         electronic_items=[],
-        relation_previous=None,
-        relation_next=None,
     )
     return deepcopy(_helper_dict)
 

@@ -13,19 +13,17 @@ from elasticsearch_dsl import Q
 from invenio_app_ils.errors import RecordRelationsError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild, \
-    RecordRelationsSiblings
-from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION, \
-    SERIAL_RELATION, Relation
+    RecordRelationsSequence, RecordRelationsSiblings
+from invenio_app_ils.relations.api import SEQUENCE_RELATION_TYPES, \
+    SERIAL_RELATION, SIBLINGS_RELATION_TYPES, Relation
 from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.documents.api import \
     search_documents_with_siblings_relations
-from cds_ils.migrator.errors import DocumentMigrationError, \
-    MultipartMigrationError
 from cds_ils.migrator.series.api import get_migrated_volume_by_serial_title, \
-    get_serials_by_child_recid
+    get_serials_by_child_recid, search_series_with_relations
 
 
 def create_parent_child_relation(parent, child, relation_type, volume):
@@ -42,20 +40,33 @@ def create_parent_child_relation(parent, child, relation_type, volume):
     )
 
 
-def create_sibling_child_relation(first, second, relation_type):
-    """Create parent child relations."""
+def create_sibling_relation(first, second, relation_type, **kwargs):
+    """Create sibling relations."""
     rr = RecordRelationsSiblings()
     click.echo(
         "Creating relations: {0} - {1}".format(first["pid"], second["pid"])
     )
-    rr.add(
-        first=first,
-        second=second,
-        relation_type=relation_type,
+    rr.add(first=first, second=second, relation_type=relation_type, **kwargs)
+
+
+def create_sequence_relation(previous_rec, next_rec, relation_type):
+    """Create sequence relations."""
+    rr = RecordRelationsSequence()
+    click.echo(
+        "Creating relations: {0} - {1}".format(
+            previous_rec["pid"], next_rec["pid"]
+        )
     )
+    rel = Relation(relation_type)
+    if not rel.relation_exists(previous_rec.pid, next_rec.pid):
+        rr.add(
+            previous_rec=previous_rec,
+            next_rec=next_rec,
+            relation_type=relation_type,
+        )
 
 
-def migrate_siblings_relation():
+def migrate_document_siblings_relation():
     """Create siblings relations."""
     document_class = current_app_ils.document_record_cls
     series_class = current_app_ils.series_record_cls
@@ -94,7 +105,7 @@ def migrate_siblings_relation():
                     document.pid
                 )
                 try:
-                    create_sibling_child_relation(
+                    create_sibling_relation(
                         current_document_record,
                         related_sibling,
                         relation_type=relation_type,
@@ -103,6 +114,55 @@ def migrate_siblings_relation():
                 except RecordRelationsError as e:
                     click.secho(e.description, fg="red")
                     continue
+
+
+def migrate_series_relations():
+    """Create relations for series."""
+    series_class = current_app_ils.series_record_cls
+    search = search_series_with_relations()
+    results = search.scan()
+
+    for series in results:
+        relations = series["_migration"]["related"]
+
+        for relation in relations:
+            related_series = get_record_by_legacy_recid(
+                series_class, relation["related_recid"]
+            )
+
+            # validate relation type
+            relation_type = Relation.get_relation_by_name(
+                relation["relation_type"]
+            )
+
+            # create relation
+            current_series_record = series_class.get_record_by_pid(series.pid)
+            try:
+                if relation_type in SIBLINGS_RELATION_TYPES:
+                    create_sibling_relation(
+                        current_series_record,
+                        related_series,
+                        relation_type=relation_type,
+                        note=relation["relation_description"],
+                    )
+
+                elif relation_type in SEQUENCE_RELATION_TYPES:
+                    if relation["sequence_order"] == "previous":
+                        create_sequence_relation(
+                            current_series_record,
+                            related_series,
+                            relation_type=relation_type,
+                        )
+                    else:
+                        create_sequence_relation(
+                            related_series,
+                            current_series_record,
+                            relation_type=relation_type,
+                        )
+                db.session.commit()
+            except RecordRelationsError as e:
+                click.secho(e.description, fg="red")
+                continue
 
 
 def link_documents_and_serials():

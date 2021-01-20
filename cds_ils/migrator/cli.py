@@ -28,7 +28,7 @@ from cds_ils.migrator.items.api import import_items_from_json
 from cds_ils.migrator.loans.api import import_loans_from_json
 from cds_ils.migrator.patrons.api import import_users_from_json
 from cds_ils.migrator.relations.api import link_documents_and_serials, \
-    migrate_siblings_relation
+    migrate_document_siblings_relation, migrate_series_relations
 from cds_ils.migrator.series.api import validate_multipart_records, \
     validate_serial_records
 from cds_ils.migrator.series.series_import import import_serial_from_file, \
@@ -105,11 +105,21 @@ def multipart(sources, rectype="multipart"):
 
 @migration.command()
 @click.argument("sources", type=click.File("r"), nargs=-1)
+@click.option(
+    "--skip-indexing",
+    is_flag=True,
+)
 @with_appcontext
-def journal(sources, rectype="journal"):
+def journal(
+    sources,
+    skip_indexing,
+    rectype="journal",
+):
     """Migrate journals from xml dump file."""
     click.echo("Migrating {}s...".format(rectype))
     import_series_from_dump(sources, rectype=rectype)
+    if not skip_indexing:
+        reindex_pidtype("serid")
 
 
 @migration.command()
@@ -231,9 +241,22 @@ def serial():
 
 @relations.command()
 @with_appcontext
-def siblings():
+def document_siblings():
     """Create sibling relations for migrated documents."""
-    migrate_siblings_relation()
+    migrate_document_siblings_relation()
+
+
+@relations.command()
+@click.option(
+    "--skip-indexing",
+    is_flag=True,
+)
+@with_appcontext
+def series(skip_indexing):
+    """Create relations for migrated series."""
+    migrate_series_relations()
+    if not skip_indexing:
+        reindex_pidtype("serid")
 
 
 @migration.group()

@@ -7,9 +7,11 @@
 
 """CDS-ILS MARCXML Journal rules."""
 
-
 import pycountry
+from dojson.errors import IgnoreKey
 from dojson.utils import for_each_value
+from invenio_app_ils.relations.api import LANGUAGE_RELATION, OTHER_RELATION, \
+    SEQUENCE_RELATION
 
 from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
@@ -109,14 +111,12 @@ def languages(self, key, value):
         raise UnexpectedValue(subfield="a")
 
 
-@model.over("_migration", "(^362__)|(^85641)|(^866__)|(^780__)|(^785__)")
-def migration(self, key, value):
+@model.over("_children", "(^362__)|(^85641)|(^866__)")
+def children_records(self, key, value):
     """Translates fields related to children record types."""
-    _migration = self.get("_migration", {})
+    _migration = self["_migration"]
     _electronic_items = _migration.get("electronic_items", [])
     _items = _migration.get("items", [])
-    _relation_previous = _migration.get("relation_previous")
-    _relation_next = _migration.get("relation_next")
     if key == "362__":
         _electronic_items.append({"subscription": clean_val("a", value, str)})
     if key == "85641":
@@ -134,18 +134,65 @@ def migration(self, key, value):
                 "subscription": clean_val("a", value, str),
             }
         )
-    if key == "780__":
-        _relation_previous = clean_val("w", value, str, req=True)
-
-    if key == "785__":
-        _relation_next = clean_val("w", value, str, req=True)
 
     _migration.update(
         {
             "electronic_items": _electronic_items,
             "items": _items,
-            "relation_previous": _relation_previous,
-            "relation_next": _relation_next,
         }
     )
+
+    raise IgnoreKey("_children")
+
+
+@model.over(
+    "_migration", "(^770__)|(^772__)|(^780__)|(^785__)|(^787__)", override=True
+)
+def related_records(self, key, value):
+    """Translates related_records field."""
+    _migration = self.get("_migration", {})
+    _related = _migration.get("related", [])
+    description = None
+    relation_type = OTHER_RELATION.name
+
+    # language
+    if key == "787__":
+        if "i" in value:
+            relation_language = clean_val("i", value, str)
+            if relation_language:
+                relation_type = LANGUAGE_RELATION.name
+
+    # has supplement/supplement to
+    if key == "770__" or key == "772__":
+        if "i" in value:
+            description = clean_val("i", value, str)
+
+    # continues/is continued by
+    if key == "780__" or key == "785__":
+        if "i" in value:
+            relation_sequence = clean_val("i", value, str)
+            if relation_sequence:
+                relation_type = SEQUENCE_RELATION.name
+                if key == "780__":
+                    sequence_order = "next"
+                else:
+                    sequence_order = "previous"
+
+    related_dict = {
+        "related_recid": clean_val("w", value, str, req=True),
+        "relation_type": relation_type,
+        "relation_description": description,
+    }
+    if relation_type == SEQUENCE_RELATION.name:
+        related_dict.update({"sequence_order": sequence_order})
+
+    _related.append(related_dict)
+
+    _migration.update(
+        {
+            "related": _related,
+            "has_related": True,
+        }
+    )
+
     return _migration

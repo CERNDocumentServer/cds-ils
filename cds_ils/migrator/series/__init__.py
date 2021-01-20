@@ -12,6 +12,6 @@ serial_marc21 = OverdoBase(entry_point_models="cds_ils.migrator.serial_model")
 journal_marc21 = OverdoBase(
     entry_point_models="cds_ils.migrator.journal_model"
 )
-mutlipart_marc21 = OverdoBase(
+multipart_marc21 = OverdoBase(
     entry_point_models="cds_ils.migrator.multipart_model"
 )
