@@ -14,8 +14,9 @@ from invenio_app_ils.errors import RecordRelationsError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild, \
     RecordRelationsSequence, RecordRelationsSiblings
-from invenio_app_ils.relations.api import SEQUENCE_RELATION_TYPES, \
-    SERIAL_RELATION, SIBLINGS_RELATION_TYPES, Relation
+from invenio_app_ils.relations.api import OTHER_RELATION, \
+    SEQUENCE_RELATION_TYPES, SERIAL_RELATION, SIBLINGS_RELATION_TYPES, \
+    Relation
 from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
 
@@ -46,7 +47,12 @@ def create_sibling_relation(first, second, relation_type, **kwargs):
     click.echo(
         "Creating relations: {0} - {1}".format(first["pid"], second["pid"])
     )
-    rr.add(first=first, second=second, relation_type=relation_type, **kwargs)
+    rr.add(
+        first=first,
+        second=second,
+        relation_type=relation_type,
+        **kwargs,
+    )
 
 
 def create_sequence_relation(previous_rec, next_rec, relation_type):
@@ -73,6 +79,8 @@ def migrate_document_siblings_relation():
 
     search = search_documents_with_siblings_relations()
     results = search.scan()
+
+    extra_metadata = {}
     for document in results:
         relations = document["_migration"]["related"]
 
@@ -99,16 +107,21 @@ def migrate_document_siblings_relation():
                 relation["relation_type"]
             )
 
+            if relation_type == OTHER_RELATION.name:
+                extra_metadata.update(
+                    {"note": relation["relation_description"]})
             # create relation
             if related_sibling and related_sibling["pid"] != document.pid:
                 current_document_record = document_class.get_record_by_pid(
                     document.pid
                 )
+
                 try:
                     create_sibling_relation(
                         current_document_record,
                         related_sibling,
-                        relation_type=relation_type,
+                        relation_type,
+                        **extra_metadata
                     )
                     db.session.commit()
                 except RecordRelationsError as e:
@@ -142,7 +155,7 @@ def migrate_series_relations():
                     create_sibling_relation(
                         current_series_record,
                         related_series,
-                        relation_type=relation_type,
+                        relation_type,
                         note=relation["relation_description"],
                     )
 
@@ -151,13 +164,13 @@ def migrate_series_relations():
                         create_sequence_relation(
                             current_series_record,
                             related_series,
-                            relation_type=relation_type,
+                            relation_type,
                         )
                     else:
                         create_sequence_relation(
                             related_series,
                             current_series_record,
-                            relation_type=relation_type,
+                            relation_type,
                         )
                 db.session.commit()
             except RecordRelationsError as e:

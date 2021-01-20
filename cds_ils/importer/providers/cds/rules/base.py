@@ -332,23 +332,28 @@ def related_records(self, key, value):
     _migration = self["_migration"]
     _related = _migration["related"]
     relation_type = OTHER_RELATION.name
+    relation_description = None
     try:
         if key == "775__" and "b" in value:
+            description = clean_val("b", value, str)
             relation_type_tag = clean_val("x", value, str)
             if relation_type_tag.lower() == 'edition':
                 relation_type = EDITION_RELATION.name
             elif relation_type_tag.lower() == 'language':
                 relation_type = LANGUAGE_RELATION.name
+            else:
+                relation_description = description
         if key == "787__" and "i" in value:
             clean_val("i", value, str, manual=True)
         _related.append(
             {
                 "related_recid": clean_val("w", value, str, req=True),
                 "relation_type": relation_type,
+                "relation_description": relation_description
             }
         )
         _migration.update({"related": _related, "has_related": True})
-        return _migration
+        raise IgnoreKey('_migration')
     except ManualImportRequired as e:
         if key == "775__":
             e.subfield = "b or c"
@@ -397,8 +402,7 @@ def open_access(self, key, value):
     """
     if "r" in value:
         self["_migration"]["eitems_open_access"] = True
-    else:
-        raise IgnoreKey("_migration")
+    raise IgnoreKey("_migration")
 
 
 @model.over("urls", "^8564_")

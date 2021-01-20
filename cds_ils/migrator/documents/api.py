@@ -8,7 +8,6 @@
 
 """CDS-ILS document migrator API."""
 
-import json
 import logging
 
 import click
@@ -46,42 +45,6 @@ def get_document_by_barcode(barcode, legacy_recid):
         )
         raise DocumentMigrationError(
             "found more than one document with barcode {}".format(barcode)
-        )
-
-
-def get_document_by_legacy_recid(legacy_recid):
-    """Search documents by its legacy recid."""
-    document_class = current_app_ils.document_record_cls
-    document_search = current_app_ils.document_search_cls()
-
-    search = document_search.query(
-        "bool", filter=[Q("term", legacy_recid=legacy_recid)]
-    )
-    result = search.execute()
-    hits_total = result.hits.total.value
-
-    if hits_total == 1:
-        click.secho(
-            "! document found with legacy recid {}".format(legacy_recid),
-            fg="green",
-        )
-        return document_class.get_record_by_pid(result.hits[0].pid)
-
-    elif hits_total == 0:
-        click.secho(
-            "no document found with legacy recid {}".format(legacy_recid),
-            fg="red",
-        )
-        raise DocumentMigrationError(
-            "no document found with legacy recid {}".format(legacy_recid)
-        )
-    else:
-        click.secho(
-            "no document found with legacy recid {}".format(legacy_recid),
-            fg="red",
-        )
-        raise DocumentMigrationError(
-            "found more than one document with recid {}".format(legacy_recid)
         )
 
 

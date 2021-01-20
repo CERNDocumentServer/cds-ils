@@ -4,16 +4,15 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS literature API."""
-
+from flask import current_app
 from invenio_pidstore.resolver import Resolver
-
-from cds_ils.config import RECORD_LEGACY_PID_TYPE
 
 
 def get_record_by_legacy_recid(cls, pid_value):
     """Get ils record by pid value and pid type."""
+    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
     resolver = Resolver(
-        pid_type=RECORD_LEGACY_PID_TYPE,
+        pid_type=legacy_pid_type,
         object_type="rec",
         getter=cls.get_record,
     )
