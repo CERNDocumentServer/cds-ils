@@ -254,3 +254,15 @@ def validate_multipart_records():
             validate_multipart_relation(multipart, volumes)
 
     click.echo("Multipart validation check done!")
+
+
+def search_series_with_relations():
+    """Return series with relations."""
+    series_search = current_app_ils.series_search_cls()
+    search = series_search.filter(
+        "bool",
+        filter=[
+            Q("term", _migration__has_related=True),
+        ],
+    )
+    return search

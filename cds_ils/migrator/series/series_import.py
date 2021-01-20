@@ -16,7 +16,7 @@ from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
 from cds_ils.importer.api import import_record
-from cds_ils.migrator.series import journal_marc21, mutlipart_marc21, \
+from cds_ils.migrator.series import journal_marc21, multipart_marc21, \
     serial_marc21
 from cds_ils.migrator.series.xml_series_loader import CDSSeriesDumpLoader
 from cds_ils.migrator.utils import model_provider_by_rectype
@@ -33,7 +33,7 @@ def import_series_from_dump(
     if rectype == "serial":
         dojson_model = serial_marc21
     elif rectype == "multipart":
-        dojson_model = mutlipart_marc21
+        dojson_model = multipart_marc21
     else:
         dojson_model = journal_marc21
     for idx, source in enumerate(sources, 1):
@@ -100,9 +100,9 @@ def import_serial_from_file(sources, rectype):
                             json_record["title"], rectype
                         )
                     )
-                    has_children = json_record.get("_migration", {}).get(
-                        "children", []
-                    )
-                    if has_children:
-                        record = import_record(json_record, model, provider)
-                        records.append(record)
+                has_children = json_record.get("_migration", {}).get(
+                    "children", []
+                )
+                if has_children:
+                    record = import_record(json_record, model, provider)
+                    records.append(record)

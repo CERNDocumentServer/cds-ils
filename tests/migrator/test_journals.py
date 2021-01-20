@@ -37,12 +37,11 @@ def check_transformation(marcxml_body, json_body):
         "_migration": {
             "is_multipart": False,
             "has_related": False,
+            "related": [],
             "record_type": "journal",
             "volumes": [],
             "items": [],
             "electronic_items": [],
-            "relation_previous": None,
-            "relation_next": None,
         }
     }
     record = model.do(blob, ignore_missing=False)
@@ -51,12 +50,11 @@ def check_transformation(marcxml_body, json_body):
         "_migration": {
             "is_multipart": False,
             "has_related": False,
+            "related": [],
             "record_type": "journal",
             "volumes": [],
             "items": [],
             "electronic_items": [],
-            "relation_previous": None,
-            "relation_next": None,
         },
     }
 
@@ -224,12 +222,11 @@ def test_migration(app):
                 "_migration": {
                     "is_multipart": False,
                     "has_related": False,
+                    "related": [],
                     "record_type": "journal",
                     "volumes": [],
                     "electronic_items": [{"subscription": "v 1 (1992) -"}],
                     "items": [],
-                    "relation_next": None,
-                    "relation_previous": None,
                 },
             },
         )
@@ -248,6 +245,7 @@ def test_migration(app):
                 "_migration": {
                     "is_multipart": False,
                     "has_related": False,
+                    "related": [],
                     "record_type": "journal",
                     "volumes": [],
                     "electronic_items": [
@@ -259,8 +257,6 @@ def test_migration(app):
                         }
                     ],
                     "items": [],
-                    "relation_next": None,
-                    "relation_previous": None,
                 },
             },
         )
@@ -275,6 +271,7 @@ def test_migration(app):
                 "_migration": {
                     "is_multipart": False,
                     "has_related": False,
+                    "related": [],
                     "record_type": "journal",
                     "volumes": [],
                     "items": [
@@ -283,50 +280,171 @@ def test_migration(app):
                         }
                     ],
                     "electronic_items": [],
-                    "relation_next": None,
-                    "relation_previous": None,
                 },
             },
         )
         check_transformation(
             """
-            <datafield tag="780" ind1=" " ind2=" ">
-                <subfield code="i">Continues</subfield>
-                <subfield code="t">Mathematics of the USSR-Izvestiya</subfield>
-                <subfield code="w">2711756</subfield>
-            </datafield>
-            """,
+                <datafield tag="787" ind1=" " ind2=" ">
+                    <subfield code="i">Random text</subfield>
+                    <subfield code="w">7483924</subfield>
+                </datafield>
+                """,
             {
                 "_migration": {
                     "is_multipart": False,
-                    "has_related": False,
                     "record_type": "journal",
                     "volumes": [],
                     "items": [],
                     "electronic_items": [],
-                    "relation_next": None,
-                    "relation_previous": "2711756",
+                    "has_related": True,
+                    "related": [
+                        {
+                            "related_recid": "7483924",
+                            "relation_type": "language",
+                            "relation_description": None,
+                        }
+                    ],
+                },
+            },
+        )
+        check_transformation(
+            """
+                <datafield tag="770" ind1=" " ind2=" ">
+                    <subfield code="i">Random text</subfield>
+                    <subfield code="w">7483924</subfield>
+                </datafield>
+                """,
+            {
+                "_migration": {
+                    "is_multipart": False,
+                    "record_type": "journal",
+                    "volumes": [],
+                    "items": [],
+                    "electronic_items": [],
+                    "has_related": True,
+                    "related": [
+                        {
+                            "related_recid": "7483924",
+                            "relation_type": "other",
+                            "relation_description": "Random text",
+                        }
+                    ],
+                },
+            },
+        )
+        check_transformation(
+            """
+                <datafield tag="772" ind1=" " ind2=" ">
+                    <subfield code="i">Random text</subfield>
+                    <subfield code="w">7483924</subfield>
+                </datafield>
+                """,
+            {
+                "_migration": {
+                    "is_multipart": False,
+                    "record_type": "journal",
+                    "volumes": [],
+                    "items": [],
+                    "electronic_items": [],
+                    "has_related": True,
+                    "related": [
+                        {
+                            "related_recid": "7483924",
+                            "relation_type": "other",
+                            "relation_description": "Random text",
+                        }
+                    ],
+                },
+            },
+        )
+        check_transformation(
+            """
+                <datafield tag="780" ind1=" " ind2=" ">
+                    <subfield code="i">Random text</subfield>
+                    <subfield code="w">7483924</subfield>
+                </datafield>
+                """,
+            {
+                "_migration": {
+                    "is_multipart": False,
+                    "has_related": True,
+                    "record_type": "journal",
+                    "volumes": [],
+                    "items": [],
+                    "electronic_items": [],
+                    "related": [
+                        {
+                            "related_recid": "7483924",
+                            "relation_type": "sequence",
+                            "sequence_order": "next",
+                            "relation_description": None,
+                        }
+                    ],
                 },
             },
         )
         check_transformation(
             """
                 <datafield tag="785" ind1=" " ind2=" ">
-                    <subfield code="i">Continued by</subfield>
-                    <subfield code="t">Izvestiya: Mathematics</subfield>
-                    <subfield code="w">2711769</subfield>
+                    <subfield code="i">Random text</subfield>
+                    <subfield code="w">7483924</subfield>
                 </datafield>
-            """,
+                """,
             {
                 "_migration": {
                     "is_multipart": False,
-                    "has_related": False,
+                    "has_related": True,
                     "record_type": "journal",
                     "volumes": [],
                     "items": [],
                     "electronic_items": [],
-                    "relation_next": "2711769",
-                    "relation_previous": None,
+                    "related": [
+                        {
+                            "related_recid": "7483924",
+                            "relation_type": "sequence",
+                            "sequence_order": "previous",
+                            "relation_description": None,
+                        }
+                    ],
+                },
+            },
+        )
+        check_transformation(
+            """
+                <datafield tag="785" ind1=" " ind2=" ">
+                    <subfield code="i">Split into</subfield>
+                    <subfield code="t">Book1</subfield>
+                    <subfield code="w">903671</subfield>
+                </datafield>
+                <datafield tag="785" ind1=" " ind2=" ">
+                    <subfield code="i">Split into</subfield>
+                    <subfield code="t">Book2</subfield>
+                    <subfield code="w"> 903672</subfield>
+                </datafield>
+                """,
+            {
+                "_migration": {
+                    "is_multipart": False,
+                    "has_related": True,
+                    "record_type": "journal",
+                    "volumes": [],
+                    "items": [],
+                    "electronic_items": [],
+                    "related": [
+                        {
+                            "related_recid": "903671",
+                            "relation_type": "sequence",
+                            "sequence_order": "previous",
+                            "relation_description": None,
+                        },
+                        {
+                            "related_recid": "903672",
+                            "relation_type": "sequence",
+                            "sequence_order": "previous",
+                            "relation_description": None,
+                        },
+                    ],
                 },
             },
         )

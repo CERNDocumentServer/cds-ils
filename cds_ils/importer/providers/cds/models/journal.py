@@ -53,10 +53,16 @@ class CDSJournal(CdsIlsOverdo):
         "939__u",
         "939__v",
         "6531_a",
+        "770__t",  # title of relation has supplement
+        "770__i",  # label of relation has supplement
+        "772__i",  # label of relation supplement to
+        "772__t",  # title of relation supplement to
         "780__i",  # label of relation continues
         "780__t",  # title of relation continues
         "785__i",  # label of relation continued by
         "785__t",  # title of relation continued by
+        "787__i",  # label of relation language
+        "787__t",  # title of relation language
         "85641y",
         "866__g",
         "866__x",
@@ -72,13 +78,12 @@ class CDSJournal(CdsIlsOverdo):
     _default_fields = {
         "_migration": {
             "has_related": False,
+            "related": [],
             "record_type": "journal",
             "volumes": [],
             "items": [],
             "electronic_items": [],
-            "relation_previous": None,
-            "relation_next": None,
-            "tags": []
+            "tags": [],
         }
     }
 
@@ -96,5 +101,6 @@ class CDSJournal(CdsIlsOverdo):
         )
 
 
-model = CDSJournal(bases=(cds_base, books_base),
-                   entry_point_group="cds_ils.importer.series")
+model = CDSJournal(
+    bases=(cds_base, books_base), entry_point_group="cds_ils.importer.series"
+)
