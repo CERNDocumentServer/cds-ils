@@ -85,7 +85,7 @@ def get_status(record):
 def get_library_by_legacy_id(legacy_id):
     """Search for library by legacy id."""
     search = current_ils_ill.library_search_cls().query(
-        "bool", filter=[Q("term", legacy_id=legacy_id)]
+        "bool", filter=[Q("term", legacy_ids=legacy_id)]
     )
     result = search.execute()
     hits_total = result.hits.total.value
