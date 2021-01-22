@@ -71,6 +71,8 @@ def clean_item_record(record):
     record["shelf"] = record["location"]
     record["medium"] = "PAPER"  # requested as default value
     record["created_by"] = {"type": "script", "value": "migration"}
+    record["legacy_library_id"] = str(record["id_crcLIBRARY"])
+    record["legacy_id"] = ""
     del record["location"]
     del record["id_bibrec"]
     del record["id_crcLIBRARY"]

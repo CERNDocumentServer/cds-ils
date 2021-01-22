@@ -29,11 +29,29 @@ from cds_ils.migrator.errors import VendorError
 from cds_ils.migrator.utils import bulk_index_records, \
     model_provider_by_rectype
 
+ORIGINAL_WILEY_ID = 17
+DEFAULT_WILEY = 333
+WILEY_DE = 333
+WILEY_UK = 444
+WILEY_US = 555
+WILEY_MAPER = {
+    'EUR': WILEY_DE,
+    'GBP': WILEY_UK,
+    'USD': WILEY_US,
+}
 
-def get_vendor_pid_by_legacy_id(legacy_id):
+
+def get_vendor_pid_by_legacy_id(legacy_id, grand_total):
     """Search for vendor by legacy id."""
+    # Check for Wiley vendor to split it depending on the currency
+    if legacy_id == ORIGINAL_WILEY_ID:
+        if grand_total and grand_total['currency']:
+            legacy_id = WILEY_MAPER.get(grand_total['currency'], DEFAULT_WILEY)
+        else:
+            legacy_id = DEFAULT_WILEY
+
     search = current_ils_acq.vendor_search_cls().filter(
-        "term", legacy_id=legacy_id
+        "term", legacy_ids=legacy_id
     )
     result = search.execute()
 
@@ -56,6 +74,10 @@ def import_vendors_from_json(dump_file):
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
         for record in input_data:
+            # Legacy_ids in the .json file can be an array of strings or just
+            # an integer, but we only accept an array of strings in the schema
+            if not isinstance(record["legacy_ids"], list):
+                record["legacy_ids"] = [str(record["legacy_ids"])]
             ils_record = import_record(
                 record,
                 model,

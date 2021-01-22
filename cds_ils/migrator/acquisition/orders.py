@@ -181,13 +181,14 @@ def migrate_order(record):
     else:
         new_order.update(order_date="1970-01-01")
 
-    vendor_pid = get_vendor_pid_by_legacy_id(record["id_crcLIBRARY"])
-    new_order.update(vendor_pid=vendor_pid)
-
     # Optional fields
     grand_total = get_cost(record)
     if grand_total:
         new_order.update(grand_total=grand_total)
+
+    vendor_pid = get_vendor_pid_by_legacy_id(record["id_crcLIBRARY"],
+                                             grand_total)
+    new_order.update(vendor_pid=vendor_pid)
 
     expected_delivery_date = record.get("expected_date")
     if expected_delivery_date:
@@ -222,6 +223,7 @@ def import_orders_from_json(dump_file, include=None):
                     provider,
                     legacy_id_key="legacy_id",
                 )
+                ils_records.append(ils_record)
             except Exception as e:
                 error_logger.error(
                     "ORDER: {0} ERROR: {1}".format(
@@ -230,6 +232,5 @@ def import_orders_from_json(dump_file, include=None):
                 )
                 db.session.rollback()
 
-            ils_records.append(ils_record)
         db.session.commit()
     bulk_index_records(ils_records)

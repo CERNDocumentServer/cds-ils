@@ -45,27 +45,28 @@ def import_internal_locations_from_json(
         for record in bar:
             click.echo(
                 'Importing internal location "{0}({1})"...'.format(
-                    record["legacy_id"], rectype
+                    record["legacy_ids"], rectype
                 )
             )
             if include_ids is None or record["legacy_id"] in include_ids:
                 # remove the library type as it is not a part of the data model
                 library_type = record.pop("type", None)
-                record["legacy_id"] = str(record["legacy_id"])
+                if not isinstance(record["legacy_ids"], list):
+                    record["legacy_ids"] = [str(record["legacy_ids"])]
                 if library_type == "external":
                     # if the type is external => ILL Library
                     record = import_record(
                         record,
                         library_model,
                         library_provider,
-                        legacy_id_key="legacy_id",
+                        legacy_id_key="legacy_ids",
                     )
                     records.append(record)
                 else:
 
                     record["location_pid"] = location_pid_value
                     record = import_record(
-                        record, model, provider, legacy_id_key="legacy_id"
+                        record, model, provider, legacy_id_key="legacy_ids"
                     )
                     records.append(record)
     # Index all new internal location and libraries records
@@ -75,7 +76,7 @@ def import_internal_locations_from_json(
 def get_internal_location_by_legacy_recid(legacy_recid):
     """Search for internal location by legacy id."""
     search = InternalLocationSearch().query(
-        "bool", filter=[Q("term", legacy_id=legacy_recid)]
+        "bool", filter=[Q("term", legacy_ids=legacy_recid)]
     )
     result = search.execute()
     hits_total = result.hits.total.value

@@ -62,7 +62,7 @@ def create_unknown_library():
     data = {
         "pid": MIGRATION_LIBRARY_PID,
         "name": "Migrated Unknown Library",
-        "legacy_id": "0",
+        "legacy_ids": ["0"],
         "notes": """This Library is used whenever we had library with
         legacy ID 0 in CDS Acquisition and ILL data.
         """,
@@ -80,7 +80,7 @@ def create_unknown_vendor():
     data = {
         "pid": MIGRATION_VENDOR_PID,
         "name": "Migrated Unknown Vendor",
-        "legacy_id": "0",
+        "legacy_ids": ["0"],
         "notes": """This Vendor is used whenever we had vendor ID 0
         in CDS Acquisition and ILL data.
         """,
