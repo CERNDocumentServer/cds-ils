@@ -83,6 +83,8 @@ class CDSJournal(CdsIlsOverdo):
             "volumes": [],
             "electronic_items": [],
             "tags": [],
+            "item_medium": [],
+            "has_medium": False,
         }
     }
 

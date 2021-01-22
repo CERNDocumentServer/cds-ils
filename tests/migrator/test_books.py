@@ -1952,7 +1952,7 @@ def test_number_of_pages(app):
             """,
             {
                 "number_of_pages": "480",
-                "physical_copy_description": "1 CD-ROM",
+                "physical_description": "1 CD-ROM",
             },
         )
         check_transformation(
@@ -1963,7 +1963,7 @@ def test_number_of_pages(app):
             """,
             {
                 "number_of_pages": "42",
-                "physical_copy_description": "2 CD-ROM, 1 DVD, 1 VHS",
+                "physical_description": "2 CD-ROM, 1 DVD, 1 VHS",
             },
         )
         check_transformation(
@@ -3086,5 +3086,147 @@ def test_record(app):
                                      'considerations about the '
                                      'synchronization manifold.'],
                 "title": "Nonlinear dynamics, chaos, and complexity",
-            }
+            },
+        )
+
+
+def test_medium(app):
+    """Test medium."""
+    with app.app_context():
+        with pytest.raises(UnexpectedValue):
+            check_transformation(
+                """
+                <datafield tag="340" ind1=" " ind2=" ">
+                    <subfield code="a">EBOOK</subfield>
+                </datafield>
+                """,
+                {
+                    "_migration": {
+                        **get_helper_dict(),
+                    },
+                },
+            )
+        check_transformation(
+            """
+            <datafield tag="340" ind1=" " ind2=" ">
+                <subfield code="a">DVD video</subfield>
+                <subfield code="x">CM-B00065102</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(),
+                    "item_medium": [
+                        {
+                            "barcode": "CM-B00065102",
+                            "medium": "DVD",
+                        }
+                    ],
+                    "has_medium": True,
+                },
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="340" ind1=" " ind2=" ">
+                <subfield code="a">paper</subfield>
+                <subfield code="x">CM-B00062302</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(),
+                    "item_medium": [
+                        {
+                            "barcode": "CM-B00062302",
+                            "medium": "PAPER",
+                        }
+                    ],
+                    "has_medium": True,
+                },
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="340" ind1=" " ind2=" ">
+                <subfield code="a">VHS</subfield>
+                <subfield code="x">CM-B00063302</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(),
+                    "item_medium": [
+                        {
+                            "barcode": "CM-B00063302",
+                            "medium": "VHS",
+                        }
+                    ],
+                    "has_medium": True,
+                },
+            },
+        )
+        # https://cds.cern.ch/record/1058314/export/xm?ln=en
+        check_transformation(
+            """
+            <datafield tag="340" ind1=" " ind2=" ">
+                <subfield code="a">CD-ROM</subfield>
+                <subfield code="x">CM-P00096545</subfield>
+                <subfield code="x">CM-B00048086</subfield>
+                <subfield code="x">CM-B00048085</subfield>
+                <subfield code="x">CM-B00048085</subfield>
+                <subfield code="x">CM-B00048083</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(),
+                    "item_medium": [
+                        {
+                            "barcode": "CM-P00096545",
+                            "medium": "CDROM",
+                        },
+                        {
+                            "barcode": "CM-B00048086",
+                            "medium": "CDROM",
+                        },
+                        {
+                            "barcode": "CM-B00048085",
+                            "medium": "CDROM",
+                        },
+                        {
+                            "barcode": "CM-B00048083",
+                            "medium": "CDROM",
+                        }
+                    ],
+                    "has_medium": True,
+                },
+            },
+        )
+
+
+def test_physical_description(app):
+    """Test medium."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="300" ind1=" " ind2=" ">
+                <subfield code="a">1 CD-ROM suppl</subfield>
+                <subfield code="x">Phys.Desc.</subfield>
+            </datafield>
+            """,
+            {
+                "physical_description": "1 CD-ROM suppl",
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="300" ind1=" " ind2=" ">
+                <subfield code="a">2 v. ; 1 CD-ROM suppl</subfield>
+                <subfield code="x">Phys.desc</subfield>
+            </datafield>
+            """,
+            {
+                "physical_description": "2 v. ; 1 CD-ROM suppl",
+            },
         )

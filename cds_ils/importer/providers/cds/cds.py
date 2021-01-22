@@ -38,6 +38,8 @@ def get_helper_dict():
         related=[],
         items=[],
         electronic_items=[],
+        item_medium=[],
+        has_medium=False,
     )
     return deepcopy(_helper_dict)
 

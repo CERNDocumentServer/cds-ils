@@ -8,7 +8,7 @@
 """CDS-ILS MARCXML Journal rules."""
 
 from dojson.errors import IgnoreKey
-from dojson.utils import for_each_value
+from dojson.utils import for_each_value, force_list
 from invenio_app_ils.relations.api import LANGUAGE_RELATION, OTHER_RELATION, \
     SEQUENCE_RELATION
 
@@ -17,7 +17,7 @@ from cds_ils.importer.providers.cds.models.journal import model
 
 from .base import title as base_title
 from .utils import clean_val, filter_list_values, out_strip
-from .values_mapping import ACCESS_TYPE, mapping
+from .values_mapping import ACCESS_TYPE, MEDIUMS, mapping
 
 
 @model.over("legacy_recid", "^001", override=True)
@@ -212,4 +212,31 @@ def related_records(self, key, value):
         }
     )
 
+    return _migration
+
+
+@model.over("_migration", "^340__")
+@out_strip
+def medium(self, key, value):
+    """Translates medium."""
+    _migration = self.get("_migration", {})
+    item_mediums = _migration.get("item_medium", [])
+    barcodes = force_list(value.get("x", ""))
+    _medium = mapping(MEDIUMS,
+                      clean_val("a", value, str).upper().replace('-', ''),
+                      raise_exception=True)
+
+    for barcode in barcodes:
+        current_item = {
+            "barcode": barcode,
+            "medium": _medium,
+        }
+        if current_item not in item_mediums:
+            item_mediums.append(current_item)
+    _migration.update(
+        {
+            "item_medium": item_mediums,
+            "has_medium": True,
+        }
+    )
     return _migration

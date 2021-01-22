@@ -49,6 +49,13 @@ ACCESS_TYPE = {
     "RESTRICTED_UNDEFINED": ["9"],
 }
 
+MEDIUMS = {
+    "PAPER": ["PAPER"],
+    "CDROM": ["CDROM", "CD-ROM"],
+    "DVD": ["DVD VIDEO", "DVD"],
+    "VHS": ["VHS"],
+}
+
 MEDIUM_TYPES = [
     "ELECTRONIC VERSION",
     "PRINT VERSION",
