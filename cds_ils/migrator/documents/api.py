@@ -20,7 +20,7 @@ migrated_logger = logging.getLogger("migrated_records")
 records_logger = logging.getLogger("records_errored")
 
 
-def get_document_by_barcode(barcode, legacy_recid):
+def get_document_by_barcode(barcode):
     """Return document from barcode search."""
     document_class = current_app_ils.document_record_cls
     document_search = current_app_ils.document_search_cls()

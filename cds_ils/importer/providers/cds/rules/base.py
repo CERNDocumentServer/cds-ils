@@ -28,8 +28,8 @@ from cds_ils.importer.providers.cds.rules.utils import clean_email, \
 from cds_ils.importer.providers.cds.rules.values_mapping import \
     ACQUISITION_METHOD, ARXIV_CATEGORIES, COLLECTION, DOCUMENT_TYPE, \
     EXTERNAL_SYSTEM_IDENTIFIERS, EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, \
-    MATERIALS, MEDIUM_TYPES, SERIAL, SUBJECT_CLASSIFICATION_EXCEPTIONS, \
-    mapping
+    MATERIALS, MEDIUM_TYPES, MEDIUMS, SERIAL, \
+    SUBJECT_CLASSIFICATION_EXCEPTIONS, mapping
 
 from ...utils import build_ils_contributor
 from .utils import extract_parts, is_excluded
@@ -1007,18 +1007,27 @@ def alternative_titles_doc(self, key, value):
 @model.over("number_of_pages", "^300__")  # item
 def number_of_pages(self, key, value):
     """Translates number_of_pages fields."""
-    val = clean_val("a", value, str)
-    if is_excluded(val):
-        raise IgnoreKey("number_of_pages")
+    val_x = clean_val("x", value, str)
+    val_a = clean_val("a", value, str)
+    if val_x:
+        if val_x == "volume":
+            raise IgnoreKey("number_of_pages")
+        elif val_x.lower() in ["phys.desc.", "phys.desc"]:
+            self["physical_description"] = val_a
+            raise IgnoreKey("number_of_pages")
+    else:
+        if is_excluded(val_a):
+            raise IgnoreKey("number_of_pages")
 
-    parts = extract_parts(val)
-    if parts["has_extra"]:
+        parts = extract_parts(val_a)
+        if parts["has_extra"]:
+            raise UnexpectedValue(subfield="a")
+        if parts["physical_description"]:
+            self["physical_description"] =\
+                parts["physical_description"]
+        if parts["number_of_pages"]:
+            return str(parts["number_of_pages"])
         raise UnexpectedValue(subfield="a")
-    if parts["physical_copy_description"]:
-        self["physical_copy_description"] = parts["physical_copy_description"]
-    if parts["number_of_pages"]:
-        return str(parts["number_of_pages"])
-    raise UnexpectedValue(subfield="a")
 
 
 @model.over("title", "^245__")
@@ -1035,3 +1044,30 @@ def title(self, key, value):
         )
         self["alternative_titles"] = _alternative_titles
     return clean_val("a", value, str, req=True)
+
+
+@model.over("_migration", "^340__")
+@out_strip
+def medium(self, key, value):
+    """Translates medium."""
+    _migration = self.get("_migration", {})
+    item_mediums = _migration.get("item_medium", [])
+    barcodes = force_list(value.get("x", ""))
+    _medium = mapping(MEDIUMS,
+                      clean_val("a", value, str).upper().replace('-', ''),
+                      raise_exception=True)
+
+    for barcode in barcodes:
+        current_item = {
+            "barcode": barcode,
+            "medium": _medium,
+        }
+        if current_item not in item_mediums:
+            item_mediums.append(current_item)
+    _migration.update(
+        {
+            "item_medium": item_mediums,
+            "has_medium": True,
+        }
+    )
+    return _migration

@@ -52,8 +52,8 @@ def number_of_pages(self, key, value):
     parts = extract_parts(val)
     if parts["has_extra"]:
         raise UnexpectedValue(subfield="a")
-    if parts["physical_copy_description"]:
-        self["physical_copy_description"] = parts["physical_copy_description"]
+    if parts["physical_description"]:
+        self["physical_description"] = parts["physical_description"]
     if parts["number_of_pages"]:
         return parts["number_of_pages"]
     raise UnexpectedValue(subfield="a")

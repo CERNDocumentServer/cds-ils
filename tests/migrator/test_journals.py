@@ -492,3 +492,120 @@ def test_migration(app):
                 },
             },
         )
+
+
+def test_medium(app):
+    """Test medium."""
+    with app.app_context():
+        with pytest.raises(UnexpectedValue):
+            check_transformation(
+                """
+                <datafield tag="340" ind1=" " ind2=" ">
+                    <subfield code="a">ebook</subfield>
+                </datafield>
+                """,
+                {
+                    "_migration": {
+                        "is_multipart": False,
+                        "has_related": False,
+                        "related": [],
+                        "record_type": "journal",
+                        "volumes": [],
+                        "electronic_items": [],
+                    },
+                },
+            )
+        check_transformation(
+            """
+            <datafield tag="340" ind1=" " ind2=" ">
+                <subfield code="a">paper</subfield>
+                <subfield code="x">CM-B00065102</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    "is_multipart": False,
+                    "has_related": False,
+                    "related": [],
+                    "record_type": "journal",
+                    "volumes": [],
+                    "electronic_items": [],
+                    "item_medium": [
+                        {
+                            "barcode": "CM-B00065102",
+                            "medium": "PAPER",
+                        }
+                    ],
+                    "has_medium": True,
+                },
+            },
+        )
+        # https://cds.cern.ch/record/1058314/export/xm?ln=en
+        check_transformation(
+            """
+            <datafield tag="340" ind1=" " ind2=" ">
+                <subfield code="a">CD-ROM</subfield>
+                <subfield code="x">CM-P00096545</subfield>
+                <subfield code="x">CM-B00048086</subfield>
+                <subfield code="x">CM-B00048085</subfield>
+                <subfield code="x">CM-B00048085</subfield>
+                <subfield code="x">CM-B00048083</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    "is_multipart": False,
+                    "has_related": False,
+                    "related": [],
+                    "record_type": "journal",
+                    "volumes": [],
+                    "electronic_items": [],
+                    "item_medium": [
+                        {
+                            "barcode": "CM-P00096545",
+                            "medium": "CDROM",
+                        },
+                        {
+                            "barcode": "CM-B00048086",
+                            "medium": "CDROM",
+                        },
+                        {
+                            "barcode": "CM-B00048085",
+                            "medium": "CDROM",
+                        },
+                        {
+                            "barcode": "CM-B00048083",
+                            "medium": "CDROM",
+                        }
+                    ],
+                    "has_medium": True,
+                },
+            },
+        )
+
+
+def test_physical_description(app):
+    """Test medium."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="300" ind1=" " ind2=" ">
+                <subfield code="a">1 CD-ROM suppl</subfield>
+                <subfield code="x">Phys.Desc.</subfield>
+            </datafield>
+            """,
+            {
+                "physical_description": "1 CD-ROM suppl",
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="300" ind1=" " ind2=" ">
+                <subfield code="a">2 v. ; 1 CD-ROM suppl</subfield>
+                <subfield code="x">Phys.desc</subfield>
+            </datafield>
+            """,
+            {
+                "physical_description": "2 v. ; 1 CD-ROM suppl",
+            },
+        )

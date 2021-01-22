@@ -15,15 +15,13 @@ import click
 from elasticsearch_dsl import Q
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
-from invenio_pidstore.errors import PIDDoesNotExistError
 
-from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record
-from cds_ils.migrator.documents.api import get_document_by_barcode
 from cds_ils.migrator.errors import DocumentMigrationError, ItemMigrationError
 from cds_ils.migrator.internal_locations.api import \
     get_internal_location_by_legacy_recid
-from cds_ils.migrator.items.utils import clean_item_record
+from cds_ils.migrator.items.utils import clean_item_record, \
+    find_document_for_item
 from cds_ils.migrator.utils import model_provider_by_rectype
 
 migrated_logger = logging.getLogger("migrated_records")
@@ -42,35 +40,9 @@ def set_internal_location_pid(record):
 
 def set_document_pid(record):
     """Set document pid for item."""
-    document_cls = current_app_ils.document_record_cls
-
-    # find document
     record["document_pid"] = None
-    try:
-
-        record["document_pid"] = get_record_by_legacy_recid(
-            document_cls, record["id_bibrec"]
-        ).pid.pid_value
-    except PIDDoesNotExistError as e:
-        error_logger.error(
-            "ITEM: {0} ERROR: Document {1} not found".format(
-                record["barcode"], record["id_bibrec"]
-            )
-        )
-        record["document_pid"] = None
-        # try to match by barcodes in volumes of the multiparts
-    if not record["document_pid"]:
-        try:
-            record["document_pid"] = get_document_by_barcode(
-                record["barcode"], record["id_bibrec"]
-            ).pid.pid_value
-        except DocumentMigrationError as e:
-            error_logger.error(
-                "ITEM: {0} ERROR: Document {1} not found".format(
-                    record["barcode"], record["id_bibrec"]
-                )
-            )
-            raise e
+    document = find_document_for_item(record)
+    record["document_pid"] = document.pid.pid_value
 
 
 def import_items_from_json(dump_file, rectype="item"):

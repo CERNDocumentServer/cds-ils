@@ -96,7 +96,7 @@ def extract_parts(value):
     return {
         "has_extra": bool(valid_parts_count > 0),
         "number_of_pages": number_of_pages,
-        "physical_copy_description": physical_description,
+        "physical_description": physical_description,
     }
 
 
