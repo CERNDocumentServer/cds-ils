@@ -1073,7 +1073,7 @@ def test_related_record(app):
                         {
                             "related_recid": "748392",
                             "relation_type": "language",
-                            "relation_description": None,
+                            "relation_description": "Test text",
                         }
                     ],
                 },

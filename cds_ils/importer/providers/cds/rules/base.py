@@ -336,13 +336,14 @@ def related_records(self, key, value):
     try:
         if key == "775__" and "b" in value:
             description = clean_val("b", value, str)
-            relation_type_tag = clean_val("x", value, str, default="")
-            if relation_type_tag.lower() == 'edition':
-                relation_type = EDITION_RELATION.name
-            elif relation_type_tag.lower() == 'language':
-                relation_type = LANGUAGE_RELATION.name
-            else:
-                relation_description = description
+            relation_description = description
+            relation_type_tag = clean_val("x", value, str)
+            if relation_type_tag:
+                if relation_type_tag.lower() == 'edition':
+                    relation_type = EDITION_RELATION.name
+                elif relation_type_tag.lower() == 'language':
+                    relation_type = LANGUAGE_RELATION.name
+
         if key == "787__" and "i" in value:
             clean_val("i", value, str, manual=True)
         _related.append(
