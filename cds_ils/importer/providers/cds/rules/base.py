@@ -336,7 +336,7 @@ def related_records(self, key, value):
     try:
         if key == "775__" and "b" in value:
             description = clean_val("b", value, str)
-            relation_type_tag = clean_val("x", value, str)
+            relation_type_tag = clean_val("x", value, str, default="")
             if relation_type_tag.lower() == 'edition':
                 relation_type = EDITION_RELATION.name
             elif relation_type_tag.lower() == 'language':
