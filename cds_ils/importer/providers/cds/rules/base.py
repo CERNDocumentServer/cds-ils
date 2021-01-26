@@ -288,9 +288,10 @@ def standard_review(self, key, value):
 
 @model.over("publication_info", "^962__")
 def publication_additional(self, key, value):
-    """Translates additional publication info."""
+    """Translates additional publication info & other related_records field."""
     _publication_info = self.get("publication_info", [])
     _migration = self["_migration"]
+    _related = _migration["related"]
     empty = not bool(_publication_info)
     for i, v in enumerate(force_list(value)):
         temp_info = {}
@@ -299,11 +300,14 @@ def publication_additional(self, key, value):
             temp_info.update(pages)
         rel_recid = clean_val("b", v, str)
         if rel_recid:
-            _migration["journal_record_legacy_recid"] = rel_recid
-            _migration["has_journal"] = True
-            # assume that if we have a parent journal
-            # then the doc is a periodical issue
-            self["document_type"] = "PERIODICAL_ISSUE"
+            _related.append(
+                {
+                    "related_recid": rel_recid,
+                    "relation_type": OTHER_RELATION.name,
+                    "relation_description": "chapter of"
+                }
+            )
+            _migration.update({"related": _related, "has_related": True})
         n_subfield = clean_val("n", v, str)
         if n_subfield.upper() == "BOOK":
             temp_info.update({"material": "BOOK"})

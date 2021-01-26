@@ -914,11 +914,12 @@ def test_publication_info(app):
             </datafield>
             """,
             {
-                "document_type": "PERIODICAL_ISSUE",
                 "_migration": {
                     **get_helper_dict(),
-                    "journal_record_legacy_recid": "2155631",
-                    "has_journal": True,
+                    "related": [
+                        {"related_recid": "2155631", "relation_type": "other",
+                         "relation_description": "chapter of"}],
+                    "has_related": True,
                 },
                 "conference_info": {
                     "identifiers": [
