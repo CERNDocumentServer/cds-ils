@@ -128,7 +128,7 @@ def tags(self, key, value):
 def special_serials(self, key, value):
     """Translates serial fields."""
     _migration = self["_migration"]
-    _serials = _migration["serials"]
+    _serials = _migration.get("serials", [])
     for v in force_list(value):
         result_a = mapping(SERIAL, clean_val("a", v, str))
         if result_a:

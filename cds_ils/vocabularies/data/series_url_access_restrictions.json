@@ -1,27 +1,32 @@
 [
   {
     "type": "series_url_access_restriction",
-    "key": "NATIONAL_LICENSE",
-    "text": "National License"
+    "key": "OPEN_ACCESS",
+    "text": "Open Access"
   },
   {
     "type": "series_url_access_restriction",
-    "key": "PERPETUAL_ACCESS_SUBSCRIPTION",
-    "text": "Perpetual access subscription"
+    "key": "RESTRICTED_NATIONAL_LICENSE",
+    "text": "Restricted access: National License"
   },
   {
     "type": "series_url_access_restriction",
-    "key": "PERPETUAL_ACCESS_BACKFILES",
-    "text": "Perpetual access backfiles"
+    "key": "RESTRICTED_PERPETUAL_ACCESS_SUBSCRIPTION",
+    "text": "Restricted access: Perpetual access subscription"
   },
   {
     "type": "series_url_access_restriction",
-    "key": "PACKAGE_DEAL",
-    "text": "Package deal"
+    "key": "RESTRICTED_PERPETUAL_ACCESS_BACKFILES",
+    "text": "Restricted access: Perpetual access backfiles"
   },
   {
     "type": "series_url_access_restriction",
-    "key": "NOT_DEFINED",
-    "text": "Not defined"
+    "key": "RESTRICTED_PACKAGE_DEAL",
+    "text": "Restricted access: Package deal"
+  },
+  {
+    "type": "series_url_access_restriction",
+    "key": "RESTRICTED_UNDEFINED",
+    "text": " Restricted access: Undefined"
   }
 ]

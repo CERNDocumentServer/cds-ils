@@ -12,10 +12,12 @@ from dojson.utils import for_each_value
 from invenio_app_ils.relations.api import LANGUAGE_RELATION, OTHER_RELATION, \
     SEQUENCE_RELATION
 
+from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
 
 from .base import title as base_title
 from .utils import clean_val, filter_list_values, out_strip
+from .values_mapping import ACCESS_TYPE, mapping
 
 
 @model.over("legacy_recid", "^001", override=True)
@@ -109,7 +111,6 @@ def children_records(self, key, value):
     _electronic_items = _migration.get("electronic_items", [])
     if key == "362__":
         _electronic_items.append({"subscription": clean_val("a", value, str)})
-
     _migration.update(
         {
             "electronic_items": _electronic_items,
@@ -124,11 +125,15 @@ def children_records(self, key, value):
 def access_urls(self, key, value):
     """Translates access urls field."""
     _access_urls = self.get("access_urls", [])
-
+    access_type_mapped = []
+    access_type_list = list(map(int, clean_val("x", value, str)))
+    for i in access_type_list:
+        access_type = mapping(ACCESS_TYPE, str(i), raise_exception=True)
+        access_type_mapped.append(access_type)
     url_dict = {
         "value": clean_val("u", value, str, req=True),
         "description": clean_val("z", value, str),
-        "access_restriction": clean_val("x", value, str),
+        "access_restriction": access_type_mapped,
     }
     _access_urls.append(url_dict)
 

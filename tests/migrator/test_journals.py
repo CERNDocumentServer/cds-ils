@@ -20,8 +20,10 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+import pytest
 from cds_dojson.marc21.utils import create_record
 
+from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
 
 marcxml = (
@@ -222,29 +224,50 @@ def test_access_urls(app):
                 <subfield code="x">8</subfield>
                 <subfield code="z">some text</subfield>
             </datafield>
-            <datafield tag="856" ind1="4" ind2="1">
-                <subfield code="3">some other notes</subfield>
-                <subfield code="u">https://url.cern.ch/serial</subfield>
-                <subfield code="x">4</subfield>
-                <subfield code="z">some other text</subfield>
-            </datafield>
             """,
             {
                 "access_urls": [
                     {
-                        "access_restriction": "8",
+                        "access_restriction": ['RESTRICTED_PACKAGE_DEAL'],
                         "description": "some text",
                         "value": "https://url.cern.ch/journal",
                     },
-                    {
-                        "access_restriction": "4",
-                        "description": "some other text",
-                        "value": "https://url.cern.ch/serial",
-                    },
                 ],
-                "note": "some notes \nsome other notes",
+                "note": "some notes",
             },
         )
+        with pytest.raises(UnexpectedValue):
+            check_transformation(
+                """
+                <datafield tag="856" ind1="4" ind2="1">
+                    <subfield code="3">some notes</subfield>
+                    <subfield code="u">https://url.cern.ch/journal</subfield>
+                    <subfield code="x">8</subfield>
+                    <subfield code="z">some text</subfield>
+                </datafield>
+                <datafield tag="856" ind1="4" ind2="1">
+                    <subfield code="3">some other notes</subfield>
+                    <subfield code="u">https://url.cern.ch/serial</subfield>
+                    <subfield code="x">4</subfield>
+                    <subfield code="z">some other text</subfield>
+                </datafield>
+                """,
+                {
+                    "access_urls": [
+                        {
+                            "access_restriction": ['RESTRICTED_PACKAGE_DEAL'],
+                            "description": "some text",
+                            "value": "https://url.cern.ch/journal",
+                        },
+                        {
+                            "access_restriction": [None],
+                            "description": "some other text",
+                            "value": "https://url.cern.ch/serial",
+                        },
+                    ],
+                    "note": "some notes \nsome other notes",
+                },
+            )
 
 
 def test_urls(app):
@@ -263,6 +286,30 @@ def test_urls(app):
                         "value": "https://url.cern.ch/journal",
                     }
                 ],
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="856" ind1="4" ind2="1">
+                <subfield code="3">v 1 (1992) -</subfield>
+                <subfield code="u">
+                https://www.radioeng.cz/search.htm
+                </subfield>
+                <subfield code="x">789</subfield>
+                <subfield code="z">tada</subfield>
+            </datafield>
+            """,
+            {
+                "access_urls": [
+                    {
+                        "access_restriction": ["RESTRICTED_PERPETUAL_ACCESS_BACKFILES",
+                                                "RESTRICTED_PACKAGE_DEAL",
+                                                "RESTRICTED_UNDEFINED"],
+                        "description": "tada",
+                        "value": "https://www.radioeng.cz/search.htm",
+                    },
+                ],
+                "note": "v 1 (1992) -",
             },
         )
 
