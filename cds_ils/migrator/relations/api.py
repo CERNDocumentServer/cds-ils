@@ -109,7 +109,8 @@ def migrate_document_siblings_relation():
 
             if relation_type == OTHER_RELATION.name:
                 extra_metadata.update(
-                    {"note": relation["relation_description"]})
+                    {"note": relation["relation_description"]}
+                )
             # create relation
             if related_sibling and related_sibling["pid"] != document.pid:
                 current_document_record = document_class.get_record_by_pid(
@@ -121,7 +122,7 @@ def migrate_document_siblings_relation():
                         current_document_record,
                         related_sibling,
                         relation_type,
-                        **extra_metadata
+                        **extra_metadata,
                     )
                     db.session.commit()
                 except RecordRelationsError as e:
@@ -200,6 +201,23 @@ def link_documents_and_serials():
                     serial, record, SERIAL_RELATION, volume
                 )
 
+    def link_record_and_journal(record_cls, search):
+        for hit in search.scan():
+            if "legacy_recid" not in hit:
+                continue
+            record = record_cls.get_record_by_pid(hit.pid)
+            for journal in hit["_migration"]["journal_record_legacy_recids"]:
+                serial = get_record_by_legacy_recid(
+                    series_class, journal["recid"]
+                )
+                create_parent_child_relation(
+                    serial, record, SERIAL_RELATION, journal["volume"]
+                )
+
+                del record["publication_info"]
+                record.commit()
+                db.session.commit()
+
     click.echo("Creating serial relations...")
     link_records_and_serial(
         document_class,
@@ -214,4 +232,8 @@ def link_documents_and_serials():
                 Q("term", _migration__has_serial=True),
             ],
         ),
+    )
+    link_record_and_journal(
+        document_class,
+        document_search.filter("term", _migration__has_journal=True),
     )

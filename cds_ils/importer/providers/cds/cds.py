@@ -26,7 +26,7 @@ def get_helper_dict():
         has_related=False,
         has_journal=False,
         tags=[],
-        journal_record_legacy_id="",
+        journal_record_legacy_recids=[],
         eitems_proxy=[],
         eitems_has_proxy=False,
         eitems_file_links=[],

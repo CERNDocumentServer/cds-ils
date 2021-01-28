@@ -53,7 +53,7 @@ class XMLRecordToJson(object):
         }
 
         marc_record = create_record(self.data)
-        if "d" in marc_record.get("leader"):
+        if "d" in marc_record.get("leader", []):
             is_deletable = True
         else:
             is_deletable = False

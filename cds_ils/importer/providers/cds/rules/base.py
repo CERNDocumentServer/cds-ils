@@ -245,20 +245,29 @@ def publication_info(self, key, value):
     if x and o subfields are present simultaneously
     it concatenates the text
     """
+    _migration = self["_migration"]
     _publication_info = self.get("publication_info", [])
     for v in force_list(value):
         temp_info = {}
         pages = clean_pages_range("c", v)
         if pages:
             temp_info.update(pages)
+        volume = clean_val("v", v, str)
         temp_info.update(
             {
                 "journal_issue": clean_val("n", v, str),
                 "journal_title": clean_val("p", v, str),
-                "journal_volume": clean_val("v", v, str),
+                "journal_volume": volume,
                 "year": clean_val("y", v, int),
             }
         )
+
+        rel_recid = clean_val("g", value, str)
+        if rel_recid:
+            recids = _migration.get("journal_record_legacy_recids", [])
+            recids.append({"recid": rel_recid, "volume": volume})
+            _migration["has_journal"] = True
+            self["document_type"] = "PERIODICAL_ISSUE"
 
         text = "{0} {1}".format(
             clean_val("o", v, str) or "", clean_val("x", v, str) or ""
@@ -267,6 +276,7 @@ def publication_info(self, key, value):
             temp_info.update({"note": text})
         if temp_info:
             _publication_info.append(temp_info)
+
     return _publication_info
 
 
@@ -354,11 +364,11 @@ def related_records(self, key, value):
             {
                 "related_recid": clean_val("w", value, str, req=True),
                 "relation_type": relation_type,
-                "relation_description": relation_description
+                "relation_description": relation_description,
             }
         )
         _migration.update({"related": _related, "has_related": True})
-        raise IgnoreKey('_migration')
+        raise IgnoreKey("_migration")
     except ManualImportRequired as e:
         if key == "775__":
             e.subfield = "b or c"
