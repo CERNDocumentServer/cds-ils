@@ -232,11 +232,18 @@ def relations():
 
 
 @relations.command()
+@click.option(
+    "--skip-indexing",
+    is_flag=True,
+)
 @with_appcontext
-def serial():
+def serial(skip_indexing):
     """Create relations for migrated serials."""
     with commit():
         link_documents_and_serials()
+    if not skip_indexing:
+        reindex_pidtype("docid")
+        reindex_pidtype("serid")
 
 
 @relations.command()

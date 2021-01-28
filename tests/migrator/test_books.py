@@ -877,6 +877,7 @@ def test_publication_info(app):
                     <subfield code="y">2007</subfield>
                     <subfield code="p">Radiat. Meas.</subfield>
                     <subfield code="v">42</subfield>
+                    <subfield code="g">123456</subfield>
                 </datafield>
                 """,
                 {
@@ -889,7 +890,14 @@ def test_publication_info(app):
                             "journal_issue": "10",
                             "journal_volume": "42",
                         }
-                    ]
+                    ],
+                    "document_type": "PERIODICAL_ISSUE",
+                    "_migration": {
+                        "has_journal": True,
+                        "journal_record_legacy_recids": [
+                            {"recid": "123456", "volume": "42"}
+                        ],
+                    },
                 },
             )
         check_transformation(
@@ -942,6 +950,7 @@ def test_publication_info(app):
                 <subfield code="p">Radiat. Meas.</subfield>
                 <subfield code="o">1692 numebrs text etc</subfield>
                 <subfield code="x">Random text</subfield>
+                <subfield code="g">123456</subfield>
             </datafield>
             """,
             {
@@ -954,7 +963,15 @@ def test_publication_info(app):
                         "journal_issue": "10",
                         "note": "1692 numebrs text etc Random text",
                     }
-                ]
+                ],
+                "document_type": "PERIODICAL_ISSUE",
+                "_migration": {
+                    **get_helper_dict(),
+                    "has_journal": True,
+                    "journal_record_legacy_recids": [
+                        {"recid": "123456", "volume": None}
+                    ],
+                },
             },
         )
         with pytest.raises(UnexpectedValue):
@@ -1116,14 +1133,16 @@ def test_related_record(app):
                     **get_helper_dict(),
                     "has_related": True,
                     "related": [
-                        {"related_recid": "7483924",
-                         "relation_type": "other",
-                         "relation_description": None,
-                         },
-                        {"related_recid": "748",
-                         "relation_type": "other",
-                         "relation_description": None,
-                         },
+                        {
+                            "related_recid": "7483924",
+                            "relation_type": "other",
+                            "relation_description": None,
+                        },
+                        {
+                            "related_recid": "748",
+                            "relation_type": "other",
+                            "relation_description": None,
+                        },
                     ],
                 },
             },
