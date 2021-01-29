@@ -85,11 +85,16 @@ def internal_notes(self, key, value):
     return {"value": clean_val("a", value, str, req=True)}
 
 
-@model.over("note", "^935__")
+@model.over("note", "(^935__)|(^866__)")
 @out_strip
 def note(self, key, value):
     """Translates note field."""
-    return clean_val("a", value, str, req=True)
+    notes_list = [self.get("note", "")]
+    notes_list.append(clean_val("a", value, str))
+    if key == "866__":
+        notes_list.append(clean_val("b", value, str))
+
+    return " \n".join(filter(None, notes_list))
 
 
 @model.over("publisher", "^933__")
@@ -111,38 +116,59 @@ def languages(self, key, value):
         raise UnexpectedValue(subfield="a")
 
 
-@model.over("_children", "(^362__)|(^85641)|(^866__)")
-def children_records(self, key, value):
+@model.over("_children", "(^362__)")
+def children(self, key, value):
     """Translates fields related to children record types."""
     _migration = self["_migration"]
     _electronic_items = _migration.get("electronic_items", [])
-    _items = _migration.get("items", [])
     if key == "362__":
         _electronic_items.append({"subscription": clean_val("a", value, str)})
-    if key == "85641":
-        _electronic_items.append(
-            {
-                "subscription": clean_val("3", value, str),
-                "url": clean_val("u", value, str),
-                "access_type": clean_val("x", value, str),
-                "note": clean_val("z", value, str),
-            }
-        )
-    if key == "866__":
-        _items.append(
-            {
-                "subscription": clean_val("a", value, str),
-            }
-        )
 
     _migration.update(
         {
             "electronic_items": _electronic_items,
-            "items": _items,
         }
     )
 
     raise IgnoreKey("_children")
+
+
+@model.over("access_urls", "^85641")
+@filter_list_values
+def access_urls(self, key, value):
+    """Translates access urls field."""
+    _access_urls = self.get("access_urls", [])
+
+    url_dict = {
+        "value": clean_val("u", value, str, req=True),
+        "description": clean_val("z", value, str),
+        "access_restriction": clean_val("x", value, str),
+    }
+    _access_urls.append(url_dict)
+
+    url_note = clean_val("3", value, str)
+    if url_note:
+        notes = self.get("note", "")
+        notes_list = [notes]
+        notes_list.append(url_note)
+        self["note"] = " \n".join(filter(None, notes_list))
+
+    return _access_urls
+
+
+@model.over("urls", "^85642")
+@filter_list_values
+def urls(self, key, value):
+    """Translates urls field."""
+    _urls = self.get("urls", [])
+
+    url_dict = {
+        "value": clean_val("u", value, str),
+        "description": clean_val("y", value, str),
+    }
+    _urls.append(url_dict)
+
+    return _urls
 
 
 @model.over(
