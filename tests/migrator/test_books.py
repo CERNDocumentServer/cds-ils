@@ -490,7 +490,7 @@ def test_urls(app):
         )
         check_transformation(
             """
-            <datafield tag="8564" ind1=" " ind2=" ">
+            <datafield tag="856" ind1="4" ind2=" ">
                 <subfield code="u">https://cds.cern.ch/record/12345/files/abc.pdf</subfield>
             </datafield>
             """,
@@ -623,7 +623,7 @@ def test_urls(app):
         )
         check_transformation(
             """
-            <datafield tag="8564" ind1=" " ind2=" ">
+            <datafield tag="856" ind1="4" ind2=" ">
                 <subfield code="u">google.com</subfield>
                 <subfield code="y">description</subfield>
             </datafield>
@@ -2483,7 +2483,7 @@ def test_note(app):
             <subfield code="a">No CD-ROM</subfield>
             </datafield>
             """,
-            {"note": """Translated from ... / No CD-ROM"""},
+            {"note": """Translated from ... \nNo CD-ROM"""},
         )
         check_transformation(
             """

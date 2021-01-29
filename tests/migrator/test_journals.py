@@ -40,7 +40,6 @@ def check_transformation(marcxml_body, json_body):
             "related": [],
             "record_type": "journal",
             "volumes": [],
-            "items": [],
             "electronic_items": [],
         }
     }
@@ -53,7 +52,6 @@ def check_transformation(marcxml_body, json_body):
             "related": [],
             "record_type": "journal",
             "volumes": [],
-            "items": [],
             "electronic_items": [],
         },
     }
@@ -172,9 +170,13 @@ def test_note(app):
                 The reports are catalogued individually and retrievable in the catalogue.
                 </subfield>
             </datafield>
+            <datafield tag="866" ind1=" " ind2=" ">
+                <subfield code="a">note1</subfield>
+                <subfield code="b">note2</subfield>
+            </datafield>
             """,
             {
-                "note": "The reports are catalogued individually and retrievable in the catalogue.",
+                "note": "The reports are catalogued individually and retrievable in the catalogue. \nnote1 \nnote2",
             },
         )
 
@@ -210,6 +212,61 @@ def test_languages(app):
         )
 
 
+def test_access_urls(app):
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="856" ind1="4" ind2="1">
+                <subfield code="3">some notes</subfield>
+                <subfield code="u">https://url.cern.ch/journal</subfield>
+                <subfield code="x">8</subfield>
+                <subfield code="z">some text</subfield>
+            </datafield>
+            <datafield tag="856" ind1="4" ind2="1">
+                <subfield code="3">some other notes</subfield>
+                <subfield code="u">https://url.cern.ch/serial</subfield>
+                <subfield code="x">4</subfield>
+                <subfield code="z">some other text</subfield>
+            </datafield>
+            """,
+            {
+                "access_urls": [
+                    {
+                        "access_restriction": "8",
+                        "description": "some text",
+                        "value": "https://url.cern.ch/journal",
+                    },
+                    {
+                        "access_restriction": "4",
+                        "description": "some other text",
+                        "value": "https://url.cern.ch/serial",
+                    },
+                ],
+                "note": "some notes \nsome other notes",
+            },
+        )
+
+
+def test_urls(app):
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="856" ind1="4" ind2="2">
+                <subfield code="u">https://url.cern.ch/journal</subfield>
+                <subfield code="y">some text</subfield>
+            </datafield>
+            """,
+            {
+                "urls": [
+                    {
+                        "description": "some text",
+                        "value": "https://url.cern.ch/journal",
+                    }
+                ],
+            },
+        )
+
+
 def test_migration(app):
     with app.app_context():
         check_transformation(
@@ -226,60 +283,6 @@ def test_migration(app):
                     "record_type": "journal",
                     "volumes": [],
                     "electronic_items": [{"subscription": "v 1 (1992) -"}],
-                    "items": [],
-                },
-            },
-        )
-        check_transformation(
-            """
-            <datafield tag="856" ind1="4" ind2="1">
-                <subfield code="3">v 1 (1992) -</subfield>
-                <subfield code="u">
-                https://www.radioeng.cz/search.htm
-                </subfield>
-                <subfield code="x">6</subfield>
-                <subfield code="z">tada</subfield>
-            </datafield>
-            """,
-            {
-                "_migration": {
-                    "is_multipart": False,
-                    "has_related": False,
-                    "related": [],
-                    "record_type": "journal",
-                    "volumes": [],
-                    "electronic_items": [
-                        {
-                            "subscription": "v 1 (1992) -",
-                            "url": "https://www.radioeng.cz/search.htm",
-                            "access_type": "6",
-                            "note": "tada",
-                        }
-                    ],
-                    "items": [],
-                },
-            },
-        )
-        check_transformation(
-            """
-            <datafield tag="866" ind1=" " ind2=" ">
-                <subfield code="a">v 1 (1992) -</subfield>
-                <subfield code="b">C</subfield>
-            </datafield>
-            """,
-            {
-                "_migration": {
-                    "is_multipart": False,
-                    "has_related": False,
-                    "related": [],
-                    "record_type": "journal",
-                    "volumes": [],
-                    "items": [
-                        {
-                            "subscription": "v 1 (1992) -",
-                        }
-                    ],
-                    "electronic_items": [],
                 },
             },
         )
@@ -295,7 +298,6 @@ def test_migration(app):
                     "is_multipart": False,
                     "record_type": "journal",
                     "volumes": [],
-                    "items": [],
                     "electronic_items": [],
                     "has_related": True,
                     "related": [
@@ -320,7 +322,6 @@ def test_migration(app):
                     "is_multipart": False,
                     "record_type": "journal",
                     "volumes": [],
-                    "items": [],
                     "electronic_items": [],
                     "has_related": True,
                     "related": [
@@ -345,7 +346,6 @@ def test_migration(app):
                     "is_multipart": False,
                     "record_type": "journal",
                     "volumes": [],
-                    "items": [],
                     "electronic_items": [],
                     "has_related": True,
                     "related": [
@@ -371,7 +371,6 @@ def test_migration(app):
                     "has_related": True,
                     "record_type": "journal",
                     "volumes": [],
-                    "items": [],
                     "electronic_items": [],
                     "related": [
                         {
@@ -397,7 +396,6 @@ def test_migration(app):
                     "has_related": True,
                     "record_type": "journal",
                     "volumes": [],
-                    "items": [],
                     "electronic_items": [],
                     "related": [
                         {
@@ -429,7 +427,6 @@ def test_migration(app):
                     "has_related": True,
                     "record_type": "journal",
                     "volumes": [],
-                    "items": [],
                     "electronic_items": [],
                     "related": [
                         {

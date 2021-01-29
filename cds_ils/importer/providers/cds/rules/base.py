@@ -353,9 +353,9 @@ def related_records(self, key, value):
             relation_description = description
             relation_type_tag = clean_val("x", value, str)
             if relation_type_tag:
-                if relation_type_tag.lower() == 'edition':
+                if relation_type_tag.lower() == "edition":
                     relation_type = EDITION_RELATION.name
-                elif relation_type_tag.lower() == 'language':
+                elif relation_type_tag.lower() == "language":
                     relation_type = LANGUAGE_RELATION.name
 
         if key == "787__" and "i" in value:
@@ -870,7 +870,7 @@ def note(self, key, value):
     # merge all found notes
     _note = self.get("note", "")
     if _note:
-        _note = "{0} / {1}".format(_note, clean_val("a", value, str, req=True))
+        _note = "{0} \n{1}".format(_note, clean_val("a", value, str, req=True))
     else:
         _note = clean_val("a", value, str, req=True)
 

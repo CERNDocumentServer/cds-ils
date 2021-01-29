@@ -81,7 +81,6 @@ class CDSJournal(CdsIlsOverdo):
             "related": [],
             "record_type": "journal",
             "volumes": [],
-            "items": [],
             "electronic_items": [],
             "tags": [],
         }
