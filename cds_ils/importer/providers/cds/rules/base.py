@@ -191,11 +191,16 @@ def authors(self, key, value):
     if item and item not in _authors:
         _authors.append(item)
     try:
-        if "u" in value:
-            other = ["et al.", "et al"]
-            val_u = list(force_list(value.get("u")))
-            if [i for i in other if i in val_u]:
+        if "u" in value or "e" in value:
+            other_authors_possible_values = ["et al.", "et al"]
+            val_u = list(force_list(value.get("u", [])))
+            val_e = list(force_list(value.get("e", [])))
+            other_authors_fields = val_e + val_u
+            has_other_authors = [i for i in other_authors_possible_values if
+                                 i in other_authors_fields]
+            if has_other_authors:
                 self["other_authors"] = True
+
     except UnexpectedValue:
         pass
     return _authors
@@ -426,15 +431,17 @@ def accelerator_experiments(self, key, value):
     return _extensions
 
 
-@model.over("_migration", "^536__")
+@model.over("_migration", "(^536__)")
 @out_strip
 def open_access(self, key, value):
     """Translate open access field.
 
     If the field is present, then the eitems of this record have open access
     """
-    if "r" in value:
+    has_open_access = "r" in value
+    if has_open_access:
         self["_migration"]["eitems_open_access"] = True
+
     raise IgnoreKey("_migration")
 
 
@@ -496,7 +503,7 @@ def isbns(self, key, value):
             "scheme": "ISBN",
         }
         if not isbn["value"]:
-            raise ManualImportRequired(subfield="a or z")
+            raise IgnoreKey("identifiers")
         if subfield_u:
             volume = re.search(r"(\(*v[.| ]*\d+.*\)*)", subfield_u)
 
@@ -506,13 +513,11 @@ def isbns(self, key, value):
                 existing_volume = self.get("volume")
                 if existing_volume:
                     raise ManualImportRequired(subfield="u")
-                # TODO volume --> when splitting to series
                 self["volume"] = volume
             if subfield_u.upper() in MEDIUM_TYPES:
                 isbn.update({"medium": subfield_u})
             else:
                 isbn.update({"description": subfield_u})
-        # TODO subfield C
         if isbn not in _isbns:
             _isbns.append(isbn)
     return _isbns
@@ -579,9 +584,12 @@ def alternative_identifiers(self, key, value):
         else:
             raise UnexpectedValue(subfield="9")
     if key == "036__":
-        indentifier_entry.update(
-            {"value": sub_a, "scheme": clean_val("9", value, str, req=True)}
-        )
+        if "a" in value and "9" in value:
+            indentifier_entry.update(
+                {"value": sub_a,
+                 "scheme": clean_val("9", value, str, req=True)}
+            )
+
     return indentifier_entry
 
 
@@ -694,8 +702,8 @@ def arxiv_eprints(self, key, value):
             duplicated = [
                 elem
                 for i, elem in enumerate(_alternative_identifiers)
-                if elem["value"] == eprint_id
-                and elem["scheme"].lower() == "arxiv"
+                if elem["value"] == eprint_id and
+                elem["scheme"].lower() == "arxiv"
             ]
             category = check_category("c", v)
             if not duplicated:
@@ -722,7 +730,7 @@ def languages(self, key, value):
         raise UnexpectedValue(subfield="a")
 
 
-@model.over("subjects", "(^050)|(^080__)|(^08204)|(^084__)|(^082__)")
+@model.over("subjects", "(^050)|(^080__)|(^08204)|(^084__)|(^082__)|(^08200)")
 @for_each_value
 @out_strip
 def subject_classification(self, key, value):
@@ -807,30 +815,6 @@ def conference_info(self, key, value):
         else:
             _conference_info.update({"acronym": clean_val("a", v, str)})
     return _conference_info
-
-
-@model.over("alternative_titles", "^242__")
-@filter_list_values
-def alternative_titles(self, key, value):
-    """Translates title translations."""
-    _alternative_titles = self.get("alternative_titles", [])
-    if "a" in value:
-        _alternative_titles.append(
-            {
-                "value": clean_val("a", value, str, req=True),
-                "type": "TRANSLATED_TITLE",
-                "language": "ENG",
-            }
-        )
-    if "b" in value:
-        _alternative_titles.append(
-            {
-                "value": clean_val("b", value, str, req=True),
-                "type": "TRANSLATED_SUBTITLE",
-                "language": "ENG",
-            }
-        )
-    return _alternative_titles
 
 
 @model.over("edition", "^250__")
@@ -951,7 +935,7 @@ def copyright(self, key, value):
     }
 
 
-@model.over("table_of_content", "(^505__)|(^5050_)")
+@model.over("table_of_content", "(^505__)|(^5050_)|(^50500)")
 @out_strip
 @flatten
 @for_each_value
@@ -967,30 +951,51 @@ def table_of_content(self, key, value):
         raise UnexpectedValue(subfield="a or t")
 
 
-@model.over("alternative_titles", "(^246__)|(^242__)")
+@model.over("alternative_titles", "^242__")
+@filter_list_values
+def alternative_titles(self, key, value):
+    """Translates title translations."""
+    _alternative_titles = self.get("alternative_titles", [])
+    if "a" in value:
+        _alternative_titles.append(
+            {
+                "value": clean_val("a", value, str, req=True),
+                "type": "TRANSLATED_TITLE",
+                "language": "ENG",
+            }
+        )
+    if "b" in value:
+        _alternative_titles.append(
+            {
+                "value": clean_val("b", value, str, req=True),
+                "type": "TRANSLATED_SUBTITLE",
+                "language": "ENG",
+            }
+        )
+    return _alternative_titles
+
+
+@model.over("alternative_titles", "^246__")
 @filter_list_values
 def alternative_titles_doc(self, key, value):
     """Alternative titles."""
     _alternative_titles = self.get("alternative_titles", [])
 
-    if key == "242__":
-        _alternative_titles += alternative_titles(self, key, value)
-    elif key == "246__":
-        if "a" in value:
-            _alternative_titles.append(
-                {
-                    "value": clean_val("a", value, str, req=True),
-                    "type": "ALTERNATIVE_TITLE",
-                }
-            )
-        if "b" in value:
-            _alternative_titles.append(
-                {
-                    "value": clean_val("b", value, str, req=True),
-                    "type": "SUBTITLE",
-                }
-            )
-        return _alternative_titles
+    if "a" in value:
+        _alternative_titles.append(
+            {
+                "value": clean_val("a", value, str, req=True),
+                "type": "ALTERNATIVE_TITLE",
+            }
+        )
+    if "b" in value:
+        _alternative_titles.append(
+            {
+                "value": clean_val("b", value, str, req=True),
+                "type": "SUBTITLE",
+            }
+        )
+    return _alternative_titles
 
 
 @model.over("number_of_pages", "^300__")  # item

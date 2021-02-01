@@ -678,6 +678,7 @@ def test_authors(app):
             <datafield tag="700" ind1=" " ind2=" ">
                 <subfield code="a">Van Dam, Hendrik</subfield>
                 <subfield code="e">ed.</subfield>
+                <subfield code="k">ORCID:0000-0003-1346-5133</subfield>
             </datafield>
             <datafield tag="100" ind1=" " ind2=" ">
                 <subfield code="a">Seyfert, Paul</subfield>
@@ -687,6 +688,7 @@ def test_authors(app):
                 <subfield code="u">CERN</subfield>
                 <subfield code="m">paul.seyfert@cern.ch</subfield>
                 <subfield code="9">#BEARD#</subfield>
+                <subfield code="q">Hillman, Jonathan</subfield>
             </datafield>
             <datafield tag="720" ind1=" " ind2=" ">
                 <subfield code="a">Neubert, Matthias</subfield>
@@ -710,11 +712,15 @@ def test_authors(app):
                         "alternative_names": "Neubert, Matthias",
                     },
                     {"full_name": "Glashow, Sheldon Lee", "roles": ["EDITOR"]},
-                    {"full_name": "Van Dam, Hendrik", "roles": ["EDITOR"]},
+                    {"full_name": "Van Dam, Hendrik", "roles": ["EDITOR"],
+                     "identifiers": [
+                         {"scheme": "ORCID", "value":
+                             "ORCID:0000-0003-1346-5133"}]},
                     {
                         "full_name": "Seyfert, Paul",
                         "roles": ["AUTHOR"],
                         "affiliations": [{"name": "CERN"}],
+                        "alternative_names": ["Hillman, Jonathan"],
                         "identifiers": [
                             {
                                 "scheme": "INSPIRE ID",
@@ -1021,7 +1027,7 @@ def test_publication_info(app):
                             "journal_title": "Radiat. Meas.",
                             "journal_issue": "10",
                             "pubinfo_freetext": "1692 numebrs "
-                            "text etc Random text",
+                                                "text etc Random text",
                         }
                     ]
                 },
@@ -1270,31 +1276,21 @@ def test_isbns(app):
                 ],
             },
         )
-        with pytest.raises(ManualImportRequired):
-            check_transformation(
-                """
-                <datafield tag="020" ind1=" " ind2=" ">
-                    <subfield code="q">(electronic bk.)</subfield>
-                    <subfield code="u">electronic version</subfield>
-                    <subfield code="b">electronic version</subfield>
-                </datafield>
-                <datafield tag="020" ind1=" " ind2=" ">
-                    <subfield code="u">electronic version</subfield>
-                </datafield>
-                """,
-                {
-                    "identifiers": [
-                        {
-                            "medium": "electronic version",
-                            "scheme": "ISBN",
-                        },
-                        {
-                            "medium": "electronic version",
-                            "scheme": "ISBN",
-                        },
-                    ],
-                },
-            )
+        check_transformation(
+            """
+            <datafield tag="020" ind1=" " ind2=" ">
+                <subfield code="q">(electronic bk.)</subfield>
+                <subfield code="u">electronic version</subfield>
+                <subfield code="b">electronic version</subfield>
+            </datafield>
+            <datafield tag="020" ind1=" " ind2=" ">
+                <subfield code="u">electronic version</subfield>
+            </datafield>
+            """,
+            {
+
+            },
+        )
         check_transformation(
             """
             <datafield tag="020" ind1=" " ind2=" ">

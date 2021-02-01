@@ -16,7 +16,7 @@ from cds_ils.importer.providers.cds.ignore_fields import CDS_IGNORE_FIELDS
 
 
 class CDSSerial(CdsIlsOverdo):
-    """Translation Index for CDS Books."""
+    """CDS Serial model."""
 
     __model_ignore_keys__ = {
         "020__a",
