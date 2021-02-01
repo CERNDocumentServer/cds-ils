@@ -45,7 +45,7 @@ def _get_correct_ils_contributor_role(subfield, role):
     return translations[clean_role]
 
 
-def _extract_json_ils_ids(info, provenence="source"):
+def _extract_json_ils_ids(info, provenance="scheme"):
     """Extract author IDs from MARC tags."""
     SOURCES = {
         "AUTHOR|(INSPIRE)": "INSPIRE ID",
@@ -59,12 +59,16 @@ def _extract_json_ils_ids(info, provenence="source"):
         match = regex.match(author_id)
         if match:
             ids.append(
-                {"value": match.group(3), provenence: SOURCES[match.group(1)]}
+                {"value": match.group(3), provenance: SOURCES[match.group(1)]}
             )
     try:
-        ids.append({"value": info["inspireid"], provenence: "INSPIRE ID"})
+        ids.append({"value": info["inspireid"], provenance: "INSPIRE ID"})
     except KeyError:
         pass
+
+    author_orcid = info.get("k")
+    if author_orcid:
+        ids.append({"value": author_orcid, provenance: "ORCID"})
 
     return ids
 
@@ -80,7 +84,12 @@ def build_ils_contributor(value):
         "roles": [
             _get_correct_ils_contributor_role("e", value.get("e", "author"))
         ],
+        "alternative_names": [],
     }
+
+    subfield_q = clean_val('q', value, str)
+    if subfield_q:
+        contributor.update({"alternative_names": [subfield_q]})
 
     value_u = value.get("u")
     if value_u:

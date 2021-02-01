@@ -17,7 +17,7 @@ from cds_ils.importer.providers.cds.ignore_fields import CDS_IGNORE_FIELDS
 
 
 class CDSStandard(CdsIlsOverdo):
-    """Translation Index for CDS Books."""
+    """CDS Standard Overdo model."""
 
     __query__ = (
         "003:SzGeCERN 690C_:STANDARD OR 980__:STANDARD "

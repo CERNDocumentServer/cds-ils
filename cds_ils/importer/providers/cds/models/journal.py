@@ -19,7 +19,7 @@ from .book import model as books_base
 
 
 class CDSJournal(CdsIlsOverdo):
-    """Translation Index for CDS Books."""
+    """CDS Journal Overdo model."""
 
     __query__ = "980__:PERI -980__:DELETED -980__:MIGRATED"
 

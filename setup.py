@@ -142,11 +142,11 @@ setup(
             "base = cds_ils.importer.providers.cds.rules.base",
         ],
         "cds_ils.importer.cds.document": [
-            "book = cds_ils.importer.providers.cds.rules.book",
+            "base = cds_ils.importer.providers.cds.rules.base",
             "standard = cds_ils.importer.providers.cds.rules.standard",
         ],
         "cds_ils.importer.document": [
-            "cds = cds_ils.importer.providers.cds.rules.book",
+            "cds = cds_ils.importer.providers.cds.rules.base",
             "springer = cds_ils.importer.providers.springer.rules.document",
             "ebl = cds_ils.importer.providers.ebl.rules.document",
             "safari = cds_ils.importer.providers.safari.rules.document",
