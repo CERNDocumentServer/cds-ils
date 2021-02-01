@@ -42,8 +42,10 @@ install_requires = [
     # migrator deps
     "cds-dojson==0.9.0",
     "lxml>=3.5.0",
+    "flower>=0.9.7",
     # needed by legacy pip resolver
-    "invenio[base,auth,metadata,files]>=3.3.0,<3.4.0",
+    "invenio[base,auth,metadata]>=3.3.0,<3.4.0",
+    "invenio-files-rest>=1.2.0,<1.3.0",
     "celery>=4.3,<5.0.0",
 ]
 
