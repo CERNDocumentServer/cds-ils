@@ -15,7 +15,7 @@
       "publisher": "World Scientific"
     },
     "abstract": "Book 2 of the Physics is arguably the best introduction to Aristotle's ideas, as well as being the most interesting and representative book in the whole of his corpus. It defines nature and distinguishes natural science from mathematics. It introduces the seminal idea of four causes, or four modes of explanation. It defines chance, but rejects a theory of chance and natural selection in favour of purpose in nature. Simplicius, writing in the sixth century AD, adds his own considerable contribution to this work. Seeing Aristotle's God as a Creator, he discusses how nature relates to soul, adds Stoic and Neoplatonist causes to Aristotle's list of four, and questions the likeness of cause to effect. He discusses missing a great evil or a great good by a hairsbreadth and considers whether animals act from reason or natural instinct. He also preserves a Posidonian discussion of mathematical astronomy.",
-    "languages": ["EN"],
+    "languages": ["ENG"],
     "created_by": {
       "type": "script",
       "value": "demo"
@@ -50,7 +50,7 @@
       "place": "Berlin",
       "publisher": "Springer"
     },
-    "languages": ["EN"],
+    "languages": ["ENG"],
     "created_by": {
       "type": "script",
       "value": "demo"
@@ -80,7 +80,7 @@
       "publisher": "Dover Publications"
     },
     "abstract": "This Dover edition, first published in 1983, is an unabridged and unaltered republication of the translation by G. B. Jeffrey, D.Sc., and W. Perret, Ph.D., first published by E. P. Dutton and Company, Publishers, N.Y., in 1922.",
-    "languages": ["EN"],
+    "languages": ["ENG"],
     "created_by": {
       "type": "script",
       "value": "demo"
@@ -116,7 +116,7 @@
       "publisher": "Albin Michel"
     },
     "abstract": "Ici, devant le deuil et la promesse de la vie, je me tiens et j'avance... Irène Jacob, l'inoubliable interprète de La Double vie de Véronique, rapproche deux évènements simultanés et essentiels : la disparition de son père, grand physicien, et la naissance d'un enfant. Ce texte subtil, sensible et tendre lui permet de revenir à ces deux moments où le miracle de la vie et l'infiniment grand se mêlent. La physique, le firmament à perte de vue, le big bang, les questions de la psychanalyse mais aussi la perception du temps, la brume des souvenirs ou les images à vif, les émotions, leurs manifestations explosives, le sommeil et les rêves irisent ce récit tout à la fois bouleversant et lumineux.",
-    "languages": ["EN"],
+    "languages": ["ENG"],
     "created_by": {
       "type": "script",
       "value": "demo"
@@ -152,7 +152,7 @@
       "publisher": "Cambridge University Press"
     },
     "abstract": "This is an abstract",
-    "languages": ["EN"],
+    "languages": ["ENG"],
     "created_by": {
       "type": "script",
       "value": "demo"
@@ -187,7 +187,7 @@
       "place": "Geneva",
       "publisher": "JACOW"
     },
-    "languages": ["EN"],
+    "languages": ["ENG"],
     "created_by": {
       "type": "script",
       "value": "demo"

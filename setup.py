@@ -37,13 +37,11 @@ install_requires = [
     "uwsgi-tools>=1.1.1",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a24",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a25",
     "sentry-sdk>=0.10.2",
     # migrator deps
     "cds-dojson==0.9.0",
     "lxml>=3.5.0",
-    # needed by legacy pip resolver
-    "invenio[base,auth,metadata,files]>=3.3.0,<3.4.0",
     "celery>=4.3,<5.0.0",
 ]
 

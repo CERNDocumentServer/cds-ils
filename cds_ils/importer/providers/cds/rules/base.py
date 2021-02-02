@@ -786,7 +786,7 @@ def alternative_titles(self, key, value):
             {
                 "value": clean_val("a", value, str, req=True),
                 "type": "TRANSLATED_TITLE",
-                "language": "EN",
+                "language": "ENG",
             }
         )
     if "b" in value:
@@ -794,7 +794,7 @@ def alternative_titles(self, key, value):
             {
                 "value": clean_val("b", value, str, req=True),
                 "type": "TRANSLATED_SUBTITLE",
-                "language": "EN",
+                "language": "ENG",
             }
         )
     return _alternative_titles
