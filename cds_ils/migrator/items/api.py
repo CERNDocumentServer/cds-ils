@@ -75,10 +75,18 @@ def set_document_pid(record):
 
 def import_items_from_json(dump_file, rectype="item"):
     """Load items from json file."""
-    dump_file = dump_file[0]
     model, provider = model_provider_by_rectype(rectype)
-
     with click.progressbar(json.load(dump_file)) as bar:
+        error_logger.error(
+            "ITEMS: PROCESSING {0}".format(
+                dump_file
+            )
+        )
+        migrated_logger.warning(
+            "ITEMS: PROCESSING {0}".format(
+                dump_file
+            )
+        )
         for record in bar:
             click.echo(
                 'Importing item "{0}({1})"...'.format(
@@ -104,18 +112,19 @@ def import_items_from_json(dump_file, rectype="item"):
                     "ITEM: {0} ERROR: {1}".format(record["barcode"], str(e))
                 )
                 continue
-            try:
-                # check if the item already there
-                item = get_item_by_barcode(record["barcode"])
-                if item:
-                    click.secho(
-                        "Item {0}) already exists with pid: {1}".format(
-                            record["barcode"], item.pid
-                        ),
-                        fg="blue",
-                    )
-                    continue
-            except ItemMigrationError:
+
+            # check if the item already there
+            item = get_item_by_barcode(record["barcode"],
+                                       raise_exception=False)
+            if item:
+                click.secho(
+                    "Item {0}) already exists with pid: {1}".format(
+                        record["barcode"], item.pid
+                    ),
+                    fg="blue",
+                )
+                continue
+            else:
                 try:
                     import_record(
                         record, model, provider, legacy_id_key="barcode"
@@ -133,7 +142,7 @@ def import_items_from_json(dump_file, rectype="item"):
                     db.session.rollback()
 
 
-def get_item_by_barcode(barcode):
+def get_item_by_barcode(barcode, raise_exception=True):
     """Retrieve item object by barcode."""
     search = current_app_ils.item_search_cls().query(
         "bool",
@@ -145,9 +154,10 @@ def get_item_by_barcode(barcode):
     hits_total = result.hits.total.value
     if not result.hits or hits_total < 1:
         click.secho("no item found with barcode {}".format(barcode), fg="red")
-        raise ItemMigrationError(
-            "no item found with barcode {}".format(barcode)
-        )
+        if raise_exception:
+            raise ItemMigrationError(
+                "no item found with barcode {}".format(barcode)
+            )
     elif hits_total > 1:
         raise ItemMigrationError(
             "found more than one item with barcode {}".format(barcode)

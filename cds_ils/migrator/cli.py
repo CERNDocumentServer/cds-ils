@@ -138,15 +138,16 @@ def internal_locations(source, include):
 
 
 @migration.command()
-@click.argument("source", type=click.File("r"), nargs=-1)
+@click.argument("sources", type=click.File("r"), nargs=-1)
 @click.option(
     "--skip-indexing",
     is_flag=True,
 )
 @with_appcontext
-def items(source, skip_indexing):
+def items(sources, skip_indexing):
     """Migrate documents from CDS legacy."""
-    import_items_from_json(source)
+    for idx, source in enumerate(sources, 1):
+        import_items_from_json(source)
     if not skip_indexing:
         reindex_pidtype("pitmid")
 
