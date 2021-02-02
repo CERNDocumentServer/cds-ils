@@ -2381,12 +2381,12 @@ def test_alternative_titles_a(app):
                     {
                         "value": """Study of the impact of stacking on simple
                       hard diffraction events in CMS/LHC""",
-                        "language": "EN",
+                        "language": "ENG",
                         "type": "TRANSLATED_TITLE",
                     },
                     {
                         "value": "Subtitle/LHC",
-                        "language": "EN",
+                        "language": "ENG",
                         "type": "TRANSLATED_SUBTITLE",
                     },
                 ]
