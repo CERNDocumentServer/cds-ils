@@ -13,7 +13,7 @@ Babel==2.9.0
 backcall==0.2.0
 base32-lib==1.0.2
 billiard==3.6.3.0
-bleach==3.2.1
+bleach==3.3.0
 blinker==1.4
 cachelib==0.1.1
 cds-dojson==0.9.0
