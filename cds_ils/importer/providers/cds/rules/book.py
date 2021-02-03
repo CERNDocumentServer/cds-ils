@@ -9,14 +9,10 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-from dojson.errors import IgnoreKey
-
-from cds_ils.importer.errors import MissingRequiredField, UnexpectedValue
 from cds_ils.importer.providers.cds.models.book import model
 
 from .base import alternative_titles as alternative_titles_base
-from .utils import clean_val, extract_parts, extract_volume_number, \
-    filter_list_values, is_excluded, out_strip
+from .utils import clean_val, filter_list_values
 
 
 @model.over("alternative_titles", "(^246__)|(^242__)")
@@ -43,36 +39,3 @@ def alternative_titles(self, key, value):
                 }
             )
         return _alternative_titles
-
-
-@model.over("number_of_pages", "^300__")  # item
-def number_of_pages(self, key, value):
-    """Translates number_of_pages fields."""
-    val = clean_val("a", value, str)
-    if is_excluded(val):
-        raise IgnoreKey("number_of_pages")
-
-    parts = extract_parts(val)
-    if parts["has_extra"]:
-        raise UnexpectedValue(subfield="a")
-    if parts["physical_copy_description"]:
-        self["physical_copy_description"] = parts["physical_copy_description"]
-    if parts["number_of_pages"]:
-        return str(parts["number_of_pages"])
-    raise UnexpectedValue(subfield="a")
-
-
-@model.over("title", "^245__")
-@out_strip
-def title(self, key, value):
-    """Translates title."""
-    if "title" in self:
-        raise UnexpectedValue()
-
-    if "b" in value:
-        _alternative_titles = self.get("alternative_titles", [])
-        _alternative_titles.append(
-            {"value": clean_val("b", value, str), "type": "SUBTITLE"}
-        )
-        self["alternative_titles"] = _alternative_titles
-    return clean_val("a", value, str, req=True)

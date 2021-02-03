@@ -69,12 +69,12 @@ def test_title(app):
                     {
                         "value": "Water quality — sampling",
                         "type": "TRANSLATED_TITLE",
-                        "language": "fr",
+                        "language": "FRA",
                     },
                     {
                         "type": "TRANSLATED_SUBTITLE",
                         "value": """part 15: guidance on the preservation and handling of sludge""",
-                        "language": "fr",
+                        "language": "FRA",
                     },
                 ],
             },
@@ -106,12 +106,12 @@ def test_title(app):
                     {
                         "value": "Water quality — sampling",
                         "type": "TRANSLATED_TITLE",
-                        "language": "fr",
+                        "language": "FRA",
                     },
                     {
                         "type": "TRANSLATED_SUBTITLE",
                         "value": """part 15: guidance on the preservation and handling of sludge""",
-                        "language": "fr",
+                        "language": "FRA",
                     },
                 ],
                 "number_of_pages": "373",
@@ -144,12 +144,12 @@ def test_title(app):
                     {
                         "value": "Water quality — sampling",
                         "type": "TRANSLATED_TITLE",
-                        "language": "fr",
+                        "language": "FRA",
                     },
                     {
                         "type": "TRANSLATED_SUBTITLE",
                         "value": """part 15: guidance on the preservation and handling of sludge""",
-                        "language": "fr",
+                        "language": "FRA",
                     },
                 ],
             },
