@@ -28,7 +28,7 @@ def title_translations(self, key, value):
             {
                 "value": clean_val("a", value, str, req=True),
                 "type": "TRANSLATED_TITLE",
-                "language": "fr",
+                "language": "FRA",
             }
         )
     if "b" in value:
@@ -36,7 +36,7 @@ def title_translations(self, key, value):
             {
                 "value": clean_val("b", value, str, req=True),
                 "type": "TRANSLATED_SUBTITLE",
-                "language": "fr",
+                "language": "FRA",
             }
         )
     return _alternative_titles

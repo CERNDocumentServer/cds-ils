@@ -238,6 +238,9 @@ def vocabularies():
     run_command("vocabulary index opendefinition spdx --force")
     run_command("vocabulary index opendefinition opendefinition --force")
 
+    # index languages
+    run_command("vocabulary index languages --force")
+
 
 def recreate_cover(pid, record_class):
     """Recreate cover for a given record pid."""

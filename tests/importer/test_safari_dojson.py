@@ -66,7 +66,7 @@ def test_safari_transformation(app):
                     {"scheme": "ISBN", "value": "9780814415467"},
                     {"scheme": "ISBN", "value": "9780814415474"},
                 ],
-                "languages": ["en"],
+                "languages": ["ENG"],
                 "provider_recid": "9780814415467",
                 "imprint": {"date": "2010", "publisher": "AMACOM"},
                 "number_of_pages": "1",

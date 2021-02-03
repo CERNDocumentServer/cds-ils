@@ -1802,7 +1802,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["EN"],
+                "languages": ["ENG"],
             },
         )
         check_transformation(
@@ -1812,7 +1812,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["EN"],
+                "languages": ["ENG"],
             },
         )
         check_transformation(
@@ -1822,7 +1822,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["FR"],
+                "languages": ["FRA"],
             },
         )
         check_transformation(
@@ -1832,7 +1832,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["PL"],
+                "languages": ["POL"],
             },
         )
         check_transformation(
@@ -1842,7 +1842,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["DE"],
+                "languages": ["DEU"],
             },
         )
         with pytest.raises(UnexpectedValue):
@@ -1853,7 +1853,7 @@ def test_languages(app):
                 </datafield>
                 """,
                 {
-                    "languages": ["DE"],
+                    "languages": ["DEU"],
                 },
             )
 
@@ -2765,7 +2765,7 @@ def test_541(app):
                     "subject_classification": [
                         {"value": "519.226", "schema": "UDC"}
                     ],
-                    "languages": ["en"],
+                    "languages": ["ENG"],
                     "title": "Bayesian networks in fault diagnosis",
                     "alternative_titles": [
                         {
@@ -3066,7 +3066,7 @@ def test_record(app):
                               "value": "Dynamical systems"},
                              {"source": "SPR",
                               "value": "Vibration, Dynamical Systems, Control"}],
-                "languages": ["EN"],
+                "languages": ["ENG"],
                 "source": "SPR",
                 "subjects": [{"scheme": "LoC",
                               "value": "QA313"},

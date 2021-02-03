@@ -122,7 +122,7 @@ def languages(self, key, value):
     """Translates languages fields."""
     lang = clean_val("b", value, str).lower()
     try:
-        return pycountry.languages.lookup(lang).alpha_2
+        return pycountry.languages.lookup(lang).alpha_3.upper()
     except (KeyError, AttributeError, LookupError):
         raise UnexpectedValue(subfield="a")
 

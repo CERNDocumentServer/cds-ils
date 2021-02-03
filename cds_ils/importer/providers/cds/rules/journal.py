@@ -7,16 +7,14 @@
 
 """CDS-ILS MARCXML Journal rules."""
 
-import pycountry
 from dojson.errors import IgnoreKey
 from dojson.utils import for_each_value
 from invenio_app_ils.relations.api import LANGUAGE_RELATION, OTHER_RELATION, \
     SEQUENCE_RELATION
 
-from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
 
-from .book import title as base_title
+from .base import title as base_title
 from .utils import clean_val, filter_list_values, out_strip
 
 
@@ -104,20 +102,8 @@ def publisher(self, key, value):
     return clean_val("b", value, str, req=True)
 
 
-@model.over("languages", "^041__")
-@for_each_value
-@out_strip
-def languages(self, key, value):
-    """Translates languages fields."""
-    lang = clean_val("a", value, str).lower()
-    try:
-        return pycountry.languages.lookup(lang).alpha_2.upper()
-    except (KeyError, AttributeError, LookupError):
-        raise UnexpectedValue(subfield="a")
-
-
 @model.over("_children", "(^362__)")
-def children(self, key, value):
+def children_records(self, key, value):
     """Translates fields related to children record types."""
     _migration = self["_migration"]
     _electronic_items = _migration.get("electronic_items", [])

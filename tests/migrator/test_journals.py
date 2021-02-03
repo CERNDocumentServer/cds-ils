@@ -207,7 +207,7 @@ def test_languages(app):
             </datafield>
             """,
             {
-                "languages": ["EN"],
+                "languages": ["ENG"],
             },
         )
 

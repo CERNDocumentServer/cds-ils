@@ -85,7 +85,7 @@ def test_ebl_transformation(app):
                         "machinery.",
                     }
                 ],
-                "languages": ["en"],
+                "languages": ["ENG"],
                 "number_of_pages": "1",
                 "publication_year": "2003",
                 "subjects": [
