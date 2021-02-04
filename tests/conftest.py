@@ -14,6 +14,8 @@ from invenio_accounts.models import Role, User
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
 from invenio_app_ils.eitems.api import EITEM_PID_TYPE, EItem
+from invenio_app_ils.ill.api import BORROWING_REQUEST_PID_TYPE, \
+    LIBRARY_PID_TYPE, BorrowingRequest, Library
 from invenio_app_ils.internal_locations.api import \
     INTERNAL_LOCATION_PID_TYPE, InternalLocation
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
@@ -169,13 +171,29 @@ def testdata(app, db, es_clear, patron1):
     data = load_json_from_datadir("eitems.json")
     eitems = _create_records(db, data, EItem, EITEM_PID_TYPE)
 
+    data = load_json_from_datadir("ill_libraries.json")
+    ill_libraries = _create_records(db, data, Library, LIBRARY_PID_TYPE)
+
+    data = load_json_from_datadir("ill_borrowing_requests.json")
+    ill_brw_reqs = _create_records(
+        db, data, BorrowingRequest, BORROWING_REQUEST_PID_TYPE
+    )
+
     data = load_json_from_datadir("loans.json")
     loans = _create_records(db, data, Loan, CIRCULATION_LOAN_PID_TYPE)
 
     # index
     ri = RecordIndexer()
     for rec in (
-        locations + int_locs + series + documents + items + eitems + loans
+        locations
+        + int_locs
+        + series
+        + documents
+        + items
+        + eitems
+        + loans
+        + ill_libraries
+        + ill_brw_reqs
     ):
         ri.index(rec)
 

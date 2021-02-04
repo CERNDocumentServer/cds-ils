@@ -51,6 +51,18 @@ def test_patron_loans_view(app, patron1, testdata, client):
             "end_date": "2018-07-28",
             "title": "Prairie Fires: The American Dreams of "
                      "Laura Ingalls Wilder",
+        },
+        {
+            "item": {
+                "barcode": "",
+                "pid": {
+                    "type": "illbid",
+                    "value": "illbid-1",
+                }
+            },
+            "start_date": "2018-06-28",
+            "end_date": "2018-07-28",
+            "title": "The Gulf: The Making of An American Sea",
         }
     ]
     expected_loan_requests = [
