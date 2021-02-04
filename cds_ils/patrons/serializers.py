@@ -15,8 +15,14 @@ def serialize_on_loan_literature_info(loan):
     """Serialize loan information."""
     Document = current_app_ils.document_record_cls
     document = Document.get_record_by_pid(loan["document_pid"])
+    if "barcode" in loan["item"]:
+        barcode = loan["item"]["barcode"]
+    else:
+        barcode = ""
+    item = dict(pid=dict(type=loan["item_pid"]["type"],
+                         value=loan["item_pid"]["value"]), barcode=barcode)
     return dict(
-        barcode=loan["item"]["barcode"],
+        item=item,
         start_date=loan["start_date"],
         end_date=loan["end_date"],
         title=document["title"],
