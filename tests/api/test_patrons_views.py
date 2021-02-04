@@ -40,7 +40,13 @@ def test_patron_loans_view(app, patron1, testdata, client):
 
     expected_literatures_on_loan = [
         {
-            "barcode": "123456789-3",
+            "item": {
+                "barcode": "123456789-3",
+                "pid": {
+                    "type": "pitmid",
+                    "value": "itemid-2",
+                }
+            },
             "start_date": "2018-06-28",
             "end_date": "2018-07-28",
             "title": "Prairie Fires: The American Dreams of "
