@@ -38,6 +38,7 @@ class CDSRecordDump(object):
         self.latest_only = latest_only
         self.dojson_model = dojson_model
         self.revisions = None
+        self.files = None
 
     @property
     def created(self):
@@ -69,6 +70,8 @@ class CDSRecordDump(object):
         # Sort versions
         for k in files.keys():
             files[k].sort(key=lambda x: x["version"])
+
+        self.files = files
 
     def _prepare_revision(self, data):
         dt = arrow.get(data["modification_datetime"]).datetime

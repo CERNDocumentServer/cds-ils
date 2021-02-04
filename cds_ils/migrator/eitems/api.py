@@ -125,7 +125,6 @@ def process_files_from_legacy():
     }
     """
     search = get_all_documents_with_files()
-
     click.echo("Found {} documents with files.".format(search.count()))
     for hit in search.scan():
         # try not to kill legacy server

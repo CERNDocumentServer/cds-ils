@@ -27,6 +27,7 @@ include pytest.ini
 include scripts/bootstrap
 include scripts/celery
 include scripts/console
+include scripts/celery
 include scripts/server
 include scripts/setup
 include scripts/update
