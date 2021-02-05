@@ -90,7 +90,7 @@ invenio-logging==1.3.0
 invenio-mail==1.0.2
 invenio-oaiserver==1.2.0
 invenio-oauth2server==1.3.2
-invenio-oauthclient==1.4.2
+invenio-oauthclient==1.4.4
 invenio-opendefinition==1.0.0a9
 invenio-pages==1.0.0a5
 invenio-pidrelations==1.0.0a7

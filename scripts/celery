@@ -6,13 +6,5 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
-set -e
-
-script_path=$(dirname "$0")
-
-export FLASK_ENV=development
-export SERVER_NAME=127.0.0.1:5000
-
-invenio run \
-  --cert "$script_path"/../docker/nginx/test.crt \
-  --key "$script_path"/../docker/nginx/test.key
+# You can pass the --beat argument if you want the beat to run
+celery -A invenio_app.celery worker -l INFO
