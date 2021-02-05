@@ -265,6 +265,9 @@ _OAUTH_REMOTE_APP_COMMON = dict(
         "protocol/openid-connect/auth",
     ),
 )
+OAUTHCLIENT_CERN_OPENID_USERINFO_URL = \
+    "https://keycloak-qa.cern.ch/auth/realms/cern/" \
+    "protocol/openid-connect/userinfo"
 OAUTHCLIENT_CERN_OPENID_ALLOWED_ROLES = ["cern-user", "librarian", "admin"]
 CERN_APP_OPENID_CREDENTIALS = dict(
     consumer_key=os.environ.get(
