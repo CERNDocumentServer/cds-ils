@@ -10,6 +10,8 @@
 
 import logging
 
+from invenio_app_ils.proxies import current_app_ils
+from invenio_app_ils.records_relations.indexer import RecordRelationIndexer
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION
 from invenio_pidstore.errors import PIDDoesNotExistError
 
@@ -29,9 +31,12 @@ records_logger = logging.getLogger("records_errored")
 
 def import_multivolume(json_record):
     """Import multivolume type of multipart."""
-    legacy_recid = json_record["legacy_recid"]
+    document_indexer = current_app_ils.document_indexer
+    series_indexer = current_app_ils.series_indexer
     series_cls, series_pid_provider = model_provider_by_rectype("multipart")
     document_cls, document_pid_provider = model_provider_by_rectype("document")
+
+    legacy_recid = json_record["legacy_recid"]
 
     # build multipart dict - leave the legacy_recid attached
     multipart_json = clean_document_json_for_multipart(
@@ -86,28 +91,41 @@ def import_multivolume(json_record):
             document_pid_provider,
             legacy_id_key="title",
         )
+        document_indexer.index(document_record)
+        series_indexer.index(multipart_record)
+
         create_parent_child_relation(
             multipart_record,
             document_record,
             MULTIPART_MONOGRAPH_RELATION,
             volume.get("volume"),
         )
+
+        RecordRelationIndexer().index(document_record, multipart_record)
     return multipart_record
 
 
 def import_multipart(json_record):
     """Import multipart record."""
-    multipart_record = None
-    multipart_id = json_record["_migration"].get("multipart_id")
+    document_indexer = current_app_ils.document_indexer
+    series_indexer = current_app_ils.series_indexer
     series_cls, series_pid_provider = model_provider_by_rectype("multipart")
     document_cls, document_pid_provider = model_provider_by_rectype("document")
 
+    multipart_record = None
+    multipart_id = json_record["_migration"].get("multipart_id")
+
+    # split json for multipart (series rectype) and
+    # document (common data for all volumes, to be stored on document rectype)
     multipart_json = clean_document_json_for_multipart(json_record)
     document_json = exclude_multipart_fields(json_record)
+
+    # volume specific information
     volumes = json_record["_migration"]["volumes"]
 
     if multipart_id:
         # try to check if the multipart already exists
+        # (from previous dump file)
         multipart_record = get_multipart_by_multipart_id(multipart_id)
     # series with record per volume shouldn't have more than one volume
     # in the list
@@ -140,10 +158,18 @@ def import_multipart(json_record):
         document_record = import_record(
             document_json, document_cls, document_pid_provider
         )
+        document_indexer.index(document_record)
+
         create_parent_child_relation(
             multipart_record,
             document_record,
             MULTIPART_MONOGRAPH_RELATION,
             volumes[0]["volume"],
         )
+        # the multipart needs to be indexed immediately,
+        # because we search multipart_id to match next volumes
+        series_indexer.index(multipart_record)
+
+        RecordRelationIndexer().index(document_record, multipart_record)
+
         return multipart_record

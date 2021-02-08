@@ -43,12 +43,8 @@ class CDSMultipartDumpLoader(CDSSeriesDumpLoader):
             else:
                 click.echo("Multipart record.")
                 record = import_multipart(json_data)
-                # the multipart needs to be indexed immediately,
-                # because we match them between them
-                series_indexer = current_app_ils.series_indexer
-                series_indexer.index(record)
-                click.echo("Indexing.")
                 # wait for the previous multipart to be indexed
+                click.echo("Indexing.")
                 time.sleep(2)
             return record
         except IlsValidationError as e:
