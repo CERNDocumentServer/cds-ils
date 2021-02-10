@@ -62,7 +62,7 @@ def test_springer_transformation(app):
                     {"full_name": "Vogt, Erich W.", "roles": ["EDITOR"]},
                 ],
                 "document_type": "BOOK",
-                "edition": "1st ed. 2001.",
+                "edition": "1st  2001.",
                 "identifiers": [
                     {"scheme": "ISBN", "value": "9780306479151"},
                     {"scheme": "ISBN", "value": "9780306479151X"},
