@@ -1,0 +1,42 @@
+[
+  {
+    "type": "document_institutions",
+    "key": "KEK",
+    "text": "KEK"
+  },
+  {
+    "type": "document_institutions",
+    "key": "CERN",
+    "text": "CERN"
+  },
+  {
+    "type": "document_institutions",
+    "key": "DESY",
+    "text": "DESY"
+  },
+  {
+    "type": "document_institutions",
+    "key": "SLAC",
+    "text": "SLAC"
+  },
+  {
+    "type": "document_institutions",
+    "key": "FERMILAB",
+    "text": "Fermilab"
+  },
+  {
+    "type": "document_institutions",
+    "key": "CORNELL",
+    "text": "Cornell"
+  },
+  {
+    "type": "document_institutions",
+    "key": "BNL",
+    "text": "BNL"
+  },
+  {
+    "type": "document_institutions",
+    "key": "ANL",
+    "text": "ANL"
+  }
+]

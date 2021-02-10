@@ -10,6 +10,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import datetime
 import re
+from calendar import month_name
 
 import pycountry
 from dateutil import parser
@@ -25,11 +26,12 @@ from cds_ils.importer.providers.cds.cds import model
 from cds_ils.importer.providers.cds.rules.utils import clean_email, \
     clean_pages_range, clean_val, extract_volume_number, filter_list_values, \
     get_week_start, out_strip, replace_in_result
-from cds_ils.importer.providers.cds.rules.values_mapping import \
-    ACQUISITION_METHOD, ARXIV_CATEGORIES, COLLECTION, DOCUMENT_TYPE, \
-    EXTERNAL_SYSTEM_IDENTIFIERS, EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, \
-    MATERIALS, MEDIUM_TYPES, MEDIUMS, SERIAL, \
-    SUBJECT_CLASSIFICATION_EXCEPTIONS, mapping
+from cds_ils.importer.providers.cds.rules.values_mapping import ACCELERATORS, \
+    ACQUISITION_METHOD, APPLICABILITY, ARXIV_CATEGORIES, COLLECTION, \
+    DOCUMENT_TYPE, EXPERIMENTS, EXTERNAL_SYSTEM_IDENTIFIERS, \
+    EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, INSTITUTIONS, MATERIALS, \
+    MEDIUM_TYPES, MEDIUMS, SERIAL, SUBJECT_CLASSIFICATION_EXCEPTIONS, \
+    mapping
 
 from ...utils import build_ils_contributor
 from .utils import extract_parts, is_excluded
@@ -322,11 +324,40 @@ def publication_info(self, key, value):
 def standard_review(self, key, value):
     """Translates standard_status field."""
     _extensions = self.get("extensions", {})
+    applicability_list = _extensions.get("standard_review_applicability", [])
+    applicability = mapping(
+        APPLICABILITY,
+        clean_val("i", value, str),
+        raise_exception=True,
+    )
+    if applicability not in applicability_list:
+        applicability_list.append(applicability)
+    if 'z' in value:
+        try:
+            check_date = clean_val("z", value, str)
+            # Normalise date
+            for month in month_name[1:]:
+                if month.lower() in check_date.lower():
+                    check_date_month = month
+            check_date_year = re.findall(r'\d+', check_date)
+            if len(check_date_year) > 1:
+                raise UnexpectedValue(subfield="z")
+            datetime_object = datetime.datetime.strptime(
+                '{} 1 {}'.format(check_date_month, check_date_year[0]),
+                '%B %d %Y')
+
+            check_date_iso = datetime_object.date().isoformat()
+            _extensions.update(
+                {
+                    "standard_review_checkdate": check_date_iso,
+                }
+            )
+        except (ValueError, IndexError):
+            raise UnexpectedValue(subfield="z")
     _extensions.update(
         {
-            "standard_review_applicability": clean_val("i", value, str),
+            "standard_review_applicability": applicability_list,
             "standard_review_validity": clean_val("v", value, str),
-            "standard_review_checkdate": clean_val("z", value, str),
             "standard_review_expert": clean_val("p", value, str),
         }
     )
@@ -420,13 +451,36 @@ def accelerator_experiments(self, key, value):
     """Translates accelerator_experiments field."""
     _extensions = self.get("extensions", {})
 
-    sub_a = clean_val("a", value, str)
-    sub_e = clean_val("e", value, str)
-    sub_p = clean_val("p", value, str)
-
     accelerators = _extensions.get("unit_accelerator", [])
     experiment = _extensions.get("unit_experiment", [])
     project = _extensions.get("unit_project", [])
+    institutions = _extensions.get("unit_institution", [])
+
+    val_a = clean_val("a", value, str)
+    val_e = clean_val("e", value, str)
+
+    def check_for_institution_in(val, value_to_check_for):
+        if value_to_check_for in val:
+            if value_to_check_for not in institutions:
+                institutions.append(value_to_check_for.upper())
+            val = val.replace(value_to_check_for, "")
+        return val.strip()
+
+    for institution_value in INSTITUTIONS:
+        val_a = check_for_institution_in(val_a, institution_value)
+        val_e = check_for_institution_in(val_e, institution_value)
+
+    sub_a = mapping(
+            ACCELERATORS,
+            val_a,
+            raise_exception=True,
+        )
+    sub_e = mapping(
+            EXPERIMENTS,
+            val_e,
+            raise_exception=True,
+        )
+    sub_p = clean_val("p", value, str)
 
     if sub_a and sub_a not in accelerators:
         accelerators.append(sub_a)
@@ -440,6 +494,7 @@ def accelerator_experiments(self, key, value):
             "unit_accelerator": accelerators,
             "unit_experiment": experiment,
             "unit_project": project,
+            "unit_institution": institutions,
         }
     )
     return _extensions

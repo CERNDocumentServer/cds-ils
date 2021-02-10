@@ -526,11 +526,6 @@
 	},
 	{
 		"type": "document_experiments",
-		"key": "HYBRIDPHOTODETECTORS",
-		"text": "HybridPhotodetectors"
-	},
-	{
-		"type": "document_experiments",
 		"key": "I32",
 		"text": "I32"
 	},
@@ -2431,18 +2426,8 @@
 	},
 	{
 		"type": "document_experiments",
-		"key": "IS654",
-		"text": "Is654"
-	},
-	{
-		"type": "document_experiments",
 		"key": "IS655",
 		"text": "IS655"
-	},
-	{
-		"type": "document_experiments",
-		"key": "IS655",
-		"text": "Is655"
 	},
 	{
 		"type": "document_experiments",
@@ -4876,11 +4861,6 @@
 	},
 	{
 		"type": "document_experiments",
-		"key": "S25",
-		"text": "S25"
-	},
-	{
-		"type": "document_experiments",
 		"key": "S26",
 		"text": "S26"
 	},
@@ -4913,11 +4893,6 @@
 		"type": "document_experiments",
 		"key": "S30",
 		"text": "S30"
-	},
-	{
-		"type": "document_experiments",
-		"key": "S30",
-		"text": "S30%"
 	},
 	{
 		"type": "document_experiments",

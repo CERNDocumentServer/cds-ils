@@ -1071,8 +1071,8 @@ def test_extensions(app):
             """,
             {
                 "extensions": {
-                    "standard_review_applicability": "applicable at CERN",
-                    "standard_review_checkdate": "Reviewed in December 2019",
+                    "standard_review_applicability": ["APPLICABLE"],
+                    "standard_review_checkdate": "2019-12-01",
                     "standard_review_expert": "Expert ICS-25.160",
                 },
             },
@@ -1083,26 +1083,46 @@ def test_extensions(app):
                 <subfield code="i">no longer applicable</subfield>
                 <subfield code="p">Expert ICS-25.160</subfield>
                 <subfield code="v">withdrawn</subfield>
-                <subfield code="z">Reviewed in December 2019</subfield>
+                <subfield code="z">Reviewed inAugust 2019</subfield>
             </datafield>
             """,
             {
                 "extensions": {
-                    "standard_review_applicability": "no longer applicable",
+
+                    "standard_review_applicability": ["NO_LONGER_APPLICABLE"],
                     "standard_review_validity": "withdrawn",
-                    "standard_review_checkdate": "Reviewed in December 2019",
+                    "standard_review_checkdate": "2019-08-01",
                     "standard_review_expert": "Expert ICS-25.160",
                 },
             },
         )
+        with pytest.raises(UnexpectedValue):
+            check_transformation(
+                """
+                <datafield tag="925" ind1=" " ind2=" ">
+                    <subfield code="i">no longer applicable</subfield>
+                    <subfield code="p">Expert ICS-25.160</subfield>
+                    <subfield code="v">withdrawn</subfield>
+                    <subfield code="z">Reviewed in December 2019 123</subfield>
+                </datafield>
+                """,
+                {
+                    "extensions": {
+                        "standard_review_applicability": "",
+                        "standard_review_validity": "withdrawn",
+                        "standard_review_checkdate": "2019-12-01",
+                        "standard_review_expert": "Expert ICS-25.160",
+                    },
+                },
+            )
         check_transformation(
             """
             <datafield tag="693" ind1=" " ind2=" ">
-                <subfield code="a">CERN LHC</subfield>
+                <subfield code="a">CERN SPS</subfield>
                 <subfield code="e">ATLAS</subfield>
             </datafield>
             <datafield tag="693" ind1=" " ind2=" ">
-                <subfield code="a">CERN LHC</subfield>
+                <subfield code="a">CERN SPS</subfield>
                 <subfield code="e">CMS</subfield>
                 <subfield code="p">FCC</subfield>
             </datafield>
@@ -1110,21 +1130,32 @@ def test_extensions(app):
                 <subfield code="i">no longer applicable</subfield>
                 <subfield code="p">Expert ICS-25.160</subfield>
                 <subfield code="v">withdrawn</subfield>
-                <subfield code="z">Reviewed in December 2019</subfield>
+                <subfield code="z">Reviewed in April 2019</subfield>
             </datafield>
             """,
             {
                 "extensions": {
-                    "unit_accelerator": ["CERN LHC"],
+                    "unit_accelerator": ["SPS"],
                     "unit_experiment": ["ATLAS", "CMS"],
                     "unit_project": ["FCC"],
-                    "standard_review_applicability": "no longer applicable",
+                    "unit_institution": ["CERN"],
+                    "standard_review_applicability": ["NO_LONGER_APPLICABLE"],
                     "standard_review_validity": "withdrawn",
-                    "standard_review_checkdate": "Reviewed in December 2019",
+                    "standard_review_checkdate": "2019-04-01",
                     "standard_review_expert": "Expert ICS-25.160",
                 }
             },
         )
+        with pytest.raises(UnexpectedValue):
+            check_transformation(
+                """
+                <datafield tag="693" ind1=" " ind2=" ">
+                    <subfield code="a">CERN LHC</subfield>
+                    <subfield code="e">PS34221</subfield>
+                </datafield>
+                """,
+                {},
+            )
 
 
 def test_related_record(app):
@@ -1211,19 +1242,46 @@ def test_accelerator_experiments(app):
         check_transformation(
             """
             <datafield tag="693" ind1=" " ind2=" ">
-                <subfield code="a">CERN LHC</subfield>
+                <subfield code="a">CERN SPS</subfield>
                 <subfield code="e">ATLAS</subfield>
             </datafield>
             <datafield tag="693" ind1=" " ind2=" ">
-                <subfield code="a">CERN LHC</subfield>
+                <subfield code="a">CERN SPS</subfield>
                 <subfield code="e">CMS</subfield>
                 <subfield code="p">FCC</subfield>
             </datafield>
             """,
             {
                 "extensions": {
-                    "unit_accelerator": ["CERN LHC"],
+                    "unit_accelerator": ["SPS"],
                     "unit_experiment": ["ATLAS", "CMS"],
+                    "unit_institution": ["CERN"],
+                    "unit_project": ["FCC"],
+                }
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="693" ind1=" " ind2=" ">
+                <subfield code="a">CERN SPS</subfield>
+                <subfield code="e">ATLAS</subfield>
+            </datafield>
+            <datafield tag="693" ind1=" " ind2=" ">
+                <subfield code="a">KEK</subfield>
+                <subfield code="e">CMS</subfield>
+                <subfield code="p">FCC</subfield>
+            </datafield>
+            <datafield tag="693" ind1=" " ind2=" ">
+                <subfield code="a">Fermilab</subfield>
+                <subfield code="e">CMS</subfield>
+                <subfield code="p">FCC</subfield>
+            </datafield>
+            """,
+            {
+                "extensions": {
+                    "unit_accelerator": ["SPS"],
+                    "unit_experiment": ["ATLAS", "CMS"],
+                    "unit_institution": ["CERN", "KEK", "FERMILAB"],
                     "unit_project": ["FCC"],
                 }
             },
