@@ -1,8 +1,8 @@
 [
   {
     "type": "document_accelerators",
-    "key": "CERN_SPS",
-    "text": "CERN SPS"
+    "key": "SPS",
+    "text": "SPS"
   },
   {
     "type": "document_accelerators",

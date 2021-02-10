@@ -94,7 +94,8 @@ export const config = {
         },
         unit_institution: {
           label: 'Institution',
-          type: 'string',
+          type: 'vocabulary',
+          vocabularyType: 'document_institutions',
           default: '',
           line: 2,
         },
