@@ -196,8 +196,7 @@ def subjects_dewey(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translate edition field."""
-    # TODO remove year if present and ed.
-    return clean_val("a", value, str)
+    return clean_val("a", value, str).replace("ed.", "").replace("edition", "")
 
 
 @model.over("number_of_pages", "^300__")

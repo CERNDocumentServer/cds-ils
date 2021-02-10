@@ -66,7 +66,7 @@ def test_ebl_transformation(app):
                     {"full_name": "Tishin, AM."},
                     {"full_name": "Spichkin, YI."},
                 ],
-                "edition": "1st ed.",
+                "edition": "1st",
                 "identifiers": [
                     {"scheme": "ISBN", "value": "9781420033373"},
                     {"scheme": "ISBN", "value": "9780750309226"},

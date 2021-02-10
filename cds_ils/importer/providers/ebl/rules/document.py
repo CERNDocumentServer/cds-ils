@@ -151,7 +151,7 @@ def subjects_dewey(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translate edition field."""
-    return clean_val("a", value, str)
+    return clean_val("a", value, str).replace("ed.", "").replace("edition", "")
 
 
 @model.over("imprint", "^264_1")

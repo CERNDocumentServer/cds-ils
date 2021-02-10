@@ -61,7 +61,7 @@ def test_safari_transformation(app):
                     {"full_name": "Falcone, Paul,", "roles": ["AUTHOR"]}
                 ],
                 "copyrights": [{"year": 2010}],
-                "edition": "2nd edition",
+                "edition": "2nd",
                 "identifiers": [
                     {"scheme": "ISBN", "value": "9780814415467"},
                     {"scheme": "ISBN", "value": "9780814415474"},
