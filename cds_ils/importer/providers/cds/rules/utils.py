@@ -181,41 +181,57 @@ def clean_val(
     default=None,
     manual=False,
     transform=None,
+    multiple_values=False
 ):
     """
     Tests values using common rules.
 
     :param subfield: marcxml subfield indicator
-    :param value: mxrcxml value
+    :param value: marcxml value
     :param var_type: expected type for value to be cleaned
     :param req: specifies if the value is required in the end schema
     :param regex_format: specifies if the value should have a pattern
     :param default: if value is missing and required it outputs default
-    :param manual: if the value should be cleaned manually durign the migration
+    :param manual: if the value should be cleaned manually during the migration
     :param transform: string transform function (or callable)
+    :param multiple_values: allow multiple values in subfield
     :return: cleaned output value
     """
+    def _clean(value_to_clean):
+        if value_to_clean is not None:
+            try:
+                if var_type is str:
+                    return clean_str(value_to_clean, regex_format, req,
+                                     transform)
+                elif var_type is bool:
+                    return bool(value_to_clean)
+                elif var_type is int:
+                    return int(value_to_clean)
+                else:
+                    raise NotImplementedError
+            except ValueError:
+                raise UnexpectedValue(subfield=subfield)
+            except TypeError:
+                raise UnexpectedValue(subfield=subfield)
+
     to_clean = value.get(subfield)
+
     if manual and to_clean:
         raise ManualImportRequired
     if req and to_clean is None:
         if default:
             return default
         raise MissingRequiredField
-    if to_clean is not None:
-        try:
-            if var_type is str:
-                return clean_str(to_clean, regex_format, req, transform)
-            elif var_type is bool:
-                return bool(to_clean)
-            elif var_type is int:
-                return int(to_clean)
-            else:
-                raise NotImplementedError
-        except ValueError:
-            raise UnexpectedValue(subfield=subfield)
-        except TypeError:
-            raise UnexpectedValue(subfield=subfield)
+
+    if multiple_values and type(to_clean) is tuple:
+        cleaned_values = []
+        for v in to_clean:
+            cleaned_values.append(_clean(v))
+        return cleaned_values
+    elif not multiple_values and type(to_clean) is tuple:
+        raise UnexpectedValue(subfield=subfield)
+    else:
+        return _clean(to_clean)
 
 
 def clean_email(value):

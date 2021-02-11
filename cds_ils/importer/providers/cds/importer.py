@@ -6,9 +6,10 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS CDS Importer."""
+from invenio_app_ils.proxies import current_app_ils
 
-from cds_ils.importer.documents.api import get_document_by_legacy_recid
 from cds_ils.importer.importer import Importer
+from cds_ils.literature.api import get_record_by_legacy_recid
 
 
 class CDSImporter(Importer):
@@ -16,5 +17,8 @@ class CDSImporter(Importer):
 
     def _match(self):
         """CDS importer match document."""
-        document = get_document_by_legacy_recid(self.json_data["legacy_recid"])
+        document_class = current_app_ils.document_record_cls
+        document = get_record_by_legacy_recid(
+            document_class, self.json_data["legacy_recid"]
+        )
         return document

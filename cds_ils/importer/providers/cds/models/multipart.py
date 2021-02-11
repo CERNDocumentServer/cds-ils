@@ -16,7 +16,7 @@ from cds_ils.importer.providers.cds.ignore_fields import CDS_IGNORE_FIELDS
 
 from ..cds import get_helper_dict
 from ..cds import model as cds_base
-from .book import model as books_base
+from .document import model as books_base
 
 
 class CDSMultipart(CdsIlsOverdo):

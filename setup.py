@@ -119,14 +119,14 @@ setup(
             "base = cds_ils.importer.providers.rules.base",
         ],
         "cds_ils.importer.models": [
-            "cds_book = cds_ils.importer.providers.cds.models.book:model",
+            "cds_book = cds_ils.importer.providers.cds.models.document:model",
             "cds_standard = cds_ils.importer.providers.cds.models.standard:model",
             "springer_document = cds_ils.importer.providers.springer.springer:model",
             "ebl_document = cds_ils.importer.providers.ebl.ebl:model",
             "safari_document = cds_ils.importer.providers.safari.safari:model",
         ],
         "cds_ils.migrator.models": [
-            "cds_book = cds_ils.importer.providers.cds.models.book:model",
+            "cds_book = cds_ils.importer.providers.cds.models.document:model",
             "cds_standard = cds_ils.importer.providers.cds.models.standard:model",
         ],
         "cds_ils.migrator.serial_model": [

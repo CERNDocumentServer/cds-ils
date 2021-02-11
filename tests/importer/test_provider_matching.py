@@ -1,6 +1,6 @@
 from cds_dojson.matcher import matcher
 
-from cds_ils.importer.providers.cds.models import book as cds_book
+from cds_ils.importer.providers.cds.models import document as cds_book
 from cds_ils.importer.providers.ebl import ebl
 from cds_ils.importer.providers.safari import safari
 from cds_ils.importer.providers.springer import springer

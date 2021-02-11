@@ -15,7 +15,7 @@ from cds_ils.importer.overdo import CdsIlsOverdo
 
 from ..cds import model as cds_base
 from ..ignore_fields import CDS_IGNORE_FIELDS
-from .book import model as books_base
+from .document import model as books_base
 
 
 class CDSJournal(CdsIlsOverdo):
