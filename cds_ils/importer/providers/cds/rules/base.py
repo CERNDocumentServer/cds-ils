@@ -598,10 +598,16 @@ def alternative_identifiers(self, key, value):
 def dois(self, key, value):
     """Translates dois fields."""
     _identifiers = self.get("identifiers", [])
+
+    def _clean_doi_material(subfield):
+        return subfield.lower().replace("(open access)", "")
+
     for v in force_list(value):
+        subfield_q = clean_val("q", v, str, transform=_clean_doi_material)
+
         material = mapping(
             MATERIALS,
-            clean_val("q", v, str, transform="lower"),
+            subfield_q,
             raise_exception=True,
         )
         doi = {
