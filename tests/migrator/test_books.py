@@ -1558,6 +1558,24 @@ def test_dois(app):
                 ],
             },
         )
+        check_transformation(
+            """
+            <datafield tag="024" ind1="7" ind2=" ">
+                <subfield code="2">DOI</subfield>
+                <subfield code="a">10.3390/books978-3-03943-243-1</subfield>
+                <subfield code="q">ebook (Open Access)</subfield>
+            </datafield>
+            """,
+            {
+                "identifiers": [
+                    {
+                        "material": "ebook",
+                        "value": "10.3390/books978-3-03943-243-1",
+                        "scheme": "DOI",
+                    }
+                ],
+            },
+        )
 
 
 def test_alternative_identifiers(app):

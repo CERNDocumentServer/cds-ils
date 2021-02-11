@@ -165,7 +165,9 @@ def clean_str(to_clean, regex_format, req, transform=None):
         raise UnexpectedValue
     if not cleaned and req:
         raise MissingRequiredField
-    if transform and hasattr(cleaned, transform):
+    if callable(transform):
+        cleaned = transform(cleaned)
+    elif transform and hasattr(cleaned, transform):
         cleaned = getattr(cleaned, transform)()
     return cleaned
 
@@ -190,7 +192,7 @@ def clean_val(
     :param regex_format: specifies if the value should have a pattern
     :param default: if value is missing and required it outputs default
     :param manual: if the value should be cleaned manually durign the migration
-    :param transform: string transform function
+    :param transform: string transform function (or callable)
     :return: cleaned output value
     """
     to_clean = value.get(subfield)
