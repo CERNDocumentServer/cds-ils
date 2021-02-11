@@ -2,8 +2,8 @@ import pytest
 from cds_dojson.matcher import matcher
 from dojson.contrib import marc21 as default
 
-from cds_ils.importer.providers.cds.models import book, journal, multipart, \
-    serial, standard
+from cds_ils.importer.providers.cds.models import document, journal, \
+    multipart, serial, standard
 
 
 def test_marc21_matcher_books():
@@ -41,12 +41,12 @@ def test_marc21_matcher_books():
     serial_models_entrypoint = "cds_ils.migrator.serial_model"
     journal_models_entrypoint = "cds_ils.migrator.journal_model"
     multipart_models_entrypoint = "cds_ils.migrator.multipart_model"
-    assert book.model == matcher(book_blob1, models_entrypoint)
-    assert book.model == matcher(book_blob2, models_entrypoint)
+    assert document.model == matcher(book_blob1, models_entrypoint)
+    assert document.model == matcher(book_blob2, models_entrypoint)
 
     with pytest.raises(AssertionError):
         # English book club should not be matched
-        assert book.model == matcher(book_blob3, models_entrypoint)
+        assert document.model == matcher(book_blob3, models_entrypoint)
     assert standard.model == matcher(standard_blob1, models_entrypoint)
     assert serial.model == matcher(serial_blob1, serial_models_entrypoint)
     assert multipart.model == matcher(

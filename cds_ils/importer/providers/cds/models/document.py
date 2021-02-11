@@ -17,7 +17,7 @@ from cds_ils.importer.providers.cds.cds import model as base_model
 from cds_ils.importer.providers.cds.ignore_fields import CDS_IGNORE_FIELDS
 
 
-class CDSBook(CdsIlsOverdo):
+class CDSDocument(CdsIlsOverdo):
     """Translation Index for CDS Books."""
 
     __query__ = (
@@ -52,6 +52,6 @@ class CDSBook(CdsIlsOverdo):
         )
 
 
-model = CDSBook(
+model = CDSDocument(
     bases=(base_model,), entry_point_group="cds_ils.importer.cds.document"
 )

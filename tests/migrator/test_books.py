@@ -27,7 +27,7 @@ from dojson.errors import MissingRule
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
 from cds_ils.importer.providers.cds.cds import get_helper_dict
-from cds_ils.importer.providers.cds.models.book import model
+from cds_ils.importer.providers.cds.models.document import model
 from cds_ils.importer.providers.cds.rules.values_mapping import MATERIALS, \
     mapping
 
@@ -224,13 +224,37 @@ def test_created(app):
                 <subfield code="a">SPR201701</subfield>
             </datafield>
             <datafield tag="859" ind1=" " ind2=" ">
-                <subfield code="f">karolina.przerwa@cern.ch</subfield>
+                <subfield code="f">p.q@cern.ch</subfield>
             </datafield>
             """,
             {
                 "created_by": {
                     "type": "user",
-                    "_email": "karolina.przerwa@cern.ch",
+                    "_email": "p.q@cern.ch",
+                },
+                "source": "SPR",
+                "_created": "2017-01-01",
+            },
+        )
+        # test earliest date
+        check_transformation(
+            """
+            <datafield tag="916" ind1=" " ind2=" ">
+                <subfield code="s">h</subfield>
+                <subfield code="w">201829</subfield>
+                <subfield code="w">201729</subfield>
+            </datafield>
+            <datafield tag="595" ind1=" " ind2=" ">
+                <subfield code="a">SPR201701</subfield>
+            </datafield>
+            <datafield tag="859" ind1=" " ind2=" ">
+                <subfield code="f">p.q@cern.ch</subfield>
+            </datafield>
+            """,
+            {
+                "created_by": {
+                    "type": "user",
+                    "_email": "p.q@cern.ch",
                 },
                 "source": "SPR",
                 "_created": "2017-01-01",

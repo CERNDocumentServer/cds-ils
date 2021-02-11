@@ -72,7 +72,18 @@ def created(self, key, value):
                 }
             )
             self["created_by"] = _created_by
-            date = clean_val("w", value, int, regex_format=r"\d{6}$")
+
+            # used to compare dates, to find the oldest publication date
+            # when multiple dates present in the field
+            date = 999999
+            date_values = clean_val("w", value, int, regex_format=r"\d{6}$",
+                                    multiple_values=True)
+            if type(date_values) is list:
+                for x in date_values:
+                    if x < date:
+                        date = x
+            else:
+                date = date_values
             if date:
                 year, week = str(date)[:4], str(date)[4:]
                 date = get_week_start(int(year), int(week))

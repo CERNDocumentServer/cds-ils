@@ -120,18 +120,3 @@ def fuzzy_search_document(title, authors):
         )
     )
     return search
-
-
-def get_document_by_legacy_recid(legacy_recid):
-    """Search documents by its legacy recid."""
-    document_search = current_app_ils.document_search_cls()
-    document_cls = current_app_ils.document_record_cls
-
-    search = document_search.query(
-        "bool", filter=[Q("term", legacy_recid=legacy_recid)]
-    )
-    result = search.execute()
-    hits_total = check_search_results(result, legacy_recid, "legacy recid")
-
-    if hits_total == 1:
-        return document_cls.get_record_by_pid(result.hits[0].pid)
