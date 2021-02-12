@@ -13,4 +13,4 @@ from cds_ils.importer.importer import Importer
 class SafariImporter(Importer):
     """OReilly importer class."""
 
-    pass
+    EITEM_OPEN_ACCESS = False
