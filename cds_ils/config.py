@@ -424,47 +424,47 @@ ILS_RECORDS_METADATA_NAMESPACES = {
 # Fields added to the metadata schema.
 ILS_RECORDS_METADATA_EXTENSIONS = {
     "document": {
-        "unit:accelerator": {
+        "unit_accelerator": {
             "elasticsearch": "keyword",
             "marshmallow": List(SanitizedUnicode()),
         },
-        "unit:curated_relation": {
+        "unit_curated_relation": {
             "elasticsearch": "boolean",
             "marshmallow": Bool(),
         },
-        "unit:experiment": {
+        "unit_experiment": {
             "elasticsearch": "keyword",
             "marshmallow": List(SanitizedUnicode()),
         },
-        "unit:institution": {
+        "unit_institution": {
             "elasticsearch": "keyword",
             "marshmallow": List(SanitizedUnicode()),
         },
-        "unit:project": {
+        "unit_project": {
             "elasticsearch": "keyword",
             "marshmallow": SanitizedUnicode(),
         },
-        "unit:study": {
+        "unit_study": {
             "elasticsearch": "keyword",
             "marshmallow": List(SanitizedUnicode()),
         },
-        "standard_review:applicability": {
+        "standard_review_applicability": {
             "elasticsearch": "keyword",
             "marshmallow": List(SanitizedUnicode()),
         },
-        "standard_review:standard_validity": {
+        "standard_review_standard_validity": {
             "elasticsearch": "keyword",
             "marshmallow": SanitizedUnicode(required=True),
         },
-        "standard_review:checkdate": {
+        "standard_review_checkdate": {
             "elasticsearch": "date",
             "marshmallow": SanitizedUnicode(),
         },
-        "standard_review:comment": {
+        "standard_review_comment": {
             "elasticsearch": "text",
             "marshmallow": SanitizedUnicode(),
         },
-        "standard_review:expert": {
+        "standard_review_expert": {
             "elasticsearch": "keyword",
             "marshmallow": SanitizedUnicode(),
         },

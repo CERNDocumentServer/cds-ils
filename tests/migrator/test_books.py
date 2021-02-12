@@ -1047,9 +1047,9 @@ def test_extensions(app):
             """,
             {
                 "extensions": {
-                    "standard_review:applicability": "applicable at CERN",
-                    "standard_review:checkdate": "Reviewed in December 2019",
-                    "standard_review:expert": "Expert ICS-25.160",
+                    "standard_review_applicability": "applicable at CERN",
+                    "standard_review_checkdate": "Reviewed in December 2019",
+                    "standard_review_expert": "Expert ICS-25.160",
                 },
             },
         )
@@ -1064,10 +1064,10 @@ def test_extensions(app):
             """,
             {
                 "extensions": {
-                    "standard_review:applicability": "no longer applicable",
-                    "standard_review:validity": "withdrawn",
-                    "standard_review:checkdate": "Reviewed in December 2019",
-                    "standard_review:expert": "Expert ICS-25.160",
+                    "standard_review_applicability": "no longer applicable",
+                    "standard_review_validity": "withdrawn",
+                    "standard_review_checkdate": "Reviewed in December 2019",
+                    "standard_review_expert": "Expert ICS-25.160",
                 },
             },
         )
@@ -1091,13 +1091,13 @@ def test_extensions(app):
             """,
             {
                 "extensions": {
-                    "unit:accelerator": ["CERN LHC"],
-                    "unit:experiment": ["ATLAS", "CMS"],
-                    "unit:project": ["FCC"],
-                    "standard_review:applicability": "no longer applicable",
-                    "standard_review:validity": "withdrawn",
-                    "standard_review:checkdate": "Reviewed in December 2019",
-                    "standard_review:expert": "Expert ICS-25.160",
+                    "unit_accelerator": ["CERN LHC"],
+                    "unit_experiment": ["ATLAS", "CMS"],
+                    "unit_project": ["FCC"],
+                    "standard_review_applicability": "no longer applicable",
+                    "standard_review_validity": "withdrawn",
+                    "standard_review_checkdate": "Reviewed in December 2019",
+                    "standard_review_expert": "Expert ICS-25.160",
                 }
             },
         )
@@ -1198,9 +1198,9 @@ def test_accelerator_experiments(app):
             """,
             {
                 "extensions": {
-                    "unit:accelerator": ["CERN LHC"],
-                    "unit:experiment": ["ATLAS", "CMS"],
-                    "unit:project": ["FCC"],
+                    "unit_accelerator": ["CERN LHC"],
+                    "unit_experiment": ["ATLAS", "CMS"],
+                    "unit_project": ["FCC"],
                 }
             },
         )
