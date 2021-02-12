@@ -310,10 +310,10 @@ def standard_review(self, key, value):
     _extensions = self.get("extensions", {})
     _extensions.update(
         {
-            "standard_review:applicability": clean_val("i", value, str),
-            "standard_review:validity": clean_val("v", value, str),
-            "standard_review:checkdate": clean_val("z", value, str),
-            "standard_review:expert": clean_val("p", value, str),
+            "standard_review_applicability": clean_val("i", value, str),
+            "standard_review_validity": clean_val("v", value, str),
+            "standard_review_checkdate": clean_val("z", value, str),
+            "standard_review_expert": clean_val("p", value, str),
         }
     )
     return _extensions
@@ -410,9 +410,9 @@ def accelerator_experiments(self, key, value):
     sub_e = clean_val("e", value, str)
     sub_p = clean_val("p", value, str)
 
-    accelerators = _extensions.get("unit:accelerator", [])
-    experiment = _extensions.get("unit:experiment", [])
-    project = _extensions.get("unit:project", [])
+    accelerators = _extensions.get("unit_accelerator", [])
+    experiment = _extensions.get("unit_experiment", [])
+    project = _extensions.get("unit_project", [])
 
     if sub_a and sub_a not in accelerators:
         accelerators.append(sub_a)
@@ -423,9 +423,9 @@ def accelerator_experiments(self, key, value):
 
     _extensions.update(
         {
-            "unit:accelerator": accelerators,
-            "unit:experiment": experiment,
-            "unit:project": project,
+            "unit_accelerator": accelerators,
+            "unit_experiment": experiment,
+            "unit_project": project,
         }
     )
     return _extensions

@@ -72,71 +72,71 @@ export const config = {
     extensions: {
       label: 'Other',
       fields: {
-        'unit:accelerator': {
+        unit_accelerator: {
           label: 'Accelerator',
           type: 'vocabulary',
           vocabularyType: 'document_accelerators',
           default: '',
           line: 1,
         },
-        'unit:experiment': {
+        unit_experiment: {
           label: 'Experiment',
           type: 'vocabulary',
           vocabularyType: 'document_experiments',
           default: '',
           line: 1,
         },
-        'unit:curated_relation': {
+        unit_curated_relation: {
           label: 'Curated Relation',
           type: 'boolean',
           default: false,
           line: 1,
         },
-        'unit:institution': {
+        unit_institution: {
           label: 'Institution',
           type: 'string',
           default: '',
           line: 2,
         },
-        'unit:project': {
+        unit_project: {
           label: 'Project',
           type: 'string',
           default: '',
           line: 2,
         },
-        'unit:study': {
+        unit_study: {
           label: 'Study',
           type: 'string',
           default: '',
           line: 2,
         },
-        'standard_review:applicability': {
+        standard_review_applicability: {
           label: 'Status CERN Applicability',
           type: 'vocabulary',
           vocabularyType: 'document_standard_reviews',
           default: '',
           line: 3,
         },
-        'standard_review:standard_validity': {
+        standard_review_standard_validity: {
           label: 'Status Standard Validity',
           type: 'string',
           default: '',
           isRequired: true,
           line: 3,
         },
-        'standard_review:checkdate': {
+        standard_review_checkdate: {
           label: 'Status check date',
           type: 'date',
           default: '',
           line: 3,
         },
-        'standard_review:comment': {
+        standard_review_comment: {
           label: 'Status comment',
           type: 'string',
           default: '',
           line: 4,
         },
-        'standard_review:expert': {
+        standard_review_expert: {
           label: 'Status expert',
           type: 'string',
           default: '',
