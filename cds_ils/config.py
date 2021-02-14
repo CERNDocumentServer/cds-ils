@@ -484,11 +484,11 @@ ILS_CIRCULATION_MAIL_TEMPLATES = {
 
 ILS_DOCUMENT_REQUEST_MAIL_TEMPLATES = {
     "request_accepted": "cds_document_request_accept.html",
-    "request_rejected_user_cancel":
-        "cds_document_request_reject_user_cancel.html",
-    "request_rejected_in_catalog":
-        "cds_document_request_reject_in_catalog.html",
-    "request_rejected_not_found": "cds_document_request_reject_not_found.html",
+    "request_declined_user_cancel":
+        "cds_document_request_decline_user_cancel.html",
+    "request_declined_in_catalog":
+        "cds_document_request_decline_in_catalog.html",
+    "request_declined_not_found": "cds_document_request_decline_not_found.html",  # noqa
 }
 
 ILS_ILL_MAIL_TEMPLATES = {
