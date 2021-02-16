@@ -146,7 +146,7 @@ def test_monograph(app):
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
                 "number_of_volumes": "2",
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                     "volumes": [
                         {
@@ -189,7 +189,7 @@ def test_monograph(app):
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
                 "number_of_volumes": "2",
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "is_multipart": True,
                     "record_type": "multipart",
                     "volumes": [
@@ -227,7 +227,7 @@ def test_monograph(app):
                 ],
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "is_multipart": True,
                     "record_type": "multipart",
                     "volumes": [
@@ -265,7 +265,7 @@ def test_monograph(app):
                 ],
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "is_multipart": True,
                     "record_type": "multipart",
                     "volumes": [
@@ -309,7 +309,7 @@ def test_monograph(app):
                     "mode_of_issuance": "MULTIPART_MONOGRAPH",
                     "number_of_volumes": "2",
                     "_migration": {
-                        **get_helper_dict(),
+                        **get_helper_dict(record_type="document"),
                         "is_multipart": False,
                         "record_type": "multipart",
                         "volumes": [],
@@ -340,7 +340,7 @@ def test_monograph(app):
                     "mode_of_issuance": "MULTIPART_MONOGRAPH",
                     "number_of_volumes": "2",
                     "_migration": {
-                        **get_helper_dict(),
+                        **get_helper_dict(record_type="document"),
                         "is_multipart": True,
                         "record_type": "multipart",
                         "volumes": [],
@@ -403,7 +403,7 @@ def test_monograph_migration(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "volumes_identifiers": [
                         {
                             "volume": "3",
@@ -479,7 +479,7 @@ def test_monograph_invalid_volume_migration(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                     "volumes_identifiers": [
                         {
@@ -524,7 +524,7 @@ def test_monograph_volume_migration_no_description(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                     "volumes_identifiers": [
                         {
@@ -585,7 +585,7 @@ def test_monograph_with_electronic_isbns(app):
                 ],
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                     "volumes_identifiers": [
                         {
@@ -632,7 +632,7 @@ def test_monograph_volume_migration_doi(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                     "volumes_identifiers": [
                         {
@@ -661,7 +661,7 @@ def test_monograph_volume_barcode(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                     "items": [{"barcode": "73-0089-0", "volume": "A"}],
                 },
@@ -683,7 +683,7 @@ def test_monograph_volume_url(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                     "volumes_urls": [
                         {
@@ -713,7 +713,7 @@ def test_monograph_legacy_representation(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                     "multipart_id": "Vol965",
                     "multivolume_record": False,
@@ -735,7 +735,7 @@ def test_monograph_legacy_report_number(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                 },
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
@@ -764,7 +764,7 @@ def test_monograph_series_authors(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
                 },
                 "authors": [

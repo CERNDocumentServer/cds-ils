@@ -12,12 +12,13 @@ from dojson.utils import for_each_value, force_list
 from invenio_app_ils.relations.api import LANGUAGE_RELATION, OTHER_RELATION, \
     SEQUENCE_RELATION
 
-from cds_ils.importer.errors import UnexpectedValue
+from cds_ils.importer.errors import ManualImportRequired, UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
 
 from .base import title as base_title
 from .utils import clean_val, filter_list_values, out_strip
-from .values_mapping import ACCESS_TYPE, MEDIUMS, mapping
+from .values_mapping import ACCESS_TYPE, COLLECTION, DOCUMENT_TYPE, MEDIUMS, \
+    mapping
 
 
 @model.over("legacy_recid", "^001", override=True)
@@ -126,7 +127,8 @@ def access_urls(self, key, value):
     """Translates access urls field."""
     _access_urls = self.get("access_urls", [])
     access_type_mapped = []
-    access_type_list = list(map(int, clean_val("x", value, str)))
+    val_x = clean_val("x", value, str)
+    access_type_list = list(map(int, val_x if val_x else []))
     for i in access_type_list:
         access_type = mapping(ACCESS_TYPE, str(i), raise_exception=True)
         access_type_mapped.append(access_type)
@@ -140,8 +142,7 @@ def access_urls(self, key, value):
     url_note = clean_val("3", value, str)
     if url_note:
         notes = self.get("note", "")
-        notes_list = [notes]
-        notes_list.append(url_note)
+        notes_list = [notes, url_note]
         self["note"] = " \n".join(filter(None, notes_list))
 
     return _access_urls
@@ -240,3 +241,33 @@ def medium(self, key, value):
         }
     )
     return _migration
+
+
+@model.over("tags", "(^980__)|(^690C_)", override=True)
+@out_strip
+def tags(self, key, value):
+    """Translates tag field - WARNING - also document type and serial field."""
+    _tags = self.get("tags", [])
+    for v in force_list(value):
+        result_a = mapping(COLLECTION, clean_val("a", v, str))
+        result_b = mapping(COLLECTION, clean_val("b", v, str))
+        if result_a:
+            _tags.append(result_a) if result_a not in _tags else None
+        if result_b:
+            _tags.append(result_b) if result_b not in _tags else None
+        if not result_a and not result_b:
+            document_type(self, key, value)
+    return _tags
+
+
+@model.over("document_type", "(^980__)|(^960__)|(^690C_)", override=True)
+@out_strip
+def document_type(self, key, value):
+    """Translates document type field."""
+    for v in force_list(value):
+        clean_val_a = clean_val("a", v, str)
+        if ((key == "980__" or key == "690C_") and clean_val_a == "PERI") \
+                or key == "960__" and clean_val_a == "31":
+            raise IgnoreKey("document_type")
+        else:
+            raise UnexpectedValue(subfield="a")

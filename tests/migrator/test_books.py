@@ -40,12 +40,12 @@ marcxml = (
 def check_transformation(marcxml_body, json_body):
     """Check transformation."""
     blob = create_record(marcxml.format(marcxml_body))
-    model._default_fields = {"_migration": {**get_helper_dict()}}
+    model._default_fields = {"_migration": {**get_helper_dict(record_type="document")}}
 
     record = model.do(blob, ignore_missing=False)
 
     expected = {
-        "_migration": {**get_helper_dict()},
+        "_migration": {**get_helper_dict(record_type="document")},
     }
 
     expected.update(**json_body)
@@ -382,7 +382,7 @@ def test_serial(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "has_serial": True,
                     "serials": [{"title": "DESIGN REPORT",
                                  "volume": None,
@@ -468,7 +468,7 @@ def test_document_type(app):
                 """,
                 {
                      "_migration": {
-                        **get_helper_dict(),
+                        **get_helper_dict(record_type="document"),
                         "tags": ["ENGLISH_BOOK_CLUB"],
                      },
                      "document_type": "BOOK"
@@ -527,7 +527,7 @@ def test_urls(app):
         """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "eitems_has_files": True,
                     "eitems_file_links": [
                         {
@@ -546,7 +546,7 @@ def test_urls(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "eitems_has_files": True,
                     "eitems_file_links": [
                         {
@@ -588,7 +588,7 @@ def test_urls(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "eitems_has_ebl": True,
                     "eitems_ebl": [
                         {
@@ -607,7 +607,7 @@ def test_urls(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "eitems_has_external": True,
                     "eitems_external": [
                         {
@@ -628,7 +628,7 @@ def test_urls(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "eitems_has_proxy": True,
                     "eitems_proxy": [
                         {
@@ -655,7 +655,7 @@ def test_urls(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "eitems_has_ebl": True,
                     "eitems_ebl": [
                         {
@@ -979,7 +979,7 @@ def test_publication_info(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "related": [
                         {"related_recid": "2155631", "relation_type": "other",
                          "relation_description": "chapter of"}],
@@ -1022,7 +1022,7 @@ def test_publication_info(app):
                 ],
                 "document_type": "PERIODICAL_ISSUE",
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "has_journal": True,
                     "journal_record_legacy_recids": [
                         {"recid": "123456", "volume": None}
@@ -1141,7 +1141,7 @@ def test_related_record(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "has_related": True,
                     "related": [
                         {
@@ -1163,7 +1163,7 @@ def test_related_record(app):
                 """,
                 {
                     "_migration": {
-                        **get_helper_dict(),
+                        **get_helper_dict(record_type="document"),
                         "has_related": True,
                         "related": [
                             {
@@ -1186,7 +1186,7 @@ def test_related_record(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "has_related": True,
                     "related": [
                         {
@@ -2654,7 +2654,7 @@ def test_book_series(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "serials": [
                         {"title": "Minutes", "issn": None, "volume": None}
                     ],
@@ -2673,7 +2673,7 @@ def test_book_series(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "serials": [
                         {
                             "title": "De Gruyter studies in mathematical physics",
@@ -2695,7 +2695,7 @@ def test_book_series(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "serials": [
                         {
                             "title": "Springer tracts in modern physics",
@@ -2883,7 +2883,7 @@ def test_volume_barcodes(app):
             dict(
                 title="Mathematische Methoden der Physik",
                 _migration={
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     **dict(
                         volumes=[
                             dict(barcode="80-1209-8", volume="1"),
@@ -2931,7 +2931,7 @@ def test_open_access(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "eitems_open_access": True,
                 },
             },
@@ -3034,7 +3034,7 @@ def test_record(app):
             {
                 "_created": "2021-01-04",
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     'has_serial': True,
                     'serials': [
                         {
@@ -3144,7 +3144,7 @@ def test_medium(app):
                 """,
                 {
                     "_migration": {
-                        **get_helper_dict(),
+                        **get_helper_dict(record_type="document"),
                     },
                 },
             )
@@ -3157,7 +3157,7 @@ def test_medium(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "item_medium": [
                         {
                             "barcode": "CM-B00065102",
@@ -3177,7 +3177,7 @@ def test_medium(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "item_medium": [
                         {
                             "barcode": "CM-B00062302",
@@ -3197,7 +3197,7 @@ def test_medium(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "item_medium": [
                         {
                             "barcode": "CM-B00063302",
@@ -3222,7 +3222,7 @@ def test_medium(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(),
+                    **get_helper_dict(record_type="document"),
                     "item_medium": [
                         {
                             "barcode": "CM-P00096545",
