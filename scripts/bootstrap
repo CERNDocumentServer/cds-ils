@@ -11,7 +11,7 @@ set -e
 script_path=$(dirname "$0")
 
 # Install application code and entrypoints from 'setup.py'
-pip install --use-deprecated=legacy-resolver -e $script_path/..[all]
+pip install -e $script_path/..[all]
 # Build assets
 invenio collect -v
 invenio webpack buildall

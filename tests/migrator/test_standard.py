@@ -21,10 +21,12 @@ marcxml = (
 
 def check_transformation(marcxml_body, json_body):
     blob = create_record(marcxml.format(marcxml_body))
-    model._default_fields = {"_migration": {**get_helper_dict()}}
+    model._default_fields = {
+        "_migration": {**get_helper_dict(record_type="document")}
+    }
 
     record = model.do(blob, ignore_missing=False)
-    expected = {"_migration": {**get_helper_dict()}}
+    expected = {"_migration": {**get_helper_dict(record_type="document")}}
     expected.update(**json_body)
     assert record == expected
 

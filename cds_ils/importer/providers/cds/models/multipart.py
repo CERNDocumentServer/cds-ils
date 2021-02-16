@@ -30,7 +30,7 @@ class CDSMultipart(CdsIlsOverdo):
     __ignore_keys__ = CDS_IGNORE_FIELDS
 
     _default_fields = {
-        "_migration": {**get_helper_dict()},
+        "_migration": {**get_helper_dict(record_type="document")},
         "mode_of_issuance": "MULTIPART_MONOGRAPH",
     }
 

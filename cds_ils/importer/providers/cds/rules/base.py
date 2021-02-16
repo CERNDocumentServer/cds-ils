@@ -45,7 +45,10 @@ def recid(self, key, value):
 @model.over("agency_code", "^003")
 def agency_code(self, key, value):
     """Control number identifier."""
-    return value
+    if isinstance(value, str):
+        return value
+    else:
+        raise IgnoreKey("agency_code")
 
 
 @model.over("created_by", "^859__")

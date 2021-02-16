@@ -13,6 +13,7 @@ from copy import deepcopy
 
 from cds_ils.importer.overdo import CdsIlsOverdo
 
+from ..cds import get_helper_dict
 from ..cds import model as cds_base
 from ..ignore_fields import CDS_IGNORE_FIELDS
 from .document import model as books_base
@@ -72,19 +73,22 @@ class CDSJournal(CdsIlsOverdo):
         "960__c",
         "980__a",
         "980__b",
+        "555__a",
+        "85642x",
+        "866__z",
+        "938__i",
+        "866__c",
+        "85641a",
+        "246_3C",
+        "222__b",
+        "340__z",
+        "697C_a",
     }
 
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__
     _default_fields = {
         "_migration": {
-            "has_related": False,
-            "related": [],
-            "record_type": "journal",
-            "volumes": [],
-            "electronic_items": [],
-            "tags": [],
-            "item_medium": [],
-            "has_medium": False,
+            **get_helper_dict(record_type="journal")
         }
     }
 

@@ -12,10 +12,10 @@ from cds_ils.importer.base_model import Base
 from cds_ils.importer.base_model import model as model_base
 
 
-def get_helper_dict():
+def get_helper_dict(record_type):
     """Return migration extra data."""
     _helper_dict = dict(
-        record_type="document",
+        record_type=record_type,
         volumes=[],
         volumes_identifiers=[],
         volumes_urls=[],
