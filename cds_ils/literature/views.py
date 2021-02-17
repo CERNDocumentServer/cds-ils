@@ -26,7 +26,8 @@ def legacy_redirect(id):
         "description": PIDDoesNotExistRESTError.description,
     }
     try:
-        record = get_record_by_legacy_recid(Record, id)
+        legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+        record = get_record_by_legacy_recid(Record, legacy_pid_type, id)
     except PIDDoesNotExistError:
         return error
     schema = record["$schema"]

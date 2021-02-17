@@ -9,6 +9,7 @@
 """CDS-ILS migrator."""
 import logging
 
+from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_pidstore.errors import PIDDoesNotExistError
 
@@ -74,15 +75,14 @@ def find_document_for_item(item_json):
     """Returns the document from an item."""
     document = None
     document_cls = current_app_ils.document_record_cls
+    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
     try:
         document = get_record_by_legacy_recid(
-            document_cls, item_json["id_bibrec"]
+            document_cls, legacy_pid_type, item_json["id_bibrec"]
         )
     except PIDDoesNotExistError as e:
         try:
-            document = get_document_by_barcode(
-                item_json["barcode"]
-            )
+            document = get_document_by_barcode(item_json["barcode"])
         except DocumentMigrationError as e:
             error_logger.error(
                 "ITEM: {0} ERROR: Document {1} not found".format(
@@ -93,8 +93,8 @@ def find_document_for_item(item_json):
 
     if document is None:
         error_msg = "ITEM: {0} ERROR: Document {1} not found".format(
-                item_json["barcode"], item_json["id_bibrec"]
-            )
+            item_json["barcode"], item_json["id_bibrec"]
+        )
         error_logger.error(error_msg)
         raise ItemMigrationError(error_msg)
     return document

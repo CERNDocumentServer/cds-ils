@@ -12,6 +12,7 @@ import logging
 import uuid
 
 import click
+from flask import current_app
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.series.api import SeriesIdProvider
@@ -54,7 +55,12 @@ class CDSSeriesDumpLoader(object):
                 json_data["pid"] = provider.pid.pid_value
                 json_data = clean_created_by_field(json_data)
                 if rectype == "journal":
-                    legacy_recid_minter(json_data["legacy_recid"], record_uuid)
+                    legacy_pid_type = current_app.config[
+                        "CDS_ILS_RECORD_LEGACY_PID_TYPE"
+                    ]
+                    legacy_recid_minter(
+                        json_data["legacy_recid"], legacy_pid_type, record_uuid
+                    )
                 add_cover_metadata(json_data)
 
                 series = series_cls.create(json_data, record_uuid)
