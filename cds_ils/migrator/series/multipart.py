@@ -10,6 +10,7 @@
 
 import logging
 
+from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.indexer import RecordRelationIndexer
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION
@@ -51,7 +52,8 @@ def import_multivolume(json_record):
     volume_list = json_record["_migration"]["volumes"]
 
     try:
-        get_record_by_legacy_recid(series_cls, legacy_recid)
+        legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+        get_record_by_legacy_recid(series_cls, legacy_pid_type, legacy_recid)
         raise MultipartMigrationError(
             f"Multipart {legacy_recid} was already " f"processed. Aborting."
         )
@@ -143,8 +145,9 @@ def import_multipart(json_record):
         )
     try:
         # check if the document already exists
+        legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
         document_record = get_record_by_legacy_recid(
-            document_cls, document_json["legacy_recid"]
+            document_cls, legacy_pid_type, document_json["legacy_recid"]
         )
         # try to create relation (should fail if already exists)
         create_parent_child_relation(

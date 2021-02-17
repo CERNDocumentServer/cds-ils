@@ -84,7 +84,12 @@ class CDSDocumentDumpLoader(object):
         try:
             with db.session.begin_nested():
                 # checks if the document with this legacy_recid already exists
-                legacy_recid_minter(json_data["legacy_recid"], record_uuid)
+                legacy_pid_type = current_app.config[
+                    "CDS_ILS_RECORD_LEGACY_PID_TYPE"
+                ]
+                legacy_recid_minter(
+                    json_data["legacy_recid"], legacy_pid_type, record_uuid
+                )
 
                 provider = DocumentIdProvider.create(
                     object_type="rec",
@@ -102,13 +107,18 @@ class CDSDocumentDumpLoader(object):
             click.secho(e.original_exception.message, fg="red")
             raise e
         except PIDAlreadyExists as e:
-            allow_updates = \
-                current_app.config.get("CDS_ILS_MIGRATION_ALLOW_UPDATES")
+            allow_updates = current_app.config.get(
+                "CDS_ILS_MIGRATION_ALLOW_UPDATES"
+            )
             if not allow_updates:
                 raise e
             # update document if already exists with legacy_recid
-            document = get_record_by_legacy_recid(document_cls,
-                                                  json_data["legacy_recid"])
+            legacy_pid_type = current_app.config[
+                "CDS_ILS_RECORD_LEGACY_PID_TYPE"
+            ]
+            document = get_record_by_legacy_recid(
+                document_cls, legacy_pid_type, json_data["legacy_recid"]
+            )
             document.update(json_data)
             document.model.updated = timestamp.replace(tzinfo=None)
             document.commit()

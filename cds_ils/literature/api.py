@@ -8,9 +8,8 @@ from flask import current_app
 from invenio_pidstore.resolver import Resolver
 
 
-def get_record_by_legacy_recid(cls, pid_value):
+def get_record_by_legacy_recid(cls, legacy_pid_type, pid_value):
     """Get ils record by pid value and pid type."""
-    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
     resolver = Resolver(
         pid_type=legacy_pid_type,
         object_type="rec",

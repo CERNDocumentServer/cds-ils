@@ -12,8 +12,13 @@ import logging
 import uuid
 
 import click
+from flask import current_app
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
+from invenio_pidstore.errors import PIDAlreadyExists
+
+from cds_ils.literature.api import get_record_by_legacy_recid
+from cds_ils.minters import legacy_recid_minter
 
 cli_logger = logging.getLogger("migrator")
 
@@ -34,6 +39,17 @@ class CDSRecordDumpLoader(object):
         return record
 
     @classmethod
+    def get_legacy_pid_type_by_provider(cls, provider):
+        """Get mintable legacy pid type based on provider pid type."""
+        config = current_app.config
+        mintable_pids_map = {
+            "pitmid": config["CDS_ILS_ITEM_LEGACY_PID_TYPE"],
+            "illbid": config["CDS_ILS_BORROWING_REQ_LEGACY_PID_TYPE"],
+            "acqoid": config["CDS_ILS_ACQ_ORDER_LEGACY_PID_TYPE"],
+        }
+        return mintable_pids_map.get(provider.pid.pid_type, None)
+
+    @classmethod
     def create_record(
         cls, dump, model, pid_provider, legacy_id_key="legacy_recid"
     ):
@@ -47,6 +63,12 @@ class CDSRecordDumpLoader(object):
                     object_type="rec",
                     object_uuid=record_uuid,
                 )
+                legacy_pid_type = cls.get_legacy_pid_type_by_provider(provider)
+
+                if legacy_pid_type:
+                    legacy_recid_minter(
+                        dump[legacy_id_key], legacy_pid_type, record_uuid
+                    )
                 dump["pid"] = provider.pid.pid_value
                 record = model.create(dump, record_uuid)
                 record.commit()
@@ -69,3 +91,18 @@ class CDSRecordDumpLoader(object):
             click.secho(e.original_exception.message, fg="blue")
             db.session.rollback()
             raise e
+        except PIDAlreadyExists as e:
+            allow_updates = current_app.config.get(
+                "CDS_ILS_MIGRATION_ALLOW_UPDATES"
+            )
+            if not allow_updates:
+                raise e
+            if legacy_pid_type:
+                # update record if already exists with legacy_recid
+                record = get_record_by_legacy_recid(
+                    model, legacy_pid_type, dump[legacy_id_key]
+                )
+                record.update(dump)
+                record.commit()
+                db.session.commit()
+                return record

@@ -13,6 +13,7 @@ import logging
 
 import click
 from elasticsearch_dsl import Q
+from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
@@ -49,16 +50,8 @@ def import_items_from_json(dump_file, rectype="item"):
     """Load items from json file."""
     model, provider = model_provider_by_rectype(rectype)
     with click.progressbar(json.load(dump_file)) as bar:
-        error_logger.error(
-            "ITEMS: PROCESSING {0}".format(
-                dump_file
-            )
-        )
-        migrated_logger.warning(
-            "ITEMS: PROCESSING {0}".format(
-                dump_file
-            )
-        )
+        error_logger.error("ITEMS: PROCESSING {0}".format(dump_file))
+        migrated_logger.warning("ITEMS: PROCESSING {0}".format(dump_file))
         for record in bar:
             click.echo(
                 'Importing item "{0}({1})"...'.format(
@@ -86,9 +79,13 @@ def import_items_from_json(dump_file, rectype="item"):
                 continue
 
             # check if the item already there
-            item = get_item_by_barcode(record["barcode"],
-                                       raise_exception=False)
-            if item:
+            item = get_item_by_barcode(
+                record["barcode"], raise_exception=False
+            )
+            allow_updates = current_app.config.get(
+                "CDS_ILS_MIGRATION_ALLOW_UPDATES"
+            )
+            if item and not allow_updates:
                 click.secho(
                     "Item {0}) already exists with pid: {1}".format(
                         record["barcode"], item.pid

@@ -8,9 +8,8 @@ from flask import current_app
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 
-def legacy_recid_minter(legacy_recid, uuid):
+def legacy_recid_minter(legacy_recid, legacy_pid_type, uuid):
     """Legacy_recid minter."""
-    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
     PersistentIdentifier.create(
         pid_type=legacy_pid_type,
         pid_value=legacy_recid,

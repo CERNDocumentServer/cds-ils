@@ -16,6 +16,7 @@
 # 59 Temple Place, Suite 330, Boston, MA 02D111-1307, USA.
 """Tests for created relations betweeen records."""
 
+from flask import current_app
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
 from invenio_app_ils.series.api import SERIES_PID_TYPE, Series
 from invenio_db import db
@@ -73,7 +74,8 @@ def test_journal_relation_from_publication_info(app):
         SERIES_PID_TYPE, "pid", {"pid": journal_data["pid"]}
     )
     journal = Series.create(journal_data, record_uuid)
-    legacy_recid_minter(journal["legacy_recid"], record_uuid)
+    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+    legacy_recid_minter(journal["legacy_recid"], legacy_pid_type, record_uuid)
     db.session.commit()
     ri = RecordIndexer()
     ri.index(document)

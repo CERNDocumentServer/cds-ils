@@ -10,6 +10,7 @@
 
 import click
 from elasticsearch_dsl import Q
+from flask import current_app
 from invenio_app_ils.errors import RecordRelationsError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild, \
@@ -47,10 +48,11 @@ def create_parent_child_relation(parent, child, relation_type, volume):
 def check_for_special_series(record):
     """Link documents and serials (DESIGN REPORT)."""
     series_class = current_app_ils.series_record_cls
-    design_report = {"title": "DESIGN REPORT",
-                     "volume": None,
-                     "issn": None,
-                     }
+    design_report = {
+        "title": "DESIGN REPORT",
+        "volume": None,
+        "issn": None,
+    }
 
     def create_relation(pid):
         serial = series_class.get_record_by_pid(pid)
@@ -101,6 +103,7 @@ def migrate_document_siblings_relation():
 
     search = search_documents_with_siblings_relations()
     results = search.scan()
+    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
 
     extra_metadata = {}
     for document in results:
@@ -110,7 +113,7 @@ def migrate_document_siblings_relation():
             related_sibling = None
             try:
                 related_sibling = get_record_by_legacy_recid(
-                    document_class, relation["related_recid"]
+                    document_class, legacy_pid_type, relation["related_recid"]
                 )
             except PIDDoesNotExistError as e:
                 pass
@@ -119,7 +122,9 @@ def migrate_document_siblings_relation():
             if related_sibling is None:
                 try:
                     related_sibling = get_record_by_legacy_recid(
-                        series_class, relation["related_recid"]
+                        series_class,
+                        legacy_pid_type,
+                        relation["related_recid"],
                     )
                 except PIDDoesNotExistError as e:
                     continue
@@ -157,13 +162,14 @@ def migrate_series_relations():
     series_class = current_app_ils.series_record_cls
     search = search_series_with_relations()
     results = search.scan()
+    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
 
     for series in results:
         relations = series["_migration"]["related"]
 
         for relation in relations:
             related_series = get_record_by_legacy_recid(
-                series_class, relation["related_recid"]
+                series_class, legacy_pid_type, relation["related_recid"]
             )
 
             # validate relation type
@@ -207,6 +213,7 @@ def link_documents_and_serials():
     document_search = current_app_ils.document_search_cls()
     series_class = current_app_ils.series_record_cls
     series_search = current_app_ils.series_search_cls()
+    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
 
     def link_records_and_serial(record_cls, search):
         for hit in search.scan():
@@ -232,7 +239,7 @@ def link_documents_and_serials():
             record = record_cls.get_record_by_pid(hit.pid)
             for journal in hit["_migration"]["journal_record_legacy_recids"]:
                 serial = get_record_by_legacy_recid(
-                    series_class, journal["recid"]
+                    series_class, legacy_pid_type, journal["recid"]
                 )
                 create_parent_child_relation(
                     serial, record, SERIAL_RELATION, journal["volume"]
