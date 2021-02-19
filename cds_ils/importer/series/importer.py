@@ -20,7 +20,7 @@ from invenio_db import db
 
 from cds_ils.importer.errors import SeriesImportError
 from cds_ils.importer.series.api import search_series_by_isbn, \
-    search_series_by_issn
+    search_series_by_issn, search_series_by_title
 
 
 class SeriesImporter(object):
@@ -55,10 +55,10 @@ class SeriesImporter(object):
 
     def _update_field_identifiers(self, matched_series, json_series):
         """Update identifiers of a given series."""
-        existing_identifiers = matched_series["identifiers"]
+        existing_identifiers = matched_series.get("identifiers", [])
         new_identifiers = [
             elem
-            for elem in json_series["identifiers"]
+            for elem in json_series.get("identifiers", [])
             if elem not in existing_identifiers
         ]
 
@@ -114,6 +114,8 @@ class SeriesImporter(object):
             if identifier["scheme"] == "ISBN"
         ]
 
+        title = json_series.get("title", None)
+
         matches = []
         # check by issn first
 
@@ -126,6 +128,14 @@ class SeriesImporter(object):
             search = search_series_by_isbn(isbn)
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
+
+        if title:
+            search = search_series_by_title(title)
+            results = search.execute().hits
+            matches += [
+                x.pid for x in results
+                if x.pid not in matches and x.title == title
+            ]
 
         return matches
 

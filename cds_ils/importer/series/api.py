@@ -13,8 +13,8 @@ from invenio_app_ils.proxies import current_app_ils
 
 def search_series_by_isbn(isbn):
     """Find series by ISBN."""
-    document_search = current_app_ils.series_search_cls()
-    search = document_search.query(
+    series_search = current_app_ils.series_search_cls()
+    search = series_search.query(
         "bool",
         must=[
             Q("term", identifiers__scheme="ISBN"),
@@ -25,13 +25,20 @@ def search_series_by_isbn(isbn):
 
 
 def search_series_by_issn(issn):
-    """Find document by ISBN."""
-    document_search = current_app_ils.series_search_cls()
-    search = document_search.query(
+    """Find series by ISSN."""
+    series_search = current_app_ils.series_search_cls()
+    search = series_search.query(
         "bool",
         must=[
             Q("term", identifiers__scheme="ISSN"),
             Q("term", identifiers__value=issn),
         ],
     )
+    return search
+
+
+def search_series_by_title(title):
+    """Find series by title."""
+    series_search = current_app_ils.series_search_cls()
+    search = series_search.query("match", title=title)
     return search

@@ -155,7 +155,6 @@ export const config = {
   IMPORTER: {
     providers: [
       { key: 'springer', text: 'Springer', value: 'springer' },
-      { key: 'cds', text: 'CDS', value: 'cds' },
       { key: 'ebl', text: 'EBL', value: 'ebl' },
       { key: 'safari', text: 'Safari', value: 'safari' },
     ],

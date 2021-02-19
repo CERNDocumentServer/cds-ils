@@ -13,7 +13,7 @@ from invenio_db import db
 
 from cds_ils.importer.api import import_record, records_logger
 from cds_ils.importer.errors import LossyConversion, \
-    ProviderNotAllowedDeletion, RecordNotDeletable
+    ProviderNotAllowedDeletion, RecordNotDeletable, SeriesImportError
 from cds_ils.importer.models import ImporterAgent, ImporterMode, \
     ImporterTaskEntry, ImporterTaskLog
 from cds_ils.importer.parse_xml import get_records_list
@@ -80,7 +80,7 @@ def import_from_xml(sources, provider, mode, source_type, eager=True):
                         source_type=source_type, eager=True
                     )
                 except (LossyConversion, RecordNotDeletable,
-                        ProviderNotAllowedDeletion) as e:
+                        ProviderNotAllowedDeletion, SeriesImportError) as e:
                     click.secho("Failed to import entry", fg="red")
                     ImporterTaskEntry.create_failure(entry_data, e)
                     continue
