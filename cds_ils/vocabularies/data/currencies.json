@@ -2,26 +2,26 @@
   {
     "key": "CHF",
     "type": "currencies",
-    "text": "Swiss Franc"
+    "text": "CHF"
   },
   {
     "key": "EUR",
     "type": "currencies",
-    "text": "Euro"
+    "text": "EUR"
   },
   {
     "key": "GBP",
     "type": "currencies",
-    "text": "British Pound sterling"
+    "text": "GBP"
   },
   {
     "key": "USD",
     "type": "currencies",
-    "text": "US Dollar"
+    "text": "USD"
   },
   {
     "key": "YEN",
     "type": "currencies",
-    "text": "Yen"
+    "text": "YEN"
   }
 ]
