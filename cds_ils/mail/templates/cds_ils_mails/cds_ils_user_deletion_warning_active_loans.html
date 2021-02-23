@@ -21,16 +21,16 @@ Thank you!
 {% endblock %}
 
 {% block body_html %}
-Dear librarians,
+Dear librarians, <br/><br/>
 
-the user "{{ patron.name }} <{{ patron.email }}>" (id {{ patron.pid }}, CERN Person id {{patron.person_id}}) is not anymore in the CERN users directory.
-The system could not anonymize data and delete the user because active loans have been found.
+the user "{{ patron.name }} <{{ patron.email }}>" (id {{ patron.pid }}, CERN Person id {{patron.person_id}}) <b>is not anymore in the CERN users directory.</b><br/>
+The system could not anonymize data and delete the user because active loans have been found.<br/><br/>
 
-Please, take the action to cancel the loans of this user so that data can be successfully anonymized.
+Please, take the action to cancel the loans of this user so that data can be successfully anonymized.<br/><br/>
 
-See <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['patron'] }}/{{ patron.pid }}">patron details</a> in the backoffice area.
+See <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['patron'] }}/{{ patron.pid }}">patron details</a> in the backoffice area.<br/><br/>
 
-List of active loans:
+List of active loans:<br/>
 <ul>
 {% for loan in loans %}
  <li>
@@ -38,6 +38,6 @@ List of active loans:
  </li>
 {% endfor %}
 </ul>
-
-Thank you!
+<br/><br/>
+Thank you!<br/>
 {% endblock %}
