@@ -13,10 +13,10 @@ Please let us know if you still need this title and we could process a new reque
 
 
 {% block body_html %}
-Dear {{ patron.name }},
+Dear {{ patron.name }}, <br/><br/>
 
-your loan extension for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has been declined.
-Please bring/send back the book to us.
+your loan extension for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has been <b>declined</b>. <br/>
+Please bring/send back the book to us.<br/><br/>
 
-Please let us know if you still need this title and we could process a new request for you.
+Please let us know if you still need this title and we could process a new request for you. <br/>
 {% endblock %}

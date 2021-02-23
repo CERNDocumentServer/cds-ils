@@ -17,15 +17,16 @@ The book will be sent by internal mail to your office mailbox. Delivery estimate
 {% endblock %}
 
 {% block body_html %}
-Dear {{ patron.name }},
+Dear {{ patron.name }},<br/><br/>
 
-your loan request for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has been received.
-
-You selected: "{{ circulation_delivery_methods[loan.delivery.method] }}"
-
+your loan request for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has been <b>received</b>.
+<br/><br/>
+You selected: <b>"{{ circulation_delivery_methods[loan.delivery.method] }}"</b>
+<br/><br/>
 {% if loan.delivery.method == "PICKUP" -%}
-You will receive an email as soon as the book is ready for you to pick up at the Library desk.
+You will receive an email as soon as the book is ready for you to pick up at the Library desk. <br/>
 {% elif loan.delivery.method == "DELIVERY" -%}
-The book will be sent by internal mail to your office mailbox. Delivery estimate is 2-3 working days maximum.
+The book will be sent by internal mail to your office mailbox. Delivery estimate is 2-3 working days maximum. <br/>
 {% endif -%}
 {% endblock %}
+
