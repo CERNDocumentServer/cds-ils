@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CLI for CDS-ILS."""
+
 import json
 import os
 import pathlib
@@ -78,8 +79,8 @@ def pages():
         ),
         Page(
             url="/terms",
-            title="Terms",
-            description="Terms",
+            title="Terms and Conditions",
+            description="Terms and Conditions",
             content=page_data("terms.html"),
             template_name="invenio_pages/dynamic.html",
         ),

@@ -21,7 +21,7 @@ export const Footer = ({ ...props }) => {
                 </List.Item>
                 <List.Item>
                   <Link to={getStaticPageByName('terms').route}>
-                    Terms and Privacy
+                    Terms and Conditions
                   </Link>
                 </List.Item>
               </List>
