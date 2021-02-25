@@ -7,30 +7,17 @@
 
 """Test loan migration."""
 import os
-import time
 
 import pytest
 from invenio_app_ils.circulation.indexer import LoanIndexer
 from invenio_circulation.api import Loan
+from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_circulation.proxies import current_circulation
-from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_search import current_search
 
 from cds_ils.migrator.errors import LoanMigrationError
 from cds_ils.migrator.loans.api import import_loans_from_json
-
-
-def reindex_loans():
-    query = (x[0] for x in PersistentIdentifier.query.filter_by(
-        object_type='rec', status=PIDStatus.REGISTERED
-    ).filter(
-        PersistentIdentifier.pid_type.in_(("loanid",))
-    ).values(
-        PersistentIdentifier.pid_value
-    ))
-
-    for loan_pid in query:
-        LoanIndexer().index(Loan.get_record_by_pid(loan_pid))
+from tests.migrator.utils import reindex_record
 
 
 def test_import_loan_returned(test_data_migration, legacy_borrower_id,
@@ -38,11 +25,11 @@ def test_import_loan_returned(test_data_migration, legacy_borrower_id,
     datadir = os.path.join(os.path.dirname(__file__), "data")
     file = (open(os.path.join(datadir, "loans.json"), "r"),)
     import_loans_from_json(file)
-    reindex_loans()
+    reindex_record(CIRCULATION_LOAN_PID_TYPE, Loan, LoanIndexer())
     current_search.flush_and_refresh(index="*")
-    LoanSearch = current_circulation.loan_search_cls
+    loan_search = current_circulation.loan_search_cls
     search = (
-        LoanSearch()
+        loan_search()
             .filter("term", document_pid="docid-1")
             .filter("term", state="ITEM_RETURNED")
     )
@@ -52,7 +39,7 @@ def test_import_loan_returned(test_data_migration, legacy_borrower_id,
     assert results[0].start_date == "2010-09-29T00:00:00"
 
     search = (
-        LoanSearch()
+        loan_search()
             .filter("term", document_pid="docid-1")
             .filter("term", state="ITEM_ON_LOAN")
             .filter("term", item_pid__value="itemid-1")

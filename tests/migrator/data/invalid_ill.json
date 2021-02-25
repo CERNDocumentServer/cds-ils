@@ -1,0 +1,25 @@
+[
+  {
+    "id_crcLIBRARY": 1,
+    "due_date": "2021-01-04T00:00:00",
+    "period_of_interest_from": "2020-10-05T00:00:00",
+    "library_notes": "{'2020-11-13 11:38:52': 'ETH invoice October 2020 - total CHF 354.70', '2020-10-05 08:33:07': 'to send via internal mail'}",
+    "expected_date": "2020-10-12T00:00:00",
+    "request_date": "2020-10-05T00:00:00",
+    "item_info": "{'publisher': 'RSC', 'isbn': '9780854042319', 'title': 'Powder Diffraction: Theory and Practice', 'authors': 'Editors: R E Dinnebier, S J L Billinge', 'edition': '', 'place': '', 'year': '2008'}",
+    "barcode": "No barcode associated",
+    "id_crcBORROWER": 2,
+    "arrival_date": "2020-10-06T00:00:00",
+    "budget_code": "",
+    "period_of_interest_to": "2021-10-05T00:00:00",
+    "request_type": "book",
+    "cost": "CHF 11.15",
+    "status": "on loan",
+    "legacy_id": "55930",
+    "overdue_letter_number": 0,
+    "borrower_comments": null,
+    "only_this_edition": "No",
+    "return_date": null,
+    "overdue_letter_date": null
+  }
+]

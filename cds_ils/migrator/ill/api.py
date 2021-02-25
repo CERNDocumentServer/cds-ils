@@ -51,6 +51,7 @@ requested     -> REQUESTED - migrated - 8 results
 """
 
 import json
+import logging
 
 import click
 from elasticsearch_dsl import Q
@@ -63,6 +64,9 @@ from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
     get_cost, get_date, get_migration_document_pid, get_patron_pid, \
     model_provider_by_rectype
+
+migrated_logger = logging.getLogger("migrated_records")
+error_logger = logging.getLogger("records_errored")
 
 
 def get_status(record):
@@ -114,6 +118,16 @@ def get_type(record):
         ill_type = "PHYSICAL_COPY"
 
     return ill_type
+
+
+def validate_ill(record):
+    """Validate borrowing request."""
+    has_anonymous_patron = record["patron_pid"] in ["-1", "-2"]
+
+    if has_anonymous_patron and record["status"] in ["ON_LOAN", "REQUESTED"]:
+        raise BorrowingRequestError(
+            f"Order {record['legacy_id']} "
+            f"has anonymous patron while being in active state.")
 
 
 def clean_record_json(record):
@@ -169,10 +183,12 @@ def clean_record_json(record):
     if budget_code:
         new_record.update(budget_code=budget_code)
 
+    validate_ill(new_record)
+
     return new_record
 
 
-def import_ill_borrowing_requests_from_json(dump_file):
+def import_ill_borrowing_requests_from_json(dump_file, raise_exception=False):
     """Imports borrowing requests from JSON data files."""
     dump_file = dump_file[0]
     model, provider = model_provider_by_rectype("borrowing-request")
@@ -181,12 +197,19 @@ def import_ill_borrowing_requests_from_json(dump_file):
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
         for record in input_data:
-            ils_record = import_record(
-                clean_record_json(record),
-                model,
-                provider,
-                legacy_id_key="legacy_id",
-            )
-            ils_records.append(ils_record)
+            try:
+                ils_record = import_record(
+                    clean_record_json(record),
+                    model,
+                    provider,
+                    legacy_id_key="legacy_id",
+                )
+                ils_records.append(ils_record)
+            except Exception as e:
+                error_logger.error(
+                    "ORDER: {0} ERROR: {1}".format(record["legacy_id"], str(e))
+                )
+                db.session.rollback()
+                if raise_exception:
+                    raise e
         db.session.commit()
-    bulk_index_records(ils_records)

@@ -1,0 +1,25 @@
+[
+  {
+    "id_crcLIBRARY": 1,
+    "due_date": null,
+    "period_of_interest_from": "2020-11-25T00:00:00",
+    "library_notes": "{'2020-11-25 15:20:30': 'ordered via Joelle'}",
+    "expected_date": "2020-12-02T00:00:00",
+    "request_date": "2020-11-25T00:00:00",
+    "item_info": "{'recid': 1}",
+    "barcode": "",
+    "id_crcBORROWER": 2,
+    "arrival_date": null,
+    "budget_code": "cash",
+    "period_of_interest_to": "2021-11-25T00:00:00",
+    "request_type": "acq-book",
+    "cost": "",
+    "status": "on order",
+    "legacy_id": "56277",
+    "overdue_letter_number": 0,
+    "borrower_comments": null,
+    "only_this_edition": "No",
+    "return_date": null,
+    "overdue_letter_date": null
+  }
+]

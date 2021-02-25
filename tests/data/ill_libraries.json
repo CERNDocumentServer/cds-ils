@@ -1,6 +1,7 @@
 [
   {
     "name": "Library 1",
-    "pid": "illlid-1"
+    "pid": "illlid-1",
+    "legacy_ids": ["1"]
   }
 ]
