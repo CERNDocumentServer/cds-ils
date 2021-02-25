@@ -64,8 +64,10 @@ def create_unknown_document():
     }
 
     return create_default_record(
-        data, current_app_ils.document_record_cls,
-        current_app_ils.document_indexer, DOCUMENT_PID_TYPE
+        data,
+        current_app_ils.document_record_cls,
+        current_app_ils.document_indexer,
+        DOCUMENT_PID_TYPE,
     )
 
 
@@ -81,8 +83,10 @@ def create_unknown_library():
     }
 
     return create_default_record(
-        data, current_ils_ill.library_record_cls,
-        current_ils_ill.library_indexer(), LIBRARY_PID_TYPE
+        data,
+        current_ils_ill.library_record_cls,
+        current_ils_ill.library_indexer(),
+        LIBRARY_PID_TYPE,
     )
 
 
@@ -98,8 +102,10 @@ def create_unknown_vendor():
     }
 
     return create_default_record(
-        data, current_ils_acq.vendor_record_cls,
-        current_ils_acq.vendor_indexer, VENDOR_PID_TYPE
+        data,
+        current_ils_acq.vendor_record_cls,
+        current_ils_acq.vendor_indexer,
+        VENDOR_PID_TYPE,
     )
 
 
@@ -112,8 +118,10 @@ def create_design_report():
     }
 
     return create_default_record(
-        data, current_app_ils.series_record_cls,
-        current_app_ils.series_indexer, SERIES_PID_TYPE
+        data,
+        current_app_ils.series_record_cls,
+        current_app_ils.series_indexer,
+        SERIES_PID_TYPE,
     )
 
 

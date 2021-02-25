@@ -211,15 +211,23 @@ def borrowers(source):
 
 @migration.command()
 @click.argument("source", type=click.File("r"), nargs=-1)
+@click.option(
+    "--fail-on-exceptions",
+    is_flag=True,
+)
 @with_appcontext
-def loans(source):
+def loans(source, fail_on_exceptions):
     """Migrate loans from CDS legacy."""
-    import_loans_from_json(source)
+    import_loans_from_json(source, fail_on_exceptions)
     reindex_pidtype("loanid")
 
 
 @migration.command()
 @click.argument("source", type=click.File("r"), nargs=-1)
+@click.option(
+    "--fail-on-exceptions",
+    is_flag=True,
+)
 @with_appcontext
 def loan_requests(source):
     """Migrate loan_requests from CDS legacy."""

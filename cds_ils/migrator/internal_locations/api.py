@@ -48,7 +48,7 @@ def import_internal_locations_from_json(
                     record["legacy_ids"], rectype
                 )
             )
-            if include_ids is None or record["legacy_id"] in include_ids:
+            if include_ids is None or record["legacy_ids"] in include_ids:
                 # remove the library type as it is not a part of the data model
                 library_type = record.pop("type", None)
                 if not isinstance(record["legacy_ids"], list):

@@ -27,11 +27,123 @@ migrated_logger = logging.getLogger("migrated_records")
 records_logger = logging.getLogger("records_errored")
 
 
-def import_loans_from_json(dump_file):
+def validate_user(loan_record):
+    """Validate loan patron."""
+    user = get_user_by_legacy_id(loan_record["id_crcBORROWER"])
+    if not user:
+        # user was deleted, fallback to the AnonymousUser
+        anonymous = current_app.config["ILS_PATRON_ANONYMOUS_CLASS"]
+        return anonymous.id
+    else:
+        return user.pid
+
+
+def validate_item(record):
+    """Validate loan item."""
+    try:
+        return get_item_by_barcode(record["item_barcode"])
+    except ItemMigrationError:
+        records_logger.error(
+            "LOAN: {0}, ERROR: barcode {1} not found.".format(
+                record["legacy_id"], record["item_barcode"]
+            )
+        )
+
+
+def validate_document_pid(record, item):
+    """Validate loan document pid."""
+    document_class = current_app_ils.document_record_cls
+    # additional check if the loan refers to the same document
+    # as it is already attached to the item
+    document_pid = item.get("document_pid")
+
+    document = document_class.get_record_by_pid(document_pid)
+    if record["legacy_document_id"] is None:
+        records_logger.error(
+            "LOAN: {0}, ERROR: document_legacy_recid {1} not found.".format(
+                record["legacy_id"], record["legacy_document_id"]
+            )
+        )
+        raise LoanMigrationError(
+            "no document id for loan {}".format(record["legacy_id"])
+        )
+    if document.get("legacy_recid", None) != record["legacy_document_id"]:
+        # this might happen when record merged or migrated,
+        # the already migrated document should take precedence
+        records_logger.error(
+            "inconsistent document dependencies for loan {}".format(
+                record["legacy_id"]
+            )
+        )
+        raise LoanMigrationError(
+            "inconsistent document dependencies for loan {}".format(
+                record["legacy_id"]
+            ),
+        )
+    return document_pid
+
+
+def provide_valid_loan_state_metadata(record, loan_dict):
+    """Provide correct loan metadata."""
+    if record["status"] == "on loan":
+        loan_dict.update(
+            dict(
+                start_date=record["start_date"],
+                end_date=record["end_date"],
+                state="ITEM_ON_LOAN",
+                transaction_date=record["start_date"],
+            )
+        )
+    elif record["status"] == "returned":
+        loan_dict.update(
+            dict(
+                transaction_date=record["returned_on"],
+                start_date=record["start_date"],
+                end_date=record["returned_on"],
+                state="ITEM_RETURNED",
+            )
+        )
+    # loan request
+    elif record["status"] == "waiting" or record["status"] == "pending":
+        loan_dict.update(
+            dict(
+                transaction_date=record["request_date"],
+                request_start_date=record["period_of_interest_from"],
+                request_expire_date=record["period_of_interest_to"],
+                state="PENDING",
+            )
+        )
+    # done loan requests became loans, and the rest we can ignore
+    elif record["status"] in ["proposed", "cancelled", "done"]:
+        return {}
+    else:
+        raise LoanMigrationError(
+            "Unknown loan state for record {0}: {1}".format(
+                record["legacy_id"], record["state"]
+            )
+        )
+    return loan_dict
+
+
+def validate_loan(new_loan_dict, record):
+    """Validate loan."""
+    if (
+        new_loan_dict["patron_pid"] in ["-1", "-2"]
+        and new_loan_dict["state"]
+        in current_app.config["CIRCULATION_STATES_LOAN_ACTIVE"]
+    ):
+        raise LoanMigrationError(
+            "Loan on item {0} has ongoing state "
+            "while the patron is anonymous (ccid:{1})".format(
+                record["item_barcode"], record["id_crcBORROWER"]
+            )
+        )
+
+
+def import_loans_from_json(dump_file, raise_exceptions=False):
     """Imports loan objects from JSON."""
     dump_file = dump_file[0]
-    document_class = current_app_ils.document_record_cls
-    loans = []
+
     (
         default_location_pid_value,
         _,
@@ -39,54 +151,22 @@ def import_loans_from_json(dump_file):
     with click.progressbar(json.load(dump_file)) as bar:
         for record in bar:
             click.echo('Importing loan "{0}"...'.format(record["legacy_id"]))
-            user = get_user_by_legacy_id(record["id_crcBORROWER"])
-            if not user:
-                # user was deleted, fallback to the AnonymousUser
-                anonym = current_app.config["ILS_PATRON_ANONYMOUS_CLASS"]
-                patron_pid = anonym.id
-            else:
-                patron_pid = user.pid
+
             try:
-                item = get_item_by_barcode(record["item_barcode"])
-            except ItemMigrationError:
-                records_logger.error(
-                    "LOAN: {0}, ERROR: barcode {1} not found.".format(
-                        record["legacy_id"], record["item_barcode"]
-                    )
-                )
+                patron_pid = validate_user(record)
+
+                item = validate_item(record)
+                document_pid = validate_document_pid(record, item)
+
+            except LoanMigrationError as e:
+                if raise_exceptions:
+                    raise e
                 continue
-                # Todo uncomment when more data
-                # raise LoanMigrationError(
-                #    'no item found with the barcode {} for loan {}'.format(
-                #        record['item_barcode'], record['legacy_id']))
+            except ItemMigrationError as e:
+                if raise_exceptions:
+                    raise e
+                continue
 
-            # additional check if the loan refers to the same document
-            # as it is already attached to the item
-            document_pid = item.get("document_pid")
-
-            document = document_class.get_record_by_pid(document_pid)
-            if record["legacy_document_id"] is None:
-                records_logger.error(
-                    "LOAN: {0}, ERROR: document_legacy_recid {1} not found."
-                    .format(
-                        record["legacy_id"], record["legacy_document_id"]
-                    )
-                )
-                raise LoanMigrationError(
-                    "no document id for loan {}".format(record["legacy_id"])
-                )
-            if (
-                document.get("legacy_recid", None)
-                != record["legacy_document_id"]
-            ):
-                # this might happen when record merged or migrated,
-                # the already migrated document should take precedence
-                click.secho(
-                    "inconsistent document dependencies for loan {}".format(
-                        record["legacy_id"]
-                    ),
-                    fg="blue",
-                )
             # create a loan
             loan_dict = dict(
                 patron_pid=str(patron_pid),
@@ -99,45 +179,16 @@ def import_loans_from_json(dump_file):
                 },
             )
 
-            if record["status"] == "on loan":
-                loan_dict.update(
-                    dict(
-                        start_date=record["start_date"],
-                        end_date=record["end_date"],
-                        state="ITEM_ON_LOAN",
-                        transaction_date=record["start_date"],
-                    )
-                )
-            elif record["status"] == "returned":
-                loan_dict.update(
-                    dict(
-                        transaction_date=record["returned_on"],
-                        start_date=record["start_date"],
-                        end_date=record["returned_on"],
-                        state="ITEM_RETURNED",
-                    )
-                )
-            # loan request
-            elif (
-                record["status"] == "waiting" or record["status"] == "pending"
-            ):
-                loan_dict.update(
-                    dict(
-                        transaction_date=record["request_date"],
-                        request_start_date=record["period_of_interest_from"],
-                        request_expire_date=record["period_of_interest_to"],
-                        state="PENDING",
-                    )
-                )
-            # done loan requests became loans, and the rest we can ignore
-            elif record["status"] in ["proposed", "cancelled", "done"]:
+            loan_dict = provide_valid_loan_state_metadata(record, loan_dict)
+            if not loan_dict:
                 continue
-            else:
-                raise LoanMigrationError(
-                    "Unkown loan state for record {0}: {1}".format(
-                        record["legacy_id"], record["state"]
-                    )
-                )
+            try:
+                validate_loan(loan_dict, record)
+            except LoanMigrationError as e:
+                if raise_exceptions:
+                    raise e
+                continue
+
             model, provider = model_provider_by_rectype("loan")
             try:
                 loan = import_record(
@@ -154,5 +205,3 @@ def import_loans_from_json(dump_file):
                 records_logger.error(
                     "LOAN: {0} ERROR: {1}".format(record["legacy_id"], str(e))
                 )
-
-    return loans

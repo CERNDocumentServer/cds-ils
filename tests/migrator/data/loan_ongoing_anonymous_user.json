@@ -1,0 +1,17 @@
+[
+  {
+    "item_barcode": "123456789-1",
+    "status": "on loan",
+    "overdue_letter_date": "2020-07-07T07:04:57",
+    "end_date": "2020-09-01T00:00:00",
+    "extension_count": 2,
+    "overdue_letter_number": 0,
+    "legacy_document_id": 1,
+    "notes": "",
+    "id_crcBORROWER": 1,
+    "returned_on": null,
+    "legacy_id": 124,
+    "type": "normal",
+    "start_date": "2009-07-07T00:00:00"
+  }
+]

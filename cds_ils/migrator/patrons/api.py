@@ -35,13 +35,22 @@ def import_users_from_json(dump_file):
                     record["id"], record["email"]
                 )
             )
-            user = get_user_by_person_id(record["ccid"])
+            ccid = record.get('ccid')
+            if not ccid:
+                click.secho(
+                    "User {0}({1}) does not have ccid".format(
+                        record["id"], record["email"]
+                    ),
+                    fg="magenta",
+                )
+                continue
+            user = get_user_by_person_id(ccid)
             if not user:
                 click.secho(
                     "User {0}({1}) not synced via LDAP".format(
                         record["id"], record["email"]
                     ),
-                    fg="red",
+                    fg="yellow",
                 )
                 continue
                 # todo uncomment when more data
@@ -57,8 +66,9 @@ def import_users_from_json(dump_file):
                 if "legacy_id" in extra_data:
                     del extra_data["legacy_id"]
                 # add legacy_id information
-                account.extra_data.update(legacy_id=str(record["id"]),
-                                          **extra_data)
+                account.extra_data.update(
+                    legacy_id=str(record["id"]), **extra_data
+                )
                 db.session.add(account)
                 patron = Patron(user.id)
                 PatronIndexer().index(patron)
