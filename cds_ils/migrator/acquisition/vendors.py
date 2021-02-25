@@ -35,9 +35,9 @@ WILEY_DE = 333
 WILEY_UK = 444
 WILEY_US = 555
 WILEY_MAPER = {
-    'EUR': WILEY_DE,
-    'GBP': WILEY_UK,
-    'USD': WILEY_US,
+    "EUR": WILEY_DE,
+    "GBP": WILEY_UK,
+    "USD": WILEY_US,
 }
 
 
@@ -45,8 +45,8 @@ def get_vendor_pid_by_legacy_id(legacy_id, grand_total):
     """Search for vendor by legacy id."""
     # Check for Wiley vendor to split it depending on the currency
     if legacy_id == ORIGINAL_WILEY_ID:
-        if grand_total and grand_total['currency']:
-            legacy_id = WILEY_MAPER.get(grand_total['currency'], DEFAULT_WILEY)
+        if grand_total and grand_total["currency"]:
+            legacy_id = WILEY_MAPER.get(grand_total["currency"], DEFAULT_WILEY)
         else:
             legacy_id = DEFAULT_WILEY
 

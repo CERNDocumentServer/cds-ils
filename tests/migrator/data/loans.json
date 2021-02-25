@@ -1,0 +1,32 @@
+[
+  {
+    "item_barcode": "123456789-1",
+    "status": "returned",
+    "overdue_letter_date": "2011-01-07T02:19:03",
+    "end_date": null,
+    "extension_count": 4,
+    "overdue_letter_number": 0,
+    "legacy_document_id": 1,
+    "notes": "{}",
+    "id_crcBORROWER": 1,
+    "returned_on": "2011-01-17",
+    "legacy_id": 3740,
+    "type": "normal",
+    "start_date": "2010-09-29T00:00:00"
+  },
+    {
+    "item_barcode": "123456789-1",
+    "status": "on loan",
+    "overdue_letter_date": "2020-07-07T07:04:57",
+    "end_date": "2020-09-01T00:00:00",
+    "extension_count": 2,
+    "overdue_letter_number": 0,
+    "legacy_document_id": 1,
+    "notes": "",
+    "id_crcBORROWER": 1,
+    "returned_on": null,
+    "legacy_id": 124,
+    "type": "normal",
+    "start_date": "2009-07-07T00:00:00"
+  }
+]

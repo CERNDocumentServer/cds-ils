@@ -10,7 +10,8 @@
     "language": ["ENG"],
     "edition": "ed. 1",
     "publication_year": "2020",
-    "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }]
+    "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }],
+    "legacy_recid": 1
   },
   {
     "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
