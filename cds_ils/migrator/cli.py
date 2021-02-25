@@ -16,7 +16,7 @@ from flask.cli import with_appcontext
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
 from cds_ils.migrator.acquisition.vendors import import_vendors_from_json
 from cds_ils.migrator.api import import_documents_from_dump
-from cds_ils.migrator.default_records import create_unknown_records
+from cds_ils.migrator.default_records import create_default_records
 from cds_ils.migrator.document_requests.api import \
     import_document_requests_from_json
 from cds_ils.migrator.eitems.api import migrate_ebl_links, \
@@ -172,33 +172,35 @@ def document_requests(source):
 
 @migration.command()
 @click.argument("source", type=click.File("r"), nargs=-1)
+@click.option(
+    "--fail-on-exceptions",
+    is_flag=True,
+)
 @with_appcontext
-def borrowing_requests(source):
+def borrowing_requests(source, fail_on_exceptions):
     """Migrate borrowing requests from CDS legacy."""
     with commit():
-        import_ill_borrowing_requests_from_json(source)
+        import_ill_borrowing_requests_from_json(source, fail_on_exceptions)
 
 
 @migration.command()
 @click.argument("source", type=click.File("r"), nargs=-1)
 @click.option(
-    "--include",
-    "-i",
-    help="Comma-separated list of legacy acquisition ids to include",
-    default=None,
+    "--fail-on-exceptions",
+    is_flag=True,
 )
 @with_appcontext
-def acquisition_orders(source, include):
+def acquisition_orders(source, fail_on_exceptions):
     """Migrate acquisition orders and document requests from CDS legacy."""
     with commit():
-        import_orders_from_json(source, include=include)
+        import_orders_from_json(source, fail_on_exceptions)
 
 
 @migration.command()
 @with_appcontext
 def create_unknown_reference_records():
     """Create necessary records for required properties."""
-    create_unknown_records()
+    create_default_records()
 
 
 @migration.command()

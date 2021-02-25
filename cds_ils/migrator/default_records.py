@@ -125,7 +125,7 @@ def create_design_report():
     )
 
 
-def create_unknown_records():
+def create_default_records():
     """Create migration records."""
     create_unknown_document()
     create_unknown_vendor()

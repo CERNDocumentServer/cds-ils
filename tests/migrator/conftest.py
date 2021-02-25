@@ -10,7 +10,9 @@ import time
 
 import pytest
 from flask import current_app
+from invenio_app_ils.acquisition.api import VENDOR_PID_TYPE, Vendor
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
+from invenio_app_ils.ill.api import LIBRARY_PID_TYPE, Library
 from invenio_app_ils.internal_locations.api import \
     INTERNAL_LOCATION_PID_TYPE, InternalLocation
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
@@ -19,6 +21,7 @@ from invenio_indexer.api import RecordIndexer
 from invenio_oauthclient.models import RemoteAccount
 from invenio_search import current_search
 
+from cds_ils.migrator.default_records import create_default_records
 from cds_ils.patrons.api import Patron
 from cds_ils.patrons.indexer import PatronIndexer
 from tests.helpers import _create_records, load_json_from_datadir
@@ -56,6 +59,12 @@ def test_data_migration(app, db, es_clear, patron1):
     data = load_json_from_datadir("items.json")
     items = _create_records(db, data, Item, ITEM_PID_TYPE)
 
+    data = load_json_from_datadir("ill_libraries.json")
+    ill_libraries = _create_records(db, data, Library, LIBRARY_PID_TYPE)
+
+    data = load_json_from_datadir("vendors.json")
+    vendors = _create_records(db, data, Vendor, VENDOR_PID_TYPE)
+
     # index
     ri = RecordIndexer()
     for rec in (
@@ -63,7 +72,11 @@ def test_data_migration(app, db, es_clear, patron1):
         + int_locs
         + documents
         + items
+        + ill_libraries
+        + vendors
     ):
         ri.index(rec)
+
+    create_default_records()
 
     current_search.flush_and_refresh(index="*")

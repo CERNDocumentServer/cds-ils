@@ -65,7 +65,6 @@ from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
 migrated_logger = logging.getLogger("migrated_records")
 error_logger = logging.getLogger("records_errored")
 
-
 DEFAULT_ITEM_MEDIUM = "ELECTRONIC"
 LIBRARIAN_IDS = [
     5,
@@ -162,9 +161,24 @@ def create_order_line(record):
         new_order_line.update(total_price=total_price)
 
     if record.get("budget_code"):
-        new_order_line.update(budget_code=record.get("budget_code"))
+        new_order_line.update(payment_mode="BUDGET_CODE",
+                              budget_code=record.get("budget_code"))
 
     return new_order_line
+
+
+def validate_order(record):
+    """Validate order."""
+    has_anonymous_patron = False
+
+    for order_line in record["order_lines"]:
+        if order_line["patron_pid"] in ["-1", "-2"]:
+            has_anonymous_patron = True
+
+    if has_anonymous_patron and record["status"] in ["PENDING", "ORDERED"]:
+        raise AcqOrderError(
+            f"Order {record['legacy_id']} "
+            f"has anonymous patron while being in active state.")
 
 
 def migrate_order(record):
@@ -205,13 +219,14 @@ def migrate_order(record):
     if notes:
         new_order.update(notes=notes)
 
+    validate_order(new_order)
+
     return new_order
 
 
-def import_orders_from_json(dump_file, include=None):
+def import_orders_from_json(dump_file, raise_exceptions=False):
     """Imports orders from JSON data files."""
     dump_file = dump_file[0]
-
     click.echo("Importing acquisition orders ..")
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
@@ -230,6 +245,7 @@ def import_orders_from_json(dump_file, include=None):
                     "ORDER: {0} ERROR: {1}".format(record["legacy_id"], str(e))
                 )
                 db.session.rollback()
+                if raise_exceptions:
+                    raise e
 
         db.session.commit()
-    bulk_index_records(ils_records)
