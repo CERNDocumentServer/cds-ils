@@ -10,9 +10,19 @@ a.logo {
    font-size:inherit;
 }
 
+@media only screen and (max-width: 440px) {
+  .right.menu {
+     font-size: 0.8em;
+  }
+}
+
 @media only screen and (max-width: 400px) {
   .logo.media-font-size {
      font-size: small;
+  }
+  .truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
   }
 }
 

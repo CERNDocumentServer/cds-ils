@@ -43,7 +43,7 @@ const DropdownItems = () => {
 export const RightMenuItem = () => {
   return (
     <Menu.Item>
-      <Media greaterThanOrEqual="tablet">
+      <Media greaterThanOrEqual="computer">
         <Dropdown item text="Help" icon="caret down">
           <Dropdown.Menu>
             <DropdownItems />
@@ -56,7 +56,7 @@ export const RightMenuItem = () => {
 
 export const RightMenuItemMobile = () => {
   return (
-    <Media at="mobile">
+    <Media lessThan="computer">
       <Dropdown item icon="help">
         <Dropdown.Menu>
           <DropdownItems />
