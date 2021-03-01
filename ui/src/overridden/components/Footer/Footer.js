@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Container, Grid, Header, Image, List } from 'semantic-ui-react';
 
 export const Footer = ({ ...props }) => {
-  const cernLogo = process.env.PUBLIC_URL + '/cern-logo-white-150.png';
+  const cernLogo = process.env.PUBLIC_URL + '/images/cern-logo-white-150.png';
   return (
     <footer>
       <Container fluid className="footer-upper">
