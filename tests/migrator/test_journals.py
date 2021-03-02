@@ -121,7 +121,8 @@ def test_abbreviated_title(app):
             </datafield>
             """,
             {
-                "abbreviated_title": "Bull. CERN Comm.",
+                "alternative_titles": [
+                    {"type": "ABBREVIATION", "value": "Bull. CERN Comm."}]
             },
         )
 
