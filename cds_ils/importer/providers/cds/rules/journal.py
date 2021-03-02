@@ -58,11 +58,14 @@ def alternative_titles_journal(self, key, value):
     return _alternative_titles
 
 
-@model.over("abbreviated_title", "^210__")
-@out_strip
+@model.over("alternative_titles", "^210__")
+@filter_list_values
 def abbreviated_title(self, key, value):
     """Translates abbreviated title field."""
-    return clean_val("a", value, str, req=True)
+    _alternative_titles = self.get("alternative_titles", [])
+    sub_a = clean_val("a", value, str, req=True)
+    _alternative_titles.append({"type": "ABBREVIATION", 'value': sub_a})
+    return _alternative_titles
 
 
 @model.over("identifiers", "^022__")

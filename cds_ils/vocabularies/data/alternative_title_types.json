@@ -11,6 +11,11 @@
   },
   {
     "type": "alternative_title_type",
+    "key": "ABBREVIATION",
+    "text": "Abbreviation"
+  },
+  {
+    "type": "alternative_title_type",
     "key": "TRANSLATED_TITLE",
     "text": "Translated Title"
   },
