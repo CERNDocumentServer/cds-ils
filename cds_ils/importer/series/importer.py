@@ -131,9 +131,8 @@ class SeriesImporter(object):
 
         if title:
             search = search_series_by_title(title)
-            results = search.execute().hits
             matches += [
-                x.pid for x in results
+                x.pid for x in search.scan()
                 if x.pid not in matches and x.title == title
             ]
 
