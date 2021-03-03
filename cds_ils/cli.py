@@ -316,10 +316,8 @@ def create_demo_docs(docs_path):
 
 def get_pids(search):
     """Get a list of pids of the search results."""
-    s = search()
-    results = s.execute()
     pids = []
-    for hit in results.hits:
+    for hit in search().scan():
         pids.append(hit["pid"])
 
     return pids

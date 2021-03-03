@@ -69,12 +69,11 @@ class PatronLoansResource(ContentNegotiatedMethodView):
         ]
         active_loans = search_by_patron_item_or_document(
             patron["id"], filter_states=active_loan_states
-        ).execute()
-
+        )
         pending_loan_states = ["PENDING"]
         pending_loans = search_by_patron_item_or_document(
             patron["id"], filter_states=pending_loan_states
-        ).execute()
+        )
 
         patron_loans = {
             "active_loans": active_loans,

@@ -47,15 +47,15 @@ def patron_loans_to_dict(patron_loans):
     :return: dict from patron's loan.
     :rtype: dict
     """
-    literatures_on_loan_results = patron_loans["active_loans"].hits.hits
+    literatures_on_loan_results = patron_loans["active_loans"].scan()
     literatures_on_loan = [
-        serialize_on_loan_literature_info(loan["_source"])
+        serialize_on_loan_literature_info(loan)
         for loan in literatures_on_loan_results
     ]
 
-    loan_requests_results = patron_loans["pending_loans"].hits.hits
+    loan_requests_results = patron_loans["pending_loans"].scan()
     loan_requests = [
-        serialize_loan_request_literature_info(loan["_source"])
+        serialize_loan_request_literature_info(loan)
         for loan in loan_requests_results
     ]
 
