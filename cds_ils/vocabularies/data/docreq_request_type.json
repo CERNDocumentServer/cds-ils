@@ -13,5 +13,10 @@
     "type": "doc_req_type",
     "key": "ARTICLE_COPY",
     "text": "Article copy"
+  },
+  {
+    "type": "doc_req_type",
+    "key": "SUGGESTION",
+    "text": "Suggestion"
   }
 ]
