@@ -18,9 +18,10 @@ def test_modify_documents(importer_test_data):
 
     importer = Importer(json_data[0], "springer")
     report = importer.import_record()
-    assert report["updated"]
+    assert report["updated_document"]
 
-    updated_document = document_cls.get_record_by_pid(report["updated"]["pid"])
+    updated_document = document_cls.get_record_by_pid(
+        report["updated_document"]["pid"])
     # wait for indexing
     time.sleep(1)
 
@@ -53,9 +54,10 @@ def test_import_documents(app, db):
     )
     importer = Importer(json_data[0], "springer")
     report = importer.import_record()
-    assert report["created"]
+    assert report["created_document"]
 
-    document = document_cls.get_record_by_pid(report["created"]["pid"])
+    document = document_cls.get_record_by_pid(
+        report["created_document"]["pid"])
     time.sleep(1)
     search = eitem_search_cls().search_by_document_pid(
         document_pid=document["pid"]
@@ -100,9 +102,10 @@ def test_replace_eitems_by_provider_priority(importer_test_data):
     ProviderImporter.IS_PROVIDER_PRIORITY_SENSITIVE = True
     importer = ProviderImporter(json_data[1], "springer")
     report = importer.import_record()
-    assert report["updated"]
+    assert report["updated_document"]
 
-    updated_document = document_cls.get_record_by_pid(report["updated"]["pid"])
+    updated_document = document_cls.get_record_by_pid(
+        report["updated_document"]["pid"])
     # wait for indexing
     time.sleep(1)
 
@@ -133,10 +136,11 @@ def test_add_document_to_serial(app, db):
     importer = Importer(json_data[0], "springer")
 
     report = importer.import_record()
-    assert report["created"]
+    assert report["created_document"]
     assert report["series"]
 
-    created_document = document_cls.get_record_by_pid(report["created"]["pid"])
+    created_document = document_cls.get_record_by_pid(
+        report["created_document"]["pid"])
 
     series_list = []
     for series in report["series"]:

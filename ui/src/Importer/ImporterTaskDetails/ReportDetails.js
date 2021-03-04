@@ -53,19 +53,18 @@ export class ReportDetails extends React.Component {
     if (!item.success) {
       return [];
     }
-    const report = item.report;
     return [
       {
         icon: 'plus',
         name: 'Created',
         documents: displayValue(
-          report.created_document,
+          item.created_document,
           BackOfficeRoutes.documentDetailsFor,
           o => o.pid,
           o => o.title
         ),
         eitems: displayValue(
-          report.created_eitem,
+          item.created_eitem,
           BackOfficeRoutes.eitemDetailsFor,
           o => o.pid,
           o => o.pid
@@ -76,19 +75,19 @@ export class ReportDetails extends React.Component {
         icon: 'edit',
         name: 'Updated',
         documents: displayValue(
-          report.updated_document,
+          item.updated_document,
           BackOfficeRoutes.documentDetailsFor,
           o => o.pid,
           o => o.title
         ),
         eitems: displayValue(
-          report.updated_eitem,
+          item.updated_eitem,
           BackOfficeRoutes.eitemDetailsFor,
           o => o.pid,
           o => o.pid
         ),
         series: displayValues(
-          report.series,
+          item.series,
           BackOfficeRoutes.seriesDetailsFor,
           o => o.pid,
           o => o.title
@@ -99,7 +98,7 @@ export class ReportDetails extends React.Component {
         name: 'Deleted',
         documents: null,
         eitems: displayValues(
-          report.deleted_eitems,
+          item.deleted_eitems,
           BackOfficeRoutes.eitemDetailsFor,
           o => o.pid,
           o => o.pid
@@ -110,7 +109,7 @@ export class ReportDetails extends React.Component {
         icon: 'magic',
         name: 'Fuzzy',
         documents: displayValues(
-          report.fuzzy_documents,
+          item.fuzzy_documents,
           BackOfficeRoutes.documentDetailsFor,
           o => o,
           o => o
@@ -122,7 +121,7 @@ export class ReportDetails extends React.Component {
         icon: 'question',
         name: 'Ambiguous',
         documents: displayValues(
-          report.ambiguous_documents,
+          item.ambiguous_documents,
           BackOfficeRoutes.documentDetailsFor,
           o => o,
           o => o

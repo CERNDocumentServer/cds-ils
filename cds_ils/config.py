@@ -468,7 +468,7 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
             "elasticsearch": "keyword",
             "marshmallow": SanitizedUnicode(),
         },
-    }
+    },
 }
 
 ILS_CIRCULATION_MAIL_TEMPLATES = {

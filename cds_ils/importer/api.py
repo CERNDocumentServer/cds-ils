@@ -7,7 +7,9 @@
 
 """CDS-ILS Importer API module."""
 import logging
+import uuid
 
+import arrow
 from celery import shared_task
 from flask import current_app
 from invenio_app_ils.errors import IlsValidationError
@@ -100,3 +102,18 @@ def import_from_xml(log_id, source_path, source_type, provider, mode):
         raise e
 
     log.set_succeeded()
+
+
+def allowed_files(filename):
+    """Checks the extension of the files."""
+    allowed_extensions = current_app.config[
+        "CDS_ILS_IMPORTER_FILE_EXTENSIONS_ALLOWED"
+    ]
+    return filename.lower().endswith(tuple(allowed_extensions))
+
+
+def rename_file(filename):
+    """Renames filename with an unique name."""
+    unique_filename = uuid.uuid4().hex
+    ext = filename.rsplit(".", 1)[1]
+    return unique_filename + "." + ext
