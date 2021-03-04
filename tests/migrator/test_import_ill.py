@@ -12,7 +12,7 @@ from cds_ils.migrator.ill.api import import_ill_borrowing_requests_from_json
 from tests.migrator.utils import reindex_record
 
 
-def test_import_ills(test_data_migration, legacy_borrower_id, es_clear):
+def test_import_ills(test_data_migration, patrons, es_clear):
     datadir = os.path.join(os.path.dirname(__file__), "data")
     file = (open(os.path.join(datadir, "ills.json"), "r"),)
 

@@ -16,9 +16,9 @@ from cds_ils.patrons.api import Patron
 from cds_ils.patrons.permissions import retrieve_patron_loans_access_action
 
 
-def test_patron_loans_view(app, patron1, testdata, client):
+def test_patron_loans_view(app, patrons, testdata, client):
     """Test check for users update in sync command."""
-
+    patron1 = patrons[0]
     db.session.add(
         ActionUsers.allow(
             retrieve_patron_loans_access_action, user=patron1

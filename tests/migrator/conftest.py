@@ -6,10 +6,8 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Migration pytest fixtures and plugins."""
-import time
 
 import pytest
-from flask import current_app
 from invenio_app_ils.acquisition.api import VENDOR_PID_TYPE, Vendor
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
 from invenio_app_ils.ill.api import LIBRARY_PID_TYPE, Library
@@ -18,7 +16,6 @@ from invenio_app_ils.internal_locations.api import \
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
 from invenio_indexer.api import RecordIndexer
-from invenio_oauthclient.models import RemoteAccount
 from invenio_search import current_search
 
 from cds_ils.migrator.default_records import create_default_records
@@ -28,22 +25,7 @@ from tests.helpers import _create_records, load_json_from_datadir
 
 
 @pytest.fixture()
-def legacy_borrower_id(app, db, patron1):
-    """Provide legacy id of borrower."""
-    client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
-        "consumer_key"
-    ]
-    account = RemoteAccount.get(user_id=patron1.id, client_id=client_id)
-    extra_data = account.extra_data
-    account.extra_data.update(legacy_id="1", **extra_data)
-    db.session.add(account)
-    patron = Patron(patron1.id)
-    PatronIndexer().index(patron)
-    current_search.flush_and_refresh(index="*")
-
-
-@pytest.fixture()
-def test_data_migration(app, db, es_clear, patron1):
+def test_data_migration(app, db, es_clear, patrons):
     """Prepare minimal data for migration tests."""
     data = load_json_from_datadir("locations.json")
     locations = _create_records(db, data, Location, LOCATION_PID_TYPE)
@@ -78,5 +60,7 @@ def test_data_migration(app, db, es_clear, patron1):
         ri.index(rec)
 
     create_default_records()
+    patron = Patron(patrons[0].id)
+    PatronIndexer().index(patron)
 
     current_search.flush_and_refresh(index="*")

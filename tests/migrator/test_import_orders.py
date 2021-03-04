@@ -10,7 +10,7 @@ from cds_ils.migrator.errors import AcqOrderError
 from tests.migrator.utils import reindex_record
 
 
-def test_import_orders(test_data_migration, legacy_borrower_id, es_clear):
+def test_import_orders(test_data_migration, patrons, es_clear):
     datadir = os.path.join(os.path.dirname(__file__), "data")
     file = (open(os.path.join(datadir, "orders.json"), "r"),)
     import_orders_from_json(file)

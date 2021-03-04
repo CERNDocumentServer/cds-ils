@@ -23,7 +23,8 @@ from cds_ils.ldap.api import LdapUserImporter, _delete_invenio_user, \
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 
 
-def test_send_email_delete_user_with_loans(app, patron1, testdata):
+def test_send_email_delete_user_with_loans(app, patrons, testdata):
+    patron1 = patrons[0]
     """Test that email sent when the user is deleted with active loans."""
     with app.extensions["mail"].record_messages() as outbox:
         assert len(outbox) == 0
@@ -201,10 +202,10 @@ def test_update_users(app, db, testdata, mocker):
     assert n_added == 2  # 00111, 00555
 
     invenio_users = User.query.all()
-    # 1 is already in test data
+    # 2 are already in test data
     # 3 in the prepared data
     # 2 newly added from LDAP
-    assert len(invenio_users) == 6
+    assert len(invenio_users) == 7
 
     patrons_search = PatronsSearch()
 
