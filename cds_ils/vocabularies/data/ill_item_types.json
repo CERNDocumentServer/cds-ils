@@ -8,10 +8,5 @@
     "type": "ill_item_type",
     "key": "PHYSICAL_COPY",
     "text": "Physical copy"
-  },
-  {
-    "type": "ill_item_type",
-    "key": "MIGRATED_UNKNOWN",
-    "text": "Migrated/Unknown"
   }
 ]

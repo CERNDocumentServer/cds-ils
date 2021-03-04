@@ -27,7 +27,7 @@ def migrate_document_request(record):
         title="Migrated record, no title provided",
         state=state,
         request_type="LOAN",
-        medium="MIGRATED_UNKNOWN",
+        medium="PAPER",
     )
 
     if record["status"] == "proposal-put aside":

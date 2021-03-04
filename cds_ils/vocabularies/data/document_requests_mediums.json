@@ -13,10 +13,5 @@
     "key": "PAPER_ELECTRONIC",
     "type": "doc_req_medium",
     "text": "Paper + electronic"
-  },
-  {
-    "key": "MIGRATED_UNKNOWN",
-    "type": "doc_req_medium",
-    "text": "Migrated/Unknown"
   }
 ]
