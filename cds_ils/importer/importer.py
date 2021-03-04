@@ -85,15 +85,15 @@ class Importer(object):
     def import_summary(self):
         """Provide import summary."""
         return {
-            "created": self.created,
-            "updated": self.updated,
+            "created_document": self.created,
+            "updated_document": self.updated,
             "ambiguous_documents": self.ambiguous_matches,
-            "fuzzy": self.fuzzy_matches,
+            "fuzzy_documents": self.fuzzy_matches,
             "series": self.series_list,
             "created_eitem": self.eitem_importer.created,
             "updated_eitem": self.eitem_importer.updated,
-            "deleted_eitem_list": self.eitem_importer.deleted_list,
-            "ambiguous_eitem_list": self.eitem_importer.ambiguous_list,
+            "deleted_eitems": self.eitem_importer.deleted_list,
+            "ambiguous_eitems": self.eitem_importer.ambiguous_list,
         }
 
     def update_records(self, matched_document):

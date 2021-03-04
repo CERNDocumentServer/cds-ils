@@ -11,14 +11,11 @@ const createTask = async formData => {
 };
 
 const check = async (taskId, nextEntry = 0) => {
-  const importerCheckURL = '/check/';
-  return await http.get(
-    `${importerURL}${importerCheckURL}${taskId}/next/${nextEntry}`
-  );
+  return await http.get(`${importerURL}/${taskId}/offset/${nextEntry}`);
 };
 
 const list = async () => {
-  return await http.get(`${importerURL}/list`);
+  return await http.get(`${importerURL}`);
 };
 
 export const importerApi = {

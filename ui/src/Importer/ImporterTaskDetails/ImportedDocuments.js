@@ -10,12 +10,12 @@ import {
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
-import { CdsBackOfficeRoutes } from '../../../routes/BackofficeUrls';
+import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
 import { ReportDetails } from './ReportDetails';
 import { Link } from 'react-router-dom';
 import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
 import { DocumentIcon } from '@inveniosoftware/react-invenio-app-ils';
-import { importerApi } from '../../../api/importer';
+import { importerApi } from '../../api/importer';
 import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
 
 export class ImportedDocuments extends React.Component {
@@ -48,15 +48,15 @@ export class ImportedDocuments extends React.Component {
 
     if (!importCompleted) {
       const nextEntry = _get(data, 'loaded_entries', 0);
-      const knownEntries = _get(data, 'reports', []);
+      const knownEntries = _get(data, 'records', []);
       const response = await importerApi.check(taskId, nextEntry);
       const responseData = response.data;
       if (responseData) {
-        responseData.reports = knownEntries.concat(
-          _get(responseData, 'reports', [])
+        responseData.records = knownEntries.concat(
+          _get(responseData, 'records', [])
         );
       }
-      if (response.data.state !== 'RUNNING') {
+      if (response.data.status !== 'RUNNING') {
         this.setState({
           importCompleted: true,
           isLoading: false,
@@ -86,7 +86,7 @@ export class ImportedDocuments extends React.Component {
       <Message negative>
         <Message.Header>Failed to import</Message.Header>
         <p>
-          The import of the literatures failed, please try again. <br />
+          The import of the literature failed, please try again. <br />
           If this error persists contact our technical support.
         </p>
       </Message>
@@ -116,18 +116,18 @@ export class ImportedDocuments extends React.Component {
         ) : isLoading ? (
           <>
             <Icon name="circle notch" loading aria-label="Import in progress" />
-            Importing literatures... This may take a while. You may leave the
+            Importing literature... This may take a while. You may leave the
             page, the process will continue in background.
           </>
-        ) : data.state === 'SUCCEEDED' ? (
+        ) : data.status === 'SUCCEEDED' ? (
           <>
             <Icon name="check circle" color="green" aria-label="Completed" />
-            Literatures imported successfully.
+            Literature imported successfully.
           </>
         ) : (
           <>
             <Icon name="times circle" color="red" aria-label="Failed" />
-            Literatures import failed.
+            Literature import failed.
           </>
         )}
       </>
@@ -138,14 +138,14 @@ export class ImportedDocuments extends React.Component {
     const { data, activeIndex } = this.state;
     return (
       <Accordion className="importer" styled fluid>
-        {data.reports.map((elem, index) => {
-          const report = _get(elem, 'report', null);
+        {data.records.map((elem, index) => {
           const importSuccess = _get(elem, 'success', null);
           const document = importSuccess
-            ? report.created_document
-              ? report.created_document
-              : report.updated_document
+            ? elem.created_document
+              ? elem.created_document
+              : elem.updated_document
             : null;
+          console.log(document);
           return (
             <div key={elem.index}>
               <Accordion.Title
@@ -183,26 +183,26 @@ export class ImportedDocuments extends React.Component {
     return (
       <>
         {this.renderResultsHeader()}
-        {!_isEmpty(data) && data.state !== 'FAILED' ? (
+        {!_isEmpty(data) && data.status !== 'FAILED' ? (
           <>
-            <Header as="h2">Literatures</Header>
+            <Header as="h2">Literature</Header>
             {!_isEmpty(data) ? (
               (data.loaded_entries || data.loaded_entries === 0) &&
-              data.total_entries ? (
+              data.entries_count ? (
                 <p>
                   {'Processed ' +
                     data.loaded_entries +
-                    ' literatures out of ' +
-                    data.total_entries +
+                    ' records out of ' +
+                    data.entries_count +
                     '.'}
                 </p>
               ) : (
                 <p>Processing file...</p>
               )
             ) : null}
-            {!_isEmpty(data.reports) ? this.renderResultsContent() : null}
+            {!_isEmpty(data.records) ? this.renderResultsContent() : null}
           </>
-        ) : !_isEmpty(data) && data.state === 'FAILED' ? (
+        ) : !_isEmpty(data) && data.status === 'FAILED' ? (
           this.renderErrorMessage(data)
         ) : null}
       </>

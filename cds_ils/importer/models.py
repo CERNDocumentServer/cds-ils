@@ -24,7 +24,15 @@ def _format_exception(exception):
         return exception_type
 
 
-class ImporterAgent(enum.Enum):
+class ImporterEnum(enum.Enum):
+    """Importer enum class."""
+
+    def __str__(self):
+        """String representation."""
+        return str(self.value)
+
+
+class ImporterAgent(ImporterEnum):
     """An agent performing an action."""
 
     CLI = "CLI"
@@ -34,7 +42,7 @@ class ImporterAgent(enum.Enum):
     """A user from the UI."""
 
 
-class ImporterTaskStatus(enum.Enum):
+class ImporterTaskStatus(ImporterEnum):
     """The status of a task."""
 
     RUNNING = "RUNNING"
@@ -47,8 +55,10 @@ class ImporterTaskStatus(enum.Enum):
     """The task was aborted due to an error."""
 
 
-class ImporterMode(enum.Enum):
+class ImporterMode(ImporterEnum):
     """The mode of an importation task."""
+
+    PREVIEW = "PREVIEW"
 
     CREATE = "CREATE"
 
@@ -126,7 +136,7 @@ class ImporterTaskLog(db.Model):
 
 
 class ImporterTaskEntry(db.Model):
-    """An entry."""
+    """Entry log of one imported record."""
 
     __tablename__ = "import_task_entry"
 
@@ -166,6 +176,11 @@ class ImporterTaskEntry(db.Model):
     )
     """Relationship."""
 
+    # default ordering
+    __mapper_args__ = {
+        "order_by": entry_index
+    }
+
     @classmethod
     def __create(cls, data):
         """Create a new entry."""
@@ -180,17 +195,7 @@ class ImporterTaskEntry(db.Model):
         return cls.__create(
             {
                 **base_data,
-                **dict(
-                    ambiguous_documents=report["ambiguous_documents"],
-                    ambiguous_eitems=report["ambiguous_eitem_list"],
-                    created_document=report["created"],
-                    created_eitem=report["created_eitem"],
-                    updated_document=report["updated"],
-                    updated_eitem=report["updated_eitem"],
-                    deleted_eitems=report["deleted_eitem_list"],
-                    series=report["series"],
-                    fuzzy_documents=report["fuzzy"],
-                ),
+                **report
             }
         )
 

@@ -38,7 +38,7 @@ def test_patron_loans_view(app, patrons, testdata, client):
 
     assert resp.status_code == 200
 
-    expected_literatures_on_loan = [
+    expected_literature_on_loan = [
         {
             "item": {
                 "barcode": "123456789-3",
@@ -73,7 +73,7 @@ def test_patron_loans_view(app, patrons, testdata, client):
         }
     ]
     data = resp.json
-    assert data["on_loan"] == expected_literatures_on_loan
+    assert data["on_loan"] == expected_literature_on_loan
     assert data["requests"] == expected_loan_requests
 
     # test extra_info
