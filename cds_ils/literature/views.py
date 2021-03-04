@@ -48,3 +48,16 @@ def legacy_redirect(id):
     url_path = series_list_route if is_document else documents_list_route
 
     return redirect("/api{0}{1}".format(url_path, record["pid"]))
+
+
+@legacy_blueprint.route("/legacy/debug")
+def debug():
+    """Temp."""
+    from flask import jsonify, make_response, request
+    print(100*"*")
+    print(request.environ)
+    print(100 * "*")
+    print(request.headers)
+    print(100 * "*")
+    output = jsonify({k: v for k, v in request.headers.items()})
+    return make_response(output, 200)
