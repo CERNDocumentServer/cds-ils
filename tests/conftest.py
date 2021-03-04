@@ -94,8 +94,11 @@ def admin(app, db):
 
 
 @pytest.fixture()
-def patron1(app, db):
+def patrons(app, db):
     """Create a patron user."""
+    db.session.execute("ALTER SEQUENCE IF EXISTS accounts_user_id_seq RESTART")
+    db.session.commit()
+
     user = User(**dict(email="patron1@cern.ch", active=True))
     db.session.add(user)
     db.session.commit()
@@ -119,37 +122,34 @@ def patron1(app, db):
         client_id=client_id,
         **dict(
             user_id=user_id,
-            extra_data=dict(person_id="1", department="Department"),
+            extra_data=dict(person_id="1", department="Department",
+                            legacy_id="1"),
         )
     )
     db.session.add(remote_account)
     db.session.commit()
-    return user
 
-
-@pytest.fixture()
-def patron2(app, db):
-    """Create a patron user without remote account."""
-    user = User(**dict(email="patron2@cern.ch", active=True))
-    db.session.add(user)
+    user2 = User(**dict(email="patron2@cern.ch", active=True))
+    db.session.add(user2)
     db.session.commit()
 
-    user_id = user.id
+    user2_id = user2.id
 
     profile = UserProfile(
         **dict(
-            user_id=user_id,
-            _displayname="id_" + str(user_id),
+            user_id=user2_id,
+            _displayname="id_" + str(user2_id),
             full_name="System User",
         )
     )
     db.session.add(profile)
     db.session.commit()
-    return user
+
+    return user, user2
 
 
 @pytest.fixture()
-def testdata(app, db, es_clear, patron1):
+def testdata(app, db, es_clear, patrons):
     """Create, index and return test data."""
     data = load_json_from_datadir("locations.json")
     locations = _create_records(db, data, Location, LOCATION_PID_TYPE)

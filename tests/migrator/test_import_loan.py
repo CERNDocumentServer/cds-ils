@@ -20,7 +20,7 @@ from cds_ils.migrator.loans.api import import_loans_from_json
 from tests.migrator.utils import reindex_record
 
 
-def test_import_loan_returned(test_data_migration, legacy_borrower_id,
+def test_import_loan_returned(test_data_migration, patrons,
                               es_clear):
     datadir = os.path.join(os.path.dirname(__file__), "data")
     file = (open(os.path.join(datadir, "loans.json"), "r"),)

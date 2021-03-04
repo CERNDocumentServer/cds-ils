@@ -7,7 +7,7 @@ from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 
 
-def test_local_accounts_indexing(app, patron1, patron2, testdata):
+def test_local_accounts_indexing(app, patrons, testdata):
     """Test if local accounts get indexed or not."""
 
     current_app_ils.patron_indexer.reindex_patrons()
