@@ -52,7 +52,6 @@ CDS_IGNORE_FIELDS = {
     "269__c",  # preprint date
     "270__m",  # conference email
     "300__b",  # 206 cds-dojson
-    "340__a",
     "440_3a",  # 206 cds-dojson
     "541__9",
     "541__a",
