@@ -10,6 +10,26 @@ a.logo {
    font-size:inherit;
 }
 
+#document-request{
+   .custom-label {
+      display: inline-block;
+      margin: 0em 0em 0.28571429rem 0em;
+      color: rgba(0, 0, 0, 0.87);
+      font-size: 0.92857143em;
+      font-weight: bold;
+      text-transform: none;
+   }
+
+   .label-subtitle {
+      display: block;
+      font-size: 0.92857143em;
+   }
+}
+
+.display-flex {
+   display: flex;
+}
+
 @media only screen and (max-width: 440px) {
   .right.menu {
      font-size: 0.8em;

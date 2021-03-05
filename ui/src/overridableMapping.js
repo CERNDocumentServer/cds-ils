@@ -11,6 +11,7 @@ import {
   RightMenuItemMobile,
 } from './overridden/components/Menu';
 import { DocumentRequestFormFields } from './overridden/frontsite/DocumentRequest/DocumentRequestForm';
+import { DocumentRequestFormHeader } from './overridden/frontsite/DocumentRequest/DocumentRequestFormHeader';
 import { NotAvailable } from './overridden/frontsite/Document/DocumentDetails/DocumentCirculation/NotAvailable';
 import {
   HomeContent,
@@ -38,6 +39,7 @@ export const overriddenCmps = {
   'LoanAvailability.NotAvailable': NotAvailable,
   'FrontSite.CustomRoute': LegacyRecordRoute,
   DocumentRequestForm: DocumentRequestFormFields,
+  'DocumentRequestForm.header': DocumentRequestFormHeader,
   'BackOfficeRoutesSwitch.CustomRoute': ImporterRoute,
   'Backoffice.Sidebar.CustomMenuItem': SideBarMenuItem,
 };
