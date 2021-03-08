@@ -89,14 +89,12 @@ def internal_notes(self, key, value):
     return {"value": clean_val("a", value, str, req=True)}
 
 
-@model.over("note", "(^935__)|(^866__)")
+@model.over("note", "(^935__)")
 @out_strip
 def note(self, key, value):
     """Translates note field."""
     notes_list = [self.get("note", "")]
     notes_list.append(clean_val("a", value, str))
-    if key == "866__":
-        notes_list.append(clean_val("b", value, str))
 
     return " \n".join(filter(None, notes_list))
 
@@ -108,20 +106,24 @@ def publisher(self, key, value):
     return clean_val("b", value, str, req=True)
 
 
-@model.over("_children", "(^362__)")
-def children_records(self, key, value):
-    """Translates fields related to children record types."""
-    _migration = self["_migration"]
-    _electronic_items = _migration.get("electronic_items", [])
-    if key == "362__":
-        _electronic_items.append({"subscription": clean_val("a", value, str)})
-    _migration.update(
-        {
-            "electronic_items": _electronic_items,
-        }
-    )
+@model.over("electronic_volumes_description", "(^362__)")
+def electronic_volumes_description(self, key, value):
+    """Translates electronic volumes description field."""
+    return clean_val("a", value, str, req=True)
 
-    raise IgnoreKey("_children")
+
+@model.over("physical_volumes", "(^866__)")
+@filter_list_values
+def physical_volumes(self, key, value):
+    """Translates physical volumes description field."""
+    _physical_volumes = self.get("physical_volumes", [])
+    physical_volumes_dict = {
+        "description": clean_val("a", value, str),
+        "location": clean_val("b", value, str),
+    }
+    _physical_volumes.append(physical_volumes_dict)
+
+    return _physical_volumes
 
 
 @model.over("access_urls", "^85641")
