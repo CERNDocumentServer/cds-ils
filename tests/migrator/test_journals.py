@@ -173,13 +173,9 @@ def test_note(app):
                 The reports are catalogued individually and retrievable in the catalogue.
                 </subfield>
             </datafield>
-            <datafield tag="866" ind1=" " ind2=" ">
-                <subfield code="a">note1</subfield>
-                <subfield code="b">note2</subfield>
-            </datafield>
             """,
             {
-                "note": "The reports are catalogued individually and retrievable in the catalogue. \nnote1 \nnote2",
+                "note": "The reports are catalogued individually and retrievable in the catalogue.",
             },
         )
 
@@ -317,23 +313,6 @@ def test_urls(app):
 
 def test_migration(app):
     with app.app_context():
-        check_transformation(
-            """
-            <datafield tag="362" ind1=" " ind2=" ">
-                <subfield code="a">v 1 (1992) -</subfield>
-            </datafield>
-            """,
-            {
-                "_migration": {
-                    "is_multipart": False,
-                    "has_related": False,
-                    "related": [],
-                    "record_type": "journal",
-                    "volumes": [],
-                    "electronic_items": [{"subscription": "v 1 (1992) -"}],
-                },
-            },
-        )
         check_transformation(
             """
                 <datafield tag="787" ind1=" " ind2=" ">
@@ -608,5 +587,82 @@ def test_physical_description(app):
             """,
             {
                 "physical_description": "2 v. ; 1 CD-ROM suppl",
+            },
+        )
+
+
+def test_electronic_volumes_description(app):
+    """Test electronic volumes description."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="362" ind1=" " ind2=" ">
+                <subfield code="a">v 1 (1992) -</subfield>
+            </datafield>
+            """,
+            {
+                "electronic_volumes_description": "v 1 (1992) -",
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="362" ind1=" " ind2=" ">
+                <subfield code="a">v 23 (1960) - v 64 (2002) ; v 70 (2008) -</subfield>
+            </datafield>
+            """,
+            {
+                "electronic_volumes_description":
+                    "v 23 (1960) - v 64 (2002) ; v 70 (2008) -",
+            },
+        )
+
+
+def test_physical_volumes_(app):
+    """Test physical volumes."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="866" ind1=" " ind2=" ">
+                <subfield code="a">2017/2018 -</subfield>
+                <subfield code="b">DE2</subfield>
+                <subfield code="g">current</subfield>
+                <subfield code="x">1</subfield>
+            </datafield>
+            """,
+            {
+                "physical_volumes": [
+                    {
+                        "description": "2017/2018 -",
+                        "location": "DE2",
+                    }
+                ],
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="866" ind1=" " ind2=" ">
+                <subfield code="a">v 98 (2020) -</subfield>
+                <subfield code="b">C</subfield>
+                <subfield code="g">current</subfield>
+                <subfield code="x">1</subfield>
+            </datafield>
+            <datafield tag="866" ind1=" " ind2=" ">
+                <subfield code="a">v 92 no 7/8 (2014) - v 97 (2019)</subfield>
+                <subfield code="b">DE2</subfield>
+                <subfield code="g">current</subfield>
+                <subfield code="x">1</subfield>
+            </datafield>
+            """,
+            {
+                "physical_volumes": [
+                    {
+                        "description": "v 98 (2020) -",
+                        "location": "C",
+                    },
+                    {
+                        "description": "v 92 no 7/8 (2014) - v 97 (2019)",
+                        "location": "DE2",
+                    }
+                ],
             },
         )
