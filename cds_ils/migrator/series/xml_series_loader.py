@@ -28,7 +28,7 @@ class CDSSeriesDumpLoader(object):
     """Migrate a CDS Series record."""
 
     @classmethod
-    def create(cls, dump, rectype):
+    def create(cls, dump, rectype, log={}):
         """Create record based on dump."""
         dump.prepare_revisions()
         # if we have a final revision - to remove when data cleaned.
@@ -41,7 +41,7 @@ class CDSSeriesDumpLoader(object):
             raise e
 
     @classmethod
-    def create_record(cls, dump, rectype):
+    def create_record(cls, dump, rectype, log={}):
         """Create a new record from dump."""
         series_cls = current_app_ils.series_record_cls
         record_uuid = uuid.uuid4()

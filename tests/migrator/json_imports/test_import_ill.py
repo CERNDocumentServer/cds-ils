@@ -14,7 +14,7 @@ from tests.migrator.utils import reindex_record
 
 def test_import_ills(test_data_migration, patrons, es_clear):
     datadir = os.path.join(os.path.dirname(__file__), "data")
-    file = (open(os.path.join(datadir, "ills.json"), "r"),)
+    file = open(os.path.join(datadir, "ills.json"), "r")
 
     import_ill_borrowing_requests_from_json(file)
 
@@ -38,11 +38,14 @@ def test_import_ills(test_data_migration, patrons, es_clear):
     assert results.hits.total.value == 1
 
     assert results[0].status == 'ON_LOAN'
+    file.close()
 
 
 def test_import_invalid_loan(test_data_migration):
     datadir = os.path.join(os.path.dirname(__file__), "data")
-    file = open(os.path.join(datadir, "invalid_ill.json"),"r"),
+    file = open(os.path.join(datadir, "invalid_ill.json"), "r")
 
     with pytest.raises(BorrowingRequestError):
-        import_ill_borrowing_requests_from_json(file, raise_exception=True)
+        import_ill_borrowing_requests_from_json(file, raise_exceptions=True)
+
+    file.close()

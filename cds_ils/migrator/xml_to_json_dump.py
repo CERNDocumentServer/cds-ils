@@ -16,7 +16,7 @@ from flask import current_app
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
 from cds_ils.migrator import migrator_marc21
-from cds_ils.migrator.errors import LossyConversion
+from cds_ils.migrator.errors import JSONConversionException, LossyConversion
 from cds_ils.migrator.handlers import migration_exception_handler
 
 cli_logger = logging.getLogger("migrator")
@@ -74,7 +74,7 @@ class CDSRecordDump(object):
         self.files = files
 
     def _prepare_revision(self, data):
-        dt = arrow.get(data["modification_datetime"]).datetime
+        timestamp = arrow.get(data["modification_datetime"]).datetime
 
         exception_handlers = {
             UnexpectedValue: migration_exception_handler,
@@ -85,27 +85,14 @@ class CDSRecordDump(object):
         if self.source_type == "marcxml":
             marc_record = create_record(data["marcxml"])
             try:
-                val = self.dojson_model.do(
+                json_converted_record = self.dojson_model.do(
                     marc_record, exception_handlers=exception_handlers
                 )
-                missing = self.dojson_model.missing(marc_record)
-                if missing:
-                    raise LossyConversion(missing=missing)
-                return dt, val
-            except LossyConversion as e:
-                current_app.logger.error(
-                    "MIGRATION RULE MISSING {0} - {1}".format(
-                        e.missing, marc_record
-                    )
-                )
-                raise e
             except Exception as e:
-                current_app.logger.error(
-                    "Impossible to convert to JSON {0} - {1}".format(
-                        e, marc_record
-                    )
-                )
-                raise e
+                raise JSONConversionException(e)
+            missing = self.dojson_model.missing(marc_record)
+            if missing:
+                raise LossyConversion(missing=missing)
+            return timestamp, json_converted_record
         else:
-            val = data["json"]
-            return dt, val
+            return timestamp, data["json"]

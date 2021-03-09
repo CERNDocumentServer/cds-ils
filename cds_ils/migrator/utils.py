@@ -8,6 +8,7 @@
 
 """CDS Migrator Records utils."""
 import datetime
+import json
 import logging
 from contextlib import contextmanager
 
@@ -30,11 +31,11 @@ from invenio_base.app import create_cli
 from invenio_circulation.proxies import current_circulation
 from invenio_db import db
 from invenio_indexer.api import RecordIndexer
+from invenio_pidstore.errors import PIDDoesNotExistError
 
+from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.default_records import MIGRATION_DOCUMENT_PID
 from cds_ils.migrator.patrons.api import get_user_by_legacy_id
-
-logger = logging.getLogger("migrator")
 
 
 def pick(obj, *keys):
@@ -108,6 +109,18 @@ def model_provider_by_rectype(rectype):
     raise ValueError("Unknown rectype: {}".format(rectype))
 
 
+def get_legacy_pid_type_by_provider(provider):
+    """Get mintable legacy pid type based on provider pid type."""
+    config = current_app.config
+    mintable_pids_map = {
+        "docid": config["CDS_ILS_RECORD_LEGACY_PID_TYPE"],
+        "pitmid": config["CDS_ILS_ITEM_LEGACY_PID_TYPE"],
+        "illbid": config["CDS_ILS_BORROWING_REQ_LEGACY_PID_TYPE"],
+        "acqoid": config["CDS_ILS_ACQ_ORDER_LEGACY_PID_TYPE"],
+    }
+    return mintable_pids_map.get(provider.pid.pid_type, None)
+
+
 def clean_created_by_field(record):
     """Clean the created by field for documents."""
     if "created_by" not in record:
@@ -122,7 +135,6 @@ def clean_created_by_field(record):
             record["created_by"] = {"type": "user_id", "value": patron_pid}
         else:
             record["created_by"] = {"type": "user_id", "value": "anonymous"}
-        del record["created_by"]["_email"]
     elif record["created_by"]["type"] == "batchuploader":
         record["created_by"] = {"type": "script", "value": "batchuploader"}
     else:
@@ -193,10 +205,7 @@ def get_migration_document_pid():
 def get_date(value):
     """Strips time and validates that string can be converted to date."""
     date_only = value.split("T")[0]
-    try:
-        datetime.datetime.strptime(date_only, "%Y-%m-%d")
-    except ValueError:
-        logger.error("{0} is not a valid date".format(date_only))
+    datetime.datetime.strptime(date_only, "%Y-%m-%d")
     return date_only
 
 
@@ -223,3 +232,41 @@ def add_title_from_conference_info(json_data):
             json_data["title"] = conference_info_title
 
     return json_data
+
+
+def get_item_info(record):
+    """Get dict out of item info field for Ills and orders.
+                  item_info: {
+                  'publisher': '',
+                  'isbn': '',
+                  'title': '',
+                  'authors': '',
+                  'edition': '',
+                  'place': '',
+                  'year': ''
+                  'recid': ''
+                  }
+    """
+    # DO NOT use at home
+    item_info = eval(record.get("item_info"))
+    return item_info
+
+
+def find_correct_document_pid(record):
+    """Try to attach document_pid or fall back to default."""
+    document_cls = current_app_ils.document_record_cls
+    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+    item_info = get_item_info(record)
+    document_legacy_recid = item_info.get("recid")
+    if document_legacy_recid:
+        try:
+            document = get_record_by_legacy_recid(
+                document_cls, legacy_pid_type, document_legacy_recid
+            )
+            document_pid = document["pid"]
+        except PIDDoesNotExistError as e:
+            document_pid = get_migration_document_pid()
+    else:
+        document_pid = get_migration_document_pid()
+
+    return document_pid

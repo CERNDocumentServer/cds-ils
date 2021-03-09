@@ -15,7 +15,8 @@ from flask.cli import with_appcontext
 
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
 from cds_ils.migrator.acquisition.vendors import import_vendors_from_json
-from cds_ils.migrator.api import import_documents_from_dump
+from cds_ils.migrator.api import document_migration_report, \
+    import_documents_from_dump, items_migration_report
 from cds_ils.migrator.default_records import create_default_records
 from cds_ils.migrator.document_requests.api import \
     import_document_requests_from_json
@@ -40,14 +41,38 @@ from cds_ils.migrator.utils import commit, reindex_pidtype
 @click.group()
 def migration():
     """CDS-ILS migrator commands."""
-    records_error_handler = FileHandler("/tmp/records_errored.log")
-    migrated_records_handler = FileHandler("/tmp/records_migrated.log")
+    records_formatter = logging.Formatter(
+        "%(asctime)s, %(legacy_id)s, %(new_pid)s, %(status)s, %(message)s, "
+    )
 
-    records_logger = logging.getLogger("records_errored")
-    migrated_records_logger = logging.getLogger("migrated_records")
+    eitems_formatter = logging.Formatter(
+        "%(asctime)s, %(document_pid)s, %(new_pid)s, %(status)s, %(message)s, "
+    )
 
-    records_logger.addHandler(records_error_handler)
-    migrated_records_logger.addHandler(migrated_records_handler)
+    items_formatter = logging.Formatter(
+        "%(asctime)s, %(barcode)s, %(new_pid)s, %(document_legacy_recid)s, %(status)s, %(message)s, "  # noqa
+    )
+
+    logged_record_types = {
+        "serial": records_formatter,
+        "multipart": records_formatter,
+        "journal": records_formatter,
+        "document": records_formatter,
+        "item": items_formatter,
+        "borrowing-request": records_formatter,
+        "loan": records_formatter,
+        "document-request": records_formatter,
+        "acq-order": records_formatter,
+        "eitem": eitems_formatter,
+        "relation": records_formatter,
+    }
+
+    for rectype, formatter in logged_record_types.items():
+        record_logger_handler = FileHandler(f"/tmp/{rectype}s.log")
+        record_logger_handler.setFormatter(formatter)
+        record_logger = logging.getLogger(f"{rectype}s_logger")
+        record_logger.addHandler(record_logger_handler)
+        record_logger.setLevel("INFO")
 
 
 @migration.command()
@@ -162,38 +187,45 @@ def vendors(source):
 
 
 @migration.command()
-@click.argument("source", type=click.File("r"), nargs=-1)
+@click.argument("sources", type=click.File("r"), nargs=-1)
 @with_appcontext
-def document_requests(source):
+def document_requests(sources):
     """Migrate document requests from CDS legacy."""
-    with commit():
+    for idx, source in enumerate(sources, 1):
         import_document_requests_from_json(source)
 
 
 @migration.command()
-@click.argument("source", type=click.File("r"), nargs=-1)
+@click.argument("sources", type=click.File("r"), nargs=-1)
 @click.option(
     "--fail-on-exceptions",
     is_flag=True,
 )
 @with_appcontext
-def borrowing_requests(source, fail_on_exceptions):
+def borrowing_requests(sources, fail_on_exceptions):
     """Migrate borrowing requests from CDS legacy."""
-    with commit():
-        import_ill_borrowing_requests_from_json(source, fail_on_exceptions)
+    for idx, source in enumerate(sources, 1):
+        import_ill_borrowing_requests_from_json(
+            source, raise_exceptions=fail_on_exceptions
+        )
 
 
 @migration.command()
-@click.argument("source", type=click.File("r"), nargs=-1)
+@click.argument("sources", type=click.File("r"), nargs=-1)
 @click.option(
     "--fail-on-exceptions",
     is_flag=True,
 )
 @with_appcontext
-def acquisition_orders(source, fail_on_exceptions):
+def acquisition_orders(sources, fail_on_exceptions):
     """Migrate acquisition orders and document requests from CDS legacy."""
-    with commit():
-        import_orders_from_json(source, fail_on_exceptions)
+    for idx, source in enumerate(sources, 1):
+        click.echo(
+            "({}/{}) Migrating orders in {}...".format(
+                idx, len(sources), source.name
+            )
+        )
+        import_orders_from_json(source, raise_exceptions=fail_on_exceptions)
 
 
 @migration.command()
@@ -212,29 +244,29 @@ def borrowers(source):
 
 
 @migration.command()
-@click.argument("source", type=click.File("r"), nargs=-1)
+@click.argument("sources", type=click.File("r"), nargs=-1)
 @click.option(
     "--fail-on-exceptions",
     is_flag=True,
 )
 @with_appcontext
-def loans(source, fail_on_exceptions):
+def loans(sources, fail_on_exceptions):
     """Migrate loans from CDS legacy."""
-    import_loans_from_json(source, fail_on_exceptions)
-    reindex_pidtype("loanid")
+    for idx, source in enumerate(sources, 1):
+        import_loans_from_json(source, fail_on_exceptions)
 
 
 @migration.command()
-@click.argument("source", type=click.File("r"), nargs=-1)
+@click.argument("sources", type=click.File("r"), nargs=-1)
 @click.option(
     "--fail-on-exceptions",
     is_flag=True,
 )
 @with_appcontext
-def loan_requests(source):
+def loan_requests(sources, fail_on_exceptions):
     """Migrate loan_requests from CDS legacy."""
-    import_loans_from_json(source)
-    reindex_pidtype("loanid")
+    for idx, source in enumerate(sources, 1):
+        import_loans_from_json(source, fail_on_exceptions)
 
 
 @migration.group()
@@ -310,3 +342,19 @@ def eitems_providers():
     migrate_external_links()
     migrate_ezproxy_links()
     migrate_ebl_links()
+
+
+@migration.command()
+@click.argument("log_file", type=click.File("r"), nargs=1)
+@click.argument("recid_list_file", type=click.File("r"), nargs=1)
+def documents_report(log_file, recid_list_file):
+    """Provide documents migration summary."""
+    document_migration_report(log_file, recid_list_file)
+
+
+@migration.command()
+@click.argument("log_file", type=click.File("r"), nargs=1)
+@click.argument("recid_list_file", type=click.File("r"), nargs=1)
+def items_report(log_file, recid_list_file):
+    """Provide item migration summary."""
+    items_migration_report(log_file, recid_list_file)

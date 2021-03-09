@@ -26,8 +26,7 @@ from invenio_db import db
 
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import VendorError
-from cds_ils.migrator.utils import bulk_index_records, \
-    model_provider_by_rectype
+from cds_ils.migrator.utils import bulk_index_records
 
 ORIGINAL_WILEY_ID = 17
 DEFAULT_WILEY = 333
@@ -65,10 +64,9 @@ def get_vendor_pid_by_legacy_id(legacy_id, grand_total):
     )
 
 
-def import_vendors_from_json(dump_file):
+def import_vendors_from_json(dump_file, rectype="vendor"):
     """Imports vendors from JSON data files."""
     dump_file = dump_file[0]
-    model, provider = model_provider_by_rectype("vendor")
 
     click.echo("Importing vendors ..")
     with click.progressbar(json.load(dump_file)) as input_data:
@@ -80,8 +78,7 @@ def import_vendors_from_json(dump_file):
                 record["legacy_ids"] = [str(record["legacy_ids"])]
             ils_record = import_record(
                 record,
-                model,
-                provider,
+                rectype=rectype,
                 legacy_id_key="legacy_id",
             )
             ils_records.append(ils_record)

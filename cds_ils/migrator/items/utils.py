@@ -17,7 +17,7 @@ from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.documents.api import get_document_by_barcode
 from cds_ils.migrator.errors import DocumentMigrationError, ItemMigrationError
 
-error_logger = logging.getLogger("records_errored")
+cli_logger = logging.getLogger("migrator")
 
 
 def clean_circulation_restriction(record):
@@ -84,18 +84,14 @@ def find_document_for_item(item_json):
         try:
             document = get_document_by_barcode(item_json["barcode"])
         except DocumentMigrationError as e:
-            error_logger.error(
-                "ITEM: {0} ERROR: Document {1} not found".format(
-                    item_json["barcode"], item_json["id_bibrec"]
-                )
-            )
-            raise e
+            pass
 
     if document is None:
-        error_msg = "ITEM: {0} ERROR: Document {1} not found".format(
-            item_json["barcode"], item_json["id_bibrec"]
+        error_msg = (
+            f"Document {item_json['id_bibrec']} not found"
+            f" for barcode {item_json['barcode']}"
         )
-        error_logger.error(error_msg)
+        cli_logger.error(error_msg)
         raise ItemMigrationError(error_msg)
     return document
 
@@ -109,7 +105,8 @@ def clean_medium(record):
         for item in document["_migration"]["item_medium"]:
             if record["barcode"] == item["barcode"]:
                 record["medium"] = item["medium"]
-    else:
+    medium = record.get("medium")
+    if not medium:
         record["medium"] = "PAPER"  # requested as default value
 
 

@@ -637,7 +637,7 @@ def test_monograph_volume_migration_doi(app):
                     "volumes_identifiers": [
                         {
                             "doi": "10.1007/978-3-030-49613-5",
-                            "material": "ebook",
+                            "material": "ELECTRONIC",
                             "source": None,
                             "volume": "1",
                         }
@@ -715,7 +715,7 @@ def test_monograph_legacy_representation(app):
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
-                    "multipart_id": "Vol965",
+                    "multipart_id": "VOL965",
                     "multivolume_record": False,
                 },
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",

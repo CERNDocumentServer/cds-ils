@@ -12,7 +12,7 @@ from tests.migrator.utils import reindex_record
 
 def test_import_orders(test_data_migration, patrons, es_clear):
     datadir = os.path.join(os.path.dirname(__file__), "data")
-    file = (open(os.path.join(datadir, "orders.json"), "r"),)
+    file = open(os.path.join(datadir, "orders.json"), "r")
     import_orders_from_json(file)
 
     reindex_record(ORDER_PID_TYPE, current_ils_acq.order_record_cls,
@@ -34,11 +34,13 @@ def test_import_orders(test_data_migration, patrons, es_clear):
     assert results.hits.total.value == 1
 
     assert results[0].status == 'ORDERED'
+    file.close()
 
 
 def test_import_invalid_loan(test_data_migration):
     datadir = os.path.join(os.path.dirname(__file__), "data")
-    file = open(os.path.join(datadir, "invalid_order.json"),"r"),
+    file = open(os.path.join(datadir, "invalid_order.json"), "r")
 
     with pytest.raises(AcqOrderError):
         import_orders_from_json(file, raise_exceptions=True)
+    file.close()

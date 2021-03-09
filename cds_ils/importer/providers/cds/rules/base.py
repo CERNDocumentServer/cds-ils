@@ -29,9 +29,9 @@ from cds_ils.importer.providers.cds.rules.utils import clean_email, \
 from cds_ils.importer.providers.cds.rules.values_mapping import ACCELERATORS, \
     ACQUISITION_METHOD, APPLICABILITY, ARXIV_CATEGORIES, COLLECTION, \
     DOCUMENT_TYPE, EXPERIMENTS, EXTERNAL_SYSTEM_IDENTIFIERS, \
-    EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, INSTITUTIONS, MATERIALS, \
-    MEDIUM_TYPES, MEDIUMS, SERIAL, SUBJECT_CLASSIFICATION_EXCEPTIONS, \
-    mapping
+    EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, IDENTIFIERS_MEDIUM_TYPES, \
+    INSTITUTIONS, ITEMS_MEDIUMS, MATERIALS, SERIAL, \
+    SUBJECT_CLASSIFICATION_EXCEPTIONS, mapping
 
 from ...utils import build_ils_contributor
 from .utils import extract_parts, is_excluded
@@ -51,6 +51,12 @@ def agency_code(self, key, value):
         return value
     else:
         raise IgnoreKey("agency_code")
+
+
+@model.over("sync", "^599__")
+def sync_tag(self, key, value):
+    """Synchronisation tag."""
+    raise IgnoreKey("sync")
 
 
 @model.over("created_by", "^859__")
@@ -81,8 +87,9 @@ def created(self, key, value):
             # used to compare dates, to find the oldest publication date
             # when multiple dates present in the field
             date = 999999
-            date_values = clean_val("w", value, int, regex_format=r"\d{6}$",
-                                    multiple_values=True)
+            date_values = clean_val(
+                "w", value, int, regex_format=r"\d{6}$", multiple_values=True
+            )
             if type(date_values) is list:
                 for x in date_values:
                     if x < date:
@@ -212,8 +219,11 @@ def authors(self, key, value):
             val_u = list(force_list(value.get("u", [])))
             val_e = list(force_list(value.get("e", [])))
             other_authors_fields = val_e + val_u
-            has_other_authors = [i for i in other_authors_possible_values if
-                                 i in other_authors_fields]
+            has_other_authors = [
+                i
+                for i in other_authors_possible_values
+                if i in other_authors_fields
+            ]
             if has_other_authors:
                 self["other_authors"] = True
 
@@ -306,7 +316,10 @@ def publication_info(self, key, value):
             recids = _migration.get("journal_record_legacy_recids", [])
             recids.append({"recid": rel_recid, "volume": volume})
             _migration["has_journal"] = True
-            self["document_type"] = "SERIAL_ISSUE"
+            # requirement from the library
+            doc_type = self["document_type"]
+            if doc_type and doc_type != "PROCEEDINGS":
+                self["document_type"] = "SERIAL_ISSUE"
 
         text = "{0} {1}".format(
             clean_val("o", v, str) or "", clean_val("x", v, str) or ""
@@ -332,19 +345,20 @@ def standard_review(self, key, value):
     )
     if applicability not in applicability_list:
         applicability_list.append(applicability)
-    if 'z' in value:
+    if "z" in value:
         try:
             check_date = clean_val("z", value, str)
             # Normalise date
             for month in month_name[1:]:
                 if month.lower() in check_date.lower():
                     check_date_month = month
-            check_date_year = re.findall(r'\d+', check_date)
+            check_date_year = re.findall(r"\d+", check_date)
             if len(check_date_year) > 1:
                 raise UnexpectedValue(subfield="z")
             datetime_object = datetime.datetime.strptime(
-                '{} 1 {}'.format(check_date_month, check_date_year[0]),
-                '%B %d %Y')
+                "{} 1 {}".format(check_date_month, check_date_year[0]),
+                "%B %d %Y",
+            )
 
             check_date_iso = datetime_object.date().isoformat()
             _extensions.update(
@@ -382,7 +396,7 @@ def publication_additional(self, key, value):
                 {
                     "related_recid": rel_recid,
                     "relation_type": OTHER_RELATION.name,
-                    "relation_description": "chapter of"
+                    "relation_description": "chapter of",
                 }
             )
             _migration.update({"related": _related, "has_related": True})
@@ -471,15 +485,15 @@ def accelerator_experiments(self, key, value):
         val_e = check_for_institution_in(val_e, institution_value)
 
     sub_a = mapping(
-            ACCELERATORS,
-            val_a,
-            raise_exception=True,
-        )
+        ACCELERATORS,
+        val_a,
+        raise_exception=True,
+    )
     sub_e = mapping(
-            EXPERIMENTS,
-            val_e,
-            raise_exception=True,
-        )
+        EXPERIMENTS,
+        val_e,
+        raise_exception=True,
+    )
     sub_p = clean_val("p", value, str)
 
     if sub_a and sub_a not in accelerators:
@@ -583,10 +597,13 @@ def isbns(self, key, value):
                 if existing_volume:
                     raise ManualImportRequired(subfield="u")
                 self["volume"] = volume
-            if subfield_u.upper() in MEDIUM_TYPES:
-                isbn.update({"medium": subfield_u})
-            else:
-                isbn.update({"description": subfield_u})
+            # WARNING! vocabulary document_identifiers_materials
+            material = mapping(
+                IDENTIFIERS_MEDIUM_TYPES,
+                subfield_u,
+            )
+            if material:
+                isbn.update({"medium": material})
         if isbn not in _isbns:
             _isbns.append(isbn)
     return _isbns
@@ -655,8 +672,10 @@ def alternative_identifiers(self, key, value):
     if key == "036__":
         if "a" in value and "9" in value:
             indentifier_entry.update(
-                {"value": sub_a,
-                 "scheme": clean_val("9", value, str, req=True)}
+                {
+                    "value": sub_a,
+                    "scheme": clean_val("9", value, str, req=True),
+                }
             )
 
     return indentifier_entry
@@ -674,8 +693,9 @@ def dois(self, key, value):
     for v in force_list(value):
         subfield_q = clean_val("q", v, str, transform=_clean_doi_material)
 
+        # vocabulary controlled
         material = mapping(
-            MATERIALS,
+            IDENTIFIERS_MEDIUM_TYPES,
             subfield_q,
             raise_exception=True,
         )
@@ -777,8 +797,8 @@ def arxiv_eprints(self, key, value):
             duplicated = [
                 elem
                 for i, elem in enumerate(_alternative_identifiers)
-                if elem["value"] == eprint_id and
-                elem["scheme"].lower() == "arxiv"
+                if elem["value"] == eprint_id
+                and elem["scheme"].lower() == "arxiv"
             ]
             category = check_category("c", v)
             if not duplicated:
@@ -868,7 +888,7 @@ def conference_info(self, key, value):
                     raise UnexpectedValue(subfield="w")
 
             try:
-                series_number = clean_val("n", v, int)
+                series_number = clean_val("n", v, str)
             except TypeError:
                 raise UnexpectedValue("n", message=" series number not an int")
 
@@ -883,7 +903,7 @@ def conference_info(self, key, value):
                     "place": clean_val("c", v, str, req=True),
                     "dates": dates,
                     "identifiers": _prev_identifiers,
-                    "series": str(series_number),
+                    "series": series_number,
                     "country": country_code,
                 }
             )
@@ -1092,8 +1112,7 @@ def number_of_pages(self, key, value):
         if parts["has_extra"]:
             raise UnexpectedValue(subfield="a")
         if parts["physical_description"]:
-            self["physical_description"] =\
-                parts["physical_description"]
+            self["physical_description"] = parts["physical_description"]
         if parts["number_of_pages"]:
             return str(parts["number_of_pages"])
         raise UnexpectedValue(subfield="a")
@@ -1121,10 +1140,17 @@ def medium(self, key, value):
     """Translates medium."""
     _migration = self.get("_migration", {})
     item_mediums = _migration.get("item_medium", [])
-    barcodes = force_list(value.get("x", ""))
-    _medium = mapping(MEDIUMS,
-                      clean_val("a", value, str).upper().replace('-', ''),
-                      raise_exception=True)
+    barcodes = []
+    val_x = value.get("x")
+
+    if val_x:
+        barcodes = [barcode for barcode in force_list(val_x) if barcode]
+
+    _medium = mapping(
+        ITEMS_MEDIUMS,
+        clean_val("a", value, str).upper().replace("-", ""),
+        raise_exception=True,
+    )
 
     for barcode in barcodes:
         current_item = {
@@ -1133,10 +1159,11 @@ def medium(self, key, value):
         }
         if current_item not in item_mediums:
             item_mediums.append(current_item)
-    _migration.update(
-        {
-            "item_medium": item_mediums,
-            "has_medium": True,
-        }
-    )
+    if item_mediums:
+        _migration.update(
+            {
+                "item_medium": item_mediums,
+                "has_medium": True,
+            }
+        )
     return _migration

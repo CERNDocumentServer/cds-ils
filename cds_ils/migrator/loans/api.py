@@ -18,13 +18,12 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
 from cds_ils.migrator.api import import_record
-from cds_ils.migrator.errors import ItemMigrationError, LoanMigrationError
+from cds_ils.migrator.errors import LoanMigrationError
+from cds_ils.migrator.handlers import json_records_exception_handlers
 from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.patrons.api import get_user_by_legacy_id
-from cds_ils.migrator.utils import model_provider_by_rectype
 
-migrated_logger = logging.getLogger("migrated_records")
-records_logger = logging.getLogger("records_errored")
+loans_logger = logging.getLogger("loans_logger")
 
 
 def validate_user(loan_record):
@@ -40,14 +39,7 @@ def validate_user(loan_record):
 
 def validate_item(record):
     """Validate loan item."""
-    try:
-        return get_item_by_barcode(record["item_barcode"])
-    except ItemMigrationError:
-        records_logger.error(
-            "LOAN: {0}, ERROR: barcode {1} not found.".format(
-                record["legacy_id"], record["item_barcode"]
-            )
-        )
+    return get_item_by_barcode(record["item_barcode"])
 
 
 def validate_document_pid(record, item):
@@ -59,22 +51,12 @@ def validate_document_pid(record, item):
 
     document = document_class.get_record_by_pid(document_pid)
     if record["legacy_document_id"] is None:
-        records_logger.error(
-            "LOAN: {0}, ERROR: document_legacy_recid {1} not found.".format(
-                record["legacy_id"], record["legacy_document_id"]
-            )
-        )
         raise LoanMigrationError(
             "no document id for loan {}".format(record["legacy_id"])
         )
     if document.get("legacy_recid", None) != record["legacy_document_id"]:
         # this might happen when record merged or migrated,
         # the already migrated document should take precedence
-        records_logger.error(
-            "inconsistent document dependencies for loan {}".format(
-                record["legacy_id"]
-            )
-        )
         raise LoanMigrationError(
             "inconsistent document dependencies for loan {}".format(
                 record["legacy_id"]
@@ -140,14 +122,13 @@ def validate_loan(new_loan_dict, record):
         )
 
 
-def import_loans_from_json(dump_file, raise_exceptions=False):
+def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
     """Imports loan objects from JSON."""
-    dump_file = dump_file[0]
-
     (
         default_location_pid_value,
         _,
     ) = current_app_ils.get_default_location_pid
+
     with click.progressbar(json.load(dump_file)) as bar:
         for record in bar:
             click.echo('Importing loan "{0}"...'.format(record["legacy_id"]))
@@ -156,52 +137,51 @@ def import_loans_from_json(dump_file, raise_exceptions=False):
                 patron_pid = validate_user(record)
 
                 item = validate_item(record)
+                if not item:
+                    continue
                 document_pid = validate_document_pid(record, item)
 
-            except LoanMigrationError as e:
-                if raise_exceptions:
-                    raise e
-                continue
-            except ItemMigrationError as e:
-                if raise_exceptions:
-                    raise e
-                continue
+                # create a loan
+                loan_dict = dict(
+                    patron_pid=str(patron_pid),
+                    transaction_location_pid=default_location_pid_value,
+                    transaction_user_pid=str(SystemAgent.id),
+                    document_pid=document_pid,
+                    item_pid={
+                        "value": item.pid.pid_value,
+                        "type": item.pid.pid_type,
+                    },
+                )
 
-            # create a loan
-            loan_dict = dict(
-                patron_pid=str(patron_pid),
-                transaction_location_pid=default_location_pid_value,
-                transaction_user_pid=str(SystemAgent.id),
-                document_pid=document_pid,
-                item_pid={
-                    "value": item.pid.pid_value,
-                    "type": item.pid.pid_type,
-                },
-            )
-
-            loan_dict = provide_valid_loan_state_metadata(record, loan_dict)
-            if not loan_dict:
-                continue
-            try:
+                loan_dict = provide_valid_loan_state_metadata(
+                    record, loan_dict
+                )
+                if not loan_dict:
+                    continue
                 validate_loan(loan_dict, record)
-            except LoanMigrationError as e:
-                if raise_exceptions:
-                    raise e
-                continue
 
-            model, provider = model_provider_by_rectype("loan")
-            try:
-                loan = import_record(
-                    loan_dict, model, provider, legacy_id_key=None
+                import_record(
+                    loan_dict,
+                    rectype=rectype,
+                    legacy_id_key=None,
+                    log=dict(legacy_id=record["legacy_id"]),
                 )
                 db.session.commit()
-                migrated_logger.warning(
-                    "LOAN: {0} OK, new pid: {1}".format(
-                        record["legacy_id"], loan["pid"]
+
+            except Exception as exc:
+                handler = json_records_exception_handlers.get(exc.__class__)
+                if handler:
+                    handler(
+                        exc,
+                        legacy_id=record["legacy_id"],
+                        barcode=record["item_barcode"],
+                        rectype=rectype,
                     )
-                )
-            except Exception as e:
-                db.session.rollback()
-                records_logger.error(
-                    "LOAN: {0} ERROR: {1}".format(record["legacy_id"], str(e))
-                )
+                    if raise_exceptions:
+                        raise exc
+                else:
+                    db.session.rollback()
+                    if raise_exceptions:
+                        raise exc
+                    else:
+                        continue

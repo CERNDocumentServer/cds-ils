@@ -55,18 +55,22 @@ import logging
 
 import click
 from elasticsearch_dsl import Q
+from flask import current_app
 from invenio_app_ils.ill.proxies import current_ils_ill
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
+from invenio_pidstore.errors import PIDDoesNotExistError
 
+from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import BorrowingRequestError, ItemMigrationError
+from cds_ils.migrator.handlers import json_records_exception_handlers
 from cds_ils.migrator.items.api import get_item_by_barcode
-from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
-    get_cost, get_date, get_migration_document_pid, get_patron_pid, \
-    model_provider_by_rectype
+from cds_ils.migrator.utils import find_correct_document_pid, \
+    get_acq_ill_notes, get_cost, get_date, get_migration_document_pid, \
+    get_patron_pid
 
-migrated_logger = logging.getLogger("migrated_records")
-error_logger = logging.getLogger("records_errored")
+records_logger = logging.getLogger("borrowing_requests_logger")
 
 
 def get_status(record):
@@ -74,8 +78,8 @@ def get_status(record):
     mapping = {
         "cancelled": "CANCELLED",
         "on loan": "ON_LOAN",
-        "received": "REQUESTED",
         "requested": "REQUESTED",
+        "new": "PENDING",
         "returned": "RETURNED",
     }
     try:
@@ -127,17 +131,27 @@ def validate_ill(record):
     if has_anonymous_patron and record["status"] in ["ON_LOAN", "REQUESTED"]:
         raise BorrowingRequestError(
             f"Order {record['legacy_id']} "
-            f"has anonymous patron while being in active state.")
+            f"has anonymous patron while being in active state."
+        )
 
 
 def clean_record_json(record):
     """Create a record for ILS."""
+    barcode = (
+        record.get("barcode")
+        .replace("No barcode associated", "")
+        .replace("No barcode asociated", "")
+    )
+    status = get_status(record)
     document_pid = None
     try:
-        item = get_item_by_barcode(record["barcode"])
-        document_pid = item.get("document_pid")
+        if barcode:
+            item = get_item_by_barcode(barcode)
+            document_pid = item.get("document_pid")
+        else:
+            document_pid = find_correct_document_pid(record)
     except ItemMigrationError:
-        document_pid = get_migration_document_pid()
+        document_pid = find_correct_document_pid(record)
 
     # library_pid
     library = get_library_by_legacy_id(record["id_crcLIBRARY"])
@@ -148,11 +162,14 @@ def clean_record_json(record):
         legacy_id=record.get("legacy_id"),
         library_pid=library_pid,
         patron_pid=get_patron_pid(record),
-        status=get_status(record),
+        status=status,
         type=get_type(record),
     )
 
     # Optional fields
+    if status == "CANCELLED":
+        new_record.update(cancel_reason="MIGRATED/UNKNOWN")
+
     expected_delivery_date = record.get("expected_date")
     if expected_delivery_date:
         new_record.update(
@@ -188,28 +205,29 @@ def clean_record_json(record):
     return new_record
 
 
-def import_ill_borrowing_requests_from_json(dump_file, raise_exception=False):
+def import_ill_borrowing_requests_from_json(
+    dump_file, raise_exceptions=False, rectype="borrowing-request"
+):
     """Imports borrowing requests from JSON data files."""
-    dump_file = dump_file[0]
-    model, provider = model_provider_by_rectype("borrowing-request")
-
     click.echo("Importing borrowing requests ..")
     with click.progressbar(json.load(dump_file)) as input_data:
-        ils_records = []
         for record in input_data:
             try:
                 ils_record = import_record(
                     clean_record_json(record),
-                    model,
-                    provider,
+                    rectype="borrowing-request",
                     legacy_id_key="legacy_id",
                 )
-                ils_records.append(ils_record)
-            except Exception as e:
-                error_logger.error(
-                    "ORDER: {0} ERROR: {1}".format(record["legacy_id"], str(e))
-                )
-                db.session.rollback()
-                if raise_exception:
-                    raise e
+            except Exception as exc:
+                handler = json_records_exception_handlers.get(exc.__class__)
+                if handler:
+                    handler(
+                        exc,
+                        legacy_id=record["legacy_id"],
+                        barcode=record["barcode"],
+                        rectype=rectype,
+                    )
+                else:
+                    db.session.rollback()
+                    raise exc
         db.session.commit()

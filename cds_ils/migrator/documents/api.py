@@ -8,16 +8,11 @@
 
 """CDS-ILS document migrator API."""
 
-import logging
-
 import click
 from elasticsearch_dsl import Q
 from invenio_app_ils.proxies import current_app_ils
 
 from cds_ils.migrator.errors import DocumentMigrationError
-
-migrated_logger = logging.getLogger("migrated_records")
-records_logger = logging.getLogger("records_errored")
 
 
 def get_document_by_barcode(barcode):
@@ -44,7 +39,7 @@ def get_document_by_barcode(barcode):
             fg="red",
         )
         raise DocumentMigrationError(
-            "found more than one document with barcode {}".format(barcode)
+            "no document found with barcode {}".format(barcode)
         )
 
 

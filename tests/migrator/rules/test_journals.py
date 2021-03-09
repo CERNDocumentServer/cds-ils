@@ -502,7 +502,7 @@ def test_medium(app):
             check_transformation(
                 """
                 <datafield tag="340" ind1=" " ind2=" ">
-                    <subfield code="a">ebook</subfield>
+                    <subfield code="a">whatever</subfield>
                 </datafield>
                 """,
                 {

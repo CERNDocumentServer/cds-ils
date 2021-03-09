@@ -12,13 +12,12 @@ from dojson.utils import for_each_value, force_list
 from invenio_app_ils.relations.api import LANGUAGE_RELATION, OTHER_RELATION, \
     SEQUENCE_RELATION
 
-from cds_ils.importer.errors import ManualImportRequired, UnexpectedValue
+from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
 
 from .base import title as base_title
 from .utils import clean_val, filter_list_values, out_strip
-from .values_mapping import ACCESS_TYPE, COLLECTION, DOCUMENT_TYPE, MEDIUMS, \
-    mapping
+from .values_mapping import ACCESS_TYPE, COLLECTION, ITEMS_MEDIUMS, mapping
 
 
 @model.over("legacy_recid", "^001", override=True)
@@ -64,7 +63,7 @@ def abbreviated_title(self, key, value):
     """Translates abbreviated title field."""
     _alternative_titles = self.get("alternative_titles", [])
     sub_a = clean_val("a", value, str, req=True)
-    _alternative_titles.append({"type": "ABBREVIATION", 'value': sub_a})
+    _alternative_titles.append({"type": "ABBREVIATION", "value": sub_a})
     return _alternative_titles
 
 
@@ -225,10 +224,17 @@ def medium(self, key, value):
     """Translates medium."""
     _migration = self.get("_migration", {})
     item_mediums = _migration.get("item_medium", [])
-    barcodes = force_list(value.get("x", ""))
-    _medium = mapping(MEDIUMS,
-                      clean_val("a", value, str).upper().replace('-', ''),
-                      raise_exception=True)
+    barcodes = []
+    val_x = value.get("x")
+    if val_x:
+        barcodes = [barcode for barcode in force_list(value.get("x"))
+                    if barcode]
+
+    _medium = mapping(
+        ITEMS_MEDIUMS,
+        clean_val("a", value, str).upper().replace("-", ""),
+        raise_exception=True,
+    )
 
     for barcode in barcodes:
         current_item = {
@@ -237,12 +243,13 @@ def medium(self, key, value):
         }
         if current_item not in item_mediums:
             item_mediums.append(current_item)
-    _migration.update(
-        {
-            "item_medium": item_mediums,
-            "has_medium": True,
-        }
-    )
+    if item_mediums:
+        _migration.update(
+            {
+                "item_medium": item_mediums,
+                "has_medium": True,
+            }
+        )
     return _migration
 
 
@@ -269,8 +276,11 @@ def document_type(self, key, value):
     """Translates document type field."""
     for v in force_list(value):
         clean_val_a = clean_val("a", v, str)
-        if ((key == "980__" or key == "690C_") and clean_val_a == "PERI") \
-                or key == "960__" and clean_val_a == "31":
+        if (
+            ((key == "980__" or key == "690C_") and clean_val_a == "PERI")
+            or key == "960__"
+            and clean_val_a == "31"
+        ):
             raise IgnoreKey("document_type")
         else:
             raise UnexpectedValue(subfield="a")

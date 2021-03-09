@@ -8,8 +8,6 @@
 
 """CDS-ILS migrator."""
 
-import logging
-
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.indexer import RecordRelationIndexer
@@ -24,18 +22,13 @@ from cds_ils.migrator.relations.api import create_parent_child_relation
 from cds_ils.migrator.series.api import clean_document_json_for_multipart, \
     exclude_multipart_fields, get_multipart_by_multipart_id, \
     replace_fields_in_volume
-from cds_ils.migrator.utils import model_provider_by_rectype
-
-migrated_logger = logging.getLogger("migrated_records")
-records_logger = logging.getLogger("records_errored")
 
 
 def import_multivolume(json_record):
     """Import multivolume type of multipart."""
     document_indexer = current_app_ils.document_indexer
     series_indexer = current_app_ils.series_indexer
-    series_cls, series_pid_provider = model_provider_by_rectype("multipart")
-    document_cls, document_pid_provider = model_provider_by_rectype("document")
+    series_cls = current_app_ils.series_record_cls
 
     legacy_recid = json_record["legacy_recid"]
 
@@ -55,14 +48,14 @@ def import_multivolume(json_record):
         legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
         get_record_by_legacy_recid(series_cls, legacy_pid_type, legacy_recid)
         raise MultipartMigrationError(
-            f"Multipart {legacy_recid} was already " f"processed. Aborting."
+            f"Multipart {legacy_recid} was already processed. Aborting."
         )
     except PIDDoesNotExistError as e:
         multipart_record = import_record(
             multipart_json,
-            series_cls,
-            series_pid_provider,
+            rectype="multipart",
             legacy_id_key="title",
+            log=dict(legacy_id=multipart_json["legacy_recid"]),
         )
     volumes_items_list = json_record["_migration"]["items"]
     volumes_identifiers_list = json_record["_migration"]["volumes_identifiers"]
@@ -89,9 +82,9 @@ def import_multivolume(json_record):
         replace_fields_in_volume(document_json_template, volume, json_record)
         document_record = import_record(
             document_json_template,
-            document_cls,
-            document_pid_provider,
+            rectype="document",
             legacy_id_key="title",
+            log=dict(legacy_id=multipart_json["legacy_recid"]),
         )
         document_indexer.index(document_record)
         series_indexer.index(multipart_record)
@@ -111,8 +104,7 @@ def import_multipart(json_record):
     """Import multipart record."""
     document_indexer = current_app_ils.document_indexer
     series_indexer = current_app_ils.series_indexer
-    series_cls, series_pid_provider = model_provider_by_rectype("multipart")
-    document_cls, document_pid_provider = model_provider_by_rectype("document")
+    document_cls = current_app_ils.document_record_cls
 
     multipart_record = None
     multipart_id = json_record["_migration"].get("multipart_id")
@@ -128,7 +120,7 @@ def import_multipart(json_record):
     if multipart_id:
         # try to check if the multipart already exists
         # (from previous dump file)
-        multipart_record = get_multipart_by_multipart_id(multipart_id)
+        multipart_record = get_multipart_by_multipart_id(multipart_id.upper())
     # series with record per volume shouldn't have more than one volume
     # in the list
     if len(volumes) != 1:
@@ -139,9 +131,9 @@ def import_multipart(json_record):
     if not multipart_record:
         multipart_record = import_record(
             multipart_json,
-            series_cls,
-            series_pid_provider,
+            rectype="multipart",
             legacy_id_key="title",
+            log=dict(legacy_id=document_json["legacy_recid"]),
         )
     try:
         # check if the document already exists
@@ -159,7 +151,9 @@ def import_multipart(json_record):
         return multipart_record
     except PIDDoesNotExistError as e:
         document_record = import_record(
-            document_json, document_cls, document_pid_provider
+            document_json,
+            rectype="document",
+            log=dict(legacy_id=document_json["legacy_recid"]),
         )
         document_indexer.index(document_record)
 

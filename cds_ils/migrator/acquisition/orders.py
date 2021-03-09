@@ -29,7 +29,7 @@ period_of_interest_from: 2010-08-18 00:00:00
                   'authors': '',
                   'edition': '',
                   'place': '',
-                  'year': ''}
+                  'year': ''} or {'recid':}
            request_type: acq-book
       borrower_comments: NULL
       only_this_edition: None
@@ -52,18 +52,23 @@ import json
 import logging
 
 import click
+from flask import current_app
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
+from invenio_pidstore.errors import PIDDoesNotExistError
 
+from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.acquisition.vendors import get_vendor_pid_by_legacy_id
 from cds_ils.migrator.api import import_record
-from cds_ils.migrator.errors import AcqOrderError, ItemMigrationError
+from cds_ils.migrator.default_records import MIGRATION_VENDOR_PID
+from cds_ils.migrator.errors import AcqOrderError, ItemMigrationError, \
+    VendorError
+from cds_ils.migrator.handlers import acquisition_order_exception_handler, \
+    json_records_exception_handlers
 from cds_ils.migrator.items.api import get_item_by_barcode
-from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
-    get_cost, get_date, get_migration_document_pid, get_patron_pid, \
-    model_provider_by_rectype
-
-migrated_logger = logging.getLogger("migrated_records")
-error_logger = logging.getLogger("records_errored")
+from cds_ils.migrator.utils import find_correct_document_pid, \
+    get_acq_ill_notes, get_cost, get_date, get_migration_document_pid, \
+    get_patron_pid
 
 DEFAULT_ITEM_MEDIUM = "ELECTRONIC"
 LIBRARIAN_IDS = [
@@ -94,27 +99,31 @@ def get_status(record):
     mapping = {
         "cancelled": "CANCELLED",
         "new": "PENDING",
+        "requested": "PENDING",
         "on order": "ORDERED",
         "proposal-on order": "ORDERED",
         "received": "RECEIVED",
+        "proposal-received": "RECEIVED",
     }
     try:
         return mapping[record["status"]]
     except KeyError:
         raise AcqOrderError(
-            "Unknown status for acquisition order!\n{}".format(record)
+            "Unknown status {} for acquisition order {}".format(
+                record["status"], record["legacy_id"]
+            )
         )
 
 
 def get_recipient(record):
     """Calculate recipient value."""
     budget_code = record.get("budget_code")
+    legacy_patron_id = record.get("id_crcBORROWER")
+
     if not budget_code:
-        if record.get("id_crcBORROWER") in LIBRARIAN_IDS:
+        if legacy_patron_id in LIBRARIAN_IDS:
             return "LIBRARY"
-        raise AcqOrderError(
-            "Could not find `budget_code` for record!\n{}".format(record)
-        )
+        return "PATRON"
 
     budget_code = budget_code.lower()
     bookshop_values = ["bs", "bookshop", "19500"]
@@ -131,21 +140,30 @@ def get_recipient(record):
         or budget_code[1:].isnumeric()  # when value is T1111
     ):
         return "PATRON"
-
-    raise AcqOrderError(
-        "Could not match `budget_code` to recipient value!\n{}".format(record)
-    )
+    return "PATRON"
 
 
-def create_order_line(record):
+def create_order_line(record, order_status):
     """Create an OrderLine."""
+    document_cls = current_app_ils.document_record_cls
+    item_medium = None
+    barcode = record.get("barcode").replace("No barcode associated", "")
+    item_medium = DEFAULT_ITEM_MEDIUM
+
     try:
-        item = get_item_by_barcode(record["barcode"])
-        document_pid = item.get("document_pid")
-        item_medium = item.get("medium")
+        if barcode:
+            item = get_item_by_barcode(barcode)
+            document_pid = item["document_pid"]
+            item_medium = item.get("medium", DEFAULT_ITEM_MEDIUM)
+        else:
+            document_pid = find_correct_document_pid(record)
     except ItemMigrationError:
-        document_pid = get_migration_document_pid()
-        item_medium = DEFAULT_ITEM_MEDIUM
+        document_pid = find_correct_document_pid(record)
+
+    if document_pid != get_migration_document_pid():
+        document = document_cls.get_record_by_pid(document_pid)
+        if document["document_type"] == "BOOK":
+            item_medium = "PAPER"
 
     new_order_line = dict(
         document_pid=document_pid,
@@ -156,13 +174,17 @@ def create_order_line(record):
         copies_ordered=1,  # default 1 because is required
     )
 
+    if order_status == "RECEIVED":
+        new_order_line.update({"copies_received": 1})
+
     total_price = get_cost(record)
     if total_price:
         new_order_line.update(total_price=total_price)
 
     if record.get("budget_code"):
-        new_order_line.update(payment_mode="BUDGET_CODE",
-                              budget_code=record.get("budget_code"))
+        new_order_line.update(
+            payment_mode="BUDGET_CODE", budget_code=record.get("budget_code")
+        )
 
     return new_order_line
 
@@ -178,15 +200,18 @@ def validate_order(record):
     if has_anonymous_patron and record["status"] in ["PENDING", "ORDERED"]:
         raise AcqOrderError(
             f"Order {record['legacy_id']} "
-            f"has anonymous patron while being in active state.")
+            f"has anonymous patron while being in active state."
+        )
 
 
 def migrate_order(record):
     """Create a order record for ILS."""
+    status = get_status(record)
+
     new_order = dict(
         legacy_id=record["legacy_id"],
-        order_lines=[create_order_line(record)],
-        status=get_status(record),
+        order_lines=[create_order_line(record, status)],
+        status=status,
     )
 
     order_date = record["request_date"]
@@ -196,13 +221,19 @@ def migrate_order(record):
         new_order.update(order_date="1970-01-01")
 
     # Optional fields
+    if status == "CANCELLED":
+        new_order.update(cancel_reason="MIGRATED/UNKNOWN")
+
     grand_total = get_cost(record)
     if grand_total:
         new_order.update(grand_total=grand_total)
 
-    vendor_pid = get_vendor_pid_by_legacy_id(
-        record["id_crcLIBRARY"], grand_total
-    )
+    try:
+        vendor_pid = get_vendor_pid_by_legacy_id(
+            record["id_crcLIBRARY"], grand_total
+        )
+    except VendorError as e:
+        vendor_pid = MIGRATION_VENDOR_PID
     new_order.update(vendor_pid=vendor_pid)
 
     expected_delivery_date = record.get("expected_date")
@@ -224,28 +255,42 @@ def migrate_order(record):
     return new_order
 
 
-def import_orders_from_json(dump_file, raise_exceptions=False):
+def import_orders_from_json(
+    dump_file, rectype="acq-order", raise_exceptions=False
+):
     """Imports orders from JSON data files."""
-    dump_file = dump_file[0]
     click.echo("Importing acquisition orders ..")
     with click.progressbar(json.load(dump_file)) as input_data:
-        ils_records = []
         for record in input_data:
-            model, provider = model_provider_by_rectype("acq-order")
+            click.echo('Processing order "{}"...'.format(record["legacy_id"]))
             try:
                 ils_record = import_record(
                     migrate_order(record),
-                    model,
-                    provider,
+                    rectype=rectype,
                     legacy_id_key="legacy_id",
                 )
-                ils_records.append(ils_record)
-            except Exception as e:
-                error_logger.error(
-                    "ORDER: {0} ERROR: {1}".format(record["legacy_id"], str(e))
+            except Exception as exc:
+                handler = acquisition_order_exception_handler.get(
+                    exc.__class__
                 )
-                db.session.rollback()
-                if raise_exceptions:
-                    raise e
-
-        db.session.commit()
+                if handler:
+                    handler(
+                        exc,
+                        legacy_id=record["legacy_id"],
+                        barcode=record["barcode"],
+                        rectype=rectype,
+                    )
+                    if raise_exceptions:
+                        raise exc
+                else:
+                    db.session.rollback()
+                    logger = logging.getLogger(f"{rectype}s_logger")
+                    logger.error(
+                        str(exc),
+                        extra=dict(
+                            legacy_id=record["legacy_id"],
+                            new_pid=None,
+                            status="ERROR",
+                        ),
+                    )
+                    raise exc
