@@ -26,8 +26,8 @@ class CDSStandard(CdsIlsOverdo):
 
     __ignore_keys__ = CDS_IGNORE_FIELDS
 
-    _default_fields = {"_migration": {
-        **get_helper_dict(record_type="document")}
+    _default_fields = {
+        "_migration": {**get_helper_dict(record_type="document")}
     }
 
     def do(

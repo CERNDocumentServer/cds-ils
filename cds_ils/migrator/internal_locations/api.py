@@ -9,7 +9,6 @@
 """CDS-ILS migrator API."""
 
 import json
-import logging
 
 import click
 from elasticsearch_dsl import Q
@@ -19,10 +18,7 @@ from invenio_app_ils.proxies import current_app_ils
 
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ItemMigrationError
-from cds_ils.migrator.utils import bulk_index_records, \
-    model_provider_by_rectype
-
-migrated_logger = logging.getLogger("migrated_documents")
+from cds_ils.migrator.utils import bulk_index_records
 
 
 def import_internal_locations_from_json(
@@ -30,8 +26,6 @@ def import_internal_locations_from_json(
 ):
     """Load parent records from file."""
     dump_file = dump_file[0]
-    model, provider = model_provider_by_rectype(rectype)
-    library_model, library_provider = model_provider_by_rectype("provider")
 
     include_ids = None if include is None else include.split(",")
 
@@ -58,8 +52,7 @@ def import_internal_locations_from_json(
                     record["type"] = "LIBRARY"
                     record = import_record(
                         record,
-                        library_model,
-                        library_provider,
+                        rectype="library",
                         legacy_id_key="legacy_ids",
                     )
                     records.append(record)
@@ -67,7 +60,9 @@ def import_internal_locations_from_json(
 
                     record["location_pid"] = location_pid_value
                     record = import_record(
-                        record, model, provider, legacy_id_key="legacy_ids"
+                        record,
+                        rectype="internal_location",
+                        legacy_id_key="legacy_ids",
                     )
                     records.append(record)
     # Index all new internal location and libraries records

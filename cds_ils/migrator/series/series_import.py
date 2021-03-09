@@ -9,21 +9,16 @@
 """CDS-ILS migrator."""
 
 import json
-import logging
 
 import click
-from invenio_app_ils.errors import IlsValidationError
-from invenio_db import db
 
 from cds_ils.migrator.api import import_record
+from cds_ils.migrator.handlers import json_records_exception_handlers, \
+    multipart_record_exception_handler, xml_record_exception_handlers
 from cds_ils.migrator.series import journal_marc21, multipart_marc21, \
     serial_marc21
 from cds_ils.migrator.series.xml_series_loader import CDSSeriesDumpLoader
-from cds_ils.migrator.utils import model_provider_by_rectype
 from cds_ils.migrator.xml_to_json_dump import CDSRecordDump
-
-migrated_logger = logging.getLogger("migrated_records")
-records_logger = logging.getLogger("records_errored")
 
 
 def import_series_from_dump(
@@ -36,6 +31,7 @@ def import_series_from_dump(
         dojson_model = multipart_marc21
     else:
         dojson_model = journal_marc21
+
     for idx, source in enumerate(sources, 1):
         click.echo(
             "({}/{}) Migrating documents in {}...".format(
@@ -44,41 +40,38 @@ def import_series_from_dump(
         )
         data = json.load(source)
         with click.progressbar(data) as records:
-            for item in records:
+            for series_record in records:
                 click.echo(
                     'Processing series from record "{}"...'.format(
-                        item["recid"]
+                        series_record["recid"]
                     )
                 )
                 try:
                     record_dump = CDSRecordDump(
-                        item, dojson_model=dojson_model
+                        series_record, dojson_model=dojson_model
                     )
-                    try:
-                        loader_class.create(record_dump, rectype)
-                    except Exception as e:
-                        db.session.rollback()
-                        raise e
+                    loader_class.create(
+                        record_dump,
+                        rectype,
+                        log=dict(legacy_id=series_record["recid"]),
+                    )
 
-                    migrated_logger.warning(
-                        "#RECID {0}: OK".format(item["recid"])
+                except Exception as exc:
+                    handler = multipart_record_exception_handler.get(
+                        exc.__class__
                     )
-                except IlsValidationError as e:
-                    records_logger.error(
-                        "@RECID: {0} FATAL: {1}".format(
-                            item["recid"],
-                            str(e.original_exception.message),
+                    if handler:
+                        handler(
+                            exc,
+                            legacy_id=series_record["recid"],
+                            rectype=rectype,
                         )
-                    )
-                except Exception as e:
-                    records_logger.error(
-                        "@RECID: {0} ERROR: {1}".format(item["recid"], str(e))
-                    )
+                    else:
+                        raise exc
 
 
 def import_serial_from_file(sources, rectype):
     """Load serial records from file."""
-    model, provider = model_provider_by_rectype(rectype)
     for idx, source in enumerate(sources, 1):
         click.echo(
             "({}/{}) Migrating documents in {}...".format(
@@ -86,7 +79,6 @@ def import_serial_from_file(sources, rectype):
             )
         )
         with click.progressbar(json.load(source).items()) as bar:
-            records = []
             for key, json_record in bar:
                 if "legacy_recid" in json_record:
                     click.echo(
@@ -104,5 +96,18 @@ def import_serial_from_file(sources, rectype):
                     "children", []
                 )
                 if has_children:
-                    record = import_record(json_record, model, provider)
-                    records.append(record)
+                    try:
+                        record = import_record(json_record, rectype=rectype)
+                    except Exception as exc:
+                        handler = json_records_exception_handlers.get(
+                            exc.__class__
+                        )
+                        if handler:
+                            handler(
+                                exc,
+                                legacy_id=json_record.get("legacy_recid")
+                                or json_record.get("title"),
+                                rectype=rectype,
+                            )
+                        else:
+                            raise exc

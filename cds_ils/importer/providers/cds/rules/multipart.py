@@ -15,13 +15,12 @@ from dojson.utils import for_each_value, force_list
 
 from cds_ils.importer.errors import MissingRequiredField, UnexpectedValue
 
-from ...utils import build_ils_contributor
 from ..models.multipart import model
 from .base import alternative_identifiers as alternative_identifiers_base
 from .base import urls as urls_base
 from .utils import clean_val, extract_parts, extract_volume_info, \
     extract_volume_number, filter_list_values, out_strip
-from .values_mapping import MATERIALS, mapping
+from .values_mapping import IDENTIFIERS_MEDIUM_TYPES, mapping
 
 
 def _insert_volume(_migration, volume_number, volume_obj, field_key="volumes"):
@@ -120,8 +119,11 @@ def dois(self, key, value):
             # this identifier is for a specific volume
             volume_obj = {
                 "doi": doi["value"],
+                # WARNING! vocabulary document_identifiers_materials
                 "material": mapping(
-                    MATERIALS, volume_info["description"], raise_exception=True
+                    IDENTIFIERS_MEDIUM_TYPES,
+                    volume_info["description"],
+                    raise_exception=True,
                 ),
                 "source": doi["source"],
             }
@@ -137,7 +139,10 @@ def dois(self, key, value):
                     subfield="q",
                     message=" found a volume number but could not extract it",
                 )
-            doi["material"] = mapping(MATERIALS, val_q, raise_exception=True)
+            # WARNING! vocabulary document_identifiers_materials
+            doi["material"] = mapping(
+                IDENTIFIERS_MEDIUM_TYPES, val_q, raise_exception=True
+            )
             if doi not in _identifiers:
                 _identifiers.append(doi)
     if len(_identifiers) > 0:
@@ -319,7 +324,7 @@ def multipart_id(self, key, value):
     """Volume serial id."""
     val_a = clean_val("a", value, str)
     _migration = self["_migration"]
-    _migration["multipart_id"] = val_a
+    _migration["multipart_id"] = val_a.upper()
     raise IgnoreKey("multipart_id")
 
 

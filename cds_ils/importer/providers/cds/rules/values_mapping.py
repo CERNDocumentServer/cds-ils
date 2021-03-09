@@ -12,7 +12,7 @@ from __future__ import unicode_literals
 from cds_ils.importer.errors import UnexpectedValue
 
 DOCUMENT_TYPE = {
-    "PROCEEDINGS": ["PROCEEDINGS", "42", "43"],
+    "PROCEEDING": ["PROCEEDINGS", "42", "43"],
     "BOOK": ["BOOK", "21"],
     "STANDARD": ["STANDARD"],
 }
@@ -49,10 +49,43 @@ ACCESS_TYPE = {
     "RESTRICTED_UNDEFINED": ["9"],
 }
 
-MEDIUMS = {
+ITEMS_MEDIUMS = {
     "PAPER": ["PAPER"],
+    "EBOOK": ["EBOOK"],
     "CDROM": ["CDROM", "CD-ROM"],
     "DVD": ["DVD VIDEO", "DVD"],
+    "VHS": ["VHS"],
+    "ONLINE": ["EBOOK"],
+}
+
+# can be inconsistent with the medium types
+# materials used in the copyrights and licenses
+MATERIALS = [
+    "addendum",
+    "additional material",
+    "data",
+    "e-proceedings",
+    "ebook",
+    "editorial note",
+    "erratum",
+    "preprint",
+    "publication",
+    "reprint",
+    "software",
+    "translation",
+]
+
+# WARNING! this should be consistent with document_identifiers_materials.json
+IDENTIFIERS_MEDIUM_TYPES = {
+    "ELECTRONIC": ["ELECTRONIC VERSION", "EBOOK"],
+    "HARDBACK": ["PRINT VERSION, HARDBACK"],
+    "PAPERBACK": ["PRINT VERSION, PAPERBACK"],
+    "PRINT_VERSION": ["PRINT VERSION", "PRINT VERSION, SPIRAL-BOUND"],
+    "CD_ROM": ["CDROM", "CD-ROM"],
+    "AUDIOBOOK": ["AUDIOBOOK"],
+    "AUDIO_CD": ["AUDIO CD"],
+    "DISKETTE": ["DISKETTE"],
+    "DVD": ["DVD"],
     "VHS": ["VHS"],
 }
 
@@ -69,7 +102,6 @@ EXPERIMENTS = {
     "EA_IRRAD_MIXED_FIELD": ["EA-IRRAD Mixed-Field"],
     "EA_IRRAD_PROTON": ["EA-IRRAD Proton"],
     "IS270": ["IS270"],
-    "NTOF41": ["nTOF41"],
     "LHC_B_OLD_NOT_USED": ["### LHC-B old not used!"],
     "ACCESS": ["ACCESS"],
     "AD_1": ["AD-1"],
@@ -114,8 +146,9 @@ EXPERIMENTS = {
     "CTF2": ["CTF2"],
     "CTF3": ["CTF3"],
     "DELPHI": ["DELPHI"],
-    "DEUTERON_PRODUCTION_IN_PP_COLLISONS":
-        ["Deuteron production in pp collisons"],
+    "DEUTERON_PRODUCTION_IN_PP_COLLISONS": [
+        "Deuteron production in pp collisons"
+    ],
     "DIRAC": ["DIRAC"],
     "DREAM": ["DREAM"],
     "E51": ["E51"],
@@ -1316,16 +1349,6 @@ EXPERIMENTS = {
     "WIZCAL": ["WIZCAL"],
     "ZEUS": ["ZEUS"],
 }
-MEDIUM_TYPES = [
-    "ELECTRONIC VERSION",
-    "PRINT VERSION",
-    "PRINT VERSION, HARDBACK",
-    "PRINT VERSION, PAPERBACK",
-    "PRINT VERSION, SPIRAL-BOUND",
-    "CD-ROM",
-    "AUDIOBOOK",
-    "DVD",
-]
 
 ARXIV_CATEGORIES = [
     "astro-ph",
@@ -1501,34 +1524,11 @@ INSTITUTIONS = [
     "Fermilab",
     "Cornell",
     "BNL",
-    "ANL"
+    "ANL",
 ]
 
 
-ACCELERATORS = [
-    "SPS",
-    "R&D",
-    "OTHER",
-    "RADFAC",
-    "RE"
-]
-
-
-MATERIALS = [
-    "addendum",
-    "additional material",
-    "data",
-    "e-proceedings",
-    "ebook",
-    "editorial note",
-    "erratum",
-    "preprint",
-    "publication",
-    "reprint",
-    "software",
-    "translation",
-]
-
+ACCELERATORS = ["SPS", "R&D", "OTHER", "RADFAC", "RE"]
 
 SUBJECT_CLASSIFICATION_EXCEPTIONS = [
     "PACS",

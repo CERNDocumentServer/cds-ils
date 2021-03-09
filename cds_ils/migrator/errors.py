@@ -18,7 +18,15 @@ class LossyConversion(DoJSONException):
         """Exception custom initialisation."""
         self.missing = kwargs.pop("missing", None)
         self.message = "Lossy conversion: {0}".format(self.missing or "")
-        super().__init__(*args, **kwargs)
+        super().__init__(*args)
+
+
+class DumpRevisionException(Exception):
+    """Exception for dump revision."""
+
+
+class JSONConversionException(Exception):
+    """JSON Conversion Exception in migration."""
 
 
 class CdsIlsMigrationException(Exception):

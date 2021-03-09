@@ -19,7 +19,7 @@ from invenio_app_ils.series.api import Series
 from invenio_app_ils.series.search import SeriesSearch
 
 from cds_ils.migrator.errors import DocumentMigrationError, \
-    MultipartMigrationError
+    MultipartMigrationError, SeriesMigrationError
 from cds_ils.migrator.utils import pick
 
 lt_es7 = ES_VERSION[0] < 7
@@ -44,6 +44,10 @@ def clean_document_json_for_multipart(json_record, include_keys=None):
         "urls",
         *include_keys
     )
+    if not json_record.get("authors"):
+        raise SeriesMigrationError(
+            "This record is missing authors field value."
+        )
     cleaned_multipart_json["authors"] = [
         author["full_name"] for author in json_record.get("authors")
     ]

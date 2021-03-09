@@ -39,6 +39,21 @@ marcxml = (
 )
 
 
+def check_transformation(marcxml_body, json_body):
+    """Check transformation."""
+    blob = create_record(marcxml.format(marcxml_body))
+    model._default_fields = {"_migration": {**get_helper_dict(record_type="document")}}
+
+    record = model.do(blob, ignore_missing=False)
+
+    expected = {
+        "_migration": {**get_helper_dict(record_type="document")},
+    }
+
+    expected.update(**json_body)
+    assert record == expected
+
+
 def test_conference_info_as_title(app):
     """Test title from conference info."""
 
@@ -65,7 +80,7 @@ def test_conference_info_as_title(app):
                 "identifiers": [{"scheme": "CERN_CODE", "value": None}],
             }
         ],
-        "document_type": "PROCEEDINGS",
+        "document_type": "PROCEEDING",
         "_migration": {
             **get_helper_dict(record_type="document"),
             "conference_place": "Bari, Italy",
@@ -100,21 +115,6 @@ def test_conference_info_as_title(app):
     data.update(**json_body)
     data = add_title_from_conference_info(data)
     assert data["title"] == "The actual title"
-
-
-def check_transformation(marcxml_body, json_body):
-    """Check transformation."""
-    blob = create_record(marcxml.format(marcxml_body))
-    model._default_fields = {"_migration": {**get_helper_dict(record_type="document")}}
-
-    record = model.do(blob, ignore_missing=False)
-
-    expected = {
-        "_migration": {**get_helper_dict(record_type="document")},
-    }
-
-    expected.update(**json_body)
-    assert record == expected
 
 
 def test_mapping():
@@ -488,7 +488,7 @@ def test_document_type(app):
             </datafield>
             """,
             {
-                "document_type": "PROCEEDINGS",
+                "document_type": "PROCEEDING",
             },
         )
         check_transformation(
@@ -498,7 +498,7 @@ def test_document_type(app):
             </datafield>
             """,
             {
-                "document_type": "PROCEEDINGS",
+                "document_type": "PROCEEDING",
             },
         )
         check_transformation(
@@ -995,6 +995,9 @@ def test_publication_info(app):
                     <subfield code="v">42</subfield>
                     <subfield code="g">123456</subfield>
                 </datafield>
+                <datafield tag="980" ind1=" " ind2=" ">
+                    <subfield code="a">BOOK</subfield>
+                </datafield>
                 """,
                 {
                     "publication_info": [
@@ -1018,12 +1021,16 @@ def test_publication_info(app):
             )
         check_transformation(
             """
+            <datafield tag="980" ind1=" " ind2=" ">
+                <subfield code="a">PROCEEDINGS</subfield>
+            </datafield>
             <datafield tag="773" ind1=" " ind2=" ">
                 <subfield code="o">1692 numebrs text etc</subfield>
                 <subfield code="x">Random text</subfield>
             </datafield>
             """,
             {
+                "document_type": "PROCEEDING",
                 "publication_info": [
                     {"note": "1692 numebrs text etc Random text"}
                 ]
@@ -1058,6 +1065,81 @@ def test_publication_info(app):
         )
         check_transformation(
             """
+            <datafield tag="980" ind1=" " ind2=" ">
+                <subfield code="a">PROCEEDINGS</subfield>
+            </datafield>
+            <datafield tag="773" ind1=" " ind2=" ">
+                <subfield code="c">1692-1695</subfield>
+                <subfield code="n">10</subfield>
+                <subfield code="y">2007</subfield>
+                <subfield code="p">Radiat. Meas.</subfield>
+                <subfield code="o">1692 numebrs text etc</subfield>
+                <subfield code="x">Random text</subfield>
+                <subfield code="g">123456</subfield>
+            </datafield>
+            """,
+            {
+                "publication_info": [
+                    {
+                        "page_start": 1692,
+                        "page_end": 1695,
+                        "year": 2007,
+                        "journal_title": "Radiat. Meas.",
+                        "journal_issue": "10",
+                        "note": "1692 numebrs text etc Random text",
+                    }
+                ],
+                "document_type": "PROCEEDING",
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "has_journal": True,
+                    "journal_record_legacy_recids": [
+                        {"recid": "123456", "volume": None}
+                    ],
+                },
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="980" ind1=" " ind2=" ">
+                <subfield code="a">PROCEEDINGS</subfield>
+            </datafield>
+            <datafield tag="773" ind1=" " ind2=" ">
+                <subfield code="c">1692-1695</subfield>
+                <subfield code="n">10</subfield>
+                <subfield code="y">2007</subfield>
+                <subfield code="p">Radiat. Meas.</subfield>
+                <subfield code="o">1692 numebrs text etc</subfield>
+                <subfield code="x">Random text</subfield>
+                <subfield code="g">123456</subfield>
+            </datafield>
+            """,
+            {
+                "publication_info": [
+                    {
+                        "page_start": 1692,
+                        "page_end": 1695,
+                        "year": 2007,
+                        "journal_title": "Radiat. Meas.",
+                        "journal_issue": "10",
+                        "note": "1692 numebrs text etc Random text",
+                    }
+                ],
+                "document_type": "PROCEEDING",
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "has_journal": True,
+                    "journal_record_legacy_recids": [
+                        {"recid": "123456", "volume": None}
+                    ],
+                },
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="690" ind1="C" ind2=" ">
+                <subfield code="a">BOOK</subfield>
+            </datafield>
             <datafield tag="773" ind1=" " ind2=" ">
                 <subfield code="c">1692-1695</subfield>
                 <subfield code="n">10</subfield>
@@ -1367,12 +1449,12 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "medium": "electronic version",
+                        "medium": "ELECTRONIC",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "electronic version",
+                        "medium": "ELECTRONIC",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1406,12 +1488,12 @@ def test_isbns(app):
                     {"value": "9780691090856", "scheme": "ISBN"},
                     {
                         "value": "9781400889167",
-                        "medium": "electronic version",
+                        "medium": "ELECTRONIC",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9780691090849",
-                        "medium": "electronic version",
+                        "medium": "ELECTRONIC",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1449,12 +1531,12 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "medium": "electronic version",
+                        "medium": "ELECTRONIC",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "electronic version",
+                        "medium": "ELECTRONIC",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1479,12 +1561,11 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "description": "description",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "electronic version",
+                        "medium": "ELECTRONIC",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1684,7 +1765,7 @@ def test_dois(app):
             <datafield tag="024" ind1="7" ind2=" ">
                 <subfield code="2">DOI</subfield>
                 <subfield code="a">10.1007/978-1-4613-0247-6</subfield>
-                <subfield code="q">data</subfield>
+                <subfield code="q">ebook</subfield>
                 <subfield code="9">source</subfield>
             </datafield>
             """,
@@ -1692,7 +1773,7 @@ def test_dois(app):
                 "identifiers": [
                     {
                         "source": "source",
-                        "material": "data",
+                        "material": "ELECTRONIC",
                         "value": "10.1007/978-1-4613-0247-6",
                         "scheme": "DOI",
                     }
@@ -1710,7 +1791,7 @@ def test_dois(app):
             {
                 "identifiers": [
                     {
-                        "material": "ebook",
+                        "material": "ELECTRONIC",
                         "value": "10.3390/books978-3-03943-243-1",
                         "scheme": "DOI",
                     }
@@ -1823,7 +1904,7 @@ def test_alternative_identifiers(app):
                 <subfield code="2">DOI</subfield>
                 <subfield code="9">arXiv</subfield>
                 <subfield code="a">10.1103/PhysRevLett.121.052004</subfield>
-                <subfield code="q">publication</subfield>
+                <subfield code="q">ebook</subfield>
             </datafield>
             """,
             {
@@ -1836,7 +1917,7 @@ def test_alternative_identifiers(app):
                     {
                         "value": "10.1103/PhysRevLett.121.052004",
                         "scheme": "DOI",
-                        "material": "publication",
+                        "material": "ELECTRONIC",
                         "source": "arXiv",
                     },
                 ],
@@ -3205,19 +3286,19 @@ def test_record(app):
                              "roles": ["EDITOR"]}],
                 "created_by": {"type": "batchuploader"},
                 "document_type": "BOOK",
-                "identifiers": [{"medium": "electronic version",
+                "identifiers": [{"medium": "ELECTRONIC",
                                  "scheme": "ISBN",
                                  "value": "9789811590344"},
-                                {"medium": "print version",
+                                {"medium": "PRINT_VERSION",
                                  "scheme": "ISBN",
                                  "value": "9789811590337"},
-                                {"medium": "print version",
+                                {"medium": "PRINT_VERSION",
                                  "scheme": "ISBN",
                                  "value": "9789811590351"},
-                                {"medium": "print version",
+                                {"medium": "PRINT_VERSION",
                                  "scheme": "ISBN",
                                  "value": "9789811590368"},
-                                {"material": "ebook",
+                                {"material": "ELECTRONIC",
                                  "scheme": "DOI",
                                  "value": "10.1007/978-981-15-9034-4"}],
                 "internal_notes": [{"value": "Physics and astronomy"}],
@@ -3262,7 +3343,7 @@ def test_medium(app):
             check_transformation(
                 """
                 <datafield tag="340" ind1=" " ind2=" ">
-                    <subfield code="a">EBOOK</subfield>
+                    <subfield code="a">WHATEVER</subfield>
                 </datafield>
                 """,
                 {
