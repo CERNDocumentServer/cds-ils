@@ -35,7 +35,7 @@ def import_users_from_json(dump_file):
                     record["id"], record["email"]
                 )
             )
-            ccid = record.get('ccid')
+            ccid = record.get("ccid")
             if not ccid:
                 click.secho(
                     "User {0}({1}) does not have ccid".format(

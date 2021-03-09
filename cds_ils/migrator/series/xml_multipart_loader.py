@@ -28,26 +28,21 @@ class CDSMultipartDumpLoader(CDSSeriesDumpLoader):
     """Multipart loader class."""
 
     @classmethod
-    def create_record(cls, dump, rectype):
+    def create_record(cls, dump, rectype, log={}):
         """Create a new record from dump."""
-        try:
-            timestamp, json_data = dump.revisions[-1]
-            json_data = clean_created_by_field(json_data)
-            add_cover_metadata(json_data)
-            is_multivolume_record = json_data["_migration"].get(
-                "multivolume_record", False
-            )
-            if is_multivolume_record:
-                click.echo("Multivolume record.")
-                record = import_multivolume(json_data)
-            else:
-                click.echo("Multipart record.")
-                record = import_multipart(json_data)
-                # wait for the previous multipart to be indexed
-                click.echo("Indexing.")
-                time.sleep(2)
-            return record
-        except IlsValidationError as e:
-            click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
-            click.secho(e.original_exception.message, fg="red")
-            raise e
+        timestamp, json_data = dump.revisions[-1]
+        json_data = clean_created_by_field(json_data)
+        add_cover_metadata(json_data)
+        is_multivolume_record = json_data["_migration"].get(
+            "multivolume_record", False
+        )
+        if is_multivolume_record:
+            click.echo("Multivolume record.")
+            record = import_multivolume(json_data)
+        else:
+            click.echo("Multipart record.")
+            record = import_multipart(json_data)
+            # wait for the previous multipart to be indexed
+            click.echo("Indexing.")
+            time.sleep(2)
+        return record

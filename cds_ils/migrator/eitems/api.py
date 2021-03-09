@@ -26,9 +26,10 @@ from cds_ils.migrator.documents.api import get_all_documents_with_files, \
     get_documents_with_ebl_eitems, get_documents_with_external_eitems, \
     get_documents_with_proxy_eitems
 from cds_ils.migrator.errors import EItemMigrationError, FileMigrationError
+from cds_ils.migrator.handlers import eitems_exception_handlers
 
-migrated_logger = logging.getLogger("migrated_records")
-records_logger = logging.getLogger("records_errored")
+migration_logger = logging.getLogger("migrator")
+eitems_logger = logging.getLogger("eitems_logger")
 
 
 def import_legacy_files(file_link):
@@ -81,6 +82,14 @@ def create_eitem(document_pid, open_access=True):
 
     obj["pid"] = provider.pid.pid_value
     eitem = EItem.create(obj, record_uuid)
+    eitems_logger.info(
+        "CREATED",
+        extra=dict(
+            document_pid=document_pid,
+            new_pid=eitem["pid"],
+            status="SUCCESS",
+        ),
+    )
     return eitem
 
 
@@ -174,7 +183,6 @@ def process_files_from_legacy():
                 pid=document["pid"], error=str(e)
             )
             click.secho(msg)
-            records_logger.error(msg)
             continue
 
         # make sure the files are not imported twice by setting the flag
@@ -185,7 +193,7 @@ def process_files_from_legacy():
         DocumentIndexer().index(document)
 
 
-def migrate_external_links():
+def migrate_external_links(raise_exceptions=True):
     """Migrate external links from documents."""
     search = get_documents_with_external_eitems()
     click.echo(
@@ -199,11 +207,19 @@ def migrate_external_links():
         click.echo("Processing document {}...".format(document["pid"]))
 
         for url in document["_migration"]["eitems_external"]:
-            eitem = create_eitem(document["pid"], open_access=True)
-            url["login_required"] = False
-            eitem["urls"] = [url]
-            eitem.commit()
-            EItemIndexer().index(eitem)
+            try:
+                eitem = create_eitem(document["pid"], open_access=True)
+                url["login_required"] = False
+                eitem["urls"] = [url]
+                eitem.commit()
+                EItemIndexer().index(eitem)
+            except Exception as exc:
+                handler = eitems_exception_handlers.get(exc.__class__)
+                if handler:
+                    handler(exc, document_pid=document["pid"])
+                else:
+                    if raise_exceptions:
+                        raise exc
 
         document["_migration"]["eitems_has_external"] = False
         document.commit()
@@ -211,7 +227,7 @@ def migrate_external_links():
         DocumentIndexer().index(document)
 
 
-def migrate_ezproxy_links():
+def migrate_ezproxy_links(raise_exceptions=True):
     """Migrate external links from documents."""
     search = get_documents_with_proxy_eitems()
     click.echo("Found {} documents with ezproxy links.".format(search.count()))
@@ -222,11 +238,19 @@ def migrate_ezproxy_links():
         click.echo("Processing document {}...".format(document["pid"]))
 
         for url in document["_migration"]["eitems_external"]:
-            eitem = create_eitem(document["pid"], open_access=False)
-            url["login_required"] = True
-            eitem["urls"] = [url]
-            eitem.commit()
-            EItemIndexer().index(eitem)
+            try:
+                eitem = create_eitem(document["pid"], open_access=False)
+                url["login_required"] = True
+                eitem["urls"] = [url]
+                eitem.commit()
+                EItemIndexer().index(eitem)
+            except Exception as exc:
+                handler = eitems_exception_handlers.get(exc.__class__)
+                if handler:
+                    handler(exc, document_pid=document["pid"])
+                else:
+                    if raise_exceptions:
+                        raise exc
 
         document["_migration"]["eitems_has_proxy"] = False
         document.commit()
@@ -234,7 +258,7 @@ def migrate_ezproxy_links():
         DocumentIndexer().index(document)
 
 
-def create_ebl_eitem(url, ebl_id_list, document):
+def create_ebl_eitem(url, ebl_id_list, document, raise_exceptions=True):
     """Create eitem record for given migration url and document."""
     eitem_indexer = current_app_ils.eitem_indexer
     url_template = (
@@ -247,26 +271,38 @@ def create_ebl_eitem(url, ebl_id_list, document):
         for ebl_id in ebl_id_list
         if ebl_id["value"] in url["value"]
     ]
-
-    if not matched_ebl_id:
-        raise EItemMigrationError(
-            "Document {pid} has different EBL identifier"
-            " than the ID specified in the url parameters".format(
-                pid=document["pid"]
+    try:
+        if not matched_ebl_id:
+            document["alternative_identifiers"].append(
+                {"value": url["value"], "scheme": "EBL"}
             )
-        )
-    eitem = create_eitem(document["pid"], open_access=False)
-    eitem["urls"] = [
-        {
-            "value": url_template.format(matched_ebl_id[0]),
-            "login_required": True,
-        }
-    ]
-    eitem.commit()
-    eitem_indexer.index(eitem)
+            raise EItemMigrationError(
+                "Document {pid} has different EBL identifier"
+                " than the ID specified in the url parameters".format(
+                    pid=document["pid"]
+                )
+            )
+        eitem = create_eitem(document["pid"], open_access=False)
+        eitem["urls"] = [
+            {
+                "value": url_template.format(matched_ebl_id[0]),
+                "login_required": True,
+            }
+        ]
+        eitem.commit()
+        eitem_indexer.index(eitem)
+
+        return eitem
+    except Exception as exc:
+        handler = eitems_exception_handlers.get(exc.__class__)
+        if handler:
+            handler(exc, document_pid=document["pid"])
+        else:
+            if raise_exceptions:
+                raise exc
 
 
-def migrate_ebl_links():
+def migrate_ebl_links(raise_exceptions=True):
     """Migrate external links from documents."""
     document_class = current_app_ils.document_record_cls
 
@@ -284,18 +320,27 @@ def migrate_ebl_links():
             for x in document["alternative_identifiers"]
             if x["scheme"] == "EBL"
         ]
+        try:
+            # validate identifier
+            if not ebl_id_list:
+                raise EItemMigrationError(
+                    "Document {pid} has no EBL alternative identifier"
+                    " while EBL ebook link was found".format(
+                        pid=document["pid"]
+                    )
+                )
 
-        # validate identifier
-        if not ebl_id_list:
-            raise EItemMigrationError(
-                "Document {pid} has no EBL alternative identifier"
-                " while EBL ebook link was found".format(pid=document["pid"])
-            )
+            for url in document["_migration"]["eitems_ebl"]:
+                create_ebl_eitem(url, ebl_id_list, document, raise_exceptions)
+            document["_migration"]["eitems_has_ebl"] = False
+            document.commit()
+            db.session.commit()
+            DocumentIndexer().index(document)
 
-        for url in document["_migration"]["eitems_ebl"]:
-            create_ebl_eitem(url, ebl_id_list, document)
-
-        document["_migration"]["eitems_has_ebl"] = False
-        document.commit()
-        db.session.commit()
-        DocumentIndexer().index(document)
+        except Exception as exc:
+            handler = eitems_exception_handlers.get(exc.__class__)
+            if handler:
+                handler(exc, document_pid=document["pid"])
+            else:
+                if raise_exceptions:
+                    raise exc

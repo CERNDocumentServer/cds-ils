@@ -23,7 +23,7 @@ from tests.migrator.utils import reindex_record
 def test_import_loan_returned(test_data_migration, patrons,
                               es_clear):
     datadir = os.path.join(os.path.dirname(__file__), "data")
-    file = (open(os.path.join(datadir, "loans.json"), "r"),)
+    file = open(os.path.join(datadir, "loans.json"), "r")
     import_loans_from_json(file)
     reindex_record(CIRCULATION_LOAN_PID_TYPE, Loan, LoanIndexer())
     current_search.flush_and_refresh(index="*")
@@ -47,13 +47,14 @@ def test_import_loan_returned(test_data_migration, patrons,
     results = search.execute()
     assert results.hits.total.value == 1
     assert results[0].start_date == "2009-07-07T00:00:00"
+    file.close()
 
 
 def test_import_invalid_loan(testdata):
     datadir = os.path.join(os.path.dirname(__file__), "data")
-    file = (
-        open(os.path.join(datadir, "loan_ongoing_anonymous_user.json"), "r"),
-    )
+    file = \
+        open(os.path.join(datadir, "loan_ongoing_anonymous_user.json"), "r")
 
     with pytest.raises(LoanMigrationError):
         import_loans_from_json(file, raise_exceptions=True)
+    file.close()

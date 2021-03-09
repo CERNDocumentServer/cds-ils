@@ -11,16 +11,15 @@
 import logging
 import uuid
 
-import click
 from flask import current_app
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.literature.api import get_record_by_legacy_recid
+from cds_ils.migrator.utils import get_legacy_pid_type_by_provider, \
+    model_provider_by_rectype
 from cds_ils.minters import legacy_recid_minter
-
-cli_logger = logging.getLogger("migrator")
 
 
 class CDSRecordDumpLoader(object):
@@ -31,29 +30,21 @@ class CDSRecordDumpLoader(object):
     """
 
     @classmethod
-    def create(cls, dump, model, pid_provider, legacy_id_key="legacy_recid"):
+    def create(cls, dump, rectype, legacy_id_key="legacy_recid", log={}):
         """Create record based on dump."""
         record = cls.create_record(
-            dump, model, pid_provider, legacy_id_key=legacy_id_key
+            dump, rectype, legacy_id_key=legacy_id_key, log=log
         )
         return record
 
     @classmethod
-    def get_legacy_pid_type_by_provider(cls, provider):
-        """Get mintable legacy pid type based on provider pid type."""
-        config = current_app.config
-        mintable_pids_map = {
-            "pitmid": config["CDS_ILS_ITEM_LEGACY_PID_TYPE"],
-            "illbid": config["CDS_ILS_BORROWING_REQ_LEGACY_PID_TYPE"],
-            "acqoid": config["CDS_ILS_ACQ_ORDER_LEGACY_PID_TYPE"],
-        }
-        return mintable_pids_map.get(provider.pid.pid_type, None)
-
-    @classmethod
     def create_record(
-        cls, dump, model, pid_provider, legacy_id_key="legacy_recid"
+        cls, dump, rectype, legacy_id_key="legacy_recid", log={}
     ):
         """Create a new record from dump."""
+        records_logger = logging.getLogger(f"{rectype}s_logger")
+        model, pid_provider = model_provider_by_rectype(rectype)
+
         if legacy_id_key is None:
             legacy_id_key = "pid"
         try:
@@ -63,7 +54,7 @@ class CDSRecordDumpLoader(object):
                     object_type="rec",
                     object_uuid=record_uuid,
                 )
-                legacy_pid_type = cls.get_legacy_pid_type_by_provider(provider)
+                legacy_pid_type = get_legacy_pid_type_by_provider(provider)
 
                 if legacy_pid_type:
                     legacy_recid_minter(
@@ -73,22 +64,17 @@ class CDSRecordDumpLoader(object):
                 record = model.create(dump, record_uuid)
                 record.commit()
             db.session.commit()
+            records_logger.info(
+                "CREATED",
+                extra=dict(
+                    new_pid=record["pid"],
+                    status="SUCCESS",
+                    legacy_id=record[legacy_id_key],
+                    **log,
+                ),
+            )
             return record
         except IlsValidationError as e:
-            click.secho("VALIDATION ERROR", fg="blue")
-            click.secho(
-                "RECID {0} did not pass validation. ERROR: \n {1}".format(
-                    dump[legacy_id_key],
-                    [
-                        "{0}: {1}".format(
-                            error.res["field"], error.res["message"]
-                        )
-                        for error in e.errors
-                    ],
-                ).join("\n"),
-                fg="blue",
-            )
-            click.secho(e.original_exception.message, fg="blue")
             db.session.rollback()
             raise e
         except PIDAlreadyExists as e:
@@ -105,4 +91,13 @@ class CDSRecordDumpLoader(object):
                 record.update(dump)
                 record.commit()
                 db.session.commit()
+                records_logger.info(
+                    "UPDATED",
+                    extra=dict(
+                        new_pid=record["pid"],
+                        status="SUCCESS",
+                        legacy_id=record[legacy_id_key],
+                        **log,
+                    ),
+                )
                 return record

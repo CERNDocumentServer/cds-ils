@@ -181,7 +181,7 @@ def clean_val(
     default=None,
     manual=False,
     transform=None,
-    multiple_values=False
+    multiple_values=False,
 ):
     """
     Tests values using common rules.
@@ -197,12 +197,14 @@ def clean_val(
     :param multiple_values: allow multiple values in subfield
     :return: cleaned output value
     """
+
     def _clean(value_to_clean):
         if value_to_clean is not None:
             try:
                 if var_type is str:
-                    return clean_str(value_to_clean, regex_format, req,
-                                     transform)
+                    return clean_str(
+                        value_to_clean, regex_format, req, transform
+                    )
                 elif var_type is bool:
                     return bool(value_to_clean)
                 elif var_type is int:

@@ -20,12 +20,13 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.literature.api import get_record_by_legacy_recid
+from cds_ils.migrator.errors import DumpRevisionException
 from cds_ils.migrator.utils import add_cover_metadata, \
     add_place_and_title_to_conference_info, add_title_from_conference_info, \
     clean_created_by_field
 from cds_ils.minters import legacy_recid_minter
 
-cli_logger = logging.getLogger("migrator")
+documents_logger = logging.getLogger("documents_logger")
 
 
 class CDSDocumentDumpLoader(object):
@@ -36,7 +37,7 @@ class CDSDocumentDumpLoader(object):
     """
 
     @classmethod
-    def create_files(cls, record, files, existing_files):
+    def create_files(cls, record, files):
         """Dump files information instead of the file."""
         record["_migration"]["files"] = []
         for key, meta in files.items():
@@ -63,14 +64,13 @@ class CDSDocumentDumpLoader(object):
                 record = cls.create_record(dump)
 
                 if dump.files:
-                    cls.create_files(record, dump.files, existing_files=None)
+                    cls.create_files(record, dump.files)
                     record.commit()
                     db.session.commit()
 
                 return record
         except IndexError as e:
-            click.secho("Revision problem", fg="red")
-            raise e
+            raise DumpRevisionException("CANNOT CREATE DUMP REVISION")
 
     @classmethod
     def create_record(cls, dump):
@@ -104,6 +104,14 @@ class CDSDocumentDumpLoader(object):
                 document.model.updated = timestamp.replace(tzinfo=None)
                 document.commit()
             db.session.commit()
+            documents_logger.info(
+                "CREATED",
+                extra=dict(
+                    legacy_id=json_data["legacy_recid"],
+                    new_pid=document["pid"],
+                    status="SUCCESS",
+                ),
+            )
             return document
         except IlsValidationError as e:
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
@@ -126,4 +134,13 @@ class CDSDocumentDumpLoader(object):
             document.model.updated = timestamp.replace(tzinfo=None)
             document.commit()
             db.session.commit()
+
+            documents_logger.info(
+                "UPDATED",
+                extra=dict(
+                    legacy_id=json_data["legacy_recid"],
+                    new_pid=document["pid"],
+                    status="SUCCESS",
+                ),
+            )
             return document

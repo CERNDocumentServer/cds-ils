@@ -23,8 +23,7 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
-from cds_ils.migrator.default_records import MIGRATION_DESIGN_PID, \
-    MIGRATION_YELLOW_PID
+from cds_ils.migrator.default_records import MIGRATION_DESIGN_PID
 from cds_ils.migrator.documents.api import \
     search_documents_with_siblings_relations
 from cds_ils.migrator.series.api import get_migrated_volume_by_serial_title, \

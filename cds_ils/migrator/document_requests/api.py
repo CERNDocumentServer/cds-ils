@@ -41,19 +41,15 @@ def migrate_document_request(record):
     return new_docreq
 
 
-def import_document_requests_from_json(dump_file):
+def import_document_requests_from_json(dump_file, rectype="document-request"):
     """Imports document requests from JSON data files."""
-    dump_file = dump_file[0]
-
     click.echo("Importing document requests ..")
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
         for record in input_data:
-            model, provider = model_provider_by_rectype("document-request")
             ils_record = import_record(
                 migrate_document_request(record),
-                model,
-                provider,
+                rectype="document-request",
                 legacy_id_key="legacy_id",
             )
             ils_records.append(ils_record)
