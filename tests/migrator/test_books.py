@@ -30,11 +30,66 @@ from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.importer.providers.cds.models.document import model
 from cds_ils.importer.providers.cds.rules.values_mapping import MATERIALS, \
     mapping
+from cds_ils.migrator.utils import add_title_from_conference_info
 
 marcxml = (
     """<collection xmlns="http://www.loc.gov/MARC21/slim">"""
     """<record>{0}</record></collection>"""
 )
+
+
+def test_conference_info_as_title(app):
+    """Test title from conference info."""
+
+    # if title rule is missing
+    marcxml_body = """
+            <datafield tag="111" ind1=" " ind2=" ">
+                <subfield code="9">20040621</subfield>
+                <subfield code="a">The conference title</subfield>
+                <subfield code="c">Bari, Italy</subfield>
+                <subfield code="z">20040621</subfield>
+            </datafield>
+            <datafield tag="960" ind1=" " ind2=" ">
+                <subfield code="a">43</subfield>
+            </datafield>
+            """
+    json_body = {
+        "conference_info": {
+            "title": "The conference title",
+            "place": "Bari, Italy",
+            "dates": "2004-06-21 - 2004-06-21",
+            "series": "None",
+            "identifiers": [{"scheme": "CERN_CODE", "value": None}],
+        },
+        "document_type": "PROCEEDINGS",
+    }
+    check_transformation(marcxml_body, json_body)
+    data = {
+        "_migration": {**get_helper_dict(record_type="document")},
+    }
+    data.update(**json_body)
+    data = add_title_from_conference_info(data)
+    assert data["title"] == "The conference title"
+
+    # if title rule exists
+    marcxml_body += """
+            <datafield tag="245" ind1=" " ind2=" ">
+                <subfield code="a">The actual title</subfield>
+            </datafield>
+            """
+
+    json_body.update(
+        {
+            "title": "The actual title",
+        }
+    )
+    check_transformation(marcxml_body, json_body)
+    data = {
+        "_migration": {**get_helper_dict(record_type="document")},
+    }
+    data.update(**json_body)
+    data = add_title_from_conference_info(data)
+    assert data["title"] == "The actual title"
 
 
 def check_transformation(marcxml_body, json_body):
@@ -947,7 +1002,7 @@ def test_publication_info(app):
                             "journal_volume": "42",
                         }
                     ],
-                    "document_type": "PERIODICAL_ISSUE",
+                    "document_type": "SERIAL_ISSUE",
                     "_migration": {
                         "has_journal": True,
                         "journal_record_legacy_recids": [
@@ -1020,7 +1075,7 @@ def test_publication_info(app):
                         "note": "1692 numebrs text etc Random text",
                     }
                 ],
-                "document_type": "PERIODICAL_ISSUE",
+                "document_type": "SERIAL_ISSUE",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "has_journal": True,
@@ -2362,7 +2417,7 @@ def test_conference_info(app):
                  between Astrophysics and Astroparticle Physics""",
                     "place": "Bari, Italy",
                     "dates": "2004-06-21 - 2004-06-21",
-                    "series": {"number": 2},
+                    "series": "2",
                     "country": "IT",
                     "acronym": "SNGHEGE2004",
                 }
@@ -2397,7 +2452,7 @@ def test_conference_info(app):
                             {"scheme": "CERN_CODE", "value": "bari20040621"},
                         ],
                         "dates": "2004-06-21 - 2004-06-21",
-                        "series": {"number": 2},
+                        "series": "2",
                         "country_code": "IT",
                         "contact": "arantza.de.oyanguren.campos@cern.ch",
                     }
