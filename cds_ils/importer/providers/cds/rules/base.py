@@ -306,7 +306,7 @@ def publication_info(self, key, value):
             recids = _migration.get("journal_record_legacy_recids", [])
             recids.append({"recid": rel_recid, "volume": volume})
             _migration["has_journal"] = True
-            self["document_type"] = "PERIODICAL_ISSUE"
+            self["document_type"] = "SERIAL_ISSUE"
 
         text = "{0} {1}".format(
             clean_val("o", v, str) or "", clean_val("x", v, str) or ""
@@ -883,7 +883,7 @@ def conference_info(self, key, value):
                     "place": clean_val("c", v, str, req=True),
                     "dates": dates,
                     "identifiers": _prev_identifiers,
-                    "series": {"number": series_number},
+                    "series": str(series_number),
                     "country": country_code,
                 }
             )

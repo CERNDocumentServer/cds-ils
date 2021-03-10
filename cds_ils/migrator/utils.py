@@ -209,3 +209,17 @@ def add_cover_metadata(json_data):
     ]
     if isbn_list:
         json_data["cover_metadata"] = {"ISBN": isbn_list[0]["value"]}
+
+
+def add_title_from_conference_info(json_data):
+    """Use the conference info to add a title if it doesn't exist."""
+    if (
+        json_data["document_type"] in ["PROCEEDINGS", "SERIAL_ISSUE"]
+        and "title" not in json_data
+    ):
+        conference_info = json_data.get("conference_info", None)
+        if conference_info:
+            conference_info_title = conference_info.get("title", "acronym")
+            json_data["title"] = conference_info_title
+
+    return json_data
