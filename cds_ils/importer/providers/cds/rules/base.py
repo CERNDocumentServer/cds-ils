@@ -24,8 +24,8 @@ from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
 from cds_ils.importer.providers.cds.cds import model
 from cds_ils.importer.providers.cds.rules.utils import clean_email, \
-    clean_pages_range, clean_val, extract_volume_number, filter_list_values, \
-    get_week_start, out_strip, replace_in_result
+    clean_val, extract_volume_number, filter_list_values, get_week_start, \
+    out_strip, replace_in_result
 from cds_ils.importer.providers.cds.rules.values_mapping import ACCELERATORS, \
     ACQUISITION_METHOD, APPLICABILITY, ARXIV_CATEGORIES, COLLECTION, \
     DOCUMENT_TYPE, EXPERIMENTS, EXTERNAL_SYSTEM_IDENTIFIERS, \
@@ -298,9 +298,9 @@ def publication_info(self, key, value):
     _publication_info = self.get("publication_info", [])
     for v in force_list(value):
         temp_info = {}
-        pages = clean_pages_range("c", v)
+        pages = clean_val("c", v, str)
         if pages:
-            temp_info.update(pages)
+            temp_info.update(pages=pages)
         volume = clean_val("v", v, str)
         temp_info.update(
             {
@@ -387,22 +387,19 @@ def publication_additional(self, key, value):
     empty = not bool(_publication_info)
     for i, v in enumerate(force_list(value)):
         temp_info = {}
-        pages = clean_pages_range("k", v)
+        pages = clean_val("k", v, str)
         if pages:
-            temp_info.update(pages)
+            temp_info.update(pages=pages)
         rel_recid = clean_val("b", v, str)
         if rel_recid:
             _related.append(
                 {
                     "related_recid": rel_recid,
                     "relation_type": OTHER_RELATION.name,
-                    "relation_description": "chapter of",
+                    "relation_description": "is chapter of"
                 }
             )
             _migration.update({"related": _related, "has_related": True})
-        n_subfield = clean_val("n", v, str)
-        if n_subfield.upper() == "BOOK":
-            temp_info.update({"material": "BOOK"})
         if not empty and i < len(_publication_info):
             _publication_info[i].update(temp_info)
         else:
@@ -820,7 +817,14 @@ def languages(self, key, value):
 def subject_classification(self, key, value):
     """Translates subject classification field."""
     prev_subjects = self.get("subjects", [])
-    _subject_classification = {"value": clean_val("a", value, str, req=True)}
+    if key == "084__":
+        _subject_classification = {
+            "value": clean_val("c", value, str, req=True)
+        }
+    else:
+        _subject_classification = {
+            "value": clean_val("a", value, str, req=True)
+        }
     if key == "080__":
         _subject_classification.update({"scheme": "UDC"})
     elif key.startswith("082"):
@@ -911,7 +915,8 @@ def conference_info(self, key, value):
                 }
             )
         else:
-            if "a" in value and "x" not in value and len(value) > 2:
+            acronym = clean_val("x", v, str)
+            if "a" in value and acronym != "acronym" and len(value) > 2:
                 _conference_info.append(clean_conference_info_fields(v, False))
             elif "a" in value and len(value) == 2:
                 _alternative_titles = self.get("alternative_titles", [])

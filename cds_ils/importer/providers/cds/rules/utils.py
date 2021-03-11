@@ -138,20 +138,6 @@ def related_url(value):
     return "{0}{1}".format("https://cds.cern.ch/record/", value)
 
 
-def clean_pages_range(pages_subfield, value):
-    """Builds pages dictionary."""
-    page_regex = r"\d+(?:[\-‐‑‒–—―⁻₋−﹘﹣－]*\d*)$"
-    pages_val = clean_val(pages_subfield, value, str, regex_format=page_regex)
-    if pages_val:
-        pages = re.split(r"[\-‐‑‒–—―⁻₋−﹘﹣－]+", pages_val)
-        if len(pages) == 1:
-            result = {"page_start": int(pages[0])}
-            return result
-        else:
-            result = {"page_start": int(pages[0]), "page_end": int(pages[1])}
-            return result
-
-
 def clean_str(to_clean, regex_format, req, transform=None):
     """Cleans string marcxml values."""
     if regex_format:

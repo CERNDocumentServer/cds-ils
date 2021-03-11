@@ -14,24 +14,8 @@ from dojson.errors import IgnoreKey
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
 from cds_ils.importer.providers.cds.rules.utils import clean_email, \
-    clean_pages_range, clean_str, clean_val, filter_list_values, \
-    get_week_start, out_strip, related_url, replace_in_result
-
-
-def test_clean_pages():
-    """Test if pages are extracted properly"""
-    pages_field = {"a": "12-14"}
-    assert clean_pages_range("a", pages_field) == {
-        "page_start": 12,
-        "page_end": 14,
-    }
-
-    pages_field = {"a": "1"}
-    assert clean_pages_range("a", pages_field) == {"page_start": 1}
-
-    with pytest.raises(UnexpectedValue):
-        pages_field = {"a": "12-14-45"}
-        clean_pages_range("a", pages_field)
+    clean_str, clean_val, filter_list_values, get_week_start, out_strip, \
+    related_url, replace_in_result
 
 
 def test_rel_url():

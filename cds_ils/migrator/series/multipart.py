@@ -12,6 +12,7 @@ from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.indexer import RecordRelationIndexer
 from invenio_app_ils.relations.api import MULTIPART_MONOGRAPH_RELATION
+from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.importer.errors import ManualImportRequired
@@ -151,6 +152,7 @@ def import_multipart(json_record):
             MULTIPART_MONOGRAPH_RELATION,
             volumes[0]["volume"],
         )
+        db.session.commit()
         return multipart_record
     except PIDDoesNotExistError as e:
         document_record = import_record(
@@ -165,6 +167,7 @@ def import_multipart(json_record):
             MULTIPART_MONOGRAPH_RELATION,
             volumes[0]["volume"],
         )
+        db.session.commit()
         # the multipart needs to be indexed immediately,
         # because we search multipart_id to match next volumes
         series_indexer.index(multipart_record)
