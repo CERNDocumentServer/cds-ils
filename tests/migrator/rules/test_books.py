@@ -180,7 +180,7 @@ def test_subject_classification(app):
         check_transformation(
             """
             <datafield tag="084" ind1=" " ind2=" ">
-                <subfield code="a">25040.40</subfield>
+                <subfield code="c">25040.40</subfield>
             </datafield>
             """,
             {"subjects": [{"value": "25040.40", "scheme": "ICS"}]},
@@ -189,19 +189,19 @@ def test_subject_classification(app):
             """
             <datafield tag="084" ind1=" " ind2=" ">
                 <subfield code="2">PACS</subfield>
-                <subfield code="a">13.75.Jz</subfield>
+                <subfield code="c">13.75.Jz</subfield>
             </datafield>
             <datafield tag="084" ind1=" " ind2=" ">
                 <subfield code="2">PACS</subfield>
-                <subfield code="a">13.60.Rj</subfield>
+                <subfield code="c">13.60.Rj</subfield>
             </datafield>
             <datafield tag="084" ind1=" " ind2=" ">
                 <subfield code="2">PACS</subfield>
-                <subfield code="a">14.20.Jn</subfield>
+                <subfield code="c">14.20.Jn</subfield>
             </datafield>
             <datafield tag="084" ind1=" " ind2=" ">
                 <subfield code="2">PACS</subfield>
-                <subfield code="a">25.80.Nv</subfield>
+                <subfield code="c">25.80.Nv</subfield>
             </datafield>
             """,
             {},
@@ -210,7 +210,7 @@ def test_subject_classification(app):
             """
             <datafield tag="084" ind1=" " ind2=" ">
                 <subfield code="2">CERN Yellow Report</subfield>
-                <subfield code="a">CERN-2018-003-CP</subfield>
+                <subfield code="c">CERN-2018-003-CP</subfield>
             </datafield>
             """,
             {},
@@ -947,13 +947,11 @@ def test_publication_info(app):
             {
                 "publication_info": [
                     {
-                        "page_start": 1692,
-                        "page_end": 1695,
+                        "pages": "1692-1695",
                         "year": 2007,
                         "journal_title": "Radiat. Meas.",
                         "journal_issue": "10",
                         "journal_volume": "42",
-                        "material": "BOOK",
                     }
                 ],
             },
@@ -974,8 +972,7 @@ def test_publication_info(app):
             {
                 "publication_info": [
                     {
-                        "page_start": 1692,
-                        "page_end": 1695,
+                        "pages": "1692-1695",
                         "year": 2007,
                         "journal_title": "Radiat. Meas.",
                         "journal_issue": "10",
@@ -984,41 +981,6 @@ def test_publication_info(app):
                 ],
             },
         )
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="773" ind1=" " ind2=" ">
-                    <subfield code="c">10-95-5</subfield>
-                    <subfield code="n">10</subfield>
-                    <subfield code="y">2007</subfield>
-                    <subfield code="p">Radiat. Meas.</subfield>
-                    <subfield code="v">42</subfield>
-                    <subfield code="g">123456</subfield>
-                </datafield>
-                <datafield tag="980" ind1=" " ind2=" ">
-                    <subfield code="a">BOOK</subfield>
-                </datafield>
-                """,
-                {
-                    "publication_info": [
-                        {
-                            "page_start": 1692,
-                            "page_end": 1695,
-                            "year": 2007,
-                            "journal_title": "Radiat. Meas.",
-                            "journal_issue": "10",
-                            "journal_volume": "42",
-                        }
-                    ],
-                    "document_type": "SERIAL_ISSUE",
-                    "_migration": {
-                        "has_journal": True,
-                        "journal_record_legacy_recids": [
-                            {"recid": "123456", "volume": "42"}
-                        ],
-                    },
-                },
-            )
         check_transformation(
             """
             <datafield tag="980" ind1=" " ind2=" ">
@@ -1051,14 +1013,14 @@ def test_publication_info(app):
                         {
                             "related_recid": "2155631",
                             "relation_type": "other",
-                            "relation_description": "chapter of",
+                            "relation_description": "is chapter of"
                         }
                     ],
                     "has_related": True,
                 },
                 "publication_info": [
                     {
-                        "page_start": 1,
+                        "pages": '1',
                     }
                 ],
             },
@@ -1081,8 +1043,7 @@ def test_publication_info(app):
             {
                 "publication_info": [
                     {
-                        "page_start": 1692,
-                        "page_end": 1695,
+                        "pages": "1692-1695",
                         "year": 2007,
                         "journal_title": "Radiat. Meas.",
                         "journal_issue": "10",
@@ -1117,8 +1078,7 @@ def test_publication_info(app):
             {
                 "publication_info": [
                     {
-                        "page_start": 1692,
-                        "page_end": 1695,
+                        "pages": "1692-1695",
                         "year": 2007,
                         "journal_title": "Radiat. Meas.",
                         "journal_issue": "10",
@@ -1141,7 +1101,7 @@ def test_publication_info(app):
                 <subfield code="a">BOOK</subfield>
             </datafield>
             <datafield tag="773" ind1=" " ind2=" ">
-                <subfield code="c">1692-1695</subfield>
+                <subfield code="c">1692-</subfield>
                 <subfield code="n">10</subfield>
                 <subfield code="y">2007</subfield>
                 <subfield code="p">Radiat. Meas.</subfield>
@@ -1153,8 +1113,7 @@ def test_publication_info(app):
             {
                 "publication_info": [
                     {
-                        "page_start": 1692,
-                        "page_end": 1695,
+                        "pages": "1692-",
                         "year": 2007,
                         "journal_title": "Radiat. Meas.",
                         "journal_issue": "10",
@@ -1171,32 +1130,6 @@ def test_publication_info(app):
                 },
             },
         )
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="773" ind1=" " ind2=" ">
-                    <subfield code="c">1692-1695-2000</subfield>
-                    <subfield code="n">10</subfield>
-                    <subfield code="y">2007</subfield>
-                    <subfield code="p">Radiat. Meas.</subfield>
-                    <subfield code="o">1692 numebrs text etc</subfield>
-                    <subfield code="x">Random text</subfield>
-                </datafield>
-                """,
-                {
-                    "publication_info": [
-                        {
-                            "page_start": 1692,
-                            "page_end": 1695,
-                            "year": 2007,
-                            "journal_title": "Radiat. Meas.",
-                            "journal_issue": "10",
-                            "pubinfo_freetext": "1692 numebrs "
-                                                "text etc Random text",
-                        }
-                    ]
-                },
-            )
 
 
 def test_extensions(app):
@@ -2524,6 +2457,10 @@ def test_conference_info(app):
                 <subfield code="x">SNGHEGE2004</subfield>
                 <subfield code="w">IT</subfield>
                 <subfield code="z">20040621</subfield>
+            </datafield>
+            <datafield tag="711" ind1=" " ind2=" ">
+                <subfield code="a">SNGHEGE2004</subfield>
+                <subfield code="x">acronym</subfield>
             </datafield>
             """,
             {

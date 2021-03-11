@@ -18,7 +18,7 @@ from invenio_app_ils.records_relations.api import RecordRelationsParentChild, \
 from invenio_app_ils.records_relations.indexer import RecordRelationIndexer
 from invenio_app_ils.relations.api import OTHER_RELATION, \
     SEQUENCE_RELATION_TYPES, SERIAL_RELATION, SIBLINGS_RELATION_TYPES, \
-    Relation
+    ParentChildRelation, Relation
 from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
 
@@ -98,6 +98,7 @@ def create_sequence_relation(previous_rec, next_rec, relation_type):
 def migrate_document_siblings_relation():
     """Create siblings relations."""
     document_class = current_app_ils.document_record_cls
+    document_search = current_app_ils.document_search_cls()
     series_class = current_app_ils.series_record_cls
 
     search = search_documents_with_siblings_relations()
@@ -112,20 +113,52 @@ def migrate_document_siblings_relation():
             related_sibling = None
             try:
                 related_sibling = get_record_by_legacy_recid(
-                    document_class, legacy_pid_type, relation["related_recid"]
+                    document_class,
+                    legacy_pid_type,
+                    relation["related_recid"],
                 )
             except PIDDoesNotExistError as e:
-                pass
-
-            # try to find sibling in series
-            if related_sibling is None:
+                # If there is no document it means it can be related to a
+                # multipart. If this is the case we relate it to the first
+                # document of the multipart
+                series_legacy_pid = current_app.config[
+                    "CDS_ILS_SERIES_LEGACY_PID_TYPE"
+                ]
                 try:
-                    related_sibling = get_record_by_legacy_recid(
+                    # Search for the series with related legacy_recid from
+                    # the document
+                    related_series = get_record_by_legacy_recid(
                         series_class,
-                        legacy_pid_type,
+                        series_legacy_pid,
                         relation["related_recid"],
                     )
+                    multipart_relation = Relation.get_relation_by_name(
+                        "multipart_monograph"
+                    )
+                    pcr = ParentChildRelation(multipart_relation)
+                    volumes = pcr.get_children_of(related_series.pid)
+
+                    if len(volumes) > 0:
+                        # Selects the first volume as the one to be related
+                        # with the document
+                        related_sibling = document_class.get_record_by_pid(
+                            volumes[0].pid_value
+                        )
+                    else:
+                        click.secho(
+                            "No document found with legacy_recid: {}".format(
+                                relation["related_recid"]
+                            ),
+                            fg="red",
+                        )
+                        continue
                 except PIDDoesNotExistError as e:
+                    click.secho(
+                        "No record found with legacy_recid: {}".format(
+                            relation["related_recid"]
+                        ),
+                        fg="red",
+                    )
                     continue
 
             # validate relation type
@@ -133,7 +166,7 @@ def migrate_document_siblings_relation():
                 relation["relation_type"]
             )
 
-            if relation_type == OTHER_RELATION.name:
+            if relation_type.name == OTHER_RELATION.name:
                 extra_metadata.update(
                     {"note": relation["relation_description"]}
                 )

@@ -239,24 +239,18 @@ def volumes_titles(self, key, value):
                 message=" volume title exists but no volume number",
             )
 
-        volume_index = re.findall(r"\d+", val_n) if val_n else None
-        if volume_index and len(volume_index) > 1:
-            raise UnexpectedValue(
-                subfield="n", message=" volume has more than one digit "
-            )
-        else:
-            volume_number = extract_volume_number(
-                val_n, raise_exception=True, subfield="n"
-            )
-            obj = {"title": val_p or volume_title}
-            if val_y:
-                if re.match("\\d+", val_y) and 1600 <= int(val_y) <= 2021:
-                    obj["publication_year"] = int(val_y)
-                else:
-                    raise UnexpectedValue(
-                        subfield="y", message=" unrecognized publication year"
-                    )
-            _insert_volume(_migration, volume_number, obj)
+        volume_number = extract_volume_number(
+            val_n, raise_exception=True, subfield="n"
+        )
+        obj = {"title": val_p or volume_title}
+        if val_y:
+            if re.match("\\d+", val_y) and len(val_y) == 4:
+                obj["publication_year"] = val_y
+            else:
+                raise UnexpectedValue(
+                    subfield="y", message=" unrecognized publication year"
+                )
+        _insert_volume(_migration, volume_number, obj)
         if val_a:
             _alternative_titles.append(
                 {
@@ -292,11 +286,18 @@ def number_of_volumes(self, key, value):
             subfield="a", message=" this record is missing a main title"
         )
     val_a = clean_val("a", value, str)
+    val_x = clean_val("x", value, str)
     parsed_a = extract_parts(val_a)
     if not parsed_a["number_of_pages"] and ("v" in val_a or "vol" in val_a):
         _volumes = re.findall(r"\d+", val_a)
         if _volumes:
             return _volumes[0]
+    if val_x:
+        if val_x == "volume":
+            raise IgnoreKey("number_of_volumes")
+        elif val_x.lower() in ["phys.desc.", "phys.desc"]:
+            self["physical_description"] = val_a
+            raise IgnoreKey("number_of_volumes")
     raise IgnoreKey("number_of_volumes")
 
 
