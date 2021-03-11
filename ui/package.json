@@ -3,7 +3,7 @@
   "version": "1.0.0a33",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
-    "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.28",
+    "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.29",
     "@rjsf/core": "^2.4.2",
     "@rjsf/semantic-ui": "^2.4.2",
     "axios": "^0.19.2",

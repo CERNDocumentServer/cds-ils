@@ -69,5 +69,5 @@ class AcqOrderError(CdsIlsMigrationException):
     """Raised for acquisition order migration errors."""
 
 
-class VendorError(CdsIlsMigrationException):
-    """Raised for vendor migration errors."""
+class ProviderError(CdsIlsMigrationException):
+    """Raised for provider migration errors."""

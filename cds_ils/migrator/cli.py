@@ -14,7 +14,6 @@ import click
 from flask.cli import with_appcontext
 
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
-from cds_ils.migrator.acquisition.vendors import import_vendors_from_json
 from cds_ils.migrator.api import import_documents_from_dump
 from cds_ils.migrator.default_records import create_default_records
 from cds_ils.migrator.document_requests.api import \
@@ -27,6 +26,7 @@ from cds_ils.migrator.internal_locations.api import \
 from cds_ils.migrator.items.api import import_items_from_json
 from cds_ils.migrator.loans.api import import_loans_from_json
 from cds_ils.migrator.patrons.api import import_users_from_json
+from cds_ils.migrator.providers.api import import_vendors_from_json
 from cds_ils.migrator.relations.api import link_documents_and_serials, \
     migrate_document_siblings_relation, migrate_series_relations
 from cds_ils.migrator.series.api import validate_multipart_records, \

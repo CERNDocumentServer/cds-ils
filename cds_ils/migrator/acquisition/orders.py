@@ -54,13 +54,12 @@ import logging
 import click
 from invenio_db import db
 
-from cds_ils.migrator.acquisition.vendors import get_vendor_pid_by_legacy_id
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import AcqOrderError, ItemMigrationError
 from cds_ils.migrator.items.api import get_item_by_barcode
-from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
-    get_cost, get_date, get_migration_document_pid, get_patron_pid, \
-    model_provider_by_rectype
+from cds_ils.migrator.providers.api import get_provider_by_legacy_id
+from cds_ils.migrator.utils import get_acq_ill_notes, get_cost, get_date, \
+    get_migration_document_pid, get_patron_pid, model_provider_by_rectype
 
 migrated_logger = logging.getLogger("migrated_records")
 error_logger = logging.getLogger("records_errored")
@@ -161,8 +160,9 @@ def create_order_line(record):
         new_order_line.update(total_price=total_price)
 
     if record.get("budget_code"):
-        new_order_line.update(payment_mode="BUDGET_CODE",
-                              budget_code=record.get("budget_code"))
+        new_order_line.update(
+            payment_mode="BUDGET_CODE", budget_code=record.get("budget_code")
+        )
 
     return new_order_line
 
@@ -178,7 +178,8 @@ def validate_order(record):
     if has_anonymous_patron and record["status"] in ["PENDING", "ORDERED"]:
         raise AcqOrderError(
             f"Order {record['legacy_id']} "
-            f"has anonymous patron while being in active state.")
+            f"has anonymous patron while being in active state."
+        )
 
 
 def migrate_order(record):
@@ -200,10 +201,8 @@ def migrate_order(record):
     if grand_total:
         new_order.update(grand_total=grand_total)
 
-    vendor_pid = get_vendor_pid_by_legacy_id(
-        record["id_crcLIBRARY"], grand_total
-    )
-    new_order.update(vendor_pid=vendor_pid)
+    provider = get_provider_by_legacy_id(record["id_crcLIBRARY"], grand_total)
+    new_order.update(provider_pid=provider.pid.pid_value)
 
     expected_delivery_date = record.get("expected_date")
     if expected_delivery_date:

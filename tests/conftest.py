@@ -15,11 +15,12 @@ from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
 from invenio_app_ils.eitems.api import EITEM_PID_TYPE, EItem
 from invenio_app_ils.ill.api import BORROWING_REQUEST_PID_TYPE, \
-    LIBRARY_PID_TYPE, BorrowingRequest, Library
+    BorrowingRequest
 from invenio_app_ils.internal_locations.api import \
     INTERNAL_LOCATION_PID_TYPE, InternalLocation
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
+from invenio_app_ils.providers.api import PROVIDER_PID_TYPE, Provider
 from invenio_app_ils.series.api import SERIES_PID_TYPE, Series
 from invenio_circulation.api import Loan
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
@@ -57,6 +58,7 @@ def app_config(app_config):
             "invenio_records_files",
             "loans",
             "locations",
+            "providers",
             "series",
             "vocabularies",
         ],
@@ -122,8 +124,9 @@ def patrons(app, db):
         client_id=client_id,
         **dict(
             user_id=user_id,
-            extra_data=dict(person_id="1", department="Department",
-                            legacy_id="1"),
+            extra_data=dict(
+                person_id="1", department="Department", legacy_id="1"
+            ),
         )
     )
     db.session.add(remote_account)
@@ -172,7 +175,7 @@ def testdata(app, db, es_clear, patrons):
     eitems = _create_records(db, data, EItem, EITEM_PID_TYPE)
 
     data = load_json_from_datadir("ill_libraries.json")
-    ill_libraries = _create_records(db, data, Library, LIBRARY_PID_TYPE)
+    ill_libraries = _create_records(db, data, Provider, PROVIDER_PID_TYPE)
 
     data = load_json_from_datadir("ill_borrowing_requests.json")
     ill_brw_reqs = _create_records(

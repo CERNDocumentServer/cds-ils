@@ -14,16 +14,16 @@ from contextlib import contextmanager
 import click
 from flask import current_app
 from invenio_accounts.models import User
-from invenio_app_ils.acquisition.api import Order, OrderIdProvider, Vendor, \
-    VendorIdProvider
+from invenio_app_ils.acquisition.api import Order, OrderIdProvider
 from invenio_app_ils.circulation.api import IlsCirculationLoanIdProvider
 from invenio_app_ils.document_requests.api import DocumentRequest, \
     DocumentRequestIdProvider
 from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.ill.api import BorrowingRequest, \
-    BorrowingRequestIdProvider, Library, LibraryIdProvider
+    BorrowingRequestIdProvider
 from invenio_app_ils.internal_locations.api import InternalLocationIdProvider
 from invenio_app_ils.items.api import ItemIdProvider
+from invenio_app_ils.providers.api import Provider, ProviderIdProvider
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.series.api import SeriesIdProvider
 from invenio_base.app import create_cli
@@ -89,16 +89,14 @@ def model_provider_by_rectype(rectype):
     elif rectype == "internal_location":
         internal_location_class = current_app_ils.internal_location_record_cls
         return internal_location_class, InternalLocationIdProvider
-    elif rectype == "library":
-        return Library, LibraryIdProvider
     elif rectype == "item":
         item_class = current_app_ils.item_record_cls
         return item_class, ItemIdProvider
     elif rectype == "loan":
         loan_class = current_circulation.loan_record_cls
         return loan_class, IlsCirculationLoanIdProvider
-    elif rectype == "vendor":
-        return Vendor, VendorIdProvider
+    elif rectype == "provider":
+        return Provider, ProviderIdProvider
     elif rectype == "borrowing-request":
         return BorrowingRequest, BorrowingRequestIdProvider
     elif rectype == "acq-order":
