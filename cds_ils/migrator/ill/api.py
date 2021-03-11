@@ -54,16 +54,14 @@ import json
 import logging
 
 import click
-from elasticsearch_dsl import Q
-from invenio_app_ils.ill.proxies import current_ils_ill
 from invenio_db import db
 
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import BorrowingRequestError, ItemMigrationError
 from cds_ils.migrator.items.api import get_item_by_barcode
-from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
-    get_cost, get_date, get_migration_document_pid, get_patron_pid, \
-    model_provider_by_rectype
+from cds_ils.migrator.providers.api import get_provider_by_legacy_id
+from cds_ils.migrator.utils import get_acq_ill_notes, get_cost, get_date, \
+    get_migration_document_pid, get_patron_pid, model_provider_by_rectype
 
 migrated_logger = logging.getLogger("migrated_records")
 error_logger = logging.getLogger("records_errored")
@@ -83,27 +81,6 @@ def get_status(record):
     except KeyError:
         raise BorrowingRequestError(
             "Unknown status for Borrowing Request!\n{}".format(record)
-        )
-
-
-def get_library_by_legacy_id(legacy_id):
-    """Search for library by legacy id."""
-    search = current_ils_ill.library_search_cls().query(
-        "bool", filter=[Q("term", legacy_ids=legacy_id)]
-    )
-    result = search.execute()
-    hits_total = result.hits.total.value
-    if not result.hits or hits_total < 1:
-        raise BorrowingRequestError(
-            "no library found with legacy id {}".format(legacy_id)
-        )
-    elif hits_total > 1:
-        raise BorrowingRequestError(
-            "found more than one library with legacy id {}".format(legacy_id)
-        )
-    else:
-        return current_ils_ill.library_record_cls.get_record_by_pid(
-            result.hits[0].pid
         )
 
 
@@ -127,7 +104,8 @@ def validate_ill(record):
     if has_anonymous_patron and record["status"] in ["ON_LOAN", "REQUESTED"]:
         raise BorrowingRequestError(
             f"Order {record['legacy_id']} "
-            f"has anonymous patron while being in active state.")
+            f"has anonymous patron while being in active state."
+        )
 
 
 def clean_record_json(record):
@@ -140,13 +118,13 @@ def clean_record_json(record):
         document_pid = get_migration_document_pid()
 
     # library_pid
-    library = get_library_by_legacy_id(record["id_crcLIBRARY"])
-    library_pid = library.pid.pid_value
+    provider = get_provider_by_legacy_id(record["id_crcLIBRARY"], None)
+    provider_pid = provider.pid.pid_value
 
     new_record = dict(
         document_pid=document_pid,
         legacy_id=record.get("legacy_id"),
-        library_pid=library_pid,
+        provider_pid=provider_pid,
         patron_pid=get_patron_pid(record),
         status=get_status(record),
         type=get_type(record),

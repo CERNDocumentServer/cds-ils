@@ -1,7 +1,7 @@
 [
   {
     "document_pid": "docid-1",
-    "library_pid": "illlid-1",
+    "provider_pid": "ill-provid-1",
     "patron_pid": "1",
     "pid": "illbid-1",
     "status": "ON_LOAN",

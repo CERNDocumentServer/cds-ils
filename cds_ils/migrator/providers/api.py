@@ -6,9 +6,9 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""CDS-ILS acquisition vendor migrator API.
+"""CDS-ILS provider migrator API.
 
-Vendor CDS fields:
+Provider CDS fields:
 
 legacy_id:
      name:
@@ -21,11 +21,12 @@ legacy_id:
 import json
 
 import click
-from invenio_app_ils.acquisition.proxies import current_ils_acq
+from elasticsearch_dsl import Q
+from invenio_app_ils.providers.proxies import current_ils_prov
 from invenio_db import db
 
 from cds_ils.migrator.api import import_record
-from cds_ils.migrator.errors import VendorError
+from cds_ils.migrator.errors import ProviderError
 from cds_ils.migrator.utils import bulk_index_records, \
     model_provider_by_rectype
 
@@ -41,8 +42,8 @@ WILEY_MAPER = {
 }
 
 
-def get_vendor_pid_by_legacy_id(legacy_id, grand_total):
-    """Search for vendor by legacy id."""
+def get_provider_by_legacy_id(legacy_id, grand_total):
+    """Search for provider by legacy id."""
     # Check for Wiley vendor to split it depending on the currency
     if legacy_id == ORIGINAL_WILEY_ID:
         if grand_total and grand_total["currency"]:
@@ -50,16 +51,18 @@ def get_vendor_pid_by_legacy_id(legacy_id, grand_total):
         else:
             legacy_id = DEFAULT_WILEY
 
-    search = current_ils_acq.vendor_search_cls().filter(
+    search = current_ils_prov.provider_search_cls().filter(
         "term", legacy_ids=legacy_id
     )
     result = search.execute()
 
     if len(result.hits) == 1:
-        return result.hits[0].pid
+        return current_ils_prov.provider_record_cls.get_record_by_pid(
+            result.hits[0].pid
+        )
 
-    raise VendorError(
-        "Found {0} vendors with legacy_id {1}".format(
+    raise ProviderError(
+        "Found {0} providers with legacy_id {1}".format(
             len(result.hits), legacy_id
         )
     )
@@ -68,12 +71,13 @@ def get_vendor_pid_by_legacy_id(legacy_id, grand_total):
 def import_vendors_from_json(dump_file):
     """Imports vendors from JSON data files."""
     dump_file = dump_file[0]
-    model, provider = model_provider_by_rectype("vendor")
+    model, provider = model_provider_by_rectype("provider")
 
     click.echo("Importing vendors ..")
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
         for record in input_data:
+            record["type"] = "VENDOR"
             # Legacy_ids in the .json file can be an array of strings or just
             # an integer, but we only accept an array of strings in the schema
             if not isinstance(record["legacy_ids"], list):

@@ -31,7 +31,7 @@ def import_internal_locations_from_json(
     """Load parent records from file."""
     dump_file = dump_file[0]
     model, provider = model_provider_by_rectype(rectype)
-    library_model, library_provider = model_provider_by_rectype("library")
+    library_model, library_provider = model_provider_by_rectype("provider")
 
     include_ids = None if include is None else include.split(",")
 
@@ -55,6 +55,7 @@ def import_internal_locations_from_json(
                     record["legacy_ids"] = [str(record["legacy_ids"])]
                 if library_type == "external":
                     # if the type is external => ILL Library
+                    record["type"] = "LIBRARY"
                     record = import_record(
                         record,
                         library_model,

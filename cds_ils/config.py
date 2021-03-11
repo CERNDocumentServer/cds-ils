@@ -356,6 +356,7 @@ JSONSCHEMAS_SCHEMAS = [
     "invenio_records_files",
     "loans",
     "locations",
+    "providers",
     "series",
     "vocabularies",
 ]

@@ -1,7 +1,8 @@
 [
   {
     "name": "Vendor 1",
-    "pid": "vendor-1",
-    "legacy_ids": ["1"]
+    "pid": "acq-provid-1",
+    "type": "VENDOR",
+    "legacy_ids": ["2"]
   }
 ]

@@ -8,13 +8,12 @@
 """Migration pytest fixtures and plugins."""
 
 import pytest
-from invenio_app_ils.acquisition.api import VENDOR_PID_TYPE, Vendor
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
-from invenio_app_ils.ill.api import LIBRARY_PID_TYPE, Library
 from invenio_app_ils.internal_locations.api import \
     INTERNAL_LOCATION_PID_TYPE, InternalLocation
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
+from invenio_app_ils.providers.api import PROVIDER_PID_TYPE, Provider
 from invenio_indexer.api import RecordIndexer
 from invenio_search import current_search
 
@@ -42,20 +41,15 @@ def test_data_migration(app, db, es_clear, patrons):
     items = _create_records(db, data, Item, ITEM_PID_TYPE)
 
     data = load_json_from_datadir("ill_libraries.json")
-    ill_libraries = _create_records(db, data, Library, LIBRARY_PID_TYPE)
+    ill_libraries = _create_records(db, data, Provider, PROVIDER_PID_TYPE)
 
     data = load_json_from_datadir("vendors.json")
-    vendors = _create_records(db, data, Vendor, VENDOR_PID_TYPE)
+    vendors = _create_records(db, data, Provider, PROVIDER_PID_TYPE)
 
     # index
     ri = RecordIndexer()
     for rec in (
-        locations
-        + int_locs
-        + documents
-        + items
-        + ill_libraries
-        + vendors
+        locations + int_locs + documents + items + ill_libraries + vendors
     ):
         ri.index(rec)
 
