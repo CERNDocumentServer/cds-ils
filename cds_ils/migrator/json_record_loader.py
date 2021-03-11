@@ -65,7 +65,7 @@ class CDSRecordDumpLoader(object):
                 )
                 legacy_pid_type = cls.get_legacy_pid_type_by_provider(provider)
 
-                if legacy_pid_type:
+                if legacy_pid_type and legacy_id_key == "legacy_recid":
                     legacy_recid_minter(
                         dump[legacy_id_key], legacy_pid_type, record_uuid
                     )
