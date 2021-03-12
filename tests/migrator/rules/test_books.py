@@ -2500,6 +2500,55 @@ def test_conference_info(app):
                  between Astrophysics and Astroparticle Physics""",
                     "conference_place": "Bari, Italy",
                 },
+                "alternative_titles": [
+                    {
+                        "value": "SNGHEGE2004",
+                        "type": "ALTERNATIVE_TITLE",
+                    }
+                ]
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="111" ind1=" " ind2=" ">
+                <subfield code="9">20040621</subfield>
+                <subfield code="a">2nd Workshop on Science with
+                 the New Generation of High Energy Gamma-ray Experiments:
+                 between Astrophysics and Astroparticle Physics
+                </subfield>
+                <subfield code="c">Bari, Italy</subfield>
+                <subfield code="d">21 Jun 2004</subfield>
+                <subfield code="f">2004</subfield>
+                <subfield code="g">bari20040621</subfield>
+                <subfield code="n">2</subfield>
+                <subfield code="x">SNGHEGE2004</subfield>
+                <subfield code="w">IT</subfield>
+                <subfield code="z">20040621</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "conference_title": """2nd Workshop on Science with
+                 the New Generation of High Energy Gamma-ray Experiments:
+                 between Astrophysics and Astroparticle Physics""",
+                    "conference_place": "Bari, Italy",
+                },
+                "conference_info": [
+                    {
+                    "identifiers": [
+                        {"scheme": "CERN_CODE", "value": "bari20040621"},
+                    ],
+                    "title": """2nd Workshop on Science with
+                 the New Generation of High Energy Gamma-ray Experiments:
+                 between Astrophysics and Astroparticle Physics""",
+                    "place": "Bari, Italy",
+                    "dates": "2004-06-21 - 2004-06-21",
+                    "series": "2",
+                    "country": "IT",
+                    "acronym": "SNGHEGE2004",
+                }
+                ]
             },
         )
         with pytest.raises(UnexpectedValue):

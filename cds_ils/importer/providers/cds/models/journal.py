@@ -83,6 +83,9 @@ class CDSJournal(CdsIlsOverdo):
         "222__b",
         "340__z",
         "697C_a",
+        "8564_z",
+        "939__y",
+        "2463_a",
     }
 
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__

@@ -895,6 +895,7 @@ def conference_info(self, key, value):
             ],
             "series": str(series_number),
             "country": country_code or "None",
+            "acronym": clean_val("x", v, str),
         }
 
     _conference_info = self.get("conference_info", [])
@@ -912,7 +913,15 @@ def conference_info(self, key, value):
         else:
             if "a" in value and "x" not in value and len(value) > 2:
                 _conference_info.append(clean_conference_info_fields(v, False))
-
+            elif "a" in value and len(value) == 2:
+                _alternative_titles = self.get("alternative_titles", [])
+                _alternative_titles.append(
+                    {
+                        "value": clean_val("a", v, str, req=True),
+                        "type": "ALTERNATIVE_TITLE",
+                    }
+                )
+                self["alternative_titles"] = _alternative_titles
     return _conference_info
 
 
