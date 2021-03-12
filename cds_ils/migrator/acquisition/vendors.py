@@ -80,6 +80,7 @@ def import_vendors_from_json(dump_file, rectype="vendor"):
                 record,
                 rectype=rectype,
                 legacy_id_key="legacy_id",
+                mint_legacy_pid=False
             )
             ils_records.append(ils_record)
         db.session.commit()

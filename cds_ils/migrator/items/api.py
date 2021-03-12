@@ -70,7 +70,6 @@ def import_items_from_json(dump_file, rectype="item"):
                     record,
                     rectype=rectype,
                     legacy_id_key="barcode",
-                    log=log_extras,
                 )
             except Exception as exc:
                 handler = json_records_exception_handlers.get(exc.__class__)

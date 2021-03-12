@@ -164,7 +164,6 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
                     loan_dict,
                     rectype=rectype,
                     legacy_id_key=None,
-                    log=dict(legacy_id=record["legacy_id"]),
                 )
                 db.session.commit()
 
