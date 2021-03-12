@@ -5,7 +5,7 @@ CERN Library: your loan for "{{ document.title }}" is due soon!
 {% block body_plain %}
 Dear {{ patron.name }},
 
-your loan on "{{ document.title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> is due in {{ expiring_in_days }} days.
+your loan on "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> is due in {{ expiring_in_days }} days.
 
 Do not forget to bring back the borrowed item on time or to extend it online in your profile page.
 {% endblock %}

@@ -4,8 +4,8 @@
   "dependencies": {
     "@babel/runtime": "^7.9.2",
     "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.30",
-    "@rjsf/core": "^2.4.2",
-    "@rjsf/semantic-ui": "^2.4.2",
+    "@rjsf/core": "^2.5.0",
+    "@rjsf/semantic-ui": "^2.5.0",
     "axios": "^0.19.2",
     "formik": "^2.2.6",
     "less": "^3.13.1",
@@ -31,8 +31,7 @@
     "redux-thunk": "^2.3.0",
     "semantic-ui-calendar-react": "^0.15.3",
     "semantic-ui-less": "^2.4.1",
-    "semantic-ui-react": "^2.0.1",
-    "yup": "^0.32.8"
+    "semantic-ui-react": "^2.0.1"
   },
   "devDependencies": {
     "@craco/craco": "^5.9.0",
