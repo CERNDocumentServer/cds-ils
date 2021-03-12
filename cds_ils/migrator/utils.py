@@ -118,7 +118,7 @@ def get_legacy_pid_type_by_provider(provider):
         "acqoid": config["CDS_ILS_ACQ_ORDER_LEGACY_PID_TYPE"],
         "loanid": config["CDS_ILS_LOAN_LEGACY_PID_TYPE"],
     }
-    return mintable_pids_map[provider.pid.pid_type]
+    return mintable_pids_map[provider.pid_type]
 
 
 def clean_created_by_field(record):

@@ -12,7 +12,7 @@ from __future__ import unicode_literals
 from cds_ils.importer.errors import UnexpectedValue
 
 DOCUMENT_TYPE = {
-    "PROCEEDING": ["PROCEEDINGS", "42", "43"],
+    "PROCEEDING": ["PROCEEDINGS", "42", "43", "CONFERENCE"],
     "BOOK": ["BOOK", "21"],
     "STANDARD": ["STANDARD"],
 }

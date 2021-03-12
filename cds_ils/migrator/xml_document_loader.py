@@ -82,7 +82,10 @@ class CDSDocumentDumpLoader(object):
         json_data = clean_created_by_field(json_data)
         add_cover_metadata(json_data)
         json_data = add_title_from_conference_info(json_data)
-        json_data = add_place_and_title_to_conference_info(json_data)
+
+        conference_info = json_data.get("conference_info")
+        if conference_info:
+            json_data = add_place_and_title_to_conference_info(json_data)
 
         try:
             with db.session.begin_nested():
