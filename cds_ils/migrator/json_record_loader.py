@@ -30,16 +30,19 @@ class CDSRecordDumpLoader(object):
     """
 
     @classmethod
-    def create(cls, dump, rectype, legacy_id_key="legacy_recid", log={}):
+    def create(cls, dump, rectype, legacy_id_key="legacy_recid",
+               mint_legacy_pid=True):
         """Create record based on dump."""
         record = cls.create_record(
-            dump, rectype, legacy_id_key=legacy_id_key, log=log
+            dump, rectype, legacy_id_key=legacy_id_key,
+            mint_legacy_pid=mint_legacy_pid
         )
         return record
 
     @classmethod
     def create_record(
-        cls, dump, rectype, legacy_id_key="legacy_recid", log={}
+        cls, dump, rectype, legacy_id_key="legacy_recid",
+        mint_legacy_pid=True,
     ):
         """Create a new record from dump."""
         records_logger = logging.getLogger(f"{rectype}s_logger")
@@ -54,13 +57,13 @@ class CDSRecordDumpLoader(object):
                     object_type="rec",
                     object_uuid=record_uuid,
                 )
-                legacy_pid_type = get_legacy_pid_type_by_provider(provider)
+                dump["pid"] = provider.pid.pid_value
 
-                if legacy_pid_type:
+                if mint_legacy_pid:
+                    legacy_pid_type = get_legacy_pid_type_by_provider(provider)
                     legacy_recid_minter(
                         dump[legacy_id_key], legacy_pid_type, record_uuid
                     )
-                dump["pid"] = provider.pid.pid_value
                 record = model.create(dump, record_uuid)
                 record.commit()
             db.session.commit()
@@ -70,7 +73,6 @@ class CDSRecordDumpLoader(object):
                     new_pid=record["pid"],
                     status="SUCCESS",
                     legacy_id=record[legacy_id_key],
-                    **log,
                 ),
             )
             return record
@@ -97,7 +99,6 @@ class CDSRecordDumpLoader(object):
                         new_pid=record["pid"],
                         status="SUCCESS",
                         legacy_id=record[legacy_id_key],
-                        **log,
                     ),
                 )
                 return record

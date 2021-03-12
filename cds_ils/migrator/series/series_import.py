@@ -53,7 +53,6 @@ def import_series_from_dump(
                     loader_class.create(
                         record_dump,
                         rectype,
-                        log=dict(legacy_id=series_record["recid"]),
                     )
 
                 except Exception as exc:

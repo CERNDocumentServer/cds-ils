@@ -263,6 +263,7 @@ def import_orders_from_json(
                     migrate_order(record),
                     rectype=rectype,
                     legacy_id_key="legacy_id",
+                    mint_legacy_pid=False
                 )
             except Exception as exc:
                 handler = acquisition_order_exception_handler.get(
