@@ -215,9 +215,24 @@ def add_title_from_conference_info(json_data):
         json_data["document_type"] in ["PROCEEDINGS", "SERIAL_ISSUE"]
         and "title" not in json_data
     ):
-        conference_info = json_data.get("conference_info", None)
-        if conference_info:
-            conference_info_title = conference_info.get("title", "acronym")
-            json_data["title"] = conference_info_title
+        conference_title = json_data["_migration"].get(
+            "conference_title", None
+        )
+        if conference_title:
+            json_data["title"] = conference_title
 
+    return json_data
+
+
+def add_place_and_title_to_conference_info(json_data):
+    """Add place and title field to conference info if it doesn't exist."""
+    for i, conference in enumerate(json_data["conference_info"]):
+        if not conference.get("place", None):
+            json_data["conference_info"][i]["place"] = json_data["_migration"][
+                "conference_place"
+            ]
+        if not conference.get("title", None):
+            json_data["conference_info"][i]["title"] = json_data["_migration"][
+                "conference_title"
+            ]
     return json_data

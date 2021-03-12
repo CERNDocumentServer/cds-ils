@@ -21,7 +21,8 @@ from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.utils import add_cover_metadata, \
-    add_title_from_conference_info, clean_created_by_field
+    add_place_and_title_to_conference_info, add_title_from_conference_info, \
+    clean_created_by_field
 from cds_ils.minters import legacy_recid_minter
 
 cli_logger = logging.getLogger("migrator")
@@ -81,6 +82,7 @@ class CDSDocumentDumpLoader(object):
         json_data = clean_created_by_field(json_data)
         add_cover_metadata(json_data)
         json_data = add_title_from_conference_info(json_data)
+        json_data = add_place_and_title_to_conference_info(json_data)
 
         try:
             with db.session.begin_nested():
