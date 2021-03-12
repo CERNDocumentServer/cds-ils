@@ -28,7 +28,7 @@ class CDSMultipartDumpLoader(CDSSeriesDumpLoader):
     """Multipart loader class."""
 
     @classmethod
-    def create_record(cls, dump, rectype, log={}):
+    def create_record(cls, dump, rectype):
         """Create a new record from dump."""
         timestamp, json_data = dump.revisions[-1]
         json_data = clean_created_by_field(json_data)

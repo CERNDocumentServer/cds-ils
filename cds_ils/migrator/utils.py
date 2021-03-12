@@ -112,11 +112,13 @@ def get_legacy_pid_type_by_provider(provider):
     config = current_app.config
     mintable_pids_map = {
         "docid": config["CDS_ILS_RECORD_LEGACY_PID_TYPE"],
+        "serid": config["CDS_ILS_SERIES_LEGACY_PID_TYPE"],
         "pitmid": config["CDS_ILS_ITEM_LEGACY_PID_TYPE"],
         "illbid": config["CDS_ILS_BORROWING_REQ_LEGACY_PID_TYPE"],
         "acqoid": config["CDS_ILS_ACQ_ORDER_LEGACY_PID_TYPE"],
+        "loanid": config["CDS_ILS_LOAN_LEGACY_PID_TYPE"],
     }
-    return mintable_pids_map.get(provider.pid.pid_type, None)
+    return mintable_pids_map[provider.pid.pid_type]
 
 
 def clean_created_by_field(record):

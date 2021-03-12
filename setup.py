@@ -160,7 +160,7 @@ setup(
             "base = cds_ils.importer.providers.cds.rules.base",
         ],
         "invenio_pidstore.minters": [
-            "lrecid = cds_ils.minters:legacy_recid_minter",
+            "legacy = cds_ils.minters:legacy_recid_minter",
         ],
     },
     extras_require=extras_require,
