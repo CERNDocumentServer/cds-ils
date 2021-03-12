@@ -30,7 +30,8 @@ from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.importer.providers.cds.models.document import model
 from cds_ils.importer.providers.cds.rules.values_mapping import MATERIALS, \
     mapping
-from cds_ils.migrator.utils import add_title_from_conference_info
+from cds_ils.migrator.utils import add_place_and_title_to_conference_info, \
+    add_title_from_conference_info
 
 marcxml = (
     """<collection xmlns="http://www.loc.gov/MARC21/slim">"""
@@ -54,14 +55,22 @@ def test_conference_info_as_title(app):
             </datafield>
             """
     json_body = {
-        "conference_info": {
-            "title": "The conference title",
-            "place": "Bari, Italy",
-            "dates": "2004-06-21 - 2004-06-21",
-            "series": "None",
-            "identifiers": [{"scheme": "CERN_CODE", "value": None}],
-        },
+        "conference_info": [
+            {
+                "title": "The conference title",
+                "place": "Bari, Italy",
+                "country": "None",
+                "dates": "2004-06-21 - 2004-06-21",
+                "series": "None",
+                "identifiers": [{"scheme": "CERN_CODE", "value": None}],
+            }
+        ],
         "document_type": "PROCEEDINGS",
+        "_migration": {
+            **get_helper_dict(record_type="document"),
+            "conference_place": "Bari, Italy",
+            "conference_title": "The conference title",
+        },
     }
     check_transformation(marcxml_body, json_body)
     data = {
@@ -69,6 +78,7 @@ def test_conference_info_as_title(app):
     }
     data.update(**json_body)
     data = add_title_from_conference_info(data)
+    data = add_place_and_title_to_conference_info(data)
     assert data["title"] == "The conference title"
 
     # if title rule exists
@@ -972,11 +982,6 @@ def test_publication_info(app):
                         "journal_volume": "42",
                     }
                 ],
-                "conference_info": {
-                    "identifiers": [
-                        {"scheme": "CERN_CODE", "value": "fsihfifri"}
-                    ]
-                },
             },
         )
         with pytest.raises(UnexpectedValue):
@@ -1036,14 +1041,13 @@ def test_publication_info(app):
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "related": [
-                        {"related_recid": "2155631", "relation_type": "other",
-                         "relation_description": "chapter of"}],
+                        {
+                            "related_recid": "2155631",
+                            "relation_type": "other",
+                            "relation_description": "chapter of",
+                        }
+                    ],
                     "has_related": True,
-                },
-                "conference_info": {
-                    "identifiers": [
-                        {"scheme": "CERN_CODE", "value": "genoa20160330"}
-                    ]
                 },
                 "publication_info": [
                     {
@@ -1738,20 +1742,11 @@ def test_alternative_identifiers(app):
         check_transformation(
             """
             <datafield tag="035" ind1=" " ind2=" ">
-                <subfield code="9">inspire-cnum</subfield>
-                <subfield code="a">2365039</subfield>
-            </datafield>
-            <datafield tag="035" ind1=" " ind2=" ">
                 <subfield code="9">Inspire</subfield>
                 <subfield code="a">2365039</subfield>
             </datafield>
             """,
             {
-                "conference_info": {
-                    "identifiers": [
-                        {"scheme": "INSPIRE_CNUM", "value": "2365039"}
-                    ],
-                },
                 "alternative_identifiers": [
                     {
                         "scheme": "Inspire",
@@ -2384,10 +2379,6 @@ def test_conference_info(app):
     with app.app_context():
         check_transformation(
             """
-            <datafield tag="035" ind1=" " ind2=" ">
-                <subfield code="9">INSPIRE-CNUM</subfield>
-                <subfield code="a">1234</subfield>
-            </datafield>
             <datafield tag="111" ind1=" " ind2=" ">
                 <subfield code="9">20040621</subfield>
                 <subfield code="a">2nd Workshop on Science with
@@ -2407,20 +2398,27 @@ def test_conference_info(app):
             </datafield>
             """,
             {
-                "conference_info": {
-                    "identifiers": [
-                        {"scheme": "INSPIRE_CNUM", "value": "1234"},
-                        {"scheme": "CERN_CODE", "value": "bari20040621"},
-                    ],
-                    "title": """2nd Workshop on Science with
+                "conference_info": [
+                    {
+                        "title": """2nd Workshop on Science with
                  the New Generation of High Energy Gamma-ray Experiments:
                  between Astrophysics and Astroparticle Physics""",
-                    "place": "Bari, Italy",
-                    "dates": "2004-06-21 - 2004-06-21",
-                    "series": "2",
-                    "country": "IT",
-                    "acronym": "SNGHEGE2004",
-                }
+                        "identifiers": [
+                            {"scheme": "CERN_CODE", "value": "bari20040621"},
+                        ],
+                        "place": "Bari, Italy",
+                        "dates": "2004-06-21 - 2004-06-21",
+                        "series": "2",
+                        "country": "IT",
+                    }
+                ],
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "conference_title": """2nd Workshop on Science with
+                 the New Generation of High Energy Gamma-ray Experiments:
+                 between Astrophysics and Astroparticle Physics""",
+                    "conference_place": "Bari, Italy",
+                },
             },
         )
         with pytest.raises(UnexpectedValue):
@@ -2443,19 +2441,24 @@ def test_conference_info(app):
 
                 """,
                 {
-                    "conference_info": {
-                        "title": """2nd Workshop on Science with the New
+                    "conference_info": [
+                        {
+                            "title": """2nd Workshop on Science with the New
                              Generation of High Energy Gamma-ray Experiments:
                              between Astrophysics and Astroparticle Physics""",
-                        "place": "Bari, Italy",
-                        "identifiers": [
-                            {"scheme": "CERN_CODE", "value": "bari20040621"},
-                        ],
-                        "dates": "2004-06-21 - 2004-06-21",
-                        "series": "2",
-                        "country_code": "IT",
-                        "contact": "arantza.de.oyanguren.campos@cern.ch",
-                    }
+                            "place": "Bari, Italy",
+                            "identifiers": [
+                                {
+                                    "scheme": "CERN_CODE",
+                                    "value": "bari20040621",
+                                },
+                            ],
+                            "dates": "2004-06-21 - 2004-06-21",
+                            "series": "2",
+                            "country_code": "IT",
+                            "contact": "arantza.de.oyanguren.campos@cern.ch",
+                        }
+                    ]
                 },
             )
             with pytest.raises(UnexpectedValue):
@@ -2484,19 +2487,26 @@ def test_conference_info(app):
                     </datafield>
                     """,
                     {
-                        "conference_info": {
-                            "title": """2nd Workshop on Science with the New
+                        "conference_info": [
+                            {
+                                "title": """2nd Workshop on Science with the New
                              Generation of High Energy Gamma-ray Experiments:
                              between Astrophysics and Astroparticle Physics""",
-                            "place": "Bari, Italy",
-                            "cern_conference_code": "bari20040621",
-                            "opening_date": "2004-06-21",
-                            "series_number": 2,
-                            "country_code": "IT",
-                            "closing_date": "2004-06-21",
-                            "contact": "arantza.de.oyanguren.campos@cern.ch",
-                            "acronym": "SNGHEGE2004",
-                        }
+                                "place": "Bari, Italy",
+                                "cern_conference_code": "bari20040621",
+                                "opening_date": "2004-06-21",
+                                "series_number": 2,
+                                "country_code": "IT",
+                                "closing_date": "2004-06-21",
+                                "contact": "arantza.de.oyanguren.campos@cern.ch",
+                            }
+                        ],
+                        "_migration": {
+                            "conference_title": """2nd Workshop on Science with the New
+                             Generation of High Energy Gamma-ray Experiments:
+                             between Astrophysics and Astroparticle Physics""",
+                            "conference_place": "Bari, Italy",
+                        },
                     },
                 )
             with pytest.raises(MissingRequiredField):
@@ -2508,9 +2518,9 @@ def test_conference_info(app):
                     </datafield>
                     """,
                     {
-                        "conference_info": {
+                        "conference_info": [{
                             "contact": "arantza.de.oyanguren.campos@cern.ch"
-                        }
+                        }]
                     },
                 )
 

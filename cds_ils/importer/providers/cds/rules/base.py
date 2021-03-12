@@ -382,20 +382,13 @@ def publication_additional(self, key, value):
                 {
                     "related_recid": rel_recid,
                     "relation_type": OTHER_RELATION.name,
-                    "relation_description": "chapter of"
+                    "relation_description": "chapter of",
                 }
             )
             _migration.update({"related": _related, "has_related": True})
         n_subfield = clean_val("n", v, str)
         if n_subfield.upper() == "BOOK":
             temp_info.update({"material": "BOOK"})
-        else:
-            _conference_info = self.get("conference_info", {})
-            _identifiers = _conference_info.get("identifiers", [])
-            conf_id = {"scheme": "CERN_CODE", "value": n_subfield}
-            _identifiers.append(conf_id)
-            _conference_info["identifiers"] = _identifiers
-            self["conference_info"] = _conference_info
         if not empty and i < len(_publication_info):
             _publication_info[i].update(temp_info)
         else:
@@ -635,18 +628,8 @@ def alternative_identifiers(self, key, value):
         sub_9 = clean_val("9", value, str, req=True)
         if "CERCER" in sub_9:
             raise IgnoreKey("alternative_identifiers")
-        # conference_info.identifiers mixed data
-        if sub_9.upper() == "INSPIRE-CNUM":
-            _conference_info = self.get("conference_info", {})
-            _prev_identifiers = _conference_info.get("identifiers", [])
-            _prev_identifiers.append(
-                {"scheme": "INSPIRE_CNUM", "value": sub_a}
-            )
-            _conference_info.update({"identifiers": _prev_identifiers})
-            self["conference_info"] = _conference_info
-            raise IgnoreKey("alternative_identifiers")
 
-        elif sub_9.upper() in EXTERNAL_SYSTEM_IDENTIFIERS:
+        if sub_9.upper() in EXTERNAL_SYSTEM_IDENTIFIERS:
             indentifier_entry.update({"value": sub_a, "scheme": sub_9})
         elif sub_9.upper() in EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE:
             raise IgnoreKey("external_system_identifiers")
@@ -843,52 +826,66 @@ def keywords(self, key, value):
 
 
 @model.over("conference_info", "(^111__)|(^711__)")
-@filter_values
 def conference_info(self, key, value):
     """Translates conference info."""
-    _conference_info = self.get("conference_info", {})
-    for v in force_list(value):
-        if key == "111__":
-            try:
-                opening_date = parser.parse(clean_val("9", v, str, req=True))
-                closing_date = parser.parse(clean_val("z", v, str, req=True))
+
+    def clean_conference_info_fields(v, required=True):
+        """Clean the conference info fields."""
+        try:
+            opening_date = clean_val("9", v, str, req=required)
+            closing_date = clean_val("z", v, str, req=required)
+            dates = None
+            if opening_date and closing_date:
+                opening_date = parser.parse(opening_date)
+                closing_date = parser.parse(closing_date)
                 dates = "{0} - {1}".format(
                     opening_date.date().isoformat(),
                     closing_date.date().isoformat(),
                 )
-            except ValueError:
-                raise UnexpectedValue(subfield="9 or z")
-            country_code = clean_val("w", v, str)
-            if country_code:
-                try:
-                    country_code = str(
-                        pycountry.countries.get(alpha_2=country_code).alpha_2
-                    )
-                except (KeyError, AttributeError):
-                    raise UnexpectedValue(subfield="w")
-
+        except ValueError:
+            raise UnexpectedValue(subfield="9 or z")
+        country_code = clean_val("w", v, str)
+        if country_code:
             try:
-                series_number = clean_val("n", v, int)
-            except TypeError:
-                raise UnexpectedValue("n", message=" series number not an int")
-
-            _prev_identifiers = _conference_info.get("identifiers", [])
-            _prev_identifiers.append(
-                {"scheme": "CERN_CODE", "value": clean_val("g", v, str)}
-            )
-
-            _conference_info.update(
+                country_code = str(
+                    pycountry.countries.get(alpha_2=country_code).alpha_2
+                )
+            except (KeyError, AttributeError):
+                raise UnexpectedValue(subfield="w")
+        try:
+            series_number = clean_val("n", v, int)
+        except TypeError:
+            raise UnexpectedValue("n", message=" series number not an int")
+        return {
+            "title": clean_val("a", v, str, req=required),
+            "place": clean_val("c", v, str, req=required),
+            "dates": dates or "None",
+            "identifiers": [
                 {
-                    "title": clean_val("a", v, str, req=True),
-                    "place": clean_val("c", v, str, req=True),
-                    "dates": dates,
-                    "identifiers": _prev_identifiers,
-                    "series": str(series_number),
-                    "country": country_code,
+                    "scheme": "CERN_CODE",
+                    "value": clean_val("g", v, str),
+                }
+            ],
+            "series": str(series_number),
+            "country": country_code or "None",
+        }
+
+    _conference_info = self.get("conference_info", [])
+
+    for v in force_list(value):
+        if key == "111__":
+            _conference_info.append(clean_conference_info_fields(v))
+            _migration = self["_migration"]
+            _migration.update(
+                {
+                    "conference_place": _conference_info[-1]["place"],
+                    "conference_title": _conference_info[-1]["title"],
                 }
             )
         else:
-            _conference_info.update({"acronym": clean_val("a", v, str)})
+            if "a" in value and "x" not in value and len(value) > 2:
+                _conference_info.append(clean_conference_info_fields(v, False))
+
     return _conference_info
 
 
