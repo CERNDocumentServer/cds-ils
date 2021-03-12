@@ -1,4 +1,3 @@
-import { DeliveryIcon } from './overridden/backoffice/DeliveryIcon/DeliveryIcon';
 import {
   PatronMetadata,
   PatronMetadataActionMenuItem,
@@ -33,9 +32,6 @@ export const overriddenCmps = {
   'ILSMenu.LogoMobile': LogoMobile,
   'ILSMenu.RightMenuItems': RightMenuItem,
   'ILSMenu.RightMenuItemsMobile': RightMenuItemMobile,
-  'LoanListEntry.DeliveryIcon': DeliveryIcon,
-  'LoanMetadata.DeliveryIcon': DeliveryIcon,
-  'RequestForPatronMessage.DeliveryIcon': DeliveryIcon,
   'LoanAvailability.NotAvailable': NotAvailable,
   'FrontSite.CustomRoute': LegacyRecordRoute,
   DocumentRequestForm: DocumentRequestFormFields,
