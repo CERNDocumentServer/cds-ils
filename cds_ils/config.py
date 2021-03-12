@@ -531,6 +531,7 @@ ILS_VOCABULARIES = [
     "item_medium",
     "language",
     "license",
+    "provider_type",
     "series_identifier_scheme",
     "series_url_access_restriction",
     "tag",
