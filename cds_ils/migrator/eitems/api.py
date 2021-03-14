@@ -56,9 +56,9 @@ def create_file(bucket, file_stream, filename, dump_file_checksum):
     return file_record
 
 
-def create_eitem_with_bucket_for_document(document_pid):
+def create_eitem_with_bucket_for_document(document_pid, open_access):
     """Create EItem and its file bucket."""
-    eitem = create_eitem(document_pid, open_access=True)
+    eitem = create_eitem(document_pid, open_access=open_access)
     with db.session.begin_nested():
         bucket = Bucket.create()
         eitem["bucket_id"] = str(bucket.id)
@@ -162,8 +162,10 @@ def process_files_from_legacy():
                     raise FileMigrationError(msg)
 
                 click.echo("File: {}".format(file_dump["url"]))
+
+                is_restricted = file_dump.get("status") == "SSO"
                 eitem, bucket = create_eitem_with_bucket_for_document(
-                    document["pid"]
+                    document["pid"], open_access=not is_restricted
                 )
 
                 # get filename

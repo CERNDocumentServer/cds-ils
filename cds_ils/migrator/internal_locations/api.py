@@ -52,7 +52,7 @@ def import_internal_locations_from_json(
                     record["type"] = "LIBRARY"
                     record = import_record(
                         record,
-                        rectype="library",
+                        rectype="provider",
                         legacy_id_key="legacy_ids",
                     )
                     records.append(record)
