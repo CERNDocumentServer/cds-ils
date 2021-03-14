@@ -68,7 +68,7 @@ def get_provider_by_legacy_id(legacy_id, grand_total):
     )
 
 
-def import_vendors_from_json(dump_file, rectype="vendor"):
+def import_vendors_from_json(dump_file, rectype="provider"):
     """Imports vendors from JSON data files."""
     dump_file = dump_file[0]
 
@@ -84,7 +84,7 @@ def import_vendors_from_json(dump_file, rectype="vendor"):
             ils_record = import_record(
                 record,
                 rectype=rectype,
-                legacy_id_key="legacy_id",
+                legacy_id_key="legacy_ids",
                 mint_legacy_pid=False
             )
             ils_records.append(ils_record)

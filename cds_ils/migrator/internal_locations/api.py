@@ -54,6 +54,7 @@ def import_internal_locations_from_json(
                         record,
                         rectype="provider",
                         legacy_id_key="legacy_ids",
+                        mint_legacy_pid=False
                     )
                     records.append(record)
                 else:
@@ -63,6 +64,7 @@ def import_internal_locations_from_json(
                         record,
                         rectype="internal_location",
                         legacy_id_key="legacy_ids",
+                        mint_legacy_pid=False
                     )
                     records.append(record)
     # Index all new internal location and libraries records
