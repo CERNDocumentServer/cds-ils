@@ -50,7 +50,7 @@ def migration():
     )
 
     items_formatter = logging.Formatter(
-        "%(asctime)s, %(barcode)s, %(new_pid)s, %(document_legacy_recid)s, %(status)s, %(message)s, "  # noqa
+        "%(asctime)s, %(legacy_id)s, %(new_pid)s, %(document_legacy_recid)s, %(status)s, %(message)s, "  # noqa
     )
 
     logged_record_types = {

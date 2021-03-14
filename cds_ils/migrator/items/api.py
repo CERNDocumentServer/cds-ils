@@ -51,9 +51,8 @@ def import_items_from_json(dump_file, rectype="item"):
     with click.progressbar(json.load(dump_file)) as bar:
 
         for record in bar:
-            log_extras = dict(
+            log_extra = dict(
                 document_legacy_recid=record["id_bibrec"],
-                barcode=record["barcode"],
             )
 
             click.echo(
@@ -70,6 +69,7 @@ def import_items_from_json(dump_file, rectype="item"):
                     record,
                     rectype=rectype,
                     legacy_id_key="barcode",
+                    log_extra=log_extra
                 )
             except Exception as exc:
                 handler = json_records_exception_handlers.get(exc.__class__)

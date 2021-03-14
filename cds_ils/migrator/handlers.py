@@ -117,7 +117,7 @@ def migration_validation_error_handler(
 
 def item_migration_exception_handler(
     exc,
-    barcode=None,
+    legacy_id=None,
     new_pid=None,
     document_legacy_recid=None,
     status=None,
@@ -130,7 +130,7 @@ def item_migration_exception_handler(
     record_logger.warning(
         str(exc),
         extra=dict(
-            barcode=barcode,
+            legacy_id=legacy_id,
             new_pid=new_pid,
             document_legacy_recid=document_legacy_recid,
             status=status,

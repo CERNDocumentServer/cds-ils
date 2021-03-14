@@ -31,18 +31,18 @@ class CDSRecordDumpLoader(object):
 
     @classmethod
     def create(cls, dump, rectype, legacy_id_key="legacy_recid",
-               mint_legacy_pid=True):
+               mint_legacy_pid=True, log_extra={}):
         """Create record based on dump."""
         record = cls.create_record(
             dump, rectype, legacy_id_key=legacy_id_key,
-            mint_legacy_pid=mint_legacy_pid
+            mint_legacy_pid=mint_legacy_pid, log_extra=log_extra
         )
         return record
 
     @classmethod
     def create_record(
         cls, dump, rectype, legacy_id_key="legacy_recid",
-        mint_legacy_pid=True,
+        mint_legacy_pid=True, log_extra={}
     ):
         """Create a new record from dump."""
         records_logger = logging.getLogger(f"{rectype}s_logger")
@@ -73,6 +73,7 @@ class CDSRecordDumpLoader(object):
                     new_pid=record["pid"],
                     status="SUCCESS",
                     legacy_id=record[legacy_id_key],
+                    **log_extra
                 ),
             )
             return record
@@ -99,6 +100,7 @@ class CDSRecordDumpLoader(object):
                         new_pid=record["pid"],
                         status="SUCCESS",
                         legacy_id=record[legacy_id_key],
+                        **log_extra
                     ),
                 )
                 return record
