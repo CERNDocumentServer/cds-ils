@@ -429,10 +429,6 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
             "elasticsearch": "keyword",
             "marshmallow": List(SanitizedUnicode()),
         },
-        "unit_curated_relation": {
-            "elasticsearch": "boolean",
-            "marshmallow": Bool(),
-        },
         "unit_experiment": {
             "elasticsearch": "keyword",
             "marshmallow": List(SanitizedUnicode()),
@@ -455,7 +451,7 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
         },
         "standard_review_standard_validity": {
             "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(required=True),
+            "marshmallow": SanitizedUnicode(),
         },
         "standard_review_checkdate": {
             "elasticsearch": "date",

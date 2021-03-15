@@ -74,10 +74,8 @@ def create_unknown_provider():
         "pid": MIGRATION_PROVIDER_PID,
         "name": "Migrated Unknown Provider",
         "legacy_ids": ["0"],
-        "type": "UNKNOWN",
-        "notes": """This Provider is used whenever we had provider ID 0
-        in CDS Acquisition and ILL data.
-        """,
+        "type": "LIBRARY",
+        "notes": """This provider is used whenever we had provider ID 0 in CDS Acquisition and ILL data.""",  # noqa
     }
 
     return create_default_record(
