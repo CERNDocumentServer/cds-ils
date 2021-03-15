@@ -458,15 +458,17 @@ def accelerator_experiments(self, key, value):
     """Translates accelerator_experiments field."""
     _extensions = self.get("extensions", {})
 
-    accelerators = _extensions.get("unit_accelerator", [])
-    experiment = _extensions.get("unit_experiment", [])
-    project = _extensions.get("unit_project", [])
+    accelerators = _extensions.get("unit_accelerator", [])  # subfield a
+    experiments = _extensions.get("unit_experiment", [])  # subfield e
+    projects = _extensions.get("unit_project", [])  # subfield p
     institutions = _extensions.get("unit_institution", [])
 
     val_a = clean_val("a", value, str)
     val_e = clean_val("e", value, str)
 
     def check_for_institution_in(val, value_to_check_for):
+        if not val:
+            return None
         if value_to_check_for in val:
             if value_to_check_for not in institutions:
                 institutions.append(value_to_check_for.upper())
@@ -477,30 +479,34 @@ def accelerator_experiments(self, key, value):
         val_a = check_for_institution_in(val_a, institution_value)
         val_e = check_for_institution_in(val_e, institution_value)
 
-    sub_a = mapping(
-        ACCELERATORS,
-        val_a,
-        raise_exception=True,
-    )
-    sub_e = mapping(
-        EXPERIMENTS,
-        val_e,
-        raise_exception=True,
-    )
-    sub_p = clean_val("p", value, str)
+    accelerator = None
+    experiment = None
+    if val_a:
+        accelerator = mapping(
+            ACCELERATORS,
+            val_a,
+            raise_exception=True,
+        )
+    if val_e:
+        experiment = mapping(
+            EXPERIMENTS,
+            val_e,
+            raise_exception=True,
+        )
+    project = clean_val("p", value, str)
 
-    if sub_a and sub_a not in accelerators:
-        accelerators.append(sub_a)
-    if sub_e and sub_e not in experiment:
-        experiment.append(sub_e)
-    if sub_p and sub_p not in project:
-        project.append(sub_p)
+    if accelerator and accelerator not in accelerators:
+        accelerators.append(accelerator)
+    if experiment and experiment not in experiments:
+        experiments.append(experiment)
+    if project and project not in projects:
+        projects.append(project)
 
     _extensions.update(
         {
             "unit_accelerator": accelerators,
-            "unit_experiment": experiment,
-            "unit_project": project,
+            "unit_experiment": experiments,
+            "unit_project": projects,
             "unit_institution": institutions,
         }
     )
