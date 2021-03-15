@@ -96,7 +96,7 @@ def get_type(record):
     ill_type = "MIGRATED_UNKNOWN"
 
     if record["request_type"] == "article":
-        ill_type = "ELECTRONIC"
+        ill_type = "E-BOOK"
 
     if record["request_type"] == "book":
         ill_type = "PHYSICAL_COPY"

@@ -11,7 +11,7 @@ const DropdownItems = () => {
   return (
     <>
       <Dropdown.Item as="a" href="https://library.web.cern.ch/resources/remote">
-        Remote access to electronic resources
+        Remote access to e-resources
       </Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item

@@ -637,7 +637,7 @@ def test_monograph_volume_migration_doi(app):
                     "volumes_identifiers": [
                         {
                             "doi": "10.1007/978-3-030-49613-5",
-                            "material": "ELECTRONIC",
+                            "material": "E-BOOK",
                             "source": None,
                             "volume": "1",
                         }
