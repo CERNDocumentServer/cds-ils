@@ -133,7 +133,7 @@ def test_subject_classification(app):
                 <subfield code="2">23</subfield>
             </datafield>
             """,
-            {"subjects": [{"value": "515.353", "scheme": "Dewey"}]},
+            {"subjects": [{"value": "515.353", "scheme": "DEWEY"}]},
         )
         check_transformation(
             """
@@ -142,7 +142,7 @@ def test_subject_classification(app):
                 <subfield code="b">XXXX</subfield>
             </datafield>
             """,
-            {"subjects": [{"value": "QA76.642", "scheme": "LoC"}]},
+            {"subjects": [{"value": "QA76.642", "scheme": "LOC"}]},
         )
         check_transformation(
             """
@@ -151,7 +151,7 @@ def test_subject_classification(app):
                 <subfield code="b">XXXX</subfield>
             </datafield>
             """,
-            {"subjects": [{"value": "QA76.642", "scheme": "LoC"}]},
+            {"subjects": [{"value": "QA76.642", "scheme": "LOC"}]},
         )
         check_transformation(
             """
@@ -164,8 +164,8 @@ def test_subject_classification(app):
             """,
             {
                 "subjects": [
-                    {"value": "QA76.642", "scheme": "LoC"},
-                    {"value": "005.275", "scheme": "Dewey"},
+                    {"value": "QA76.642", "scheme": "LOC"},
+                    {"value": "005.275", "scheme": "DEWEY"},
                 ]
             },
         )
@@ -2120,6 +2120,25 @@ def test_imprint(app):
                 },
             },
         )
+        check_transformation(
+            """
+            <datafield tag="260" ind1=" " ind2=" ">
+                <subfield code="a">Sydney</subfield>
+                <subfield code="b">Allen &amp; Unwin</subfield>
+                <subfield code="c">2013</subfield>
+                <subfield code="g">2015</subfield>
+            </datafield>
+            """,
+            {
+                "publication_year": "2013",
+                "imprint": {
+                    "place": "Sydney",
+                    "publisher": "Allen & Unwin",
+                    "date": "2013-01-01",
+                    "reprint": "2015",
+                },
+            },
+        )
 
 
 @pytest.mark.skip
@@ -2787,6 +2806,32 @@ def test_table_of_contents(app):
                 ]
             },
         )
+        check_transformation(
+            """
+            <datafield tag="505" ind1="0" ind2=" ">
+                <subfield code="t">
+                CONTENTS; PREFACE; CHAPTER 1  GENERALITIES ON DYNAMIC SYSTEMS AND MAPS; 1.1. Continuous Dynamic Systems and Discrete Dynamic Systems.; 1.2. Some Considerations on Maps and Some Definitions.
+                </subfield>
+            </datafield>
+            <datafield tag="505" ind1="0" ind2=" ">
+                <subfield code="t">
+                1.8.1. Generalities.1.8.2. Basin boundary, singular points and the Schroeder's equation.; 1.8.3. One-dimensional noninveriible maps and chaotic behaviours. Generalization of Chebyshev's polynomials.; 1.8.4. One-dimensional noninvertible maps. Properties of generalized Chebyshev's polynomials.
+                </subfield>
+            </datafield>
+            """,
+            {
+                "table_of_content": [
+                    "CONTENTS",
+                    "PREFACE",
+                    "CHAPTER 1  GENERALITIES ON DYNAMIC SYSTEMS AND MAPS",
+                    "1.1. Continuous Dynamic Systems and Discrete Dynamic Systems.",
+                    "1.2. Some Considerations on Maps and Some Definitions.",
+                    "1.8.1. Generalities.1.8.2. Basin boundary, singular points and the Schroeder's equation.",
+                    "1.8.3. One-dimensional noninveriible maps and chaotic behaviours. Generalization of Chebyshev's polynomials.",
+                    "1.8.4. One-dimensional noninvertible maps. Properties of generalized Chebyshev's polynomials.",
+                ]
+            },
+        )
         with pytest.raises(UnexpectedValue):
             check_transformation(
                 """
@@ -3310,11 +3355,11 @@ def test_record(app):
                               "value": "Vibration, Dynamical Systems, Control"}],
                 "languages": ["ENG"],
                 "source": "SPR",
-                "subjects": [{"scheme": "LoC",
+                "subjects": [{"scheme": "LOC",
                               "value": "QA313"},
-                             {"scheme": "Dewey",
+                             {"scheme": "DEWEY",
                               "value": "515.39"},
-                             {"scheme": "Dewey",
+                             {"scheme": "DEWEY",
                               "value": "515.48"}],
                 "table_of_content": ['Professor Valentin Afraimovich',
                                      'The need for more integration between '

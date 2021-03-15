@@ -7,11 +7,11 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS Migrator Records loader."""
-
 import logging
 import uuid
 
 import click
+from dateutil import parser
 from flask import current_app
 from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
@@ -103,7 +103,9 @@ class CDSDocumentDumpLoader(object):
                 )
                 json_data["pid"] = provider.pid.pid_value
                 document = document_cls.create(json_data, record_uuid)
-                document.model.created = dump.created.replace(tzinfo=None)
+                created_date = parser.parse(json_data["_created"])
+                document.model.created = created_date if created_date else \
+                    dump.created.replace(tzinfo=None)
                 document.model.updated = timestamp.replace(tzinfo=None)
                 document.commit()
             db.session.commit()

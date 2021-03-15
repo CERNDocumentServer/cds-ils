@@ -293,6 +293,8 @@ def number_of_volumes(self, key, value):
         )
     val_a = clean_val("a", value, str)
     parsed_a = extract_parts(val_a)
+    if parsed_a["number_of_pages"]:
+        self["number_of_pages"] = str(parsed_a["number_of_pages"])
     if not parsed_a["number_of_pages"] and ("v" in val_a or "vol" in val_a):
         _volumes = re.findall(r"\d+", val_a)
         if _volumes:

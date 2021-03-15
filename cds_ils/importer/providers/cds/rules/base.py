@@ -824,7 +824,7 @@ def subject_classification(self, key, value):
     if key == "080__":
         _subject_classification.update({"scheme": "UDC"})
     elif key.startswith("082"):
-        _subject_classification.update({"scheme": "Dewey"})
+        _subject_classification.update({"scheme": "DEWEY"})
     elif key == "084__":
         sub_2 = clean_val("2", value, str)
         if sub_2 and sub_2.upper() in SUBJECT_CLASSIFICATION_EXCEPTIONS:
@@ -833,7 +833,7 @@ def subject_classification(self, key, value):
         else:
             _subject_classification.update({"scheme": "ICS"})
     elif key.startswith("050"):
-        _subject_classification.update({"scheme": "LoC"})
+        _subject_classification.update({"scheme": "LOC"})
     if _subject_classification not in prev_subjects:
         return _subject_classification
     else:
@@ -931,7 +931,8 @@ def imprint(self, key, value):
     if reprint:
         reprint = reprint.lower().replace("repr.", "").strip()
     try:
-        date = parser.parse(clean_val("c", value, str, req=True))
+        date = parser.parse(clean_val("c", value, str, req=True),
+                            default=datetime.datetime(1954, 1, 1))
     except ParserError:
         raise UnexpectedValue(subfield="c")
     except Exception:
@@ -1035,7 +1036,6 @@ def copyright(self, key, value):
 
 
 @model.over("table_of_content", "(^505__)|(^5050_)|(^50500)")
-@out_strip
 @flatten
 @for_each_value
 def table_of_content(self, key, value):
@@ -1045,7 +1045,8 @@ def table_of_content(self, key, value):
     ).strip()
     if text != "--":
         chapters = re.split(r"; | -- |--", text)
-        return chapters
+        chapters = [elem.strip(' ') for elem in chapters]
+        return list(filter(None, chapters))
     else:
         raise UnexpectedValue(subfield="a or t")
 
