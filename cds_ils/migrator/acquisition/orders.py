@@ -66,7 +66,7 @@ from cds_ils.migrator.utils import find_correct_document_pid, \
     get_acq_ill_notes, get_cost, get_date, get_migration_document_pid, \
     get_patron_pid
 
-DEFAULT_ITEM_MEDIUM = "ELECTRONIC"
+DEFAULT_ITEM_MEDIUM = "E-BOOK"
 LIBRARIAN_IDS = [
     5,
     7,

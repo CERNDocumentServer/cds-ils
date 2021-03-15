@@ -1449,12 +1449,12 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "medium": "ELECTRONIC",
+                        "medium": "E-BOOK",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "ELECTRONIC",
+                        "medium": "E-BOOK",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1488,12 +1488,12 @@ def test_isbns(app):
                     {"value": "9780691090856", "scheme": "ISBN"},
                     {
                         "value": "9781400889167",
-                        "medium": "ELECTRONIC",
+                        "medium": "E-BOOK",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9780691090849",
-                        "medium": "ELECTRONIC",
+                        "medium": "E-BOOK",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1531,12 +1531,12 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "medium": "ELECTRONIC",
+                        "medium": "E-BOOK",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "ELECTRONIC",
+                        "medium": "E-BOOK",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1565,7 +1565,7 @@ def test_isbns(app):
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "ELECTRONIC",
+                        "medium": "E-BOOK",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1773,7 +1773,7 @@ def test_dois(app):
                 "identifiers": [
                     {
                         "source": "source",
-                        "material": "ELECTRONIC",
+                        "material": "E-BOOK",
                         "value": "10.1007/978-1-4613-0247-6",
                         "scheme": "DOI",
                     }
@@ -1791,7 +1791,7 @@ def test_dois(app):
             {
                 "identifiers": [
                     {
-                        "material": "ELECTRONIC",
+                        "material": "E-BOOK",
                         "value": "10.3390/books978-3-03943-243-1",
                         "scheme": "DOI",
                     }
@@ -1917,7 +1917,7 @@ def test_alternative_identifiers(app):
                     {
                         "value": "10.1103/PhysRevLett.121.052004",
                         "scheme": "DOI",
-                        "material": "ELECTRONIC",
+                        "material": "E-BOOK",
                         "source": "arXiv",
                     },
                 ],
@@ -3286,7 +3286,7 @@ def test_record(app):
                              "roles": ["EDITOR"]}],
                 "created_by": {"type": "batchuploader"},
                 "document_type": "BOOK",
-                "identifiers": [{"medium": "ELECTRONIC",
+                "identifiers": [{"medium": "E-BOOK",
                                  "scheme": "ISBN",
                                  "value": "9789811590344"},
                                 {"medium": "PRINT_VERSION",
@@ -3298,7 +3298,7 @@ def test_record(app):
                                 {"medium": "PRINT_VERSION",
                                  "scheme": "ISBN",
                                  "value": "9789811590368"},
-                                {"material": "ELECTRONIC",
+                                {"material": "E-BOOK",
                                  "scheme": "DOI",
                                  "value": "10.1007/978-981-15-9034-4"}],
                 "internal_notes": [{"value": "Physics and astronomy"}],
