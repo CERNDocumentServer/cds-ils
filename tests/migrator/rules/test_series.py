@@ -226,6 +226,7 @@ def test_monograph(app):
                     }
                 ],
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                'number_of_pages': '2',
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "is_multipart": True,
