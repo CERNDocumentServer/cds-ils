@@ -225,7 +225,7 @@ def migrate_order(record):
         new_order.update(grand_total=grand_total)
     try:
         provider = get_provider_by_legacy_id(record["id_crcLIBRARY"],
-                                             grand_total)
+                                             grand_total=grand_total)
         provider_pid = provider.pid.pid_value
     except ProviderError as e:
         provider_pid = MIGRATION_PROVIDER_PID
