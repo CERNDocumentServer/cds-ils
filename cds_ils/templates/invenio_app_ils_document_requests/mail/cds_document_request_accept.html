@@ -1,5 +1,5 @@
 {% block subject %}
-CERN Library: your request for "{{ request.title }}" has been approved.
+CERN Library: request approved for "{{ request.title|safe }}"
 {% endblock %}
 
 {% block body_plain %}
