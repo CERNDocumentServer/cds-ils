@@ -318,7 +318,7 @@ def publication_info(self, key, value):
             _migration["has_journal"] = True
             # requirement from the library
             doc_type = self["document_type"]
-            if doc_type and doc_type != "PROCEEDING":
+            if doc_type and doc_type != "PROCEEDINGS":
                 self["document_type"] = "SERIAL_ISSUE"
 
         text = "{0} {1}".format(

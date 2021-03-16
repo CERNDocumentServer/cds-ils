@@ -223,7 +223,7 @@ def add_cover_metadata(json_data):
 def add_title_from_conference_info(json_data):
     """Use the conference info to add a title if it doesn't exist."""
     if (
-        json_data["document_type"] in ["PROCEEDING", "SERIAL_ISSUE"]
+        json_data["document_type"] in ["PROCEEDINGS", "SERIAL_ISSUE"]
         and "title" not in json_data
     ):
         conference_title = json_data["_migration"].get(

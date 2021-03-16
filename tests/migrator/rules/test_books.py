@@ -80,7 +80,7 @@ def test_conference_info_as_title(app):
                 "identifiers": [{"scheme": "CERN_CODE", "value": None}],
             }
         ],
-        "document_type": "PROCEEDING",
+        "document_type": "PROCEEDINGS",
         "_migration": {
             **get_helper_dict(record_type="document"),
             "conference_place": "Bari, Italy",
@@ -488,7 +488,7 @@ def test_document_type(app):
             </datafield>
             """,
             {
-                "document_type": "PROCEEDING",
+                "document_type": "PROCEEDINGS",
             },
         )
         check_transformation(
@@ -498,7 +498,7 @@ def test_document_type(app):
             </datafield>
             """,
             {
-                "document_type": "PROCEEDING",
+                "document_type": "PROCEEDINGS",
             },
         )
         check_transformation(
@@ -1030,7 +1030,7 @@ def test_publication_info(app):
             </datafield>
             """,
             {
-                "document_type": "PROCEEDING",
+                "document_type": "PROCEEDINGS",
                 "publication_info": [
                     {"note": "1692 numebrs text etc Random text"}
                 ]
@@ -1089,7 +1089,7 @@ def test_publication_info(app):
                         "note": "1692 numebrs text etc Random text",
                     }
                 ],
-                "document_type": "PROCEEDING",
+                "document_type": "PROCEEDINGS",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "has_journal": True,
@@ -1125,7 +1125,7 @@ def test_publication_info(app):
                         "note": "1692 numebrs text etc Random text",
                     }
                 ],
-                "document_type": "PROCEEDING",
+                "document_type": "PROCEEDINGS",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "has_journal": True,
