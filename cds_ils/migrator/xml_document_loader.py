@@ -93,6 +93,9 @@ class CDSDocumentDumpLoader(object):
                 legacy_pid_type = current_app.config[
                     "CDS_ILS_RECORD_LEGACY_PID_TYPE"
                 ]
+                # First mint the legacy_recid before assigning the pid. In case
+                # it fails while importing an existing record we will update it
+                # and don't want the new pid, since there is already one there
                 legacy_recid_minter(
                     json_data["legacy_recid"], legacy_pid_type, record_uuid
                 )
