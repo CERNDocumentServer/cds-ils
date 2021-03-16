@@ -42,7 +42,7 @@ WILEY_MAPER = {
 }
 
 
-def get_provider_by_legacy_id(legacy_id, grand_total):
+def get_provider_by_legacy_id(legacy_id, grand_total=None, provider_type=None):
     """Search for provider by legacy id."""
     # Check for Wiley vendor to split it depending on the currency
     if legacy_id == ORIGINAL_WILEY_ID:
@@ -51,9 +51,14 @@ def get_provider_by_legacy_id(legacy_id, grand_total):
         else:
             legacy_id = DEFAULT_WILEY
 
-    search = current_ils_prov.provider_search_cls().filter(
-        "term", legacy_ids=legacy_id
-    )
+    if provider_type:
+        search = current_ils_prov.provider_search_cls().filter(
+            "term", legacy_ids=legacy_id
+        ).filter("term", type=provider_type)
+    else:
+        search = current_ils_prov.provider_search_cls().filter(
+            "term", legacy_ids=legacy_id
+        )
     result = search.execute()
 
     if len(result.hits) == 1:

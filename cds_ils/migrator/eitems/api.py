@@ -319,7 +319,7 @@ def migrate_ebl_links(raise_exceptions=True):
         # find the ebl identifier in document identifiers
         ebl_id_list = [
             x
-            for x in document["alternative_identifiers"]
+            for x in document.get("alternative_identifiers", [])
             if x["scheme"] == "EBL"
         ]
         try:

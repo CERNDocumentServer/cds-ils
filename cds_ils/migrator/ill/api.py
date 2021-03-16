@@ -134,7 +134,9 @@ def clean_record_json(record):
         document_pid = find_correct_document_pid(record)
 
     # library_pid
-    provider = get_provider_by_legacy_id(record["id_crcLIBRARY"], None)
+    provider = get_provider_by_legacy_id(record["id_crcLIBRARY"],
+                                         provider_type="LIBRARY"
+                                         )
     provider_pid = provider.pid.pid_value
 
     new_record = dict(
