@@ -58,7 +58,6 @@ class CDSRecordDumpLoader(object):
                     object_uuid=record_uuid,
                 )
                 dump["pid"] = provider.pid.pid_value
-
                 if mint_legacy_pid:
                     legacy_pid_type = get_legacy_pid_type_by_provider(provider)
                     legacy_recid_minter(
@@ -91,6 +90,8 @@ class CDSRecordDumpLoader(object):
                 record = get_record_by_legacy_recid(
                     model, legacy_pid_type, dump[legacy_id_key]
                 )
+                # When updating we don't want to change the pid
+                del dump["pid"]
                 record.update(dump)
                 record.commit()
                 db.session.commit()
