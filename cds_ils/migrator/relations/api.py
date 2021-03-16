@@ -161,7 +161,7 @@ def migrate_series_relations():
     series_class = current_app_ils.series_record_cls
     search = search_series_with_relations()
     results = search.scan()
-    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+    legacy_pid_type = current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
 
     for series in results:
         relations = series["_migration"]["related"]
