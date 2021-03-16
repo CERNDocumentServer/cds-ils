@@ -1,5 +1,5 @@
 {% block subject %}
-CERN Library: your loan for "{{ document.title }}" has started.
+CERN Library: loan started for "{{ document.title|safe }}"
 {% endblock %}
 
 {% block body_plain %}

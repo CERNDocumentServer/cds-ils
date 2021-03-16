@@ -1,5 +1,5 @@
 {% block subject %}
-CERN Library: your loan for "{{ document.title }}" is overdue!
+CERN Library: loan overdue for "{{ document.title|safe }}"
 {% endblock %}
 
 {% block body_plain %}

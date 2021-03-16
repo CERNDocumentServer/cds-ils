@@ -1,5 +1,5 @@
 {% block subject %}
-CERN Library: you have cancelled your request "{{ request.title }}".
+CERN Library: request declined for "{{ request.title|safe }}"
 {% endblock %}
 
 {% block body_plain %}
