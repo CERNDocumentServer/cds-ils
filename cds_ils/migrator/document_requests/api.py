@@ -51,6 +51,7 @@ def import_document_requests_from_json(dump_file, rectype="document-request"):
                 migrate_document_request(record),
                 rectype="document-request",
                 legacy_id_key="legacy_id",
+                mint_legacy_pid=False
             )
             ils_records.append(ils_record)
         db.session.commit()
