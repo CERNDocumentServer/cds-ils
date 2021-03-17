@@ -1,3 +1,10 @@
 /*******************************
          Site Overrides
 *******************************/
+
+/* Frontsite */
+@{fs-parent-selector} {
+    .standard-number {
+        margin-left: 0;
+    }
+}
