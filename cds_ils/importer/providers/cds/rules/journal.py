@@ -88,12 +88,16 @@ def internal_notes(self, key, value):
     return {"value": clean_val("a", value, str, req=True)}
 
 
-@model.over("note", "(^935__)")
+@model.over("note", "(^935__)|(^362__)")
 @out_strip
 def note(self, key, value):
     """Translates note field."""
     notes_list = [self.get("note", "")]
-    notes_list.append(clean_val("a", value, str))
+    _note = clean_val("a", value, str)
+
+    if key == "362__":
+        _note = f"Dates of publication: {_note}"
+    notes_list.append(_note)
 
     return " \n".join(filter(None, notes_list))
 
@@ -103,12 +107,6 @@ def note(self, key, value):
 def publisher(self, key, value):
     """Translates publisher field."""
     return clean_val("b", value, str, req=True)
-
-
-@model.over("electronic_volumes_description", "(^362__)")
-def electronic_volumes_description(self, key, value):
-    """Translates electronic volumes description field."""
-    return clean_val("a", value, str, req=True)
 
 
 @model.over("physical_volumes", "(^866__)")
@@ -133,21 +131,25 @@ def access_urls(self, key, value):
     access_type_mapped = []
     val_x = clean_val("x", value, str)
     access_type_list = list(map(int, val_x if val_x else []))
+
     for i in access_type_list:
         access_type = mapping(ACCESS_TYPE, str(i), raise_exception=True)
         access_type_mapped.append(access_type)
+
+    sub_3 = clean_val("3", value, str)
+    sub_z = clean_val("z", value, str)
+    electronic_volumes_description = f"{sub_3} ({sub_z})"
+
+    open_access = "OPEN_ACCESS" in access_type_mapped
+
     url_dict = {
         "value": clean_val("u", value, str, req=True),
-        "description": clean_val("z", value, str),
+        "description": electronic_volumes_description,
         "access_restriction": access_type_mapped,
+        "open_access": open_access
+
     }
     _access_urls.append(url_dict)
-
-    url_note = clean_val("3", value, str)
-    if url_note:
-        notes = self.get("note", "")
-        notes_list = [notes, url_note]
-        self["note"] = " \n".join(filter(None, notes_list))
 
     return _access_urls
 

@@ -226,11 +226,10 @@ def test_access_urls(app):
                 "access_urls": [
                     {
                         "access_restriction": ['RESTRICTED_PACKAGE_DEAL'],
-                        "description": "some text",
+                        "description": "some notes (some text)",
                         "value": "https://url.cern.ch/journal",
                     },
                 ],
-                "note": "some notes",
             },
         )
         with pytest.raises(UnexpectedValue):
@@ -302,11 +301,10 @@ def test_urls(app):
                         "access_restriction": ["RESTRICTED_PERPETUAL_ACCESS_BACKFILES",
                                                 "RESTRICTED_PACKAGE_DEAL",
                                                 "RESTRICTED_UNDEFINED"],
-                        "description": "tada",
+                        "description": "v 1 (1992) - (tada)",
                         "value": "https://www.radioeng.cz/search.htm",
                     },
                 ],
-                "note": "v 1 (1992) -",
             },
         )
 
@@ -601,7 +599,7 @@ def test_electronic_volumes_description(app):
             </datafield>
             """,
             {
-                "electronic_volumes_description": "v 1 (1992) -",
+                "note": "Dates of publication: v 1 (1992) -",
             },
         )
         check_transformation(
@@ -611,8 +609,8 @@ def test_electronic_volumes_description(app):
             </datafield>
             """,
             {
-                "electronic_volumes_description":
-                    "v 23 (1960) - v 64 (2002) ; v 70 (2008) -",
+                "note":
+                    "Dates of publication: v 23 (1960) - v 64 (2002) ; v 70 (2008) -",
             },
         )
 
