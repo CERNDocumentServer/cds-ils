@@ -74,9 +74,7 @@ def test_conference_info_as_title(app):
             {
                 "title": "The conference title",
                 "place": "Bari, Italy",
-                "country": "None",
                 "dates": "2004-06-21 - 2004-06-21",
-                "series": "None",
                 "identifiers": [{"scheme": "CERN_CODE", "value": None}],
             }
         ],
@@ -2581,7 +2579,7 @@ def test_conference_info(app):
                                 "place": "Bari, Italy",
                                 "cern_conference_code": "bari20040621",
                                 "opening_date": "2004-06-21",
-                                "series_number": 2,
+                                "series": "2",
                                 "country_code": "IT",
                                 "closing_date": "2004-06-21",
                                 "contact": "arantza.de.oyanguren.campos@cern.ch",
@@ -3133,26 +3131,46 @@ def test_volume_barcodes(app):
 def test_conference_info_multiple_series_number(app):
     """Test conference info with multiple series numbers."""
     with app.app_context():
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="111" ind1=" " ind2=" ">
-                    <subfield code="9">20150708</subfield>
-                    <subfield code="a">
-                    3rd Singularity Theory Meeting of Northeast region & the Brazil-Mexico 2nd Meeting on Singularities
-                    </subfield>
-                    <subfield code="c">Salvador, Brazil</subfield>
-                    <subfield code="d">8 - 11 & 13 - 17 Jul 2015</subfield>
-                    <subfield code="f">2015</subfield>
-                    <subfield code="g">salvador20150708</subfield>
-                    <subfield code="n">3</subfield>
-                    <subfield code="n">2</subfield>
-                    <subfield code="w">BR</subfield>
-                    <subfield code="z">20150717</subfield>
-                </datafield>
-                """,
-                dict(),
-            )
+        check_transformation(
+            """
+            <datafield tag="111" ind1=" " ind2=" ">
+                <subfield code="9">20150708</subfield>
+                <subfield code="a">
+                3rd Singularity Theory Meeting of Northeast region and the Brazil-Mexico 2nd Meeting on Singularities
+                </subfield>
+                <subfield code="c">Salvador, Brazil</subfield>
+                <subfield code="d">8 - 11 & 13 - 17 Jul 2015</subfield>
+                <subfield code="f">2015</subfield>
+                <subfield code="g">salvador20150708</subfield>
+                <subfield code="n">3</subfield>
+                <subfield code="n">2</subfield>
+                <subfield code="w">BR</subfield>
+                <subfield code="z">20150717</subfield>
+            </datafield>
+            """,
+            {
+                "conference_info": [
+                    {
+                        "title": "3rd Singularity Theory Meeting of Northeast region and the Brazil-Mexico 2nd Meeting on Singularities",
+                        "place": "Salvador, Brazil",
+                        "country": "BR",
+                        "dates": "2015-07-08 - 2015-07-17",
+                        "series": "3, 2",
+                        "identifiers": [
+                            {
+                                "scheme": "CERN_CODE",
+                                "value": "salvador20150708",
+                            }
+                        ],
+                    }
+                ],
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "conference_place": "Salvador, Brazil",
+                    "conference_title": "3rd Singularity Theory Meeting of Northeast region and the Brazil-Mexico 2nd Meeting on Singularities",
+                },
+            },
+        )
 
 
 def test_open_access(app):
