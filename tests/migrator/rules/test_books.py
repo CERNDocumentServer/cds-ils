@@ -940,9 +940,6 @@ def test_publication_info(app):
                 <subfield code="v">42</subfield>
                 <subfield code="w">C19-01-08.1</subfield>
             </datafield>
-            <datafield tag="962" ind1=" " ind2=" ">
-                <subfield code="n">BOOK</subfield>
-            </datafield>
             """,
             {
                 "publication_info": [
@@ -964,9 +961,6 @@ def test_publication_info(app):
                 <subfield code="y">2007</subfield>
                 <subfield code="p">Radiat. Meas.</subfield>
                 <subfield code="v">42</subfield>
-            </datafield>
-            <datafield tag="962" ind1=" " ind2=" ">
-                <subfield code="n">fsihfifri</subfield>
             </datafield>
             """,
             {
@@ -996,33 +990,6 @@ def test_publication_info(app):
                 "publication_info": [
                     {"note": "1692 numebrs text etc Random text"}
                 ]
-            },
-        )
-        check_transformation(
-            """
-            <datafield tag="962" ind1=" " ind2=" ">
-                <subfield code="b">2155631</subfield>
-                <subfield code="n">genoa20160330</subfield>
-                <subfield code="k">1</subfield>
-            </datafield>
-            """,
-            {
-                "_migration": {
-                    **get_helper_dict(record_type="document"),
-                    "related": [
-                        {
-                            "related_recid": "2155631",
-                            "relation_type": "other",
-                            "relation_description": "is chapter of"
-                        }
-                    ],
-                    "has_related": True,
-                },
-                "publication_info": [
-                    {
-                        "pages": '1',
-                    }
-                ],
             },
         )
         check_transformation(

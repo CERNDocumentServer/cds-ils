@@ -156,3 +156,35 @@ def test_title(app):
                 ],
             },
         )
+
+
+def test_publication_info(app):
+    """Test publication info."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="962" ind1=" " ind2=" ">
+                <subfield code="b">2155631</subfield>
+                <subfield code="n">genoa20160330</subfield>
+                <subfield code="k">1</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "related": [
+                        {
+                            "related_recid": "2155631",
+                            "relation_type": "other",
+                            "relation_description": "is chapter of"
+                        }
+                    ],
+                    "has_related": True,
+                },
+                "publication_info": [
+                    {
+                        "pages": '1',
+                    }
+                ],
+            },
+        )

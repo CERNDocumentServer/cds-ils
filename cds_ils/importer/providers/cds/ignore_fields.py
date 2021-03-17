@@ -120,6 +120,7 @@ CDS_IGNORE_FIELDS = {
     "961__h",
     "961__l",
     "961__x",
+    "962__k",
     "962__b",
     "962__n",  # books connected by conference
     "963__a",
