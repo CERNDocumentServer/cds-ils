@@ -145,7 +145,6 @@ export class ImportedDocuments extends React.Component {
               ? elem.created_document
               : elem.updated_document
             : null;
-          console.log(document);
           return (
             <div key={elem.index}>
               <Accordion.Title

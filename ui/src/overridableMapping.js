@@ -12,6 +12,7 @@ import {
 import { DocumentRequestFormFields } from './overridden/frontsite/DocumentRequest/DocumentRequestForm';
 import { DocumentRequestFormHeader } from './overridden/frontsite/DocumentRequest/DocumentRequestFormHeader';
 import { NotAvailable } from './overridden/frontsite/Document/DocumentDetails/DocumentCirculation/NotAvailable';
+import { StandardNumber } from './overridden/frontsite/Document/DocumentDetails/DocumentPanel/StandardNumber';
 import {
   HomeContent,
   HomeHeadline,
@@ -36,6 +37,8 @@ export const overriddenCmps = {
   'FrontSite.CustomRoute': LegacyRecordRoute,
   DocumentRequestForm: DocumentRequestFormFields,
   'DocumentRequestForm.header': DocumentRequestFormHeader,
+  'DocumentPanel.AfterAuthors': StandardNumber,
+  'DocumentPanelMobile.AfterAuthors': StandardNumber,
   'BackOfficeRoutesSwitch.CustomRoute': ImporterRoute,
   'Backoffice.Sidebar.CustomMenuItem': SideBarMenuItem,
 };
