@@ -880,21 +880,25 @@ def conference_info(self, key, value):
             except (KeyError, AttributeError):
                 raise UnexpectedValue(subfield="w")
         try:
-            series_number = clean_val("n", v, int)
+            series_number = clean_val("n", v, int, multiple_values=True)
+            if type(series_number) is list:
+                series_number = ", ".join(str(x) for x in series_number)
+            else:
+                series_number = str(series_number) if series_number else None
         except TypeError:
             raise UnexpectedValue("n", message=" series number not an int")
         return {
             "title": clean_val("a", v, str, req=required),
             "place": clean_val("c", v, str, req=required),
-            "dates": dates or "None",
+            "dates": dates,
             "identifiers": [
                 {
                     "scheme": "CERN_CODE",
                     "value": clean_val("g", v, str),
                 }
             ],
-            "series": str(series_number),
-            "country": country_code or "None",
+            "series": series_number,
+            "country": country_code,
             "acronym": clean_val("x", v, str),
         }
 
