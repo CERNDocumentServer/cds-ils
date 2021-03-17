@@ -169,9 +169,7 @@ def process_files_from_legacy():
                 )
 
                 # get filename
-                file_name = file_dump["description"]
-                if not file_name:
-                    file_name = file_dump["full_name"]
+                file_name = file_dump["full_name"]
 
                 file_stream = import_legacy_files(file_dump["url"])
 
