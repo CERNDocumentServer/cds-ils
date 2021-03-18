@@ -75,7 +75,6 @@ def test_conference_info_as_title(app):
                 "title": "The conference title",
                 "place": "Bari, Italy",
                 "dates": "2004-06-21 - 2004-06-21",
-                "identifiers": [{"scheme": "CERN_CODE", "value": None}],
             }
         ],
         "document_type": "PROCEEDINGS",

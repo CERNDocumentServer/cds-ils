@@ -848,6 +848,19 @@ def conference_info(self, key, value):
                 )
         except ValueError:
             raise UnexpectedValue(subfield="9 or z")
+
+        conference_identifiers = []
+
+        val_g = clean_val("g", v, str)
+        val_i = clean_val("i", v, str)
+
+        if val_g:
+            conference_identifiers.append({"scheme": "CERN_CODE",
+                                          "value": val_g})
+        if val_i:
+            conference_identifiers.append({"scheme": "INSPIRE_CNUM",
+                                          "value": val_i})
+
         country_code = clean_val("w", v, str)
         if country_code:
             try:
@@ -868,12 +881,7 @@ def conference_info(self, key, value):
             "title": clean_val("a", v, str, req=required),
             "place": clean_val("c", v, str, req=required),
             "dates": dates,
-            "identifiers": [
-                {
-                    "scheme": "CERN_CODE",
-                    "value": clean_val("g", v, str),
-                }
-            ],
+            "identifiers": conference_identifiers,
             "series": series_number,
             "country": country_code,
             "acronym": clean_val("x", v, str),

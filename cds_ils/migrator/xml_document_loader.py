@@ -106,9 +106,13 @@ class CDSDocumentDumpLoader(object):
                 )
                 json_data["pid"] = provider.pid.pid_value
                 document = document_cls.create(json_data, record_uuid)
-                created_date = parser.parse(json_data["_created"])
-                document.model.created = created_date if created_date else \
-                    dump.created.replace(tzinfo=None)
+
+                created_date = json_data.get("_created")
+                if created_date:
+                    created_date = parser.parse(created_date)
+                else:
+                    created_date = dump.created.replace(tzinfo=None)
+                document.model.created = created_date
                 document.model.updated = timestamp.replace(tzinfo=None)
                 document.commit()
             db.session.commit()
