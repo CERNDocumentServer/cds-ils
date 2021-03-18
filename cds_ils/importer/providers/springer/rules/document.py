@@ -295,5 +295,5 @@ def id_isbns(self, key, value):
 def eitem_internal_note(self, key, value):
     """Translate item internal note."""
     _eitem = self.get("_eitem", {})
-    _eitem["internal_note"] = clean_val("a", value, str)
+    _eitem["internal_notes"] = clean_val("a", value, str)
     return _eitem
