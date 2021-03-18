@@ -1,0 +1,13 @@
+[
+  {
+    "key": "arXiv-nonexclusive-distrib-1.0",
+    "type": "license",
+    "text": "arXiv.org - Non-exclusive license to distribute",
+    "data": {
+      "loader": "CERN",
+      "maintainer": "arXiv.org",
+      "status": "active",
+      "url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/license.html"
+    }
+  }
+]

@@ -998,20 +998,38 @@ def alternative_abstracts(self, key, value):
 @filter_values
 def licenses(self, key, value):
     """Translates license fields."""
+    ARXIV_LICENSE = "arxiv.org/licenses/nonexclusive-distrib/1.0/"
+    _license = dict()
+
     material = mapping(
         MATERIALS,
         clean_val("3", value, str, transform="lower"),
         raise_exception=True,
     )
 
-    return {
-        "license": {
-            "url": clean_val("u", value, str),
-            "name": clean_val("a", value, str),
-        },
-        "material": material,
-        "internal_note": clean_val("g", value, str),
-    }
+    if material:
+        _license["material"] = material
+
+    internal_notes = clean_val("g", value, str)
+    if internal_notes:
+        _license["internal_notes"] = internal_notes
+
+    license_id = clean_val("a", value, str)
+    if not license_id:
+        # check if there is the URL instead of the id
+        license_url = clean_val("u", value, str)
+        # the only known URL at the moment is ArXiv
+        if license_url and ARXIV_LICENSE in license_url:
+            license_id = "arXiv-nonexclusive-distrib-1.0"
+
+    if license_id:
+        _license["license"] = dict(
+            id=license_id
+        )
+    else:
+        raise UnexpectedValue
+
+    return _license
 
 
 @model.over("copyrights", "^542__")

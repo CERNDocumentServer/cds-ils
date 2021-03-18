@@ -33,7 +33,7 @@ def test_springer_transformation(app):
             example,
             {
                 "_eitem": {
-                    "internal_note": "Physics and Astronomy (R0) "
+                    "internal_notes": "Physics and Astronomy (R0) "
                     "(SpringerNature-43715)",
                     "urls": [
                         {

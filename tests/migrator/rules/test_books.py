@@ -2306,24 +2306,21 @@ def test_license(app):
                 "licenses": [
                     {
                         "license": {
-                            "url": "http://arxiv.org/licenses/nonexclusive-distrib/1.0/",
-                            "name": None,
+                            "id": "arXiv-nonexclusive-distrib-1.0",
                         }
                     },
                     {
                         "license": {
-                            "name": "CC-BY-4.0",
-                            "url": None,
+                            "id": "CC-BY-4.0",
                         },
                         "material": "preprint",
                     },
                     {
                         "license": {
-                            "name": "CC-BY-4.0",
-                            "url": None,
+                            "id": "CC-BY-4.0",
                         },
                         "material": "publication",
-                        "internal_note": "DAI/7161287",
+                        "internal_notes": "DAI/7161287",
                     },
                 ]
             },

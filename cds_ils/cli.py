@@ -224,6 +224,14 @@ def vocabularies():
         if verbose:
             click.secho(res.output)
 
+    # licenses
+    run_command("vocabulary index opendefinition spdx --force")
+    run_command("vocabulary index opendefinition opendefinition --force")
+    # languages
+    run_command("vocabulary index languages --force")
+
+    # keep JSON files as last. Extra licenses will be added to the ones
+    # imported above
     vocabularies_dir = os.path.join(
         os.path.realpath("."),
         "cds_ils",
@@ -236,11 +244,6 @@ def vocabularies():
         if name.endswith(".json")
     )
     run_command("vocabulary index json --force {}".format(json_files))
-    run_command("vocabulary index opendefinition spdx --force")
-    run_command("vocabulary index opendefinition opendefinition --force")
-
-    # index languages
-    run_command("vocabulary index languages --force")
 
 
 def recreate_cover(pid, record_class):
