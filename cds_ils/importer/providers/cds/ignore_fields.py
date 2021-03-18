@@ -42,16 +42,18 @@ CDS_IGNORE_FIELDS = {
     "100__1",
     "100__4",
     "100__d",
+    "100__v",
     "100__9",
     "111__d",
     "111__f",
     "145__a",
+    "246__9",
     "246__i",
     "269__a",  # preprint info
     "269__b",  # preprint info
     "269__c",  # preprint date
     "270__a",
-    "270__k"
+    "270__k",
     "270__l",
     "270__m",  # conference email
     "300__b",  # 206 cds-dojson
@@ -93,12 +95,16 @@ CDS_IGNORE_FIELDS = {
     "700__9",
     "700__d",
     "700__m",
+    "700__v",
     "710__5",
     "773__0",  # on library request
     "773__r",  # publication_info/parent_report_number
     "773__w",  # inspire cnum (duplicated field with 035__9)
     "773__z",  # publication_info/parent_isbn
     "775__c",  # related edition's year (it will be resolved)
+    "7870_i",
+    "7870_r",
+    "7870_w",
     "852__c",
     "852__h",
     "852__p",
@@ -111,6 +117,7 @@ CDS_IGNORE_FIELDS = {
     "901__a",  # record affiliation
     "901__u",
     "903__a",
+    "903__s",
     "916__a",
     "916__d",
     "916__e",
