@@ -46,7 +46,7 @@ def import_multivolume(json_record):
     volume_list = json_record["_migration"]["volumes"]
 
     try:
-        legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+        legacy_pid_type = current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
         get_record_by_legacy_recid(series_cls, legacy_pid_type, legacy_recid)
         raise MultipartMigrationError(
             f"Multipart {legacy_recid} was already processed. Aborting."

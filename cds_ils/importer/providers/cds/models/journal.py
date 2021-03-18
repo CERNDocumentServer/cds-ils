@@ -34,6 +34,7 @@ class CDSJournal(CdsIlsOverdo):
         "044__b",
         "222__a",
         "310__a",
+        "340__a",
         "938__a",
         "044__a",
         "246_39",
