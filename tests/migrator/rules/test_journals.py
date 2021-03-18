@@ -309,12 +309,13 @@ def test_urls(app):
         )
 
 
-def test_migration(app):
+def test_relation_migration(app):
     with app.app_context():
         check_transformation(
             """
                 <datafield tag="787" ind1=" " ind2=" ">
                     <subfield code="i">Random text</subfield>
+                    <subfield code="x">language</subfield>
                     <subfield code="w">7483924</subfield>
                 </datafield>
                 """,
@@ -339,6 +340,7 @@ def test_migration(app):
             """
                 <datafield tag="770" ind1=" " ind2=" ">
                     <subfield code="i">Random text</subfield>
+                    <subfield code="x">other</subfield>
                     <subfield code="w">7483924</subfield>
                 </datafield>
                 """,
@@ -364,6 +366,7 @@ def test_migration(app):
                 <datafield tag="772" ind1=" " ind2=" ">
                     <subfield code="i">Random text</subfield>
                     <subfield code="w">7483924</subfield>
+                    <subfield code="x">other</subfield>
                 </datafield>
                 """,
             {
@@ -388,6 +391,7 @@ def test_migration(app):
                 <datafield tag="780" ind1=" " ind2=" ">
                     <subfield code="i">Random text</subfield>
                     <subfield code="w">7483924</subfield>
+                    <subfield code="x">sequence</subfield>
                 </datafield>
                 """,
             {
@@ -413,6 +417,7 @@ def test_migration(app):
                 <datafield tag="785" ind1=" " ind2=" ">
                     <subfield code="i">Random text</subfield>
                     <subfield code="w">7483924</subfield>
+                    <subfield code="x">sequence</subfield>
                 </datafield>
                 """,
             {
@@ -439,11 +444,13 @@ def test_migration(app):
                     <subfield code="i">Split into</subfield>
                     <subfield code="t">Book1</subfield>
                     <subfield code="w">903671</subfield>
+                    <subfield code="x">sequence</subfield>
                 </datafield>
                 <datafield tag="785" ind1=" " ind2=" ">
                     <subfield code="i">Split into</subfield>
                     <subfield code="t">Book2</subfield>
                     <subfield code="w"> 903672</subfield>
+                    <subfield code="x">sequence</subfield>
                 </datafield>
                 """,
             {
@@ -467,96 +474,6 @@ def test_migration(app):
                             "relation_description": None,
                         },
                     ],
-                },
-            },
-        )
-
-
-def test_medium(app):
-    """Test medium."""
-    with app.app_context():
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="340" ind1=" " ind2=" ">
-                    <subfield code="a">whatever</subfield>
-                </datafield>
-                """,
-                {
-                    "_migration": {
-                        "is_multipart": False,
-                        "has_related": False,
-                        "related": [],
-                        "record_type": "journal",
-                        "volumes": [],
-                        "electronic_items": [],
-                    },
-                },
-            )
-        check_transformation(
-            """
-            <datafield tag="340" ind1=" " ind2=" ">
-                <subfield code="a">paper</subfield>
-                <subfield code="x">CM-B00065102</subfield>
-            </datafield>
-            """,
-            {
-                "_migration": {
-                    "is_multipart": False,
-                    "has_related": False,
-                    "related": [],
-                    "record_type": "journal",
-                    "volumes": [],
-                    "electronic_items": [],
-                    "item_medium": [
-                        {
-                            "barcode": "CM-B00065102",
-                            "medium": "PAPER",
-                        }
-                    ],
-                    "has_medium": True,
-                },
-            },
-        )
-        # https://cds.cern.ch/record/1058314/export/xm?ln=en
-        check_transformation(
-            """
-            <datafield tag="340" ind1=" " ind2=" ">
-                <subfield code="a">CD-ROM</subfield>
-                <subfield code="x">CM-P00096545</subfield>
-                <subfield code="x">CM-B00048086</subfield>
-                <subfield code="x">CM-B00048085</subfield>
-                <subfield code="x">CM-B00048085</subfield>
-                <subfield code="x">CM-B00048083</subfield>
-            </datafield>
-            """,
-            {
-                "_migration": {
-                    "is_multipart": False,
-                    "has_related": False,
-                    "related": [],
-                    "record_type": "journal",
-                    "volumes": [],
-                    "electronic_items": [],
-                    "item_medium": [
-                        {
-                            "barcode": "CM-P00096545",
-                            "medium": "CDROM",
-                        },
-                        {
-                            "barcode": "CM-B00048086",
-                            "medium": "CDROM",
-                        },
-                        {
-                            "barcode": "CM-B00048085",
-                            "medium": "CDROM",
-                        },
-                        {
-                            "barcode": "CM-B00048083",
-                            "medium": "CDROM",
-                        }
-                    ],
-                    "has_medium": True,
                 },
             },
         )

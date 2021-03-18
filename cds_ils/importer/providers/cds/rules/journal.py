@@ -138,7 +138,7 @@ def access_urls(self, key, value):
 
     sub_3 = clean_val("3", value, str)
     sub_z = clean_val("z", value, str)
-    electronic_volumes_description = f"{sub_3} ({sub_z})"
+    electronic_volumes_description = f"{sub_3} ({sub_z})".strip()
 
     open_access = "OPEN_ACCESS" in access_type_mapped
 
@@ -177,30 +177,33 @@ def related_records(self, key, value):
     _migration = self.get("_migration", {})
     _related = _migration.get("related", [])
     description = None
+    sequence_order = None
     relation_type = OTHER_RELATION.name
+    relation_type_tag = clean_val("x", value, str)
+    if relation_type_tag:
+        relation_type_tag = relation_type_tag.upper()
+    else:
+        raise UnexpectedValue('Relation type missing.')
 
+    if relation_type_tag not in ["LANGUAGE", "EDITION", "SEQUENCE", "OTHER"]:
+        raise UnexpectedValue(f'Unsupported relation type {relation_type_tag}')
     # language
-    if key == "787__":
-        if "i" in value:
-            relation_language = clean_val("i", value, str)
-            if relation_language:
-                relation_type = LANGUAGE_RELATION.name
+    if key == "787__" and relation_type_tag == 'LANGUAGE':
+        relation_type = LANGUAGE_RELATION.name
 
     # has supplement/supplement to
     if key == "770__" or key == "772__":
-        if "i" in value:
+        if "i" in value and relation_type_tag == 'OTHER':
             description = clean_val("i", value, str)
 
     # continues/is continued by
     if key == "780__" or key == "785__":
-        if "i" in value:
-            relation_sequence = clean_val("i", value, str)
-            if relation_sequence:
-                relation_type = SEQUENCE_RELATION.name
-                if key == "780__":
-                    sequence_order = "next"
-                else:
-                    sequence_order = "previous"
+        if relation_type_tag == 'SEQUENCE':
+            relation_type = SEQUENCE_RELATION.name
+            if key == "780__":
+                sequence_order = "next"
+            else:
+                sequence_order = "previous"
 
     related_dict = {
         "related_recid": clean_val("w", value, str, req=True),
@@ -219,41 +222,6 @@ def related_records(self, key, value):
         }
     )
 
-    return _migration
-
-
-@model.over("_migration", "^340__")
-@out_strip
-def medium(self, key, value):
-    """Translates medium."""
-    _migration = self.get("_migration", {})
-    item_mediums = _migration.get("item_medium", [])
-    barcodes = []
-    val_x = value.get("x")
-    if val_x:
-        barcodes = [barcode for barcode in force_list(value.get("x"))
-                    if barcode]
-
-    _medium = mapping(
-        ITEMS_MEDIUMS,
-        clean_val("a", value, str).upper().replace("-", ""),
-        raise_exception=True,
-    )
-
-    for barcode in barcodes:
-        current_item = {
-            "barcode": barcode,
-            "medium": _medium,
-        }
-        if current_item not in item_mediums:
-            item_mediums.append(current_item)
-    if item_mediums:
-        _migration.update(
-            {
-                "item_medium": item_mediums,
-                "has_medium": True,
-            }
-        )
     return _migration
 
 

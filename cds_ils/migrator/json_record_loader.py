@@ -91,7 +91,8 @@ class CDSRecordDumpLoader(object):
                     model, legacy_pid_type, dump[legacy_id_key]
                 )
                 # When updating we don't want to change the pid
-                del dump["pid"]
+                if 'pid' in dump:
+                    del dump["pid"]
                 record.update(dump)
                 record.commit()
                 db.session.commit()

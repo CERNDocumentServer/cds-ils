@@ -16,7 +16,9 @@ from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.series.api import SeriesIdProvider
 from invenio_db import db
+from invenio_pidstore.errors import PIDAlreadyExists
 
+from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.utils import add_cover_metadata, clean_created_by_field
 from cds_ils.minters import legacy_recid_minter
 
@@ -42,28 +44,68 @@ class CDSSeriesDumpLoader(object):
     @classmethod
     def create_record(cls, dump, rectype):
         """Create a new record from dump."""
+        records_logger = logging.getLogger(f"{rectype}s_logger")
         series_cls = current_app_ils.series_record_cls
         record_uuid = uuid.uuid4()
-        with db.session.begin_nested():
-            provider = SeriesIdProvider.create(
-                object_type="rec",
-                object_uuid=record_uuid,
-            )
-            timestamp, json_data = dump.revisions[-1]
-            json_data["pid"] = provider.pid.pid_value
-            json_data = clean_created_by_field(json_data)
-            if rectype == "journal":
-                legacy_pid_type = current_app.config[
-                    "CDS_ILS_RECORD_LEGACY_PID_TYPE"
-                ]
-                legacy_recid_minter(
-                    json_data["legacy_recid"], legacy_pid_type, record_uuid
+        try:
+            with db.session.begin_nested():
+                provider = SeriesIdProvider.create(
+                    object_type="rec",
+                    object_uuid=record_uuid,
                 )
-            add_cover_metadata(json_data)
+                timestamp, json_data = dump.revisions[-1]
 
-            series = series_cls.create(json_data, record_uuid)
-            series.model.created = dump.created.replace(tzinfo=None)
+                json_data = clean_created_by_field(json_data)
+                json_data["pid"] = provider.pid.pid_value
+                if rectype == "journal":
+                    legacy_pid_type = current_app.config[
+                        "CDS_ILS_SERIES_LEGACY_PID_TYPE"
+                    ]
+                    legacy_recid_minter(
+                        json_data["legacy_recid"], legacy_pid_type, record_uuid
+                    )
+                add_cover_metadata(json_data)
+                series = series_cls.create(json_data, record_uuid)
+                series.model.created = dump.created.replace(tzinfo=None)
+                series.model.updated = timestamp.replace(tzinfo=None)
+                series.commit()
+            db.session.commit()
+            records_logger.info(
+                "CREATED",
+                extra=dict(
+                    new_pid=series["pid"],
+                    status="SUCCESS",
+                    legacy_id=json_data["legacy_recid"],
+                ),
+            )
+            return series
+        except PIDAlreadyExists as e:
+            allow_updates = current_app.config.get(
+                "CDS_ILS_MIGRATION_ALLOW_UPDATES"
+            )
+            if not allow_updates:
+                raise e
+            # update document if already exists with legacy_recid
+            legacy_pid_type = current_app.config[
+                "CDS_ILS_SERIES_LEGACY_PID_TYPE"
+            ]
+            # When updating we don't want to change the pid
+            if "pid" in json_data:
+                del json_data["pid"]
+            series = get_record_by_legacy_recid(
+                series_cls, legacy_pid_type, json_data["legacy_recid"]
+            )
+            series.update(json_data)
             series.model.updated = timestamp.replace(tzinfo=None)
             series.commit()
-        db.session.commit()
-        return series
+            db.session.commit()
+
+            records_logger.info(
+                "UPDATED",
+                extra=dict(
+                    legacy_id=json_data["legacy_recid"],
+                    new_pid=series["pid"],
+                    status="SUCCESS",
+                ),
+            )
+            return series

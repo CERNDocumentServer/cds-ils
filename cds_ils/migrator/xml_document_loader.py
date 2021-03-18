@@ -135,6 +135,9 @@ class CDSDocumentDumpLoader(object):
             legacy_pid_type = current_app.config[
                 "CDS_ILS_RECORD_LEGACY_PID_TYPE"
             ]
+            # When updating we don't want to change the pid
+            if 'pid' in json_data:
+                del json_data["pid"]
             document = get_record_by_legacy_recid(
                 document_cls, legacy_pid_type, json_data["legacy_recid"]
             )

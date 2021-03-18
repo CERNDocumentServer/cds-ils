@@ -56,7 +56,10 @@ def agency_code(self, key, value):
 @model.over("sync", "^599__")
 def sync_tag(self, key, value):
     """Synchronisation tag."""
-    raise IgnoreKey("sync")
+    if clean_val('a', value, str).upper() == "CDSSYNC":
+        raise IgnoreKey("sync")
+    else:
+        raise UnexpectedValue(subfield='a')
 
 
 @model.over("created_by", "^859__")
