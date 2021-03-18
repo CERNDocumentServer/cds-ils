@@ -9,7 +9,7 @@ import { parametrize } from 'react-overridable';
 import { Container } from 'semantic-ui-react';
 
 export const HomeHeadline = parametrize(Headline, {
-  backgroundImageURL: process.env.PUBLIC_URL + '/home-headline-background.jpg',
+  backgroundImageURL: process.env.PUBLIC_URL + '/images/home-headline-background.jpg',
 });
 
 export const HomeContent = () => {
