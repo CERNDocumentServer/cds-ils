@@ -91,6 +91,7 @@ class CDSSerial(CdsIlsOverdo):
         "300__a",
         "300__b",
         "310__a",
+        "340__a",
         "4901_a",
         "490__v",
         "500__9",
@@ -116,6 +117,7 @@ class CDSSerial(CdsIlsOverdo):
         "595__a",
         "595__i",
         "595__z",
+        "599__a",
         "65027b",
         "6531_9",
         "6531_a",
@@ -199,6 +201,8 @@ class CDSSerial(CdsIlsOverdo):
         "_migration": {"record_type": "serial", "children": []},
         "mode_of_issuance": "SERIAL",
     }
+
+    rectype = "serial"
 
     def do(
         self,

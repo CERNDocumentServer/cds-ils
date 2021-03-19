@@ -30,6 +30,7 @@ class CDSMultipart(CdsIlsOverdo):
         "_migration": {**get_helper_dict(record_type="document")},
         "mode_of_issuance": "MULTIPART_MONOGRAPH",
     }
+    rectype = "multipart"
 
     def do(
         self,

@@ -232,22 +232,6 @@ def add_title_from_conference_info(json_data):
         if conference_title:
             json_data["title"] = conference_title
 
-    return json_data
-
-
-def add_place_and_title_to_conference_info(json_data):
-    """Add place and title field to conference info if it doesn't exist."""
-    for i, conference in enumerate(json_data["conference_info"]):
-        if not conference.get("place", None):
-            json_data["conference_info"][i]["place"] = json_data["_migration"][
-                "conference_place"
-            ]
-        if not conference.get("title", None):
-            json_data["conference_info"][i]["title"] = json_data["_migration"][
-                "conference_title"
-            ]
-    return json_data
-
 
 def get_item_info(record):
     """Get dict out of item info field for Ills and orders.

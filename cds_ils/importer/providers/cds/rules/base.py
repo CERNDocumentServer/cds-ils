@@ -17,6 +17,7 @@ from dateutil import parser
 from dateutil.parser import ParserError
 from dojson.errors import IgnoreKey
 from dojson.utils import filter_values, flatten, for_each_value, force_list
+from flask import current_app
 from invenio_app_ils.relations.api import EDITION_RELATION, \
     LANGUAGE_RELATION, OTHER_RELATION
 
@@ -56,7 +57,7 @@ def agency_code(self, key, value):
 @model.over("sync", "^599__")
 def sync_tag(self, key, value):
     """Synchronisation tag."""
-    if clean_val('a', value, str).upper() == "CDSSYNC":
+    if clean_val('a', value, str).upper() == "ILSSYNC":
         raise IgnoreKey("sync")
     else:
         raise UnexpectedValue(subfield='a')
@@ -242,7 +243,9 @@ def alt_authors(self, key, value):
     _authors = self.get("authors", [])
     if _authors:
         for i, v in enumerate(force_list(value)):
-            _authors[i].update({"alternative_names": clean_val("a", v, str)})
+            _alternative_names = _authors[i].get("alternative_names", [])
+            _alternative_names.append(clean_val("a", v, str))
+            _authors[i].update({"alternative_names": _alternative_names})
     return _authors
 
 
@@ -491,6 +494,7 @@ def open_access(self, key, value):
     If the field is present, then the eitems of this record have open access
     """
     has_open_access = "r" in value
+    open_access = clean_val("r", value, str)
     if has_open_access:
         self["_migration"]["eitems_open_access"] = True
 
@@ -645,12 +649,28 @@ def alternative_identifiers(self, key, value):
 def dois(self, key, value):
     """Translates dois fields."""
     _identifiers = self.get("identifiers", [])
+    dois_url_prefix = current_app.config['CDS_ILS_DOI_URL_PREFIX']
 
-    def _clean_doi_material(subfield):
-        return subfield.lower().replace("(open access)", "")
+    def _clean_doi_access(subfield):
+        return subfield.lower().replace("(open access)", "").strip()
+
+    def clean_material(subfield_q):
+        return re.sub(r'\([^)]*\)', '', subfield_q).strip()
+
+    def create_eitem(subfield_a, subfield_q):
+        eitems_proxy = self["_migration"]["eitems_proxy"]
+        eitems_proxy.append(
+            {"description": subfield_q,
+             "value": dois_url_prefix.format(doi=subfield_a),
+             }
+        )
 
     for v in force_list(value):
-        subfield_q = clean_val("q", v, str, transform=_clean_doi_material)
+        subfield_q = clean_val("q", v, str, transform=_clean_doi_access)
+        subfield_a = clean_val("a", v, str, req=True)
+        create_eitem(subfield_a=subfield_a, subfield_q=subfield_q)
+        if subfield_q:
+            subfield_q = clean_material(subfield_q)
 
         # vocabulary controlled
         material = mapping(
@@ -659,13 +679,15 @@ def dois(self, key, value):
             raise_exception=True,
         )
         doi = {
-            "value": clean_val("a", v, str, req=True),
+            "value": subfield_a,
             "material": material,
-            "source": clean_val("9", v, str),
             "scheme": "DOI",
         }
         if doi not in _identifiers:
             _identifiers.append(doi)
+
+    self["_migration"]["eitems_has_proxy"] = True
+
     return _identifiers
 
 
@@ -790,27 +812,26 @@ def languages(self, key, value):
 def subject_classification(self, key, value):
     """Translates subject classification field."""
     prev_subjects = self.get("subjects", [])
+
     if key == "084__":
         _subject_classification = {
-            "value": clean_val("c", value, str, req=True)
+            "value": clean_val("c", value, str, req=True),
+            "scheme": "ICS"
         }
     else:
-        _subject_classification = {
-            "value": clean_val("a", value, str, req=True)
+        scheme_mapping = {
+            "080__": "UDC",
+            "08204": "DEWEY",
+            "082__": "DEWEY",
+            "08200": "DEWEY",
+            "050_4": "LOC",
+            "050__": "LOC",
         }
-    if key == "080__":
-        _subject_classification.update({"scheme": "UDC"})
-    elif key.startswith("082"):
-        _subject_classification.update({"scheme": "DEWEY"})
-    elif key == "084__":
-        sub_2 = clean_val("2", value, str)
-        if sub_2 and sub_2.upper() in SUBJECT_CLASSIFICATION_EXCEPTIONS:
-            keywords(self, key, value)
-            raise IgnoreKey("subjects")
-        else:
-            _subject_classification.update({"scheme": "ICS"})
-    elif key.startswith("050"):
-        _subject_classification.update({"scheme": "LOC"})
+        scheme = scheme_mapping[key]
+        _subject_classification = {
+            "value": clean_val("a", value, str, req=True),
+            "scheme": scheme
+        }
     if _subject_classification not in prev_subjects:
         return _subject_classification
     else:
@@ -836,8 +857,8 @@ def conference_info(self, key, value):
     def clean_conference_info_fields(v, required=True):
         """Clean the conference info fields."""
         try:
-            opening_date = clean_val("9", v, str, req=required)
-            closing_date = clean_val("z", v, str, req=required)
+            opening_date = clean_val("9", v, str)
+            closing_date = clean_val("z", v, str)
             dates = None
             if opening_date and closing_date:
                 opening_date = parser.parse(opening_date)
@@ -856,54 +877,55 @@ def conference_info(self, key, value):
 
         if val_g:
             conference_identifiers.append({"scheme": "CERN_CODE",
-                                          "value": val_g})
+                                           "value": val_g})
         if val_i:
             conference_identifiers.append({"scheme": "INSPIRE_CNUM",
-                                          "value": val_i})
+                                           "value": val_i})
 
-        country_code = clean_val("w", v, str)
+        country_code = clean_val("w", v, str, multiple_values=True)
+        country_codes = []
         if country_code:
             try:
-                country_code = str(
-                    pycountry.countries.get(alpha_2=country_code).alpha_2
-                )
+                if isinstance(country_code, list):
+                    country_codes = []
+                    for code in country_code:
+                        country_codes.append(str(
+                            pycountry.countries.get(alpha_2=code).alpha_3
+                        ))
+                else:
+                    country_code = str(
+                        pycountry.countries.get(alpha_2=country_code).alpha_3
+                    )
             except (KeyError, AttributeError):
                 raise UnexpectedValue(subfield="w")
-        try:
-            series_number = clean_val("n", v, int, multiple_values=True)
-            if type(series_number) is list:
-                series_number = ", ".join(str(x) for x in series_number)
-            else:
-                series_number = str(series_number) if series_number else None
-        except TypeError:
-            raise UnexpectedValue("n", message=" series number not an int")
+
+        series_number = clean_val("n", v, int, multiple_values=True)
+        if type(series_number) is list:
+            series_number = ", ".join(str(x) for x in series_number)
+        else:
+            series_number = str(series_number) if series_number else None
+
         return {
             "title": clean_val("a", v, str, req=required),
             "place": clean_val("c", v, str, req=required),
             "dates": dates,
             "identifiers": conference_identifiers,
             "series": series_number,
-            "country": country_code,
+            "country": country_codes[0] if country_codes else country_code,
             "acronym": clean_val("x", v, str),
         }
 
     _conference_info = self.get("conference_info", [])
+    _migration = self["_migration"]
 
     for v in force_list(value):
         if key == "111__":
+
             _conference_info.append(clean_conference_info_fields(v))
-            _migration = self["_migration"]
-            _migration.update(
-                {
-                    "conference_place": _conference_info[-1]["place"],
-                    "conference_title": _conference_info[-1]["title"],
-                }
-            )
+            _migration["conference_title"] = _conference_info[-1]["title"]
         else:
-            acronym = clean_val("x", v, str)
-            if "a" in value and acronym != "acronym" and len(value) > 2:
-                _conference_info.append(clean_conference_info_fields(v, False))
-            elif "a" in value and len(value) == 2:
+            # only subfield "a" is present, migrate as an alternative title
+            if "a" in value and len(value) == 2:
                 _alternative_titles = self.get("alternative_titles", [])
                 _alternative_titles.append(
                     {
@@ -912,6 +934,18 @@ def conference_info(self, key, value):
                     }
                 )
                 self["alternative_titles"] = _alternative_titles
+                raise IgnoreKey("conference_info")
+            # if only 711__a and 711__x -> ignore
+            elif "a" in value and "x" in value and len(value) == 3:
+                acronym = clean_val("x", v, str)
+                acronym_value = clean_val("a", v, str)
+                if acronym and acronym.lower() != 'acronym':
+                    raise UnexpectedValue(subfield="x")
+                raise IgnoreKey("conference_info")
+            # if the field is marked as acronym, migrate
+            # as conference_info
+            elif "a" in value and "x" not in value and len(value) >= 3:
+                _conference_info.append(clean_conference_info_fields(v, False))
     return _conference_info
 
 

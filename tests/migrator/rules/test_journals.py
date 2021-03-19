@@ -42,7 +42,6 @@ def check_transformation(marcxml_body, json_body):
             "related": [],
             "record_type": "journal",
             "volumes": [],
-            "electronic_items": [],
         }
     }
     record = model.do(blob, ignore_missing=False)
@@ -54,7 +53,6 @@ def check_transformation(marcxml_body, json_body):
             "related": [],
             "record_type": "journal",
             "volumes": [],
-            "electronic_items": [],
         },
     }
 
@@ -324,7 +322,6 @@ def test_relation_migration(app):
                     "is_multipart": False,
                     "record_type": "journal",
                     "volumes": [],
-                    "electronic_items": [],
                     "has_related": True,
                     "related": [
                         {
@@ -349,7 +346,6 @@ def test_relation_migration(app):
                     "is_multipart": False,
                     "record_type": "journal",
                     "volumes": [],
-                    "electronic_items": [],
                     "has_related": True,
                     "related": [
                         {
@@ -374,7 +370,6 @@ def test_relation_migration(app):
                     "is_multipart": False,
                     "record_type": "journal",
                     "volumes": [],
-                    "electronic_items": [],
                     "has_related": True,
                     "related": [
                         {
@@ -400,7 +395,6 @@ def test_relation_migration(app):
                     "has_related": True,
                     "record_type": "journal",
                     "volumes": [],
-                    "electronic_items": [],
                     "related": [
                         {
                             "related_recid": "7483924",
@@ -426,7 +420,6 @@ def test_relation_migration(app):
                     "has_related": True,
                     "record_type": "journal",
                     "volumes": [],
-                    "electronic_items": [],
                     "related": [
                         {
                             "related_recid": "7483924",
@@ -459,7 +452,6 @@ def test_relation_migration(app):
                     "has_related": True,
                     "record_type": "journal",
                     "volumes": [],
-                    "electronic_items": [],
                     "related": [
                         {
                             "related_recid": "903671",

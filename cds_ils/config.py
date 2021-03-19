@@ -618,6 +618,8 @@ CDS_ILS_LDAP_URL = "ldap://xldap.cern.ch"
 CDS_ILS_SYNDETIC_CLIENT = "CHANGE_ME"
 #: EzProxy URL
 CDS_ILS_EZPROXY_URL = "https://ezproxy.cern.ch/login?url={url}"
+# Eitem DOI URL prefix
+CDS_ILS_DOI_URL_PREFIX = 'http://dx.doi.org/{doi}'
 
 ###############################################################################
 # CDS-ILS importer configuration

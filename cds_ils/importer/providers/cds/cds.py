@@ -37,10 +37,8 @@ def get_helper_dict(record_type):
         eitems_open_access=False,
         related=[],
         items=[],
-        electronic_items=[],
         item_medium=[],
         has_medium=False,
-        conference_place="",
         conference_title="",
     )
     return deepcopy(_helper_dict)

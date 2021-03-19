@@ -30,6 +30,8 @@ class CDSStandard(CdsIlsOverdo):
         "_migration": {**get_helper_dict(record_type="document")}
     }
 
+    rectype = "document"
+
     def do(
         self,
         blob,

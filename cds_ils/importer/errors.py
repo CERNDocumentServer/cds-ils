@@ -48,8 +48,10 @@ class CDSImporterException(DoJSONException):
         """Constructor."""
         self.subfield = kwargs.get("subfield", None)
         message = kwargs.get("message", None)
+        if self.subfield:
+            self.message = f"{self.message}({self.subfield})"
         if message:
-            self.message = self.message + message
+            self.message = f"{self.message}: {message}"
 
         super(CDSImporterException, self).__init__(*args)
 

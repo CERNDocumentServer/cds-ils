@@ -1,0 +1,50 @@
+[
+  {
+    "files": [
+      {
+        "comment": null,
+        "status": "SSO",
+        "version": 1,
+        "encoding": null,
+        "creation_date": "2012-09-20T13:59:33+00:00",
+        "bibdocid": 734935,
+        "mime": "application/pdf",
+        "full_name": "BOTyhdiO1HVI.pdf",
+        "superformat": ".pdf",
+        "recids_doctype": [
+          [
+            1463268,
+            "Main",
+            "BOTyhdiO1HVI.pdf"
+          ]
+        ],
+        "path": "/opt/cdsweb/var/data/files/g73/734935/BOTyhdiO1HVI.pdf;1",
+        "size": 198525,
+        "license": {},
+        "modification_date": "2012-09-20T13:59:33+00:00",
+        "copyright": {},
+        "url": "http://cds.cern.ch/record/1463268/files/BOTyhdiO1HVI.pdf",
+        "checksum": "2beed5eea5eec0f48688f9de393e197d",
+        "description": null,
+        "format": ".pdf",
+        "name": "BOTyhdiO1HVI",
+        "subformat": "",
+        "etag": "\"734935.pdf1\"",
+        "recid": 1463268,
+        "flags": [],
+        "hidden": false,
+        "type": "Main",
+        "full_path": "/opt/cdsweb/var/data/files/g73/734935/BOTyhdiO1HVI.pdf;1"
+      }
+    ],
+    "collections": null,
+    "recid": 1463268,
+    "record": [
+      {
+        "marcxml": "<record>\n  <controlfield tag=\"001\">1463268</controlfield>\n  <controlfield tag=\"003\">SzGeCERN</controlfield>\n  <controlfield tag=\"005\">20201016221650.0</controlfield>\n  <datafield tag=\"021\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">ASTM-E467-08</subfield>\n  </datafield>\n  <datafield tag=\"021\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">ASTM-E-467-08</subfield>\n  </datafield>\n  <datafield tag=\"245\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">Standard practice for verification of constant amplitude dynamic forces in an axial fatigue testing system</subfield>\n  </datafield>\n  <datafield tag=\"260\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">West Conshohocken, PA</subfield>\n    <subfield code=\"b\">ASTM</subfield>\n    <subfield code=\"c\">2008</subfield>\n  </datafield>\n  <datafield tag=\"690\" ind1=\"C\" ind2=\" \">\n    <subfield code=\"a\">STANDARD</subfield>\n  </datafield>\n  <datafield tag=\"856\" ind1=\"4\" ind2=\" \">\n    <subfield code=\"u\">http://cds.cern.ch/record/1463268/files/BOTyhdiO1HVI.pdf</subfield>\n  </datafield>\n  <datafield tag=\"960\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">21</subfield>\n  </datafield>\n  <datafield tag=\"300\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">11 p</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOOK</subfield>\n  </datafield>\n  <datafield tag=\"980\" ind1=\" \" ind2=\" \">\n    <subfield code=\"b\">STANDARD</subfield>\n  </datafield>\n  <datafield tag=\"520\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">1.1 This practice covers procedures for the dynamic verification of cyclic force amplitude control or measurement accuracy ....</subfield>\n  </datafield>\n  <datafield tag=\"110\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">American Society for Testing and Materials. Philadelphia</subfield>\n  </datafield>\n  <datafield tag=\"650\" ind1=\"1\" ind2=\"7\">\n    <subfield code=\"2\">SzGeCERN</subfield>\n    <subfield code=\"a\">Engineering</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">ASTM201207 - vol.03.01</subfield>\n  </datafield>\n  <datafield tag=\"595\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">BOTyhdiO1HVI.pdf</subfield>\n  </datafield>\n  <datafield tag=\"916\" ind1=\" \" ind2=\" \">\n    <subfield code=\"s\">h</subfield>\n    <subfield code=\"w\">201230</subfield>\n  </datafield>\n  <datafield tag=\"041\" ind1=\" \" ind2=\" \">\n    <subfield code=\"a\">eng</subfield>\n  </datafield>\n  <datafield tag=\"084\" ind1=\" \" ind2=\" \">\n    <subfield code=\"c\">77.040.10</subfield>\n  </datafield>\n</record>",
+        "json": null,
+        "modification_datetime": "2020-10-16T20:16:50+00:00"
+      }
+    ]
+  }
+]

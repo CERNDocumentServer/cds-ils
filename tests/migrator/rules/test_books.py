@@ -30,8 +30,7 @@ from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.importer.providers.cds.models.document import model
 from cds_ils.importer.providers.cds.rules.values_mapping import MATERIALS, \
     mapping
-from cds_ils.migrator.utils import add_place_and_title_to_conference_info, \
-    add_title_from_conference_info
+from cds_ils.migrator.utils import add_title_from_conference_info
 
 marcxml = (
     """<collection xmlns="http://www.loc.gov/MARC21/slim">"""
@@ -80,7 +79,6 @@ def test_conference_info_as_title(app):
         "document_type": "PROCEEDINGS",
         "_migration": {
             **get_helper_dict(record_type="document"),
-            "conference_place": "Bari, Italy",
             "conference_title": "The conference title",
         },
     }
@@ -89,8 +87,7 @@ def test_conference_info_as_title(app):
         "_migration": {**get_helper_dict(record_type="document")},
     }
     data.update(**json_body)
-    data = add_title_from_conference_info(data)
-    data = add_place_and_title_to_conference_info(data)
+    add_title_from_conference_info(data)
     assert data["title"] == "The conference title"
 
     # if title rule exists
@@ -110,7 +107,7 @@ def test_conference_info_as_title(app):
         "_migration": {**get_helper_dict(record_type="document")},
     }
     data.update(**json_body)
-    data = add_title_from_conference_info(data)
+    add_title_from_conference_info(data)
     assert data["title"] == "The actual title"
 
 
@@ -201,16 +198,12 @@ def test_subject_classification(app):
                 <subfield code="c">25.80.Nv</subfield>
             </datafield>
             """,
-            {},
-        )
-        check_transformation(
-            """
-            <datafield tag="084" ind1=" " ind2=" ">
-                <subfield code="2">CERN Yellow Report</subfield>
-                <subfield code="c">CERN-2018-003-CP</subfield>
-            </datafield>
-            """,
-            {},
+            {"subjects": [
+                {"value": "13.75.Jz", "scheme": "ICS"},
+                {"value": "13.60.Rj", "scheme": "ICS"},
+                {"value": "14.20.Jn", "scheme": "ICS"},
+                {"value": "25.80.Nv", "scheme": "ICS"},
+            ]},
         )
 
 
@@ -795,7 +788,7 @@ def test_authors(app):
                     {
                         "full_name": "Frampton, Paul H",
                         "roles": ["EDITOR"],
-                        "alternative_names": "Neubert, Matthias",
+                        "alternative_names": ["Neubert, Matthias"],
                     },
                     {"full_name": "Glashow, Sheldon Lee", "roles": ["EDITOR"]},
                     {"full_name": "Van Dam, Hendrik", "roles": ["EDITOR"],
@@ -1669,12 +1662,20 @@ def test_dois(app):
             {
                 "identifiers": [
                     {
-                        "source": "source",
                         "material": "E-BOOK",
                         "value": "10.1007/978-1-4613-0247-6",
                         "scheme": "DOI",
                     }
                 ],
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    'eitems_has_proxy': True,
+                    'eitems_proxy': [
+                        {'description': 'ebook',
+                         'value':
+                             'http://dx.doi.org/10.1007/978-1-4613-0247-6'}
+                    ]
+                },
             },
         )
         check_transformation(
@@ -1693,6 +1694,16 @@ def test_dois(app):
                         "scheme": "DOI",
                     }
                 ],
+                "_migration": {
+                    **get_helper_dict(record_type='document'),
+                    'eitems_has_proxy': True,
+                    'eitems_proxy': [
+                        {'description': 'ebook',
+                         'value':
+                             'http://dx.doi.org/10.3390/books978-3-03943-243-1'
+                         }
+                    ]
+                }
             },
         )
 
@@ -1815,9 +1826,21 @@ def test_alternative_identifiers(app):
                         "value": "10.1103/PhysRevLett.121.052004",
                         "scheme": "DOI",
                         "material": "E-BOOK",
-                        "source": "arXiv",
                     },
                 ],
+                "_migration": {
+                    **get_helper_dict(record_type='document'),
+                    "eitems_has_proxy": True,
+                    "eitems_proxy":
+                        [
+                            {'description': None,
+                             'value': 'http://dx.doi.org/10.1007/s00269-016-0862-1'},  # noqa
+                            {'description': None,
+                             'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'},  # noqa
+                            {'description': 'ebook',
+                             'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'},  # noqa
+                    ]
+                }
             },
         )
         check_transformation(
@@ -2403,7 +2426,7 @@ def test_conference_info(app):
                         "place": "Bari, Italy",
                         "dates": "2004-06-21 - 2004-06-21",
                         "series": "2",
-                        "country": "IT",
+                        "country": "ITA",
                     }
                 ],
                 "_migration": {
@@ -2411,7 +2434,6 @@ def test_conference_info(app):
                     "conference_title": """2nd Workshop on Science with
                  the New Generation of High Energy Gamma-ray Experiments:
                  between Astrophysics and Astroparticle Physics""",
-                    "conference_place": "Bari, Italy",
                 },
                 "alternative_titles": [
                     {
@@ -2449,7 +2471,6 @@ def test_conference_info(app):
                     "conference_title": """2nd Workshop on Science with
                  the New Generation of High Energy Gamma-ray Experiments:
                  between Astrophysics and Astroparticle Physics""",
-                    "conference_place": "Bari, Italy",
                 },
                 "conference_info": [
                     {
@@ -2462,7 +2483,7 @@ def test_conference_info(app):
                     "place": "Bari, Italy",
                     "dates": "2004-06-21 - 2004-06-21",
                     "series": "2",
-                    "country": "IT",
+                    "country": "ITA",
                     "acronym": "SNGHEGE2004",
                 }
                 ]
@@ -2502,7 +2523,7 @@ def test_conference_info(app):
                             ],
                             "dates": "2004-06-21 - 2004-06-21",
                             "series": "2",
-                            "country_code": "IT",
+                            "country_code": "ITA",
                             "contact": "arantza.de.oyanguren.campos@cern.ch",
                         }
                     ]
@@ -2543,7 +2564,7 @@ def test_conference_info(app):
                                 "cern_conference_code": "bari20040621",
                                 "opening_date": "2004-06-21",
                                 "series": "2",
-                                "country_code": "IT",
+                                "country_code": "ITA",
                                 "closing_date": "2004-06-21",
                                 "contact": "arantza.de.oyanguren.campos@cern.ch",
                             }
@@ -3116,7 +3137,7 @@ def test_conference_info_multiple_series_number(app):
                     {
                         "title": "3rd Singularity Theory Meeting of Northeast region and the Brazil-Mexico 2nd Meeting on Singularities",
                         "place": "Salvador, Brazil",
-                        "country": "BR",
+                        "country": "BRA",
                         "dates": "2015-07-08 - 2015-07-17",
                         "series": "3, 2",
                         "identifiers": [
@@ -3129,7 +3150,6 @@ def test_conference_info_multiple_series_number(app):
                 ],
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    "conference_place": "Salvador, Brazil",
                     "conference_title": "3rd Singularity Theory Meeting of Northeast region and the Brazil-Mexico 2nd Meeting on Singularities",
                 },
             },
@@ -3251,6 +3271,11 @@ def test_record(app):
                 "_created": "2021-01-04",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
+                    'eitems_has_proxy': True,
+                    'eitems_proxy': [
+                        {'description': 'ebook',
+                         'value':
+                             'http://dx.doi.org/10.1007/978-981-15-9034-4'}],
                     'has_serial': True,
                     'serials': [
                         {

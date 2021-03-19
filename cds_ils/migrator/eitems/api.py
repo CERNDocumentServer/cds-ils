@@ -237,7 +237,7 @@ def migrate_ezproxy_links(raise_exceptions=True):
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 
-        for url in document["_migration"]["eitems_external"]:
+        for url in document["_migration"]["eitems_proxy"]:
             try:
                 eitem = create_eitem(document["pid"], open_access=False)
                 url["login_required"] = True
