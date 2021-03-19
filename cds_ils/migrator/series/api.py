@@ -42,6 +42,7 @@ def clean_document_json_for_multipart(json_record, include_keys=None):
         "note",
         "title",
         "urls",
+        "_created",
         *include_keys
     )
     if not json_record.get("authors"):

@@ -5,6 +5,7 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 """Test documents migration."""
+from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.migrator.series import journal_marc21
 from cds_ils.migrator.xml_to_json_dump import CDSRecordDump
 from tests.migrator.xml_imports.helpers import load_json
@@ -20,6 +21,7 @@ def test_migrate_record(datadir, base_app):
         res = dump.revisions[-1][1]
         assert res['legacy_recid'] == 229384
         assert res == {
+            '_created': '1992-01-21',
             '_migration': {
                 'is_multipart': False,
                 'has_related': True,

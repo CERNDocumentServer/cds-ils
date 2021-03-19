@@ -20,6 +20,7 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.literature.api import get_record_by_legacy_recid
+from cds_ils.migrator.consts import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.errors import DumpRevisionException
 from cds_ils.migrator.utils import add_cover_metadata, \
     add_title_from_conference_info, clean_created_by_field
@@ -102,12 +103,10 @@ class CDSDocumentDumpLoader(object):
                 json_data["pid"] = provider.pid.pid_value
                 document = document_cls.create(json_data, record_uuid)
 
-                created_date = json_data.get("_created")
-                if created_date:
-                    created_date = parser.parse(created_date)
-                else:
-                    created_date = dump.created.replace(tzinfo=None)
-                document.model.created = created_date
+                created_date = json_data.get(
+                    "_created", CDS_ILS_FALLBACK_CREATION_DATE
+                )
+                document.model.created = parser.parse(created_date)
                 document.model.updated = timestamp.replace(tzinfo=None)
                 document.commit()
             db.session.commit()

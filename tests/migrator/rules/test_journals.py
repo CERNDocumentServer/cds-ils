@@ -573,3 +573,21 @@ def test_physical_volumes_(app):
                 ],
             },
         )
+
+
+def test_created(app):
+    """Test physical volumes."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="961" ind1=" " ind2=" ">
+                <subfield code="c">20110222</subfield>
+                <subfield code="h">1256</subfield>
+                <subfield code="l">CER01</subfield>
+                <subfield code="x">19920121</subfield>
+            </datafield>
+            """,
+            {
+                "_created": "1992-01-21"
+            },
+        )
