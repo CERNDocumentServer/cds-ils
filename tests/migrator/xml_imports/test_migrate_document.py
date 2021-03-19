@@ -110,6 +110,7 @@ def test_migrate_record(datadir, base_app):
                            'eitems_proxy': [],
                            'item_medium': [],
                            'is_multipart': False,
+                           'is_yellow_report': False,
                            'journal_record_legacy_recids': [],
                            'record_type': 'document',
                            'volumes': [],
