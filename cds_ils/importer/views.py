@@ -101,7 +101,7 @@ class ImporterListView(ContentNegotiatedMethodView):
 
     @need_permissions("document-importer")
     def post(self, **kwargs):
-        """Loan checkout post method."""
+        """Import documents via a file."""
         if request.files:
             file = request.files["file"]
             form_data = ImporterImportSchemaV1().load(request.form)

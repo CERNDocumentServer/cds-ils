@@ -13,11 +13,107 @@ import click
 from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
+from invenio_app_ils.vocabularies.api import VOCABULARY_TYPE_LICENSE
 from invenio_db import db
 
 from cds_ils.importer.documents.api import fuzzy_search_document, \
     search_document_by_title_authors, search_documents_by_doi, \
     search_documents_by_isbn
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
+
+VOCABULARIES_FIELDS = {
+    "alternative_identifiers": {
+        "scheme": {
+            "source": "json",
+            "type": "alternative_identifier_scheme",
+        },
+    },
+    "alternative_titles": {
+        "type": {
+            "source": "json",
+            "type": "alternative_title_type",
+        },
+    },
+    "authors": {
+        "affiliations": {
+            "identifiers": {
+                "scheme": {
+                    "source": "json",
+                    "type": "affiliation_identifier_scheme",
+                },
+            }
+        },
+        "identifiers": {
+            "scheme": {
+                "source": "json",
+                "type": "author_identifier_scheme",
+            },
+        },
+        "roles": {
+            "source": "json",
+            "type": "author_role",
+        },
+        "type": {
+            "source": "json",
+            "type": "author_type",
+        },
+    },
+    "identifiers": {
+        "scheme": {
+            "source": "json",
+            "type": "identifier_scheme",
+        },
+        "material": {
+            "source": "json",
+            "type": "doc_identifiers_materials",
+        },
+    },
+    "extensions": {
+        "unit_accelerator": {
+            "source": "json",
+            "type": "document_accelerators",
+        },
+        "unit_experiment": {
+            "source": "json",
+            "type": "document_experiments",
+        },
+        "standard_review_applicability": {
+            "source": "json",
+            "type": "document_standard_reviews",
+        },
+        "unit_institution": {
+            "source": "json",
+            "type": "document_institutions",
+        },
+    },
+    "conference_info": {
+        "identifiers": {
+            "scheme": {
+                "source": "json",
+                "type": "conference_identifier_scheme",
+            }
+        }
+    },
+    "licenses": {
+        "license": {
+            "source": "elasticsearch",
+            "type": VOCABULARY_TYPE_LICENSE,
+        },
+    },
+    "subjects": {
+        "scheme": {
+            "source": "json",
+            "type": "doc_subjects",
+        },
+    },
+    "tags": {
+        "source": "json",
+        "type": "tag",
+    },
+    # all language fields and conference_info.country already
+    # validated in the rules with pycountry
+}
 
 
 class DocumentImporter(object):
@@ -45,13 +141,16 @@ class DocumentImporter(object):
 
     def _before_create(self):
         """Perform before create metadata modification."""
-        cleaned = deepcopy(self.json_data)
+        document = deepcopy(self.json_data)
         for field in self.helper_metadata_fields:
-            if field in cleaned:
-                del cleaned[field]
+            if field in document:
+                del document[field]
         # save the import source
-        self._set_record_import_source(cleaned)
-        return cleaned
+        self._set_record_import_source(document)
+
+        vocabulary_validator.validate(VOCABULARIES_FIELDS, document)
+
+        return document
 
     def create_document(self):
         """Create a new record from dump."""

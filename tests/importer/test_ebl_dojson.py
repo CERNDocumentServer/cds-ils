@@ -89,8 +89,8 @@ def test_ebl_transformation(app):
                 "number_of_pages": "1",
                 "publication_year": "2003",
                 "subjects": [
-                    {"scheme": "LoC", "value": "TK454.4.M3T57 2003"},
-                    {"scheme": "Dewey", "value": "538.4"},
+                    {"scheme": "LOC", "value": "TK454.4.M3T57 2003"},
+                    {"scheme": "DEWEY", "value": "538.4"},
                 ],
                 "table_of_content": [
                     "Front Cover",

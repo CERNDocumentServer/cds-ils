@@ -14,7 +14,7 @@ import click
 
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.handlers import json_records_exception_handlers, \
-    multipart_record_exception_handler, xml_record_exception_handlers
+    multipart_record_exception_handler
 from cds_ils.migrator.series import journal_marc21, multipart_marc21, \
     serial_marc21
 from cds_ils.migrator.series.xml_series_loader import CDSSeriesDumpLoader
@@ -54,7 +54,6 @@ def import_series_from_dump(
                         record_dump,
                         rectype,
                     )
-
                 except Exception as exc:
                     handler = multipart_record_exception_handler.get(
                         exc.__class__
@@ -79,24 +78,16 @@ def import_serial_from_file(sources, rectype):
         )
         with click.progressbar(json.load(source).items()) as bar:
             for key, json_record in bar:
-                if "legacy_recid" in json_record:
-                    click.echo(
-                        'Importing serial "{0}({1})"...'.format(
-                            json_record["legacy_recid"], rectype
-                        )
-                    )
-                else:
-                    click.echo(
-                        'Importing parent "{0}({1})"...'.format(
-                            json_record["title"], rectype
-                        )
-                    )
+                field = json_record.get("legacy_recid", "title")
+                click.echo(
+                    'Importing serial "{0}({1})"...'.format(field, rectype)
+                )
                 has_children = json_record.get("_migration", {}).get(
                     "children", []
                 )
                 if has_children:
                     try:
-                        record = import_record(
+                        import_record(
                             json_record,
                             legacy_id=json_record["legacy_recid"],
                             rectype=rectype)
@@ -107,8 +98,9 @@ def import_serial_from_file(sources, rectype):
                         if handler:
                             handler(
                                 exc,
-                                legacy_id=json_record.get("legacy_recid")
-                                or json_record.get("title"),
+                                legacy_id=json_record.get(
+                                    "legacy_recid", "title"
+                                ),
                                 rectype=rectype,
                             )
                         else:

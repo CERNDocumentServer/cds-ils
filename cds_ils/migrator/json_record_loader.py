@@ -36,11 +36,10 @@ class CDSRecordDumpLoader(object):
     def create(cls, dump, rectype, legacy_id, mint_legacy_pid=True,
                log_extra={}):
         """Create record based on dump."""
-        record = cls.create_record(
+        return cls.create_record(
             dump, rectype, legacy_id=legacy_id,
             mint_legacy_pid=mint_legacy_pid, log_extra=log_extra
         )
-        return record
 
     @classmethod
     def create_record(
@@ -82,7 +81,7 @@ class CDSRecordDumpLoader(object):
                     new_pid=record["pid"],
                     status="SUCCESS",
                     legacy_id=legacy_id,
-                    **log_extra
+                    **log_extra,
                 ),
             )
             return record
@@ -101,7 +100,7 @@ class CDSRecordDumpLoader(object):
                     model, legacy_pid_type, legacy_id
                 )
                 # When updating we don't want to change the pid
-                if 'pid' in dump:
+                if "pid" in dump:
                     del dump["pid"]
                 record.update(dump)
                 record.commit()
@@ -112,7 +111,7 @@ class CDSRecordDumpLoader(object):
                         new_pid=record["pid"],
                         status="SUCCESS",
                         legacy_id=legacy_id,
-                        **log_extra
+                        **log_extra,
                     ),
                 )
                 return record

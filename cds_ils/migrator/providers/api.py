@@ -21,14 +21,14 @@ legacy_id:
 import json
 
 import click
-from elasticsearch_dsl import Q
 from invenio_app_ils.providers.proxies import current_ils_prov
 from invenio_db import db
 
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ProviderError
-from cds_ils.migrator.utils import bulk_index_records, \
-    model_provider_by_rectype
+from cds_ils.migrator.utils import bulk_index_records
 
 ORIGINAL_WILEY_ID = 17
 DEFAULT_WILEY = 333
@@ -39,6 +39,13 @@ WILEY_MAPPER = {
     "EUR": WILEY_DE,
     "GBP": WILEY_UK,
     "USD": WILEY_US,
+}
+
+VOCABULARIES_FIELDS = {
+    "type": {
+        "source": "json",
+        "type": "provider_type",
+    },
 }
 
 
@@ -87,11 +94,14 @@ def import_vendors_from_json(dump_file, rectype="provider"):
             # an integer, but we only accept an array of strings in the schema
             if not isinstance(record["legacy_ids"], list):
                 record["legacy_ids"] = [str(record["legacy_ids"])]
+
+            vocabulary_validator.validate(VOCABULARIES_FIELDS, record)
+
             ils_record = import_record(
                 record,
                 rectype=rectype,
                 legacy_id=record["legacy_ids"],
-                mint_legacy_pid=False
+                mint_legacy_pid=False,
             )
             ils_records.append(ils_record)
         db.session.commit()

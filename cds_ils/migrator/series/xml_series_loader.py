@@ -18,6 +18,9 @@ from invenio_app_ils.series.api import SeriesIdProvider
 from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
+from cds_ils.importer.series.importer import VOCABULARIES_FIELDS
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.consts import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.utils import add_cover_metadata, clean_created_by_field
@@ -55,9 +58,12 @@ class CDSSeriesDumpLoader(object):
                     object_uuid=record_uuid,
                 )
                 timestamp, json_data = dump.revisions[-1]
-
                 json_data = clean_created_by_field(json_data)
+
+                vocabulary_validator.validate(VOCABULARIES_FIELDS, json_data)
+
                 json_data["pid"] = provider.pid.pid_value
+
                 if rectype == "journal":
                     legacy_pid_type = current_app.config[
                         "CDS_ILS_SERIES_LEGACY_PID_TYPE"

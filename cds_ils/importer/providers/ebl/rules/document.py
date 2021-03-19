@@ -133,7 +133,7 @@ def subjects_loc(self, key, value):
     """Translates subject classification."""
     _subjects = self.get("subjects", [])
 
-    _subjects.append({"scheme": "LoC", "value": clean_val("a", value, str)})
+    _subjects.append({"scheme": "LOC", "value": clean_val("a", value, str)})
     return _subjects
 
 
@@ -143,7 +143,7 @@ def subjects_dewey(self, key, value):
     """Translates subject classification."""
     _subjects = self.get("subjects", [])
 
-    _subjects.append({"scheme": "Dewey", "value": clean_val("a", value, str)})
+    _subjects.append({"scheme": "DEWEY", "value": clean_val("a", value, str)})
     return _subjects
 
 

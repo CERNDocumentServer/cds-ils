@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS Migrator Records loader."""
+
 import logging
 import uuid
 
@@ -19,6 +20,9 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
+from cds_ils.importer.documents.importer import VOCABULARIES_FIELDS
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.consts import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.errors import DumpRevisionException
@@ -84,6 +88,7 @@ class CDSDocumentDumpLoader(object):
 
         timestamp, json_data = dump.revisions[-1]
         json_data = clean_created_by_field(json_data)
+        vocabulary_validator.validate(VOCABULARIES_FIELDS, json_data)
         add_cover_metadata(json_data)
         add_title_from_conference_info(json_data)
         add_cds_url(json_data)
@@ -139,7 +144,7 @@ class CDSDocumentDumpLoader(object):
                 "CDS_ILS_RECORD_LEGACY_PID_TYPE"
             ]
             # When updating we don't want to change the pid
-            if 'pid' in json_data:
+            if "pid" in json_data:
                 del json_data["pid"]
             document = get_record_by_legacy_recid(
                 document_cls, legacy_pid_type, json_data["legacy_recid"]

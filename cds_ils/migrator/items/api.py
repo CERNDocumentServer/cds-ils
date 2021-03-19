@@ -10,14 +10,14 @@
 
 import json
 import logging
-from copy import deepcopy
 
 import click
 from elasticsearch_dsl import Q
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
-from invenio_pidstore.errors import PIDDoesNotExistError
 
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ItemMigrationError
 from cds_ils.migrator.handlers import json_records_exception_handlers
@@ -27,6 +27,19 @@ from cds_ils.migrator.items.utils import clean_item_record, \
     find_document_for_item
 
 items_logger = logging.getLogger("items_logger")
+
+VOCABULARIES_FIELDS = {
+    "medium": {
+        "source": "json",
+        "type": "item_medium",
+    },
+    "price": {
+        "currency": {
+            "source": "json",
+            "type": "currencies",
+        },
+    },
+}
 
 
 def set_internal_location_pid(record):
@@ -65,11 +78,14 @@ def import_items_from_json(dump_file, rectype="item"):
                 set_document_pid(record)
                 # clean the item JSON
                 clean_item_record(record)
-                new_item = import_record(
+
+                vocabulary_validator.validate(VOCABULARIES_FIELDS, record)
+
+                import_record(
                     record,
                     rectype=rectype,
                     legacy_id=record["barcode"],
-                    log_extra=log_extra
+                    log_extra=log_extra,
                 )
             except Exception as exc:
                 handler = json_records_exception_handlers.get(exc.__class__)

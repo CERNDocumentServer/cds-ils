@@ -56,6 +56,8 @@ import logging
 import click
 from invenio_db import db
 
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.default_records import MIGRATION_PROVIDER_PID
 from cds_ils.migrator.errors import BorrowingRequestError, \
@@ -67,6 +69,31 @@ from cds_ils.migrator.utils import find_correct_document_pid, \
     get_acq_ill_notes, get_cost, get_date, get_patron_pid
 
 records_logger = logging.getLogger("borrowing_requests_logger")
+
+VOCABULARIES_FIELDS = {
+    "payment": {
+        "mode": {
+            "source": "json",
+            "type": "ill_payment_mode",
+        },
+        "debit_cost": {
+            "currency": {
+                "source": "json",
+                "type": "currencies",
+            },
+        },
+    },
+    "total": {
+        "currency": {
+            "source": "json",
+            "type": "currencies",
+        },
+    },
+    "type": {
+        "source": "json",
+        "type": "ill_item_type",
+    },
+}
 
 
 def get_status(record):
@@ -118,7 +145,6 @@ def clean_record_json(record):
         .replace("No barcode asociated", "")
     )
     status = get_status(record)
-    document_pid = None
     try:
         if barcode:
             item = get_item_by_barcode(barcode)
@@ -181,6 +207,8 @@ def clean_record_json(record):
 
     validate_ill(new_record)
 
+    vocabulary_validator.validate(VOCABULARIES_FIELDS, new_record)
+
     return new_record
 
 
@@ -192,9 +220,9 @@ def import_ill_borrowing_requests_from_json(
     with click.progressbar(json.load(dump_file)) as input_data:
         for record in input_data:
             try:
-                ils_record = import_record(
+                import_record(
                     clean_record_json(record),
-                    rectype="borrowing-request",
+                    rectype=rectype,
                     legacy_id=record["legacy_id"],
                 )
             except Exception as exc:
@@ -206,6 +234,8 @@ def import_ill_borrowing_requests_from_json(
                         barcode=record["barcode"],
                         rectype=rectype,
                     )
+                    if raise_exceptions:
+                        raise exc
                 else:
                     db.session.rollback()
                     raise exc

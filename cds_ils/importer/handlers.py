@@ -3,10 +3,10 @@
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
 #
-# cds-migrator-kit is free software; you can redistribute it and/or modify it
+# cds-ils is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""CDS Migrator Records logging handler."""
+"""CDS Importer Records logging handler."""
 
 import logging
 

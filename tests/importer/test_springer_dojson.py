@@ -83,9 +83,9 @@ def test_springer_transformation(app):
                 "number_of_pages": "386",
                 "publication_year": "2001.",
                 "subjects": [
-                    {"scheme": "LoC", "value": "QC770-798"},
-                    {"scheme": "LoC", "value": "QC702.7.H42"},
-                    {"scheme": "Dewey", "value": "539.7092"},
+                    {"scheme": "LOC", "value": "QC770-798"},
+                    {"scheme": "LOC", "value": "QC702.7.H42"},
+                    {"scheme": "DEWEY", "value": "539.7092"},
                 ],
                 "table_of_content": [
                     "The Spin Structure of the Nucleon",

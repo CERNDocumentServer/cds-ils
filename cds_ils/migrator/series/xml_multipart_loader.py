@@ -12,10 +12,10 @@ import logging
 import time
 
 import click
-from invenio_app_ils.errors import IlsValidationError
-from invenio_app_ils.proxies import current_app_ils
-from invenio_db import db
 
+from cds_ils.importer.series.importer import VOCABULARIES_FIELDS
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.migrator.series.multipart import import_multipart, \
     import_multivolume
 from cds_ils.migrator.series.xml_series_loader import CDSSeriesDumpLoader
@@ -32,10 +32,13 @@ class CDSMultipartDumpLoader(CDSSeriesDumpLoader):
         """Create a new record from dump."""
         timestamp, json_data = dump.revisions[-1]
         json_data = clean_created_by_field(json_data)
+        vocabulary_validator.validate(VOCABULARIES_FIELDS, json_data)
+
         add_cover_metadata(json_data)
         is_multivolume_record = json_data["_migration"].get(
             "multivolume_record", False
         )
+
         if is_multivolume_record:
             click.echo("Multivolume record.")
             record = import_multivolume(json_data)
