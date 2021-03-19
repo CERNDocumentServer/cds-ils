@@ -8,5 +8,15 @@
     "type": "identifier_scheme",
     "key": "ISBN",
     "text": "International Standard Book Number (ISBN)"
+  },
+  {
+    "type": "identifier_scheme",
+    "key": "REPORT_NUMBER",
+    "text": "Report Number"
+  },
+  {
+    "type": "identifier_scheme",
+    "key": "STANDARD_NUMBER",
+    "text": "Standard Number"
   }
 ]
