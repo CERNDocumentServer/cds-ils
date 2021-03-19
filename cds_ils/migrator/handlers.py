@@ -183,6 +183,21 @@ def relation_already_exists_exception_handler(exc, **kwargs):
         raise exc
 
 
+def default_error_handler(
+    exc, legacy_id=None, rectype="document", raise_exceptions=False, **kwargs
+):
+    """Handle any error."""
+    logger = logging.getLogger(f"{rectype}s_logger")
+    logger.error(
+        str(exc),
+        extra=dict(
+            legacy_id=legacy_id, status="ERROR", new_pid=None, **kwargs
+        ),
+    )
+    if raise_exceptions:
+        raise exc
+
+
 json_records_exception_handlers = {
     IlsValidationError: ils_validation_error_handler,
     DocumentMigrationError: item_migration_exception_handler,
@@ -214,8 +229,7 @@ multipart_record_exception_handler.update(
 
 acquisition_order_exception_handler = deepcopy(json_records_exception_handlers)
 
-acquisition_order_exception_handler.update(
-    {
+acquisition_order_exception_handler.update({
         AcqOrderError: migration_validation_error_handler,
         ProviderError: migration_validation_error_handler,
     }

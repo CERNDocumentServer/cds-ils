@@ -97,6 +97,7 @@ CDS_IGNORE_FIELDS = {
     "700__m",
     "700__v",
     "710__5",
+    "711__d",
     "773__0",  # on library request
     "773__r",  # publication_info/parent_report_number
     "773__w",  # inspire cnum (duplicated field with 035__9)
@@ -118,6 +119,11 @@ CDS_IGNORE_FIELDS = {
     "901__u",
     "903__a",
     "903__s",
+    "912__a",
+    "912__n",
+    "912__f",
+    "912__p",
+    "912__r",
     "916__a",
     "916__d",
     "916__e",
