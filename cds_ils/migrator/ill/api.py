@@ -63,7 +63,9 @@ from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record
-from cds_ils.migrator.errors import BorrowingRequestError, ItemMigrationError
+from cds_ils.migrator.default_records import MIGRATION_PROVIDER_PID
+from cds_ils.migrator.errors import BorrowingRequestError, \
+    ItemMigrationError, ProviderError
 from cds_ils.migrator.handlers import json_records_exception_handlers
 from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.providers.api import get_provider_by_legacy_id
@@ -133,11 +135,13 @@ def clean_record_json(record):
     except ItemMigrationError:
         document_pid = find_correct_document_pid(record)
 
-    # library_pid
-    provider = get_provider_by_legacy_id(record["id_crcLIBRARY"],
-                                         provider_type="LIBRARY"
-                                         )
-    provider_pid = provider.pid.pid_value
+    try:
+        # library_pid
+        provider = get_provider_by_legacy_id(record["id_crcLIBRARY"],
+                                             provider_type="LIBRARY")
+        provider_pid = provider.pid.pid_value
+    except ProviderError as e:
+        provider_pid = MIGRATION_PROVIDER_PID
 
     new_record = dict(
         document_pid=document_pid,
