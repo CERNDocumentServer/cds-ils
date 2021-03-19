@@ -82,6 +82,7 @@ def test_migrate_record(datadir, base_app):
                     'issn': '2194-1009'}],
                 'has_serial': True,
                 'is_multipart': False,
+                'is_yellow_report': False,
                 'has_related': False,
                 'has_journal': False,
                 'tags': [],

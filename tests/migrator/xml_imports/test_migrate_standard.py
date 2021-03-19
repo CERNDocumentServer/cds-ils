@@ -46,6 +46,7 @@ def test_migrate_record(datadir, base_app):
                            'volumes_urls': [], 'serials': [],
                            'has_serial': False,
                            'is_multipart': False,
+                           'is_yellow_report': False,
                            'has_related': False,
                            'has_journal': False, 'tags': [],
                            'journal_record_legacy_recids': [],

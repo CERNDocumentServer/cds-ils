@@ -39,9 +39,13 @@ class CDSDocumentDumpLoader(object):
     @classmethod
     def create_files(cls, record, files):
         """Dump files information instead of the file."""
+        if record["_migration"]["is_yellow_report"]:
+            return
         record["_migration"]["files"] = []
         for key, meta in files.items():
             obj = cls.create_file(None, key, meta)
+            if obj.get("format") == ".ps.gz":
+                continue
             # remove not needed, ES cannot handle list of lists
             del obj["recids_doctype"]
             record["_migration"]["files"].append(obj)

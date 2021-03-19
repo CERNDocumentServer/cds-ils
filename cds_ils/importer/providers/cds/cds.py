@@ -22,6 +22,7 @@ def get_helper_dict(record_type):
         serials=[],
         has_serial=False,
         is_multipart=False,
+        is_yellow_report=False,
         has_related=False,
         has_journal=False,
         tags=[],

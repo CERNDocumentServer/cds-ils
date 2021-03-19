@@ -145,7 +145,6 @@ def process_files_from_legacy():
 
         try:
             for file_dump in document["_migration"]["files"]:
-
                 # check if url migrated from MARC
                 url_in_marc = [
                     item

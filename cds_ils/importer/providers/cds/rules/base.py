@@ -152,7 +152,10 @@ def special_serials(self, key, value):
     _migration = self["_migration"]
     _serials = _migration.get("serials", [])
     for v in force_list(value):
-        result_a = mapping(SERIAL, clean_val("a", v, str))
+        value_a = clean_val("a", v, str)
+        if value_a and value_a == "YELLOW REPORT":
+            _migration["is_yellow_report"] = True
+        result_a = mapping(SERIAL, value_a)
         if result_a:
             _serials.append(
                 {
