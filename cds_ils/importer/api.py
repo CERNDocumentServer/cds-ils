@@ -6,10 +6,10 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer API module."""
+
 import logging
 import uuid
 
-import arrow
 from celery import shared_task
 from flask import current_app
 from invenio_app_ils.errors import IlsValidationError

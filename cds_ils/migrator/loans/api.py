@@ -131,10 +131,7 @@ def validate_loan(new_loan_dict, record):
 
 def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
     """Imports loan objects from JSON."""
-    (
-        default_location_pid_value,
-        _,
-    ) = current_app_ils.get_default_location_pid
+    default_location_pid_value, _ = current_app_ils.get_default_location_pid
 
     with click.progressbar(json.load(dump_file)) as bar:
         for record in bar:

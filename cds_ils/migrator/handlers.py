@@ -21,7 +21,7 @@ from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.errors import AcqOrderError, DocumentMigrationError, \
     DumpRevisionException, EItemMigrationError, ItemMigrationError, \
     JSONConversionException, LoanMigrationError, LossyConversion, \
-    ProviderError, SeriesMigrationError
+    ProviderError, SeriesMigrationError, VocabularyError
 from cds_ils.migrator.utils import get_legacy_pid_type_by_provider, \
     model_provider_by_rectype
 
@@ -172,6 +172,30 @@ def eitem_migration_exception_handler(exc, document_pid=None, *kwargs):
     eitems_logger.error(str(exc), extra=dict(document_pid=document_pid))
 
 
+def vocabulary_exception_handler(
+    exc,
+    legacy_id=None,
+    new_pid=None,
+    document_legacy_recid=None,
+    status=None,
+    rectype=None,
+    **kwargs,
+):
+    """Handle vocabulary exception."""
+    record_logger = logging.getLogger("vocabularies_logger")
+    click.secho(str(exc), fg="blue")
+    record_logger.warning(
+        str(exc),
+        extra=dict(
+            legacy_id=legacy_id,
+            new_pid=new_pid,
+            document_legacy_recid=document_legacy_recid,
+            status=status,
+            **kwargs,
+        ),
+    )
+
+
 def relation_already_exists_exception_handler(exc, **kwargs):
     """Handle relation already exists exception."""
     relations_logger = logging.getLogger("relations_logger")
@@ -215,6 +239,7 @@ xml_record_exception_handlers = {
     # raised if not CDS_ILS_MIGRATION_ALLOW_UPDATES
     PIDAlreadyExists: pid_already_exists_handler,
     RecordRelationsError: relation_already_exists_exception_handler,
+    VocabularyError: vocabulary_exception_handler,
 }
 
 multipart_record_exception_handler = deepcopy(xml_record_exception_handlers)

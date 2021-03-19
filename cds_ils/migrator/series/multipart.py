@@ -61,7 +61,7 @@ def import_multivolume(json_record):
     volumes_identifiers_list = json_record["_migration"]["volumes_identifiers"]
     volumes_urls_list = json_record["_migration"]["volumes_urls"]
 
-    lists_lenghts = [
+    lists_lengths = [
         len(entry)
         for entry in [
             volumes_urls_list,
@@ -70,7 +70,7 @@ def import_multivolume(json_record):
         ]
     ]
 
-    too_many_volumes = any(lists_lenghts) > len(volume_list)
+    too_many_volumes = any(lists_lengths) > len(volume_list)
 
     if too_many_volumes:
         raise ManualImportRequired(

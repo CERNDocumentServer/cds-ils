@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator API."""
+
 import csv
 import json
 
@@ -14,10 +15,11 @@ import click
 from celery import shared_task
 from invenio_db import db
 
+from cds_ils.migrator.documents.xml_document_loader import \
+    CDSDocumentDumpLoader
 from cds_ils.migrator.handlers import default_error_handler, \
     xml_record_exception_handlers
 from cds_ils.migrator.json_record_loader import CDSRecordDumpLoader
-from cds_ils.migrator.xml_document_loader import CDSDocumentDumpLoader
 from cds_ils.migrator.xml_to_json_dump import CDSRecordDump
 
 

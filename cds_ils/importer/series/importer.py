@@ -21,6 +21,38 @@ from invenio_db import db
 from cds_ils.importer.errors import SeriesImportError
 from cds_ils.importer.series.api import search_series_by_isbn, \
     search_series_by_issn, search_series_by_title
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
+
+VOCABULARIES_FIELDS = {
+    "access_urls": {
+        "access_restriction": {
+            "source": "json",
+            "type": "series_url_access_restrictions",
+        },
+    },
+    "alternative_titles": {
+        "type": {
+            "source": "json",
+            "type": "alternative_title_type",
+        },
+    },
+    "identifiers": {
+        "scheme": {
+            "source": "json",
+            "type": "series_identifier_scheme",
+        },
+        "material": {
+            "source": "json",
+            "type": "doc_identifiers_materials",
+        },
+    },
+    "tags": {
+        "source": "json",
+        "type": "tags",
+    },
+    # all language fields already validated in the rules with pycountry
+}
 
 
 class SeriesImporter(object):
@@ -44,14 +76,17 @@ class SeriesImporter(object):
 
     def _before_create(self, json_series):
         """Perform before create metadata modification."""
-        cleaned = deepcopy(json_series)
+        series = deepcopy(json_series)
 
-        if "volume" in cleaned:
-            del cleaned["volume"]
+        if "volume" in series:
+            del series["volume"]
         # save the import source
-        self._set_record_import_source(cleaned)
-        cleaned["mode_of_issuance"] = "SERIAL"
-        return cleaned
+        self._set_record_import_source(series)
+        series["mode_of_issuance"] = "SERIAL"
+
+        vocabulary_validator.validate(VOCABULARIES_FIELDS, series)
+
+        return series
 
     def _update_field_identifiers(self, matched_series, json_series):
         """Update identifiers of a given series."""
@@ -132,7 +167,8 @@ class SeriesImporter(object):
         if title:
             search = search_series_by_title(title)
             matches += [
-                x.pid for x in search.scan()
+                x.pid
+                for x in search.scan()
                 if x.pid not in matches and x.title == title
             ]
 

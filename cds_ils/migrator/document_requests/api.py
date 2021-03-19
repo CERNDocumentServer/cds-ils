@@ -13,9 +13,26 @@ import json
 import click
 from invenio_db import db
 
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
-    get_patron_pid, model_provider_by_rectype
+    get_patron_pid
+
+VOCABULARIES_FIELDS = {
+    "medium": {
+        "source": "json",
+        "type": "doc_req_medium",
+    },
+    "payment_method": {
+        "source": "json",
+        "type": "doc_req_payment_method",
+    },
+    "request_type": {
+        "source": "json",
+        "type": "doc_req_type",
+    },
+}
 
 
 def migrate_document_request(record):
@@ -38,6 +55,8 @@ def migrate_document_request(record):
     if note:
         new_docreq.update(note=note)
 
+    vocabulary_validator.validate(VOCABULARIES_FIELDS, new_docreq)
+
     return new_docreq
 
 
@@ -47,9 +66,10 @@ def import_document_requests_from_json(dump_file, rectype="document-request"):
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
         for record in input_data:
+
             ils_record = import_record(
                 migrate_document_request(record),
-                rectype="document-request",
+                rectype=rectype,
                 legacy_id=record["legacy_id"],
                 mint_legacy_pid=False
             )

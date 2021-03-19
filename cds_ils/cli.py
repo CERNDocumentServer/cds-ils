@@ -229,6 +229,8 @@ def vocabularies():
     run_command("vocabulary index opendefinition opendefinition --force")
     # languages
     run_command("vocabulary index languages --force")
+    # countries
+    run_command("vocabulary index countries --force")
 
     # keep JSON files as last. Extra licenses will be added to the ones
     # imported above

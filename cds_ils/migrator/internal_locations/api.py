@@ -16,8 +16,11 @@ from invenio_app_ils.internal_locations.api import InternalLocation
 from invenio_app_ils.internal_locations.search import InternalLocationSearch
 from invenio_app_ils.proxies import current_app_ils
 
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ItemMigrationError
+from cds_ils.migrator.providers.api import VOCABULARIES_FIELDS
 from cds_ils.migrator.utils import bulk_index_records
 
 
@@ -28,11 +31,7 @@ def import_internal_locations_from_json(
     dump_file = dump_file[0]
 
     include_ids = None if include is None else include.split(",")
-
-    (
-        location_pid_value,
-        _,
-    ) = current_app_ils.get_default_location_pid
+    location_pid_value, _ = current_app_ils.get_default_location_pid
 
     with click.progressbar(json.load(dump_file)) as bar:
         records = []
@@ -50,21 +49,23 @@ def import_internal_locations_from_json(
                 if library_type == "external":
                     # if the type is external => ILL Library
                     record["type"] = "LIBRARY"
+
+                    vocabulary_validator.validate(VOCABULARIES_FIELDS, record)
+
                     record = import_record(
                         record,
                         rectype="provider",
                         legacy_id=record["legacy_ids"],
-                        mint_legacy_pid=False
+                        mint_legacy_pid=False,
                     )
                     records.append(record)
                 else:
-
                     record["location_pid"] = location_pid_value
                     record = import_record(
                         record,
                         rectype="internal_location",
                         legacy_id=record["legacy_ids"],
-                        mint_legacy_pid=False
+                        mint_legacy_pid=False,
                     )
                     records.append(record)
     # Index all new internal location and libraries records

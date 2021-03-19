@@ -7,7 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator API."""
-import hashlib
+
 import io
 import logging
 import time

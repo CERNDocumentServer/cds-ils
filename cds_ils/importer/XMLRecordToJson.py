@@ -3,10 +3,11 @@
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
 #
-# cds-migrator-kit is free software; you can redistribute it and/or modify it
+# cds-ils is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""CDS Migrator Records loader."""
+"""CDS Importer Records loader."""
+
 import datetime
 
 from cds_dojson.marc21.utils import create_record

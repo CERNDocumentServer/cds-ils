@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer command lines module."""
+
 import click
 from flask.cli import with_appcontext
 from invenio_app_ils.errors import IlsValidationError
@@ -17,11 +18,15 @@ from cds_ils.importer.errors import LossyConversion, \
 from cds_ils.importer.models import ImporterAgent, ImporterMode, \
     ImporterTaskEntry, ImporterTaskLog
 from cds_ils.importer.parse_xml import get_records_list
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 
 
 @click.group()
 def importer():
     """CDS-ILS importer commands."""
+    # reset vocabularies validator cache
+    vocabulary_validator.reset()
 
 
 @importer.command()
@@ -54,13 +59,15 @@ def import_from_xml(sources, provider, mode, source_type, eager=True):
                 idx, len(sources), source.name
             )
         )
-        log = ImporterTaskLog.create(dict(
-            agent=ImporterAgent.CLI,
-            provider=provider,
-            source_type=source_type,
-            mode=ImporterMode.CREATE,  # commands act as create
-            original_filename=source.name,
-        ))
+        log = ImporterTaskLog.create(
+            dict(
+                agent=ImporterAgent.CLI,
+                provider=provider,
+                source_type=source_type,
+                mode=ImporterMode.CREATE,  # commands act as create
+                original_filename=source.name,
+            )
+        )
 
         entry_data = None
         try:
@@ -76,11 +83,18 @@ def import_from_xml(sources, provider, mode, source_type, eager=True):
 
                 try:
                     report = import_record(
-                        record, provider, mode,
-                        source_type=source_type, eager=True
+                        record,
+                        provider,
+                        mode,
+                        source_type=source_type,
+                        eager=True,
                     )
-                except (LossyConversion, RecordNotDeletable,
-                        ProviderNotAllowedDeletion, SeriesImportError) as e:
+                except (
+                    LossyConversion,
+                    RecordNotDeletable,
+                    ProviderNotAllowedDeletion,
+                    SeriesImportError,
+                ) as e:
                     click.secho("Failed to import entry", fg="red")
                     ImporterTaskEntry.create_failure(entry_data, e)
                     continue

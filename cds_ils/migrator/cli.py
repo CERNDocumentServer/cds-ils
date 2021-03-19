@@ -7,12 +7,15 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator CLI."""
+
 import logging
 from logging import FileHandler
 
 import click
 from flask.cli import with_appcontext
 
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
 from cds_ils.migrator.api import document_migration_report, \
     import_documents_from_dump, items_migration_report
@@ -67,6 +70,7 @@ def migration():
         "acq-order": records_formatter,
         "eitem": eitems_formatter,
         "relation": records_formatter,
+        "vocabularie": records_formatter,
     }
 
     for rectype, formatter in logged_record_types.items():
@@ -75,6 +79,9 @@ def migration():
         record_logger = logging.getLogger(f"{rectype}s_logger")
         record_logger.addHandler(record_logger_handler)
         record_logger.setLevel("INFO")
+
+    # reset vocabularies validator cache
+    vocabulary_validator.reset()
 
 
 @migration.command()

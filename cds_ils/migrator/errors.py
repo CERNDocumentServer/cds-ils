@@ -79,3 +79,7 @@ class AcqOrderError(CdsIlsMigrationException):
 
 class ProviderError(CdsIlsMigrationException):
     """Raised for provider migration errors."""
+
+
+class VocabularyError(CdsIlsMigrationException):
+    """Raised for vocabulary migration errors."""

@@ -55,6 +55,8 @@ import click
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.default_records import MIGRATION_DOCUMENT_PID, \
     MIGRATION_PROVIDER_PID
@@ -88,6 +90,45 @@ LIBRARIAN_IDS = [
     8762,
     9579,
 ]
+
+VOCABULARIES_FIELDS = {
+    "order_lines": {
+        "medium": {
+            "source": "json",
+            "type": "acq_medium",
+        },
+        "payment_mode": {
+            "source": "json",
+            "type": "acq_order_line_payment_mode",
+        },
+        "purchase_type": {
+            "source": "json",
+            "type": "acq_order_line_purchase_type",
+        },
+        "recipient": {
+            "source": "json",
+            "type": "acq_recipient",
+        },
+    },
+    "payment": {
+        "mode": {
+            "source": "json",
+            "type": "acq_payment_mode",
+        },
+        "debit_cost": {
+            "currency": {
+                "source": "json",
+                "type": "currencies",
+            },
+        },
+    },
+    "grand_total": {
+        "currency": {
+            "source": "json",
+            "type": "currencies",
+        },
+    },
+}
 
 
 def get_status(record):
@@ -142,7 +183,6 @@ def get_recipient(record):
 def create_order_line(record, order_status):
     """Create an OrderLine."""
     document_cls = current_app_ils.document_record_cls
-    item_medium = None
     barcode = record.get("barcode").replace("No barcode associated", "")
     item_medium = DEFAULT_ITEM_MEDIUM
 
@@ -270,6 +310,8 @@ def migrate_order(record):
 
     validate_order(new_order)
 
+    vocabulary_validator.validate(VOCABULARIES_FIELDS, new_order)
+
     return new_order
 
 
@@ -282,11 +324,11 @@ def import_orders_from_json(
         for record in input_data:
             click.echo('Processing order "{}"...'.format(record["legacy_id"]))
             try:
-                ils_record = import_record(
+                import_record(
                     migrate_order(record),
                     rectype=rectype,
                     legacy_id=record["legacy_id"],
-                    mint_legacy_pid=True
+                    mint_legacy_pid=True,
                 )
             except Exception as exc:
                 handler = acquisition_order_exception_handler.get(
