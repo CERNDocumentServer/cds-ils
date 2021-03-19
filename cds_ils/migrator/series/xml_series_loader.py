@@ -7,11 +7,11 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS Migrator Records loader."""
-
 import logging
 import uuid
 
 import click
+from dateutil import parser
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.series.api import SeriesIdProvider
@@ -19,6 +19,7 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.literature.api import get_record_by_legacy_recid
+from cds_ils.migrator.consts import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.utils import add_cover_metadata, clean_created_by_field
 from cds_ils.minters import legacy_recid_minter
 
@@ -66,7 +67,10 @@ class CDSSeriesDumpLoader(object):
                     )
                 add_cover_metadata(json_data)
                 series = series_cls.create(json_data, record_uuid)
-                series.model.created = dump.created.replace(tzinfo=None)
+                created_date = json_data.get(
+                    "_created", CDS_ILS_FALLBACK_CREATION_DATE
+                )
+                series.model.created = parser.parse(created_date)
                 series.model.updated = timestamp.replace(tzinfo=None)
                 series.commit()
             db.session.commit()

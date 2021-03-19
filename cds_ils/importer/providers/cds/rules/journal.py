@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS MARCXML Journal rules."""
+import datetime
 
 from dojson.errors import IgnoreKey
 from dojson.utils import for_each_value, force_list
@@ -16,8 +17,9 @@ from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
 
 from .base import title as base_title
-from .utils import clean_val, filter_list_values, out_strip
-from .values_mapping import ACCESS_TYPE, COLLECTION, ITEMS_MEDIUMS, mapping
+from .utils import clean_val, filter_list_values, get_week_start, out_strip
+from .values_mapping import ACCESS_TYPE, ACQUISITION_METHOD, COLLECTION, \
+    mapping
 
 
 @model.over("legacy_recid", "^001", override=True)
@@ -256,3 +258,19 @@ def document_type(self, key, value):
             raise IgnoreKey("document_type")
         else:
             raise UnexpectedValue(subfield="a")
+
+
+@model.over("_created", "^961__", override=True)
+@out_strip
+def created(self, key, value):
+    """Translates created information to fields."""
+    _created_by = self.get("created_by", {})
+    date_value = clean_val("x", value, int, regex_format=r"\d{8}$")
+    if date_value:
+        year, week, day = str(date_value)[:4],\
+                          str(date_value)[4:6],\
+                          str(date_value)[6:8]
+        date = datetime.date(int(year), int(week), int(day))
+        return date.isoformat()
+
+    raise IgnoreKey("_created")

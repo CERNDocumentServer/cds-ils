@@ -11,12 +11,15 @@
 import logging
 import uuid
 
+from dateutil import parser
 from flask import current_app
 from invenio_app_ils.errors import IlsValidationError
+from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.literature.api import get_record_by_legacy_recid
+from cds_ils.migrator.consts import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.utils import get_legacy_pid_type_by_provider, \
     model_provider_by_rectype
 from cds_ils.minters import legacy_recid_minter
@@ -47,7 +50,8 @@ class CDSRecordDumpLoader(object):
         """Create a new record from dump."""
         records_logger = logging.getLogger(f"{rectype}s_logger")
         model, pid_provider = model_provider_by_rectype(rectype)
-
+        document_class = current_app_ils.document_record_cls
+        series_class = current_app_ils.series_record_cls
         if legacy_id_key is None:
             legacy_id_key = "pid"
         try:
@@ -64,6 +68,12 @@ class CDSRecordDumpLoader(object):
                         dump[legacy_id_key], legacy_pid_type, record_uuid
                     )
                 record = model.create(dump, record_uuid)
+                if isinstance(record, document_class) \
+                        or isinstance(record, series_class):
+                    created_date = dump.get(
+                        "_created", CDS_ILS_FALLBACK_CREATION_DATE
+                    )
+                    record.model.created = parser.parse(created_date)
                 record.commit()
             db.session.commit()
             records_logger.info(
