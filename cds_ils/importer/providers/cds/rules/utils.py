@@ -205,11 +205,11 @@ def clean_val(
     to_clean = value.get(subfield)
 
     if manual and to_clean:
-        raise ManualImportRequired
+        raise ManualImportRequired(subfield=subfield)
     if req and to_clean is None:
         if default:
             return default
-        raise MissingRequiredField
+        raise MissingRequiredField(subfield=subfield)
 
     if multiple_values and type(to_clean) is tuple:
         cleaned_values = []

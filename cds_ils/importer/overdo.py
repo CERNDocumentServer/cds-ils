@@ -16,6 +16,8 @@ from dojson.utils import GroupableOrderedDict
 class CdsIlsOverdo(Overdo):
     """Overwrite API of Overdo dojson class."""
 
+    rectype = None
+
     def do(
         self,
         blob,
@@ -40,7 +42,7 @@ class CdsIlsOverdo(Overdo):
         handlers = {IgnoreKey: None}
         handlers.update(exception_handlers or {})
 
-        def clean_missing(exc, output, key, value):
+        def clean_missing(exc, output, key, value, rectype=None):
             order = output.get("__order__")
             if order:
                 order.remove(key)
@@ -79,7 +81,7 @@ class CdsIlsOverdo(Overdo):
                 if exc.__class__ in handlers:
                     handler = handlers[exc.__class__]
                     if handler is not None:
-                        handler(exc, output, key, value)
+                        handler(exc, output, key, value, rectype=self.rectype)
                 else:
                     raise
         return output

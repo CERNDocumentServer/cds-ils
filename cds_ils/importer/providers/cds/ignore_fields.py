@@ -6,7 +6,6 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS CDS Importer ignored fields."""
-
 CDS_IGNORE_FIELDS = {
     "003",
     "003___",
@@ -46,13 +45,16 @@ CDS_IGNORE_FIELDS = {
     "100__9",
     "111__d",
     "111__f",
+    "111__y",
     "145__a",
+    "245__9",
     "246__9",
     "246__i",
     "269__a",  # preprint info
     "269__b",  # preprint info
     "269__c",  # preprint date
     "270__a",
+    "270__d",
     "270__k",
     "270__l",
     "270__m",  # conference email
@@ -98,6 +100,7 @@ CDS_IGNORE_FIELDS = {
     "700__v",
     "710__5",
     "711__d",
+    "711__f",
     "773__0",  # on library request
     "773__r",  # publication_info/parent_report_number
     "773__w",  # inspire cnum (duplicated field with 035__9)

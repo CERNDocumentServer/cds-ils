@@ -94,6 +94,8 @@ class CDSJournal(CdsIlsOverdo):
         "_migration": {**get_helper_dict(record_type="journal")}
     }
 
+    rectype = "journal"
+
     def do(
         self,
         blob,
