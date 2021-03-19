@@ -94,14 +94,20 @@ def migration():
     "--skip-indexing",
     is_flag=True,
 )
+@click.option(
+    "--fail-on-exceptions",
+    is_flag=True,
+)
 @with_appcontext
-def documents(sources, source_type, include, skip_indexing):
+def documents(sources, source_type, include, skip_indexing,
+              fail_on_exceptions=False):
     """Migrate documents from CDS legacy."""
     import_documents_from_dump(
         sources=sources,
         source_type=source_type,
         eager=True,
         include=include,
+        raise_exceptions=fail_on_exceptions
     )
     # We don't get the record back from _loadrecord so re-index all documents
     if not skip_indexing:

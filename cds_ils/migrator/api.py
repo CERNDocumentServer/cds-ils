@@ -14,14 +14,16 @@ import click
 from celery import shared_task
 from invenio_db import db
 
-from cds_ils.migrator.handlers import xml_record_exception_handlers
+from cds_ils.migrator.handlers import default_error_handler, \
+    xml_record_exception_handlers
 from cds_ils.migrator.json_record_loader import CDSRecordDumpLoader
 from cds_ils.migrator.xml_document_loader import CDSDocumentDumpLoader
 from cds_ils.migrator.xml_to_json_dump import CDSRecordDump
 
 
 def import_documents_from_dump(
-    sources, source_type, eager, include, rectype="document"
+    sources, source_type, eager, include, rectype="document",
+    raise_exceptions=False
 ):
     """Load records."""
     include = include if include is None else include.split(",")
@@ -51,10 +53,14 @@ def import_documents_from_dump(
                             handler(
                                 exc,
                                 legacy_id=dump_record["recid"],
-                                rectype=rectype,
+                                rectype=rectype
                             )
                         else:
-                            raise exc
+                            default_error_handler(
+                                exc, rectype=rectype,
+                                raise_exceptions=raise_exceptions,
+                                legacy_id=dump_record["recid"],
+                            )
 
 
 def import_record(dump, rectype, legacy_id_key="legacy_recid",
