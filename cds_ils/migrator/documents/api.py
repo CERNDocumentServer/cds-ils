@@ -79,6 +79,18 @@ def get_documents_with_ebl_eitems():
     return search
 
 
+def get_documents_with_safari_eitems():
+    """Return documents with eitems from Safari provider to be migrated."""
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.filter(
+        "bool",
+        filter=[
+            Q("term", _migration__eitems_has_safari=True),
+        ],
+    )
+    return search
+
+
 def get_documents_with_external_eitems():
     """Return documents with eitems from external providers to be migrated."""
     document_search = current_app_ils.document_search_cls()

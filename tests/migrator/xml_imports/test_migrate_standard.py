@@ -51,13 +51,20 @@ def test_migrate_record(datadir, base_app):
                            'journal_record_legacy_recids': [],
                            'eitems_proxy': [],
                            'eitems_has_proxy': False,
-                           'eitems_file_links': [{
-                               'value': 'http://cds.cern.ch/record/1463268/files/BOTyhdiO1HVI.pdf'}],
+                           'eitems_file_links': [
+                               {
+                                    'url': {
+                                        'value': 'http://cds.cern.ch/record/1463268/files/BOTyhdiO1HVI.pdf'
+                                    }
+                               }
+                           ],
                            'eitems_has_files': True,
                            'eitems_external': [],
                            'eitems_has_external': False,
                            'eitems_ebl': [],
                            'eitems_has_ebl': False,
+                           'eitems_safari': [],
+                           'eitems_has_safari': False,
                            'eitems_open_access': False,
                            'related': [], 'items': [],
                            'item_medium': [], 'has_medium': False,

@@ -20,7 +20,8 @@ from cds_ils.migrator.default_records import create_default_records
 from cds_ils.migrator.document_requests.api import \
     import_document_requests_from_json
 from cds_ils.migrator.eitems.api import migrate_ebl_links, \
-    migrate_external_links, migrate_ezproxy_links, process_files_from_legacy
+    migrate_external_links, migrate_ezproxy_links, migrate_safari_links, \
+    process_files_from_legacy
 from cds_ils.migrator.ill.api import import_ill_borrowing_requests_from_json
 from cds_ils.migrator.internal_locations.api import \
     import_internal_locations_from_json
@@ -348,6 +349,7 @@ def eitems_providers():
     migrate_external_links()
     migrate_ezproxy_links()
     migrate_ebl_links()
+    migrate_safari_links()
 
 
 @migration.command()
