@@ -24,7 +24,7 @@ from invenio_files_rest.models import Bucket, ObjectVersion
 
 from cds_ils.migrator.documents.api import get_all_documents_with_files, \
     get_documents_with_ebl_eitems, get_documents_with_external_eitems, \
-    get_documents_with_proxy_eitems
+    get_documents_with_proxy_eitems, get_documents_with_safari_eitems
 from cds_ils.migrator.errors import EItemMigrationError, FileMigrationError
 from cds_ils.migrator.handlers import eitems_exception_handlers
 
@@ -150,7 +150,7 @@ def process_files_from_legacy():
                 url_in_marc = [
                     item
                     for item in document["_migration"]["eitems_file_links"]
-                    if item["value"] == file_dump["url"]
+                    if item["url"]["value"] == file_dump["url"]
                 ]
                 if not url_in_marc:
                     msg = (
@@ -205,12 +205,17 @@ def migrate_external_links(raise_exceptions=True):
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
-
-        for url in document["_migration"]["eitems_external"]:
+        open_access = document["_migration"]["eitems_open_access"]
+        for item in document["_migration"]["eitems_external"]:
             try:
-                eitem = create_eitem(document["pid"], open_access=True)
-                url["login_required"] = False
-                eitem["urls"] = [url]
+                eitem = create_eitem(
+                    document["pid"],
+                    open_access=open_access
+                    if open_access
+                    else item["open_access"],
+                )
+                item["url"]["login_required"] = False
+                eitem["urls"] = [item["url"]]
                 eitem.commit()
                 EItemIndexer().index(eitem)
             except Exception as exc:
@@ -236,12 +241,24 @@ def migrate_ezproxy_links(raise_exceptions=True):
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
-
-        for url in document["_migration"]["eitems_proxy"]:
+        open_access = document["_migration"]["eitems_open_access"]
+        for item in document["_migration"]["eitems_proxy"]:
+            # ExProxy links require login and therefore they need to be
+            # restricted
+            if open_access or item["open_access"]:
+                raise EItemMigrationError(
+                    "Document {pid} has EzProxy links that are not restricted "
+                    "(Open Access) while it should be restricted".format(
+                        pid=document["pid"]
+                    )
+                )
             try:
-                eitem = create_eitem(document["pid"], open_access=False)
-                url["login_required"] = True
-                eitem["urls"] = [url]
+                eitem = create_eitem(
+                    document["pid"],
+                    open_access=False,
+                )
+                item["url"]["login_required"] = True
+                eitem["urls"] = [item["url"]]
                 eitem.commit()
                 EItemIndexer().index(eitem)
             except Exception as exc:
@@ -258,7 +275,7 @@ def migrate_ezproxy_links(raise_exceptions=True):
         DocumentIndexer().index(document)
 
 
-def create_ebl_eitem(url, ebl_id_list, document, raise_exceptions=True):
+def create_ebl_eitem(item, ebl_id_list, document, raise_exceptions=True):
     """Create eitem record for given migration url and document."""
     eitem_indexer = current_app_ils.eitem_indexer
     url_template = (
@@ -269,12 +286,12 @@ def create_ebl_eitem(url, ebl_id_list, document, raise_exceptions=True):
     matched_ebl_id = [
         ebl_id["value"]
         for ebl_id in ebl_id_list
-        if ebl_id["value"] in url["value"]
+        if ebl_id["value"] in item["url"]["value"]
     ]
     try:
         if not matched_ebl_id:
             document["alternative_identifiers"].append(
-                {"value": url["value"], "scheme": "EBL"}
+                {"value": item["url"]["value"], "scheme": "EBL"}
             )
             raise EItemMigrationError(
                 "Document {pid} has different EBL identifier"
@@ -330,9 +347,41 @@ def migrate_ebl_links(raise_exceptions=True):
                     )
                 )
 
-            for url in document["_migration"]["eitems_ebl"]:
-                create_ebl_eitem(url, ebl_id_list, document, raise_exceptions)
+            for item in document["_migration"]["eitems_ebl"]:
+                create_ebl_eitem(item, ebl_id_list, document, raise_exceptions)
             document["_migration"]["eitems_has_ebl"] = False
+            document.commit()
+            db.session.commit()
+            DocumentIndexer().index(document)
+
+        except Exception as exc:
+            handler = eitems_exception_handlers.get(exc.__class__)
+            if handler:
+                handler(exc, document_pid=document["pid"])
+            else:
+                if raise_exceptions:
+                    raise exc
+
+
+def migrate_safari_links(raise_exceptions=True):
+    """Migrate Safari links from documents."""
+    document_class = current_app_ils.document_record_cls
+
+    search = get_documents_with_safari_eitems()
+    click.echo("Found {} documents with safari links.".format(search.count()))
+
+    for hit in search.scan():
+        # make sure the document is in DB not only ES
+        document = document_class.get_record_by_pid(hit.pid)
+        click.echo("Processing document {}...".format(document["pid"]))
+
+        try:
+            for item in document["_migration"]["eitems_safari"]:
+                eitem = create_eitem(document["pid"], open_access=False)
+                eitem["urls"] = [item["url"]]
+                eitem.commit()
+                EItemIndexer().index(eitem)
+            document["_migration"]["eitems_has_safari"] = False
             document.commit()
             db.session.commit()
             DocumentIndexer().index(document)

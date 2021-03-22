@@ -488,9 +488,8 @@ def open_access(self, key, value):
 
     If the field is present, then the eitems of this record have open access
     """
-    has_open_access = "r" in value
-    open_access = clean_val("r", value, str)
-    if has_open_access:
+    sub_r = clean_val("r", value, str)
+    if sub_r and "open access" in sub_r.lower():
         self["_migration"]["eitems_open_access"] = True
 
     raise IgnoreKey("_migration")
@@ -501,42 +500,60 @@ def open_access(self, key, value):
 @for_each_value
 def urls(self, key, value):
     """Translates urls field."""
+    # Contains description and restriction of the url
     sub_y = clean_val("y", value, str, default="")
+    # Value of the url
     sub_u = clean_val("u", value, str, req=True)
 
     eitems_ebl = self["_migration"]["eitems_ebl"]
+    eitems_safari = self["_migration"]["eitems_safari"]
     eitems_external = self["_migration"]["eitems_external"]
     eitems_proxy = self["_migration"]["eitems_proxy"]
     eitems_files = self["_migration"]["eitems_file_links"]
 
-    url = {"value": sub_u}
+    def translate_open_access(item, field):
+        if field:
+            is_open_access = "open access" in field.lower()
+            item["open_access"] = is_open_access
+
+    eitem_url = {"url": {"value": sub_u}}
     if sub_y and sub_y != "ebook":
-        url["description"] = sub_y
+        eitem_url["url"]["description"] = sub_y
 
     # EBL publisher login required
+    # No need to check for open_access since EBL is always restricted
     if all([elem in sub_u for elem in ["cds", ".cern.ch" "/auth.py"]]):
-        eitems_ebl.append(url)
+        eitems_ebl.append(eitem_url)
         self["_migration"]["eitems_has_ebl"] = True
     # EzProxy links
     elif "ezproxy.cern.ch" in sub_u:
-        url["value"] = url["value"].replace(
+        translate_open_access(eitem_url, sub_y)
+        eitem_url["url"]["value"] = eitem_url["url"]["value"].replace(
             "https://ezproxy.cern.ch/login?url=", ""
         )
-        eitems_proxy.append(url)
+        eitems_proxy.append(eitem_url)
         self["_migration"]["eitems_has_proxy"] = True
+    # Safari links
+    # No need to check for open_access since Safari is always restricted
+    elif sub_u.startswith("https://learning.oreilly.com/library/view/"):
+        eitems_safari.append(eitem_url)
+        self["_migration"]["eitems_has_safari"] = True
     # local files
+    # No need to check for open_access since for local files open_access is
+    # controlled by files restriction itself
     elif all(
         [elem in sub_u for elem in ["cds", ".cern.ch/record/", "/files"]]
     ):
-        eitems_files.append(url)
+        eitems_files.append(eitem_url)
         self["_migration"]["eitems_has_files"] = True
     elif sub_y == "ebook" or sub_y == "e-proceedings":
-        eitems_external.append(url)
+        translate_open_access(eitem_url, sub_y)
+        eitems_external.append(eitem_url)
         self["_migration"]["eitems_has_external"] = True
     else:
         # if none of the above, it is just external url
         # attached to the document
-        return url
+        return eitem_url["url"]
 
 
 @model.over(
@@ -654,14 +671,21 @@ def dois(self, key, value):
 
     def create_eitem(subfield_a, subfield_q):
         eitems_proxy = self["_migration"]["eitems_proxy"]
-        eitems_proxy.append(
-            {"description": subfield_q,
-             "value": dois_url_prefix.format(doi=subfield_a),
-             }
-        )
+        open_access = False
+        if subfield_q:
+            open_access = "open access" in subfield_q.lower()
+            subfield_q = _clean_doi_access(subfield_q)
+        eitem = {
+            "url": {
+                "description": subfield_q,
+                "value": dois_url_prefix.format(doi=subfield_a),
+            },
+            "open_access": open_access
+        }
+        eitems_proxy.append(eitem)
 
     for v in force_list(value):
-        subfield_q = clean_val("q", v, str, transform=_clean_doi_access)
+        subfield_q = clean_val("q", v, str)
         subfield_a = clean_val("a", v, str, req=True)
         create_eitem(subfield_a=subfield_a, subfield_q=subfield_q)
         if subfield_q:

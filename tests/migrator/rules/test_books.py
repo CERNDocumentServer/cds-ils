@@ -586,8 +586,10 @@ def test_urls(app):
                     "eitems_has_files": True,
                     "eitems_file_links": [
                         {
-                            "description": "Description",
-                            "value": "http://cds.cern.ch/record/1393420/files/NF-EN-13480-2-AC6.pdf",
+                            "url": {
+                                "description": "Description",
+                                "value": "http://cds.cern.ch/record/1393420/files/NF-EN-13480-2-AC6.pdf",
+                            },
                         }
                     ],
                 }
@@ -605,7 +607,9 @@ def test_urls(app):
                     "eitems_has_files": True,
                     "eitems_file_links": [
                         {
-                            "value": "https://cds.cern.ch/record/12345/files/abc.pdf"
+                            "url": {
+                                "value": "https://cds.cern.ch/record/12345/files/abc.pdf"
+                            },
                         }
                     ],
                 }
@@ -647,7 +651,9 @@ def test_urls(app):
                     "eitems_has_ebl": True,
                     "eitems_ebl": [
                         {
-                            "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560"
+                            "url": {
+                                "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560"
+                            },
                         }
                     ],
                 }
@@ -663,10 +669,12 @@ def test_urls(app):
             {
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    "eitems_has_external": True,
-                    "eitems_external": [
+                    "eitems_has_safari": True,
+                    "eitems_safari": [
                         {
-                            "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar"
+                            "url": {
+                                "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar"
+                            },
                         }
                     ],
                 }
@@ -687,7 +695,10 @@ def test_urls(app):
                     "eitems_has_proxy": True,
                     "eitems_proxy": [
                         {
-                            "value": "https://www.worldscientific.com/toc/rast/10"
+                            "url": {
+                                "value": "https://www.worldscientific.com/toc/rast/10"
+                            },
+                            "open_access": False,
                         }
                     ],
                 }
@@ -714,12 +725,59 @@ def test_urls(app):
                     "eitems_has_ebl": True,
                     "eitems_ebl": [
                         {
-                            "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560"
+                            "url": {
+                                "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560"
+                            },
                         },
                     ],
+                    "eitems_safari": [
+                        {
+                            "url": {
+                                "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar"
+                            },
+                        },
+                    ],
+                    "eitems_has_safari": True,
+                }
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="856" ind1="4" ind2=" ">
+                <subfield code="u"> https://learning.oreilly.com/library/view/-/9781119745228/?ar </subfield>
+                <subfield code="y">ebook</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "eitems_safari": [
+                        {
+                            "url": {
+                                "value": "https://learning.oreilly.com/library/view/-/9781119745228/?ar"
+                            },
+                        },
+                    ],
+                    "eitems_has_safari": True,
+                }
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="856" ind1="4" ind2=" ">
+                <subfield code="u"> https://external.com </subfield>
+                <subfield code="y">ebook</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
                     "eitems_external": [
                         {
-                            "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar"
+                            "url": {
+                                "value": "https://external.com"
+                            },
+                            "open_access": False,
                         },
                     ],
                     "eitems_has_external": True,
@@ -1671,9 +1729,13 @@ def test_dois(app):
                     **get_helper_dict(record_type="document"),
                     'eitems_has_proxy': True,
                     'eitems_proxy': [
-                        {'description': 'ebook',
-                         'value':
-                             'http://dx.doi.org/10.1007/978-1-4613-0247-6'}
+                        {
+                            'url': {
+                                'description': 'ebook',
+                                 'value': 'http://dx.doi.org/10.1007/978-1-4613-0247-6'
+                            },
+                            "open_access": False,
+                        }
                     ]
                 },
             },
@@ -1698,10 +1760,13 @@ def test_dois(app):
                     **get_helper_dict(record_type='document'),
                     'eitems_has_proxy': True,
                     'eitems_proxy': [
-                        {'description': 'ebook',
-                         'value':
-                             'http://dx.doi.org/10.3390/books978-3-03943-243-1'
-                         }
+                        {
+                            "url": {
+                                'description': 'ebook',
+                                 'value':'http://dx.doi.org/10.3390/books978-3-03943-243-1'
+                                },
+                            "open_access": True,
+                        }
                     ]
                 }
             },
@@ -1833,12 +1898,27 @@ def test_alternative_identifiers(app):
                     "eitems_has_proxy": True,
                     "eitems_proxy":
                         [
-                            {'description': None,
-                             'value': 'http://dx.doi.org/10.1007/s00269-016-0862-1'},  # noqa
-                            {'description': None,
-                             'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'},  # noqa
-                            {'description': 'ebook',
-                             'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'},  # noqa
+                            {
+                                "url": {
+                                    'description': None,
+                                    'value': 'http://dx.doi.org/10.1007/s00269-016-0862-1'
+                                },
+                                "open_access": False,
+                            },
+                            {
+                                "url": {
+                                    'description': None,
+                                    'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'
+                                },
+                                "open_access": False,
+                            },
+                            {
+                                "url": {
+                                    'description': 'ebook',
+                                     'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'
+                                },
+                                "open_access": False,
+                            }
                     ]
                 }
             },
@@ -3168,6 +3248,19 @@ def test_open_access(app):
             {
                 "_migration": {
                     **get_helper_dict(record_type="document"),
+                    "eitems_open_access": False,
+                },
+            },
+        ),
+        check_transformation(
+            """
+            <datafield tag="536" ind1=" " ind2=" ">
+                <subfield code="r">Open Access</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
                     "eitems_open_access": True,
                 },
             },
@@ -3273,9 +3366,14 @@ def test_record(app):
                     **get_helper_dict(record_type="document"),
                     'eitems_has_proxy': True,
                     'eitems_proxy': [
-                        {'description': 'ebook',
-                         'value':
-                             'http://dx.doi.org/10.1007/978-981-15-9034-4'}],
+                        {
+                            'url': {
+                                'description': 'ebook',
+                                'value': 'http://dx.doi.org/10.1007/978-981-15-9034-4'
+                            },
+                            "open_access": False,
+                        }
+                    ],
                     'has_serial': True,
                     'serials': [
                         {

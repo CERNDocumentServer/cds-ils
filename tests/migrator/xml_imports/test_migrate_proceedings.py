@@ -88,11 +88,20 @@ def test_migrate_record(datadir, base_app):
                 'journal_record_legacy_recids': [],
                 'eitems_proxy': [
                     {
-                        'description': 'e-proceedings (v.1)',
-                        'value': 'http://dx.doi.org/10.1007/978-3-319-41945-9'},
+                        'url': {
+                            'description': 'e-proceedings (v.1)',
+                            'value': 'http://dx.doi.org/10.1007/978-3-319-41945-9'
+                        },
+                        "open_access": False,
+                    },
                     {
-                        'description': 'e-proceedings (v.2)',
-                        'value': 'http://dx.doi.org/10.1007/978-3-319-48812-7'}],
+                        'url': {
+                            'description': 'e-proceedings (v.2)',
+                            'value': 'http://dx.doi.org/10.1007/978-3-319-48812-7'
+                        },
+                        "open_access": False,
+                    }
+                ],
                 'eitems_has_proxy': True,
                 'eitems_file_links': [],
                 'eitems_has_files': False,
@@ -100,6 +109,8 @@ def test_migrate_record(datadir, base_app):
                 'eitems_has_external': False,
                 'eitems_ebl': [],
                 'eitems_has_ebl': False,
+                'eitems_safari': [],
+                'eitems_has_safari': False,
                 'eitems_open_access': False,
                 'related': [],
                 'items': [], 'item_medium': [],
