@@ -63,10 +63,10 @@ def import_documents_from_dump(
                             )
 
 
-def import_record(dump, rectype, legacy_id_key="legacy_recid",
+def import_record(dump, rectype, legacy_id,
                   mint_legacy_pid=True, log_extra={}):
     """Import record in database."""
-    record = CDSRecordDumpLoader.create(dump, rectype, legacy_id_key,
+    record = CDSRecordDumpLoader.create(dump, rectype, legacy_id,
                                         mint_legacy_pid=mint_legacy_pid,
                                         log_extra=log_extra)
     return record

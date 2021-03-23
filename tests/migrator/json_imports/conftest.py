@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Migration pytest fixtures and plugins."""
+import time
 
 import pytest
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
@@ -53,6 +54,7 @@ def test_data_migration(app, db, es_clear, patrons):
     ):
         ri.index(rec)
 
+    time.sleep(1)
     create_default_records()
     patron = Patron(patrons[0].id)
     PatronIndexer().index(patron)

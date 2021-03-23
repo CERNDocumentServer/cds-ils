@@ -96,7 +96,10 @@ def import_serial_from_file(sources, rectype):
                 )
                 if has_children:
                     try:
-                        record = import_record(json_record, rectype=rectype)
+                        record = import_record(
+                            json_record,
+                            legacy_id=json_record["legacy_recid"],
+                            rectype=rectype)
                     except Exception as exc:
                         handler = json_records_exception_handlers.get(
                             exc.__class__

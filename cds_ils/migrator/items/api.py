@@ -68,7 +68,7 @@ def import_items_from_json(dump_file, rectype="item"):
                 new_item = import_record(
                     record,
                     rectype=rectype,
-                    legacy_id_key="barcode",
+                    legacy_id=record["barcode"],
                     log_extra=log_extra
                 )
             except Exception as exc:

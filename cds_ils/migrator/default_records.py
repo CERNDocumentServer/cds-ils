@@ -10,6 +10,7 @@
 import uuid
 
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
+from invenio_app_ils.items.api import ITEM_PID_TYPE
 from invenio_app_ils.providers.api import PROVIDER_PID_TYPE
 from invenio_app_ils.providers.proxies import current_ils_prov
 from invenio_app_ils.proxies import current_app_ils
@@ -17,10 +18,10 @@ from invenio_app_ils.series.api import SERIES_PID_TYPE
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
-MIGRATION_DOCUMENT_PID = "L1t3r-4tUr3"
-MIGRATION_PROVIDER_PID = "Pr0v1-d3r1d"
-MIGRATION_YELLOW_PID = "Y3lL0-R3p9R"
-MIGRATION_DESIGN_PID = "d3S1g-r3P0r"
+from cds_ils.migrator.config import MIGRATION_DESIGN_PID, \
+    MIGRATION_DOCUMENT_PID, MIGRATION_ITEM_PID, MIGRATION_PROVIDER_PID
+from cds_ils.migrator.internal_locations.api import \
+    get_internal_location_by_legacy_recid
 
 
 def mint_migration_records(pid_type, pid_field, data):
@@ -99,6 +100,27 @@ def create_design_report():
         current_app_ils.series_record_cls,
         current_app_ils.series_indexer,
         SERIES_PID_TYPE,
+    )
+
+
+def create_unknown_item():
+    """Create unknown item."""
+    int_loc_pid_value = get_internal_location_by_legacy_recid(3).pid.pid_value
+    data = {
+        "created_by": {"type": "script", "value": "migration"},
+        "internal_location_pid": int_loc_pid_value,
+        "barcode": "DEFAULT",
+        "status": "FOR_REFERENCE_ONLY",
+        "pid": MIGRATION_ITEM_PID,
+        "document_pid": MIGRATION_DOCUMENT_PID,
+        "circulation_restriction": "NO_RESTRICTION",
+        "medium": "PAPER",
+    }
+    create_default_record(
+        data,
+        current_app_ils.item_record_cls,
+        current_app_ils.item_indexer,
+        ITEM_PID_TYPE,
     )
 
 

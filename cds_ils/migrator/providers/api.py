@@ -35,19 +35,20 @@ DEFAULT_WILEY = 333
 WILEY_DE = 333
 WILEY_UK = 444
 WILEY_US = 555
-WILEY_MAPER = {
+WILEY_MAPPER = {
     "EUR": WILEY_DE,
     "GBP": WILEY_UK,
     "USD": WILEY_US,
 }
 
 
-def get_provider_by_legacy_id(legacy_id, grand_total=None, provider_type=None):
+def get_provider_by_legacy_id(legacy_id, provider_type, grand_total=None):
     """Search for provider by legacy id."""
     # Check for Wiley vendor to split it depending on the currency
-    if legacy_id == ORIGINAL_WILEY_ID:
+    if provider_type == 'VENDOR' and legacy_id == ORIGINAL_WILEY_ID:
         if grand_total and grand_total["currency"]:
-            legacy_id = WILEY_MAPER.get(grand_total["currency"], DEFAULT_WILEY)
+            legacy_id = WILEY_MAPPER.get(grand_total["currency"],
+                                         DEFAULT_WILEY)
         else:
             legacy_id = DEFAULT_WILEY
 
@@ -89,7 +90,7 @@ def import_vendors_from_json(dump_file, rectype="provider"):
             ils_record = import_record(
                 record,
                 rectype=rectype,
-                legacy_id_key="legacy_ids",
+                legacy_id=record["legacy_ids"],
                 mint_legacy_pid=False
             )
             ils_records.append(ils_record)

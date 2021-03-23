@@ -33,27 +33,27 @@ class CDSRecordDumpLoader(object):
     """
 
     @classmethod
-    def create(cls, dump, rectype, legacy_id_key="legacy_recid",
-               mint_legacy_pid=True, log_extra={}):
+    def create(cls, dump, rectype, legacy_id, mint_legacy_pid=True,
+               log_extra={}):
         """Create record based on dump."""
         record = cls.create_record(
-            dump, rectype, legacy_id_key=legacy_id_key,
+            dump, rectype, legacy_id=legacy_id,
             mint_legacy_pid=mint_legacy_pid, log_extra=log_extra
         )
         return record
 
     @classmethod
     def create_record(
-        cls, dump, rectype, legacy_id_key="legacy_recid",
+        cls, dump, rectype, legacy_id,
         mint_legacy_pid=True, log_extra={}
     ):
         """Create a new record from dump."""
         records_logger = logging.getLogger(f"{rectype}s_logger")
         model, pid_provider = model_provider_by_rectype(rectype)
+
         document_class = current_app_ils.document_record_cls
         series_class = current_app_ils.series_record_cls
-        if legacy_id_key is None:
-            legacy_id_key = "pid"
+
         try:
             with db.session.begin_nested():
                 record_uuid = uuid.uuid4()
@@ -65,7 +65,7 @@ class CDSRecordDumpLoader(object):
                 if mint_legacy_pid:
                     legacy_pid_type = get_legacy_pid_type_by_provider(provider)
                     legacy_recid_minter(
-                        dump[legacy_id_key], legacy_pid_type, record_uuid
+                       legacy_id, legacy_pid_type, record_uuid
                     )
                 record = model.create(dump, record_uuid)
                 if isinstance(record, document_class) \
@@ -81,7 +81,7 @@ class CDSRecordDumpLoader(object):
                 extra=dict(
                     new_pid=record["pid"],
                     status="SUCCESS",
-                    legacy_id=record[legacy_id_key],
+                    legacy_id=legacy_id,
                     **log_extra
                 ),
             )
@@ -98,7 +98,7 @@ class CDSRecordDumpLoader(object):
             if legacy_pid_type:
                 # update record if already exists with legacy_recid
                 record = get_record_by_legacy_recid(
-                    model, legacy_pid_type, dump[legacy_id_key]
+                    model, legacy_pid_type, legacy_id
                 )
                 # When updating we don't want to change the pid
                 if 'pid' in dump:
@@ -111,7 +111,7 @@ class CDSRecordDumpLoader(object):
                     extra=dict(
                         new_pid=record["pid"],
                         status="SUCCESS",
-                        legacy_id=record[legacy_id_key],
+                        legacy_id=legacy_id,
                         **log_extra
                     ),
                 )

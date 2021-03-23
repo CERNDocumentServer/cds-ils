@@ -475,7 +475,7 @@ def clean_loans(user_email, given_date):
         )
         document_request.delete(force=True)
         db.session.commit()
-        current_app_ils.document_indexer.delete(document_request)
+        current_app_ils.document_request_indexer.delete(document_request)
 
     patron_loans = (
         current_circulation.loan_search_cls()
