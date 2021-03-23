@@ -56,15 +56,15 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
 from cds_ils.migrator.api import import_record
-from cds_ils.migrator.default_records import MIGRATION_PROVIDER_PID
+from cds_ils.migrator.default_records import MIGRATION_DOCUMENT_PID, \
+    MIGRATION_PROVIDER_PID
 from cds_ils.migrator.errors import AcqOrderError, ItemMigrationError, \
     ProviderError
 from cds_ils.migrator.handlers import acquisition_order_exception_handler
 from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.providers.api import get_provider_by_legacy_id
 from cds_ils.migrator.utils import find_correct_document_pid, \
-    get_acq_ill_notes, get_cost, get_date, get_migration_document_pid, \
-    get_patron_pid
+    get_acq_ill_notes, get_cost, get_date, get_patron_pid
 
 DEFAULT_ITEM_MEDIUM = "E-BOOK"
 LIBRARIAN_IDS = [
@@ -156,7 +156,7 @@ def create_order_line(record, order_status):
     except ItemMigrationError:
         document_pid = find_correct_document_pid(record)
 
-    if document_pid != get_migration_document_pid():
+    if document_pid != MIGRATION_DOCUMENT_PID:
         document = document_cls.get_record_by_pid(document_pid)
         if document["document_type"] == "BOOK":
             item_medium = "PAPER"
@@ -224,7 +224,30 @@ def migrate_order(record):
     if grand_total:
         new_order.update(grand_total=grand_total)
     try:
-        provider = get_provider_by_legacy_id(record["id_crcLIBRARY"],
+
+        provider_type = 'VENDOR'
+
+        # due to migrating the article requests as orders
+        # (formerly treated as ILLs)
+        if record['request_type'] == 'article':
+            provider_type = 'LIBRARY'
+
+        provider_legacy_id = record["id_crcLIBRARY"]
+
+        # perform merge of libraries and vendors by legacy id
+        vendor_merge_mapper = {"63": 19, "47": 20, "48": 37}
+        library_merge_mapper = {"72": 33, "74": 42}
+
+        if provider_type == 'VENDOR' and provider_legacy_id in [63, 47, 48]:
+            provider_legacy_id = vendor_merge_mapper[str(provider_legacy_id)]
+            provider_type = 'LIBRARY'
+
+        elif provider_type == 'LIBRARY' and provider_legacy_id in [72, 74]:
+            provider_type = 'VENDOR'
+            provider_legacy_id = library_merge_mapper[str(provider_legacy_id)]
+
+        provider = get_provider_by_legacy_id(provider_legacy_id,
+                                             provider_type=provider_type,
                                              grand_total=grand_total)
         provider_pid = provider.pid.pid_value
     except ProviderError as e:
@@ -262,8 +285,8 @@ def import_orders_from_json(
                 ils_record = import_record(
                     migrate_order(record),
                     rectype=rectype,
-                    legacy_id_key="legacy_id",
-                    mint_legacy_pid=False
+                    legacy_id=record["legacy_id"],
+                    mint_legacy_pid=True
                 )
             except Exception as exc:
                 handler = acquisition_order_exception_handler.get(

@@ -18,6 +18,7 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
 from cds_ils.migrator.api import import_record
+from cds_ils.migrator.default_records import MIGRATION_ITEM_PID
 from cds_ils.migrator.errors import LoanMigrationError
 from cds_ils.migrator.handlers import json_records_exception_handlers
 from cds_ils.migrator.items.api import get_item_by_barcode
@@ -37,9 +38,10 @@ def validate_user(loan_record):
         return user.pid
 
 
-def validate_item(record):
+def validate_item(record, raise_exception=True):
     """Validate loan item."""
-    return get_item_by_barcode(record["item_barcode"])
+    return get_item_by_barcode(record["item_barcode"].upper(),
+                               raise_exception=raise_exception)
 
 
 def validate_document_pid(record, item):
@@ -54,12 +56,17 @@ def validate_document_pid(record, item):
         raise LoanMigrationError(
             "no document id for loan {}".format(record["legacy_id"])
         )
-    if document.get("legacy_recid", None) != record["legacy_document_id"]:
+    document_legacy_recid = document.get("legacy_recid", None)
+    if document_legacy_recid and \
+            document_legacy_recid != record["legacy_document_id"]:
         # this might happen when record merged or migrated,
         # the already migrated document should take precedence
         raise LoanMigrationError(
-            "inconsistent document dependencies for loan {}".format(
-                record["legacy_id"]
+            "inconsistent document dependencies for loan {} "
+            "(attached document legacy recid: {}, "
+            "legacy recid found via attached item: {}".format(
+                record["legacy_id"], record["legacy_document_id"],
+                document_legacy_recid
             ),
         )
     return document_pid
@@ -136,9 +143,14 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
             try:
                 patron_pid = validate_user(record)
 
-                item = validate_item(record)
+                item = validate_item(record, raise_exception=False)
                 if not item:
-                    continue
+                    item = current_app_ils.item_record_cls.get_record_by_pid(
+                        MIGRATION_ITEM_PID)
+                item_pid = {
+                    "value": item.pid.pid_value,
+                    "type": item.pid.pid_type
+                }
                 document_pid = validate_document_pid(record, item)
 
                 # create a loan
@@ -147,10 +159,7 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
                     transaction_location_pid=default_location_pid_value,
                     transaction_user_pid=str(SystemAgent.id),
                     document_pid=document_pid,
-                    item_pid={
-                        "value": item.pid.pid_value,
-                        "type": item.pid.pid_type,
-                    },
+                    item_pid=item_pid,
                 )
 
                 loan_dict = provide_valid_loan_state_metadata(
@@ -163,7 +172,7 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
                 import_record(
                     loan_dict,
                     rectype=rectype,
-                    legacy_id_key=None,
+                    legacy_id=record["legacy_id"],
                 )
                 db.session.commit()
 
@@ -180,7 +189,4 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
                         raise exc
                 else:
                     db.session.rollback()
-                    if raise_exceptions:
-                        raise exc
-                    else:
-                        continue
+                    raise exc

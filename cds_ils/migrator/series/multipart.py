@@ -55,7 +55,7 @@ def import_multivolume(json_record):
         multipart_record = import_record(
             multipart_json,
             rectype="multipart",
-            legacy_id_key="legacy_recid",
+            legacy_id=multipart_json["legacy_recid"],
         )
     volumes_items_list = json_record["_migration"]["items"]
     volumes_identifiers_list = json_record["_migration"]["volumes_identifiers"]
@@ -83,7 +83,7 @@ def import_multivolume(json_record):
         document_record = import_record(
             document_json_template,
             rectype="document",
-            legacy_id_key="title",
+            legacy_id=json_record["legacy_recid"],
             # we don't mint the legacy pid for these documents, since they
             # never were records on legacy, only it's parent multipart was
             mint_legacy_pid=False,
@@ -135,7 +135,7 @@ def import_multipart(json_record):
         multipart_record = import_record(
             multipart_json,
             rectype="multipart",
-            legacy_id_key="title",
+            legacy_id=json_record["legacy_recid"],
             # we don't mint the legacy pid for these series, since they
             # never were records on legacy, only it's volumes were
             mint_legacy_pid=False,
@@ -159,6 +159,7 @@ def import_multipart(json_record):
         document_record = import_record(
             document_json,
             rectype="document",
+            legacy_id=document_json["legacy_recid"]
         )
         document_indexer.index(document_record)
 

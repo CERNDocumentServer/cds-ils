@@ -16,7 +16,8 @@ from flask.cli import with_appcontext
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
 from cds_ils.migrator.api import document_migration_report, \
     import_documents_from_dump, items_migration_report
-from cds_ils.migrator.default_records import create_default_records
+from cds_ils.migrator.default_records import create_default_records, \
+    create_unknown_item
 from cds_ils.migrator.document_requests.api import \
     import_document_requests_from_json
 from cds_ils.migrator.eitems.api import migrate_ebl_links, \
@@ -240,6 +241,13 @@ def acquisition_orders(sources, fail_on_exceptions):
 def create_unknown_reference_records():
     """Create necessary records for required properties."""
     create_default_records()
+
+
+@migration.command()
+@with_appcontext
+def create_default_item():
+    """Create unknown item for migration of loans."""
+    create_unknown_item()
 
 
 @migration.command()

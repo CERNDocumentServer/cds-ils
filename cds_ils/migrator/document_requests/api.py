@@ -50,7 +50,7 @@ def import_document_requests_from_json(dump_file, rectype="document-request"):
             ils_record = import_record(
                 migrate_document_request(record),
                 rectype="document-request",
-                legacy_id_key="legacy_id",
+                legacy_id=record["legacy_id"],
                 mint_legacy_pid=False
             )
             ils_records.append(ils_record)

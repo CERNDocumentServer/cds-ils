@@ -58,7 +58,7 @@ def agency_code(self, key, value):
 def sync_tag(self, key, value):
     """Synchronisation tag."""
     if clean_val('a', value, str).upper() == "ILSSYNC":
-        raise IgnoreKey("sync")
+        return True
     else:
         raise UnexpectedValue(subfield='a')
 

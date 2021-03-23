@@ -54,14 +54,8 @@ import json
 import logging
 
 import click
-from elasticsearch_dsl import Q
-from flask import current_app
-from invenio_app_ils.ill.proxies import current_ils_ill
-from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
-from invenio_pidstore.errors import PIDDoesNotExistError
 
-from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.default_records import MIGRATION_PROVIDER_PID
 from cds_ils.migrator.errors import BorrowingRequestError, \
@@ -70,8 +64,7 @@ from cds_ils.migrator.handlers import json_records_exception_handlers
 from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.providers.api import get_provider_by_legacy_id
 from cds_ils.migrator.utils import find_correct_document_pid, \
-    get_acq_ill_notes, get_cost, get_date, get_migration_document_pid, \
-    get_patron_pid, model_provider_by_rectype
+    get_acq_ill_notes, get_cost, get_date, get_patron_pid
 
 records_logger = logging.getLogger("borrowing_requests_logger")
 
@@ -202,7 +195,7 @@ def import_ill_borrowing_requests_from_json(
                 ils_record = import_record(
                     clean_record_json(record),
                     rectype="borrowing-request",
-                    legacy_id_key="legacy_id",
+                    legacy_id=record["legacy_id"],
                 )
             except Exception as exc:
                 handler = json_records_exception_handlers.get(exc.__class__)

@@ -8,8 +8,6 @@
 
 """CDS Migrator Records utils."""
 import datetime
-import json
-import logging
 from contextlib import contextmanager
 
 import click
@@ -34,7 +32,7 @@ from invenio_indexer.api import RecordIndexer
 from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
-from cds_ils.migrator.default_records import MIGRATION_DOCUMENT_PID
+from cds_ils.migrator.config import MIGRATION_DOCUMENT_PID
 from cds_ils.migrator.patrons.api import get_user_by_legacy_id
 
 
@@ -195,13 +193,6 @@ def get_patron_pid(record):
     return str(patron_pid)
 
 
-def get_migration_document_pid():
-    """Get the PID of the dedicated migration document."""
-    return current_app_ils.document_record_cls.get_record_by_pid(
-        MIGRATION_DOCUMENT_PID
-    ).pid.pid_value
-
-
 def get_date(value):
     """Strips time and validates that string can be converted to date."""
     date_only = value.split("T")[0]
@@ -231,6 +222,20 @@ def add_title_from_conference_info(json_data):
         )
         if conference_title:
             json_data["title"] = conference_title
+
+
+def add_cds_url(json_data):
+    """Add url pointing back to CDS."""
+    if json_data.get('sync', False):
+        _urls = json_data.get('urls', [])
+        legacy_recid = json_data["legacy_recid"]
+        _urls.append({
+            'value': f'http://cds.cern.ch/record/{legacy_recid}',
+            'description': 'See on CDS',
+            'meta': 'CDS'
+        })
+        json_data["urls"] = _urls
+        del json_data["sync"]
 
 
 def get_item_info(record):
@@ -265,8 +270,8 @@ def find_correct_document_pid(record):
             )
             document_pid = document["pid"]
         except PIDDoesNotExistError as e:
-            document_pid = get_migration_document_pid()
+            document_pid = MIGRATION_DOCUMENT_PID
     else:
-        document_pid = get_migration_document_pid()
+        document_pid = MIGRATION_DOCUMENT_PID
 
     return document_pid

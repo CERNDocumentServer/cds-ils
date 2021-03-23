@@ -53,7 +53,7 @@ def import_internal_locations_from_json(
                     record = import_record(
                         record,
                         rectype="provider",
-                        legacy_id_key="legacy_ids",
+                        legacy_id=record["legacy_ids"],
                         mint_legacy_pid=False
                     )
                     records.append(record)
@@ -63,7 +63,7 @@ def import_internal_locations_from_json(
                     record = import_record(
                         record,
                         rectype="internal_location",
-                        legacy_id_key="legacy_ids",
+                        legacy_id=record["legacy_ids"],
                         mint_legacy_pid=False
                     )
                     records.append(record)
