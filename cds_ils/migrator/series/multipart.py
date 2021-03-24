@@ -111,11 +111,6 @@ def import_multipart(json_record):
     multipart_record = None
     multipart_id = json_record["_migration"].get("multipart_id")
 
-    # split json for multipart (series rectype) and
-    # document (common data for all volumes, to be stored on document rectype)
-    multipart_json = clean_document_json_for_multipart(json_record)
-    document_json = exclude_multipart_fields(json_record)
-
     # volume specific information
     volumes = json_record["_migration"]["volumes"]
 
@@ -127,6 +122,12 @@ def import_multipart(json_record):
     # in the list
     if len(volumes) != 1:
         raise ManualImportRequired("Matched volumes number incorrect.")
+
+    # split json for multipart (series rectype) and
+    # document (common data for all volumes, to be stored on document rectype)
+    multipart_json = clean_document_json_for_multipart(json_record)
+    document_json = exclude_multipart_fields(json_record)
+    document_json["title"] = volumes[0]["title"]
 
     # series with separate record per volume
     # (identified together with multipart id)
