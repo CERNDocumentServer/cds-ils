@@ -101,6 +101,27 @@ def created(self, key, value):
                 return date.isoformat()
     elif key == "595__":
         try:
+            _migration = self["_migration"]
+            _eitems_internal_notes = _migration.get(
+                "eitems_internal_notes",
+                ""
+            )
+            sub_a_internal_notes = clean_val(
+                "a", value, str, regex_format=r"[A-Z]{3,4}[0-9]{4,6}$"
+            )
+            if sub_a_internal_notes:
+                if not _eitems_internal_notes:
+                    _eitems_internal_notes = sub_a_internal_notes
+                else:
+                    _eitems_internal_notes += f"; {sub_a_internal_notes}"
+                _migration.update(
+                    {
+                        "eitems_internal_notes": _eitems_internal_notes
+                    }
+                )
+        except UnexpectedValue as e:
+            pass
+        try:
             sub_a = clean_val(
                 "a", value, str, regex_format=r"[A-Z]{3}[0-9]{6}$"
             )

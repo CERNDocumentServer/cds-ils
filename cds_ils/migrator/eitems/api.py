@@ -10,6 +10,7 @@
 
 import io
 import logging
+import re
 import time
 import uuid
 
@@ -22,6 +23,7 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_files_rest.models import Bucket, ObjectVersion
 
+from cds_ils.importer.providers.cds.rules.values_mapping import mapping
 from cds_ils.migrator.documents.api import get_all_documents_with_files, \
     get_documents_with_ebl_eitems, get_documents_with_external_eitems, \
     get_documents_with_proxy_eitems, get_documents_with_safari_eitems
@@ -91,6 +93,27 @@ def create_eitem(document_pid, open_access=True):
         ),
     )
     return eitem
+
+
+def add_eitem_extra_metadata(eitem, document):
+    """Adds internal notes to the e-items."""
+    PROVIDERS_MAPPING = {
+        "safari": "SAF",
+        "springer": "SPR",
+        "ebl": "EBL"
+    }
+    internal_notes = document["_migration"]["eitems_internal_notes"]
+    if internal_notes:
+        eitem["internal_notes"] = internal_notes
+        # It must be only one value to update created_by
+        if ";" not in internal_notes:
+            raw_provider = re.findall('^[A-Z]{3,4}', internal_notes)[0]
+            provider = mapping(
+                PROVIDERS_MAPPING,
+                raw_provider,
+                default_val=raw_provider
+            )
+            eitem["created_by"]["value"] = provider
 
 
 def process_files_from_legacy():
@@ -166,6 +189,9 @@ def process_files_from_legacy():
                 eitem, bucket = create_eitem_with_bucket_for_document(
                     document["pid"], open_access=not is_restricted
                 )
+                add_eitem_extra_metadata(eitem, document)
+                eitem.model.created = document.model.created
+                eitem.commit()
 
                 # get filename
                 file_name = file_dump["full_name"]
@@ -215,6 +241,8 @@ def migrate_external_links(raise_exceptions=True):
                 )
                 item["url"]["login_required"] = False
                 eitem["urls"] = [item["url"]]
+                add_eitem_extra_metadata(eitem, document)
+                eitem.model.created = document.model.created
                 eitem.commit()
                 EItemIndexer().index(eitem)
             except Exception as exc:
@@ -258,6 +286,8 @@ def migrate_ezproxy_links(raise_exceptions=True):
                 )
                 item["url"]["login_required"] = True
                 eitem["urls"] = [item["url"]]
+                add_eitem_extra_metadata(eitem, document)
+                eitem.model.created = document.model.created
                 eitem.commit()
                 EItemIndexer().index(eitem)
             except Exception as exc:
@@ -305,6 +335,8 @@ def create_ebl_eitem(item, ebl_id_list, document, raise_exceptions=True):
                 "login_required": True,
             }
         ]
+        add_eitem_extra_metadata(eitem, document)
+        eitem.model.created = document.model.created
         eitem.commit()
         eitem_indexer.index(eitem)
 
@@ -378,6 +410,8 @@ def migrate_safari_links(raise_exceptions=True):
             for item in document["_migration"]["eitems_safari"]:
                 eitem = create_eitem(document["pid"], open_access=False)
                 eitem["urls"] = [item["url"]]
+                add_eitem_extra_metadata(eitem, document)
+                eitem.model.created = document.model.created
                 eitem.commit()
                 EItemIndexer().index(eitem)
             document["_migration"]["eitems_has_safari"] = False

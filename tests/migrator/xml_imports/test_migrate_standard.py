@@ -69,5 +69,6 @@ def test_migrate_record(datadir, base_app):
                            'eitems_open_access': False,
                            'related': [], 'items': [],
                            'item_medium': [], 'has_medium': False,
-                           'conference_title': ''},
+                           'conference_title': '',
+                           'eitems_internal_notes': ''},
         }

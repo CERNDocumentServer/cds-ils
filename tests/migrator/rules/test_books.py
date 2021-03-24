@@ -252,7 +252,39 @@ def test_created(app):
                 <subfield code="a">SPR201701</subfield>
             </datafield>
             """,
-            {"source": "SPR", "_created": "2017-01-01"},
+            {
+                "source": "SPR",
+                "_created": "2017-01-01",
+                "_migration": {
+                     **get_helper_dict(record_type="document"),
+                     'eitems_internal_notes': 'SPR201701',
+                }
+             },
+        )
+        check_transformation(
+            """
+            <datafield tag="595" ind1=" " ind2=" ">
+                <subfield code="a">SPR201701</subfield>
+            </datafield>
+            <datafield tag="595" ind1=" " ind2=" ">
+                <subfield code="a">SPR2018</subfield>
+            </datafield>
+            <datafield tag="595" ind1=" " ind2=" ">
+                <subfield code="a">IEEE201901</subfield>
+            </datafield>
+            """,
+            {
+                "source": "SPR",
+                "_created": "2017-01-01",
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    'eitems_internal_notes': 'SPR201701; SPR2018; IEEE201901',
+                },
+                'internal_notes': [
+                    {'value': 'SPR2018'},
+                    {'value': 'IEEE201901'}
+                ],
+            },
         )
         check_transformation(
             """
@@ -289,6 +321,10 @@ def test_created(app):
                 },
                 "source": "SPR",
                 "_created": "2017-01-01",
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    'eitems_internal_notes': 'SPR201701',
+                }
             },
         )
         # test earliest date
@@ -313,6 +349,10 @@ def test_created(app):
                 },
                 "source": "SPR",
                 "_created": "2017-01-01",
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    'eitems_internal_notes': 'SPR201701',
+                }
             },
         )
 
@@ -3365,6 +3405,7 @@ def test_record(app):
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     'eitems_has_proxy': True,
+                    'eitems_internal_notes': 'SPR202101',
                     'eitems_proxy': [
                         {
                             'url': {
