@@ -226,6 +226,26 @@ def test_access_urls(app):
                         "access_restriction": ['RESTRICTED_PACKAGE_DEAL'],
                         "description": "some notes (some text)",
                         "value": "https://url.cern.ch/journal",
+                        "open_access": False,
+                    },
+                ],
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="856" ind1="4" ind2="1">
+                <subfield code="3">some notes</subfield>
+                <subfield code="u">https://url.cern.ch/journal</subfield>
+                <subfield code="x">6</subfield>
+            </datafield>
+            """,
+            {
+                "access_urls": [
+                    {
+                        "access_restriction": ['OPEN_ACCESS'],
+                        "description": "some notes",
+                        "value": "https://url.cern.ch/journal",
+                        "open_access": True,
                     },
                 ],
             },
@@ -259,7 +279,6 @@ def test_access_urls(app):
                             "value": "https://url.cern.ch/serial",
                         },
                     ],
-                    "note": "some notes \nsome other notes",
                 },
             )
 
@@ -301,6 +320,7 @@ def test_urls(app):
                                                 "RESTRICTED_UNDEFINED"],
                         "description": "v 1 (1992) - (tada)",
                         "value": "https://www.radioeng.cz/search.htm",
+                        'open_access': False,
                     },
                 ],
             },

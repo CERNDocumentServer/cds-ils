@@ -42,9 +42,10 @@ def test_migrate_record(datadir, base_app):
             'access_urls': [
                 {
                     'value': 'https://ezproxy.cern.ch/login?url=http://iopscience.iop.org/0508-3443',
-                    'description': 'v 1 (1950) - v 18 (1967) (None)',
+                    'description': 'v 1 (1950) - v 18 (1967)',
                     'access_restriction': [
-                        'RESTRICTED_PERPETUAL_ACCESS_BACKFILES']
+                        'RESTRICTED_PERPETUAL_ACCESS_BACKFILES'],
+                    'open_access': False,
                 }
             ],
             'subjects': [{'value': '53', 'scheme': 'UDC'}],

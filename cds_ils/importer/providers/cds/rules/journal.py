@@ -126,7 +126,6 @@ def physical_volumes(self, key, value):
 
 
 @model.over("access_urls", "^85641")
-@filter_list_values
 def access_urls(self, key, value):
     """Translates access urls field."""
     _access_urls = self.get("access_urls", [])
@@ -140,13 +139,15 @@ def access_urls(self, key, value):
 
     sub_3 = clean_val("3", value, str)
     sub_z = clean_val("z", value, str)
-    electronic_volumes_description = f"{sub_3} ({sub_z})".strip()
+    electronic_volumes_description = f"{sub_3}"
+    if sub_z:
+        electronic_volumes_description += f" ({sub_z})"
 
     open_access = "OPEN_ACCESS" in access_type_mapped
 
     url_dict = {
         "value": clean_val("u", value, str, req=True),
-        "description": electronic_volumes_description,
+        "description": electronic_volumes_description.strip(),
         "access_restriction": access_type_mapped,
         "open_access": open_access
 
