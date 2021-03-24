@@ -7,4 +7,13 @@
     .standard-number {
         margin-left: 0;
     }
+
+    .standard-number-list-view {
+        float: right;
+        margin-right: @defaultMarginValue !important;
+    }
+
+    .margin-bottom-with-standard-number {
+        margin-bottom: @defaultMarginValue * 0.5 !important;
+    }
 }

@@ -21,6 +21,8 @@ import { LegacyRecordRoute } from './overridden/frontsite/Routes/LegacyRoute';
 import { Slogan } from './overridden/frontsite/Home/Slogan';
 import { SideBarMenuItem } from './overridden/backoffice/Sidebar/SideBarMenuItem';
 import { ImporterRoute } from './overridden/routes/ImporterRoute';
+import { overriddenSearchAppCmps } from './overridden/frontsite/LiteratureSearch/LiteratureSearch';
+import { StandardCardView } from './overridden/frontsite//DocumentSearch/StandardCardView';
 
 export const overriddenCmps = {
   'Backoffice.PatronDetails.Metadata': PatronMetadata,
@@ -39,6 +41,8 @@ export const overriddenCmps = {
   'DocumentRequestForm.header': DocumentRequestFormHeader,
   'DocumentPanel.AfterAuthors': StandardNumber,
   'DocumentPanelMobile.AfterAuthors': StandardNumber,
+  'DocumentCard.AfterAuthors': StandardCardView,
+  LiteratureSearch: overriddenSearchAppCmps,
   'BackOfficeRoutesSwitch.CustomRoute': ImporterRoute,
   'Backoffice.Sidebar.CustomMenuItem': SideBarMenuItem,
 };
