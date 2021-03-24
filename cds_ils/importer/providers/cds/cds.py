@@ -38,6 +38,7 @@ def get_helper_dict(record_type):
         eitems_has_ebl=False,
         eitems_has_safari=False,
         eitems_open_access=False,
+        eitems_internal_notes="",
         related=[],
         items=[],
         item_medium=[],

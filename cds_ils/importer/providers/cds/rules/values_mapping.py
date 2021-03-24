@@ -1589,7 +1589,7 @@ def mapping(field_map, val, raise_exception=False, default_val=None):
         elif isinstance(field_map, list):
             if val in field_map:
                 return val
-        elif default_val:
+        if default_val:
             return default_val
         if raise_exception:
             raise UnexpectedValue

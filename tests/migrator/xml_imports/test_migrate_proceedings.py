@@ -116,5 +116,6 @@ def test_migrate_record(datadir, base_app):
                 'related': [],
                 'items': [], 'item_medium': [],
                 'has_medium': False,
-                'conference_title': '10th International ISAAC Congress'}
+                'conference_title': '10th International ISAAC Congress',
+                'eitems_internal_notes': 'SPR201609; SPR201705'}
         }

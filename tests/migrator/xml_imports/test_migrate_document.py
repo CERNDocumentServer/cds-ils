@@ -123,6 +123,7 @@ def test_migrate_record(datadir, base_app):
                            'volumes_urls': [],
                            'items': [],
                            'conference_title': '',
-                           },
+                           'eitems_internal_notes': '',
+            },
 
         }
