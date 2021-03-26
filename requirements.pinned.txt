@@ -154,7 +154,7 @@ python-geoip==1.2
 python-ldap==3.2.0
 pytz==2020.4
 pywebpack==1.1.0
-PyYAML==5.3.1
+PyYAML==5.4
 redis==3.5.3
 requests==2.25.0
 requests-oauthlib==1.1.0
