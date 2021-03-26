@@ -28,7 +28,7 @@ VOCABULARIES_FIELDS = {
     "access_urls": {
         "access_restriction": {
             "source": "json",
-            "type": "series_url_access_restrictions",
+            "type": "series_url_access_restriction",
         },
     },
     "alternative_titles": {
@@ -49,7 +49,7 @@ VOCABULARIES_FIELDS = {
     },
     "tags": {
         "source": "json",
-        "type": "tags",
+        "type": "tag",
     },
     # all language fields already validated in the rules with pycountry
 }

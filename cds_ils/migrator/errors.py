@@ -83,3 +83,7 @@ class ProviderError(CdsIlsMigrationException):
 
 class VocabularyError(CdsIlsMigrationException):
     """Raised for vocabulary migration errors."""
+
+
+class RelationMigrationError(CdsIlsMigrationException):
+    """Raised for exceptions when migrating relations."""

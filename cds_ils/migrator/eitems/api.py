@@ -143,8 +143,8 @@ def process_files_from_legacy():
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
 
-        try:
-            for file_dump in document["_migration"]["files"]:
+        for file_dump in document["_migration"]["files"]:
+            try:
                 # check if url migrated from MARC
                 url_in_marc = [
                     item
@@ -177,13 +177,13 @@ def process_files_from_legacy():
                 )
                 click.echo("Indexing...")
                 EItemIndexer().index(eitem)
-        except Exception as e:
-            msg = "DOCUMENT: {pid} CAN'T MIGRATE FILES ERROR: {error}".format(
-                pid=document["pid"], error=str(e)
-            )
-            click.secho(msg)
-            continue
 
+            except Exception as exc:
+                handler = eitems_exception_handlers.get(exc.__class__)
+                if handler:
+                    handler(exc, document_pid=document["pid"])
+                else:
+                    raise exc
         # make sure the files are not imported twice by setting the flag
         document["_migration"]["eitems_has_files"] = False
         document["_migration"]["has_files"] = False
@@ -244,14 +244,16 @@ def migrate_ezproxy_links(raise_exceptions=True):
         for item in document["_migration"]["eitems_proxy"]:
             # ExProxy links require login and therefore they need to be
             # restricted
-            if open_access or item["open_access"]:
-                raise EItemMigrationError(
-                    "Document {pid} has EzProxy links that are not restricted "
-                    "(Open Access) while it should be restricted".format(
-                        pid=document["pid"]
-                    )
-                )
             try:
+                if open_access or item["open_access"]:
+                    raise EItemMigrationError(
+                        "Document {pid} has EzProxy "
+                        "links that are not restricted "
+                        "(Open Access) while it should be restricted".format(
+                            pid=document["pid"]
+                        )
+                    )
+
                 eitem = create_eitem(
                     document["pid"],
                     open_access=False,

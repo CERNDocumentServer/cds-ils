@@ -72,7 +72,7 @@ def import_serial_from_file(sources, rectype):
     """Load serial records from file."""
     for idx, source in enumerate(sources, 1):
         click.echo(
-            "({}/{}) Migrating documents in {}...".format(
+            "({}/{}) Migrating serial in {}...".format(
                 idx, len(sources), source.name
             )
         )
@@ -89,7 +89,7 @@ def import_serial_from_file(sources, rectype):
                     try:
                         import_record(
                             json_record,
-                            legacy_id=json_record["legacy_recid"],
+                            legacy_id=json_record["title"],
                             rectype=rectype)
                     except Exception as exc:
                         handler = json_records_exception_handlers.get(
@@ -98,9 +98,7 @@ def import_serial_from_file(sources, rectype):
                         if handler:
                             handler(
                                 exc,
-                                legacy_id=json_record.get(
-                                    "legacy_recid", "title"
-                                ),
+                                legacy_id=json_record.get("title"),
                                 rectype=rectype,
                             )
                         else:

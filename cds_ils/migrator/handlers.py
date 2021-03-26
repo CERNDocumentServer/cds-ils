@@ -12,16 +12,16 @@ import logging
 from copy import deepcopy
 
 import click
-from flask import current_app
 from invenio_app_ils.errors import IlsValidationError, RecordRelationsError
-from invenio_pidstore.errors import PIDAlreadyExists
+from invenio_pidstore.errors import PIDAlreadyExists, PIDDoesNotExistError
 
 from cds_ils.importer.errors import ManualImportRequired
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.errors import AcqOrderError, DocumentMigrationError, \
-    DumpRevisionException, EItemMigrationError, ItemMigrationError, \
-    JSONConversionException, LoanMigrationError, LossyConversion, \
-    ProviderError, SeriesMigrationError, VocabularyError
+    DumpRevisionException, EItemMigrationError, FileMigrationError, \
+    ItemMigrationError, JSONConversionException, LoanMigrationError, \
+    LossyConversion, ProviderError, RelationMigrationError, \
+    SeriesMigrationError, VocabularyError
 from cds_ils.migrator.utils import get_legacy_pid_type_by_provider, \
     model_provider_by_rectype
 
@@ -95,7 +95,8 @@ def ils_validation_error_handler(
     """Handle validation error."""
     logger = logging.getLogger(f"{rectype}s_logger")
     logger.error(
-        str(exc.original_exception.message),
+        f"{str(exc.original_exception.message)}: "
+        f"{str([error.res for error in exc.errors])}",
         extra=dict(
             legacy_id=legacy_id, status="ERROR", new_pid=None, **kwargs
         ),
@@ -169,7 +170,9 @@ def pid_already_exists_handler(
 def eitem_migration_exception_handler(exc, document_pid=None, *kwargs):
     """Handle Eitem migration exception."""
     eitems_logger = logging.getLogger("eitems_logger")
-    eitems_logger.error(str(exc), extra=dict(document_pid=document_pid))
+    click.secho(str(exc), fg="red")
+    eitems_logger.error(str(exc), extra=dict(document_pid=document_pid,
+                                             new_pid=None, status="ERROR"))
 
 
 def vocabulary_exception_handler(
@@ -196,14 +199,27 @@ def vocabulary_exception_handler(
     )
 
 
-def relation_already_exists_exception_handler(exc, **kwargs):
+def relation_exception_handler(exc, **kwargs):
     """Handle relation already exists exception."""
     relations_logger = logging.getLogger("relations_logger")
     relations_logger.warning(
-        str(exc), extra=dict(legacy_id=None, status="WARNING", new_pid=None)
+        str(exc), extra=dict(legacy_id=None, status="ERROR", new_pid=None)
     )
-    allow_updates = current_app.config.get("CDS_ILS_MIGRATION_ALLOW_UPDATES")
-    if not allow_updates:
+
+
+def related_record_not_found(exc, raise_exceptions=False, **kwargs):
+    """Handle not found exceptions."""
+    relations_logger = logging.getLogger("relations_logger")
+    if isinstance(exc, PIDDoesNotExistError):
+        message = f"Record legacy " \
+                  f"id {exc.pid_value}({exc.pid_type}) not found."
+    else:
+        message = str(exc)
+    relations_logger.error(
+        message, extra=dict(legacy_id=None, status="ERROR", new_pid=None)
+    )
+
+    if raise_exceptions:
         raise exc
 
 
@@ -238,7 +254,7 @@ xml_record_exception_handlers = {
     DumpRevisionException: revision_exception_handler,
     # raised if not CDS_ILS_MIGRATION_ALLOW_UPDATES
     PIDAlreadyExists: pid_already_exists_handler,
-    RecordRelationsError: relation_already_exists_exception_handler,
+    RecordRelationsError: relation_exception_handler,
     VocabularyError: vocabulary_exception_handler,
 }
 
@@ -246,7 +262,7 @@ multipart_record_exception_handler = deepcopy(xml_record_exception_handlers)
 
 multipart_record_exception_handler.update(
     {
-        RecordRelationsError: relation_already_exists_exception_handler,
+        RecordRelationsError: relation_exception_handler,
         ManualImportRequired: migration_validation_error_handler,
         SeriesMigrationError: migration_validation_error_handler,
     }
@@ -263,4 +279,12 @@ acquisition_order_exception_handler.update({
 eitems_exception_handlers = {
     IlsValidationError: ils_validation_error_handler,
     EItemMigrationError: eitem_migration_exception_handler,
+    AssertionError: eitem_migration_exception_handler,
+    FileMigrationError: eitem_migration_exception_handler
+}
+
+relation_exception_handlers = {
+    RecordRelationsError: relation_exception_handler,
+    RelationMigrationError: related_record_not_found,
+    PIDDoesNotExistError: related_record_not_found
 }

@@ -13,5 +13,15 @@
     "type": "series_identifier_scheme",
     "key": "DOI",
     "text": "Digital Object Identifier (DOI)"
+  },
+    {
+    "type": "identifier_scheme",
+    "key": "REPORT_NUMBER",
+    "text": "Report Number"
+  },
+  {
+    "type": "identifier_scheme",
+    "key": "STANDARD_NUMBER",
+    "text": "Standard Number"
   }
 ]

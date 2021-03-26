@@ -175,7 +175,7 @@ def special_serials(self, key, value):
 @out_strip
 def document_type(self, key, value):
     """Translates document type field."""
-    _doc_type = self.get("document_type", {})
+    _doc_type = self.get("document_type", None)
 
     def doc_type_mapping(val):
         if val:
@@ -184,22 +184,22 @@ def document_type(self, key, value):
     for v in force_list(value):
         val_a = doc_type_mapping(clean_val("a", v, str))
         val_b = doc_type_mapping(clean_val("b", v, str))
-
         if not val_a and not val_b and not _doc_type:
             raise UnexpectedValue(subfield="a")
 
-        if val_a and val_b and (val_a != val_b != _doc_type):
+        if val_a and val_b and val_b != "STANDARD" \
+                and (val_a != val_b != _doc_type):
             raise ManualImportRequired(
                 subfield="a or b - " "inconsistent doc type"
             )
         if val_a:
-            if _doc_type and _doc_type != val_a:
+            if _doc_type and _doc_type != "STANDARD" and _doc_type != val_a:
                 raise ManualImportRequired(
                     subfield="a" "inconsistent doc type"
                 )
             _doc_type = val_a
         if val_b:
-            if _doc_type and _doc_type != val_a:
+            if _doc_type and val_b != "STANDARD" and _doc_type != val_b:
                 raise ManualImportRequired(
                     subfield="b" "inconsistent doc type"
                 )
@@ -406,12 +406,16 @@ def related_records(self, key, value):
 
         if key == "787__" and "i" in value:
             clean_val("i", value, str, manual=True)
+
+        new_relation = {
+            "related_recid": clean_val("w", value, str, req=True),
+            "relation_type": relation_type,
+            "relation_description": relation_description,
+        }
+        if 'n' in value:
+            new_relation.update({"volume": clean_val("n", value, str)})
         _related.append(
-            {
-                "related_recid": clean_val("w", value, str, req=True),
-                "relation_type": relation_type,
-                "relation_description": relation_description,
-            }
+            new_relation
         )
         _migration.update({"related": _related, "has_related": True})
         raise IgnoreKey("_migration")

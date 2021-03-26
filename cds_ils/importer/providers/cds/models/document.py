@@ -27,7 +27,7 @@ class CDSDocument(CdsIlsOverdo):
         "(-980:STANDARD 980:BOOK) OR "
         "697C_:LEGSERLIB AND "
         "(-980__:DELETED -980__:MIGRATED -980__:STANDARD "
-        "-596__:MULTIVOLUMES)"
+        "-596__:MULTIVOLUMES1 -596__:MULTIVOLUMESX)"
     )
 
     __model_ignore_keys__ = {

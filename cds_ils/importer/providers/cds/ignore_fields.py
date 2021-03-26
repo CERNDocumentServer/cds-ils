@@ -106,6 +106,8 @@ CDS_IGNORE_FIELDS = {
     "773__w",  # inspire cnum (duplicated field with 035__9)
     "773__z",  # publication_info/parent_isbn
     "775__c",  # related edition's year (it will be resolved)
+    "775__p",
+    "775__n",
     "7870_i",
     "7870_r",
     "7870_w",

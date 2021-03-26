@@ -78,11 +78,19 @@ def provide_valid_loan_state_metadata(record, loan_dict):
         loan_dict.update(
             dict(
                 start_date=record["start_date"],
-                end_date=record["end_date"],
+                # IGNORE THE END DATE EXCEPTIONALLY TO AUTOMATICALLY EXTEND
+                # end_date=record["end_date"],
+                end_date="2021-05-28T17:00:00",
                 state="ITEM_ON_LOAN",
                 transaction_date=record["start_date"],
             )
         )
+        item_pid = record.get("item_pid")
+        if item_pid and item_pid["value"] == MIGRATION_ITEM_PID:
+            loan_dict.update(
+                dict(state="CANCELLED",
+                     cancel_reason="Migration: unknown item"))
+
     elif record["status"] == "returned":
         loan_dict.update(
             dict(
@@ -129,7 +137,8 @@ def validate_loan(new_loan_dict, record):
         )
 
 
-def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
+def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan",
+                           mint_legacy_pid=True):
     """Imports loan objects from JSON."""
     default_location_pid_value, _ = current_app_ils.get_default_location_pid
 
@@ -170,6 +179,7 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan"):
                     loan_dict,
                     rectype=rectype,
                     legacy_id=record["legacy_id"],
+                    mint_legacy_pid=mint_legacy_pid
                 )
                 db.session.commit()
 

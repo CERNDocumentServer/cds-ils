@@ -54,6 +54,7 @@ def test_data_migration(app, db, es_clear, patrons):
     ):
         ri.index(rec)
 
+    # wait for indexing
     time.sleep(1)
     create_default_records()
     patron = Patron(patrons[0].id)

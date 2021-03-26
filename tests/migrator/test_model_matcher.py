@@ -23,7 +23,7 @@ def test_marc21_matcher_books():
         "003": "SzGeCERN",
         "690C_": [{"a": "BOOK"}],
         "245__": [{"a": "Test "}],
-        "596__": [{"a": "MULTIVOLUMES"}],
+        "596__": [{"a": "MULTIVOLUMESX"}],
         "246__": [{"p": "Volume Title", "n": "2"}],
     }
     multipart_blob2 = {
@@ -31,7 +31,7 @@ def test_marc21_matcher_books():
         "690C_": [{"a": "BOOK"}],
         "245__": [{"a": "Test "}],
         "246__": [{"n": "2"}],
-        "596__": [{"a": "MULTIVOLUMES"}],
+        "596__": [{"a": "MULTIVOLUMES1"}],
     }
     standard_blob1 = {"003": "SzGeCERN", "690C_": [{"a": "STANDARD"}]}
     journal_blob = {"003": "SzGeCERN", "980__": [{"a": "PERI"}]}

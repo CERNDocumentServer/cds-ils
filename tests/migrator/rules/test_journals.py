@@ -139,7 +139,7 @@ def test_identifiers(app):
                     {
                         "scheme": "ISSN",
                         "value": "1805-9600",
-                        "material": "online",
+                        "material": "E-BOOK",
                     }
                 ],
             },

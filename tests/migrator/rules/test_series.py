@@ -742,7 +742,7 @@ def test_monograph_legacy_report_number(app):
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
                 "identifiers": [
                     {
-                        "scheme": "report_number",
+                        "scheme": "REPORT_NUMBER",
                         "value": "IAEA-INIS-20-REV-0-D",
                     }
                 ],

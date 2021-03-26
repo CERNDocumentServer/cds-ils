@@ -33,8 +33,10 @@ from cds_ils.migrator.items.api import import_items_from_json
 from cds_ils.migrator.loans.api import import_loans_from_json
 from cds_ils.migrator.patrons.api import import_users_from_json
 from cds_ils.migrator.providers.api import import_vendors_from_json
-from cds_ils.migrator.relations.api import link_documents_and_serials, \
-    migrate_document_siblings_relation, migrate_series_relations
+from cds_ils.migrator.relations.api import link_documents_and_serials
+from cds_ils.migrator.relations.documents import \
+    migrate_document_siblings_relation
+from cds_ils.migrator.relations.series import migrate_series_relations
 from cds_ils.migrator.series.api import validate_multipart_records, \
     validate_serial_records
 from cds_ils.migrator.series.series_import import import_serial_from_file, \
@@ -139,7 +141,7 @@ def multipart(sources, rectype="multipart"):
     """Migrate multiparts from xml dump file."""
     click.echo("Migrating {}s...".format(rectype))
     import_series_from_dump(
-        sources, rectype=rectype, loader_class=CDSMultipartDumpLoader
+        sources, rectype=rectype, loader_class=CDSMultipartDumpLoader,
     )
 
 
@@ -288,7 +290,8 @@ def loans(sources, fail_on_exceptions):
 def loan_requests(sources, fail_on_exceptions):
     """Migrate loan_requests from CDS legacy."""
     for idx, source in enumerate(sources, 1):
-        import_loans_from_json(source, fail_on_exceptions)
+        import_loans_from_json(source, fail_on_exceptions,
+                               mint_legacy_pid=False)
 
 
 @migration.group()
@@ -312,10 +315,14 @@ def serial(skip_indexing):
 
 
 @relations.command()
+@click.option(
+    "--fail-on-exceptions",
+    is_flag=True,
+)
 @with_appcontext
-def document_siblings():
+def document_siblings(fail_on_exceptions):
     """Create sibling relations for migrated documents."""
-    migrate_document_siblings_relation()
+    migrate_document_siblings_relation(raise_exceptions=fail_on_exceptions)
 
 
 @relations.command()
@@ -323,10 +330,14 @@ def document_siblings():
     "--skip-indexing",
     is_flag=True,
 )
+@click.option(
+    "--fail-on-exceptions",
+    is_flag=True,
+)
 @with_appcontext
-def series(skip_indexing):
+def series(skip_indexing, fail_on_exceptions):
     """Create relations for migrated series."""
-    migrate_series_relations()
+    migrate_series_relations(raise_exceptions=fail_on_exceptions)
     if not skip_indexing:
         reindex_pidtype("serid")
 
