@@ -36,7 +36,7 @@ def test_migrate_record(datadir, base_app):
             'document_type': 'PROCEEDINGS',
             'identifiers': [
                 {'value': '9783319419435', 'scheme': 'ISBN',
-                 'medium': 'PRINT_VERSION'},
+                 'material': 'PRINT_VERSION'},
                 {'value': '10.1007/978-3-319-41945-9',
                  'material': 'E-BOOK',
                  'scheme': 'DOI'},

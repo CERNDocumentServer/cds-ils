@@ -73,14 +73,8 @@ export const config = {
       label: 'CERN',
       fields: {
         unit_accelerator: {
-          items: {
-            label: 'Accelerator',
-            type: 'string',
-            widget: 'vocabulary',
-            vocabularyType: 'document_accelerators',
-          },
           label: 'Accelerators',
-          type: 'array',
+          type: 'string',
         },
         unit_experiment: {
           items: {

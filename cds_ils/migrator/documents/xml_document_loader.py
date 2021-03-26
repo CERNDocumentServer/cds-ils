@@ -110,12 +110,19 @@ class CDSDocumentDumpLoader(object):
                     object_type="rec",
                     object_uuid=record_uuid,
                 )
+                # requirement from the library
+                if (
+                    json_data["_migration"]["has_journal"]
+                    and json_data["document_type"] != "PROCEEDINGS"
+                ):
+                    json_data["document_type"] = "SERIAL_ISSUE"
                 json_data["pid"] = provider.pid.pid_value
                 document = document_cls.create(json_data, record_uuid)
 
                 created_date = json_data.get(
                     "_created", CDS_ILS_FALLBACK_CREATION_DATE
                 )
+
                 document.model.created = parser.parse(created_date)
                 document.model.updated = timestamp.replace(tzinfo=None)
                 document.commit()

@@ -427,7 +427,7 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
     "document": {
         "unit_accelerator": {
             "elasticsearch": "keyword",
-            "marshmallow": List(SanitizedUnicode()),
+            "marshmallow": SanitizedUnicode(),
         },
         "unit_experiment": {
             "elasticsearch": "keyword",
