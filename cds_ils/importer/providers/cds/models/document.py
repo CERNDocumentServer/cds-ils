@@ -33,6 +33,17 @@ class CDSDocument(CdsIlsOverdo):
     __model_ignore_keys__ = {
         # this field is used to match multipart monograph items as volumes
         "020__b",
+        "0247_9",
+        "084__2",
+        "084__a",
+        "270__b",
+        "540__u",
+        "700__i",
+        "710__5",
+        "700__m",
+        "100__m",
+        "775__n",
+        "775__p",
     }
 
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__

@@ -27,12 +27,11 @@ from cds_ils.importer.providers.cds.cds import model
 from cds_ils.importer.providers.cds.rules.utils import clean_email, \
     clean_val, extract_volume_number, filter_list_values, get_week_start, \
     out_strip, replace_in_result
-from cds_ils.importer.providers.cds.rules.values_mapping import ACCELERATORS, \
+from cds_ils.importer.providers.cds.rules.values_mapping import \
     ACQUISITION_METHOD, APPLICABILITY, ARXIV_CATEGORIES, COLLECTION, \
     DOCUMENT_TYPE, EXPERIMENTS, EXTERNAL_SYSTEM_IDENTIFIERS, \
     EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, IDENTIFIERS_MEDIUM_TYPES, \
-    INSTITUTIONS, ITEMS_MEDIUMS, MATERIALS, SERIAL, \
-    SUBJECT_CLASSIFICATION_EXCEPTIONS, mapping
+    ITEMS_MEDIUMS, MATERIALS, SERIAL, mapping
 
 from ...utils import build_ils_contributor
 from .utils import extract_parts, is_excluded
@@ -98,7 +97,10 @@ def created(self, key, value):
             if date:
                 year, week = str(date)[:4], str(date)[4:]
                 date = get_week_start(int(year), int(week))
-                return date.isoformat()
+                if date < datetime.date.today():
+                    return date.isoformat()
+                else:
+                    return datetime.date.today().isoformat()
     elif key == "595__":
         try:
             _migration = self["_migration"]
@@ -203,26 +205,31 @@ def document_type(self, key, value):
             return mapping(DOCUMENT_TYPE, val)
 
     for v in force_list(value):
-        val_a = doc_type_mapping(clean_val("a", v, str))
-        val_b = doc_type_mapping(clean_val("b", v, str))
+        sub_a = clean_val("a", v, str)
+        sub_b = clean_val("b", v, str)
+        val_a = doc_type_mapping(sub_a)
+        val_b = doc_type_mapping(sub_b)
+
         if not val_a and not val_b and not _doc_type:
+            if sub_a == 'REPORT' or sub_b == 'REPORT':
+                continue
             raise UnexpectedValue(subfield="a")
 
         if val_a and val_b and val_b != "STANDARD" \
                 and (val_a != val_b != _doc_type):
             raise ManualImportRequired(
-                subfield="a or b - " "inconsistent doc type"
+                "inconsistent doc type", subfield="a or b"
             )
         if val_a:
             if _doc_type and _doc_type != "STANDARD" and _doc_type != val_a:
                 raise ManualImportRequired(
-                    subfield="a" "inconsistent doc type"
+                    "Inconsistent doc type", subfield="a"
                 )
             _doc_type = val_a
         if val_b:
             if _doc_type and val_b != "STANDARD" and _doc_type != val_b:
                 raise ManualImportRequired(
-                    subfield="b" "inconsistent doc type"
+                    "Inconsistent doc type", subfield="b"
                 )
             _doc_type = val_b
     return _doc_type
@@ -238,7 +245,7 @@ def authors(self, key, value):
         _authors.append(item)
     try:
         if "u" in value or "e" in value:
-            other_authors_possible_values = ["et al.", "et al"]
+            other_authors_possible_values = ["et al.", "et al", "ed. et al."]
             val_u = list(force_list(value.get("u", [])))
             val_e = list(force_list(value.get("e", [])))
             other_authors_fields = val_e + val_u
@@ -341,10 +348,6 @@ def publication_info(self, key, value):
             recids = _migration.get("journal_record_legacy_recids", [])
             recids.append({"recid": rel_recid, "volume": volume})
             _migration["has_journal"] = True
-            # requirement from the library
-            doc_type = self["document_type"]
-            if doc_type and doc_type != "PROCEEDINGS":
-                self["document_type"] = "SERIAL_ISSUE"
 
         text = "{0} {1}".format(
             clean_val("o", v, str) or "", clean_val("x", v, str) or ""
@@ -454,35 +457,15 @@ def accelerator_experiments(self, key, value):
     """Translates accelerator_experiments field."""
     _extensions = self.get("extensions", {})
 
-    accelerators = _extensions.get("unit_accelerator", [])  # subfield a
+    accelerators = _extensions.get("unit_accelerator", "")  # subfield a
     experiments = _extensions.get("unit_experiment", [])  # subfield e
     projects = _extensions.get("unit_project", [])  # subfield p
-    institutions = _extensions.get("unit_institution", [])
 
     val_a = clean_val("a", value, str)
     val_e = clean_val("e", value, str)
 
-    def check_for_institution_in(val, value_to_check_for):
-        if not val:
-            return None
-        if value_to_check_for in val:
-            if value_to_check_for not in institutions:
-                institutions.append(value_to_check_for.upper())
-            val = val.replace(value_to_check_for, "")
-        return val.strip()
-
-    for institution_value in INSTITUTIONS:
-        val_a = check_for_institution_in(val_a, institution_value)
-        val_e = check_for_institution_in(val_e, institution_value)
-
-    accelerator = None
     experiment = None
-    if val_a:
-        accelerator = mapping(
-            ACCELERATORS,
-            val_a,
-            raise_exception=True,
-        )
+
     if val_e:
         experiment = mapping(
             EXPERIMENTS,
@@ -491,8 +474,10 @@ def accelerator_experiments(self, key, value):
         )
     project = clean_val("p", value, str)
 
-    if accelerator and accelerator not in accelerators:
-        accelerators.append(accelerator)
+    if not accelerators:
+        accelerators = val_a
+    elif val_a not in accelerators:
+        accelerators += f"; {val_a}"
     if experiment and experiment not in experiments:
         experiments.append(experiment)
     if project and project not in projects:
@@ -503,7 +488,6 @@ def accelerator_experiments(self, key, value):
             "unit_accelerator": accelerators,
             "unit_experiment": experiments,
             "unit_project": projects,
-            "unit_institution": institutions,
         }
     )
     return _extensions
@@ -616,7 +600,7 @@ def isbns(self, key, value):
                 subfield_u,
             )
             if material:
-                isbn.update({"medium": material})
+                isbn.update({"material": material})
         if isbn not in _isbns:
             _isbns.append(isbn)
     return _isbns
@@ -930,7 +914,9 @@ def conference_info(self, key, value):
                                            "value": val_i})
 
         country_code = clean_val("w", v, str, multiple_values=True)
+        place = clean_val("c", v, str, req=required)
         country_codes = []
+        country = None
         if country_code:
             try:
                 if isinstance(country_code, list):
@@ -939,10 +925,21 @@ def conference_info(self, key, value):
                         country_codes.append(str(
                             pycountry.countries.get(alpha_2=code).alpha_3
                         ))
+                    country = country_codes[0]
                 else:
-                    country_code = str(
-                        pycountry.countries.get(alpha_2=country_code).alpha_3
-                    )
+                    if country_code == "Online":
+                        if place != "Online":
+                            raise UnexpectedValue(subfield="c and w")
+                        else:
+                            place = "Online"
+
+                    else:
+                        country_code = str(
+                            pycountry.countries.get(
+                                alpha_2=country_code
+                            ).alpha_3
+                        )
+                        country = country_code
             except (KeyError, AttributeError):
                 raise UnexpectedValue(subfield="w")
 
@@ -954,11 +951,11 @@ def conference_info(self, key, value):
 
         return {
             "title": clean_val("a", v, str, req=required),
-            "place": clean_val("c", v, str, req=required),
+            "place": place,
             "dates": dates,
             "identifiers": conference_identifiers,
             "series": series_number,
-            "country": country_codes[0] if country_codes else country_code,
+            "country": country,
             "acronym": clean_val("x", v, str),
         }
 
@@ -1000,7 +997,10 @@ def conference_info(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translates edition indicator field."""
-    return clean_val("a", value, str).replace("ed.", "")
+    sub_a = clean_val("a", value, str)
+    if not sub_a:
+        raise UnexpectedValue(subfield="a")
+    return sub_a.replace("ed.", "")
 
 
 @model.over("imprint", "^260__")

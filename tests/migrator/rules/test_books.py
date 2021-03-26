@@ -20,6 +20,8 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+import datetime
+
 import pytest
 from cds_dojson.marc21.utils import create_record
 from dojson.errors import MissingRule
@@ -324,6 +326,20 @@ def test_created(app):
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     'eitems_internal_notes': 'SPR201701',
+                }
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="916" ind1=" " ind2=" ">
+                <subfield code="s">h</subfield>
+                <subfield code="w">202829</subfield>
+            </datafield>
+            """,
+            {
+                "_created": datetime.date.today().isoformat(),
+                "created_by": {
+                    "type": "user"
                 }
             },
         )
@@ -1175,7 +1191,7 @@ def test_publication_info(app):
                         "note": "1692 numebrs text etc Random text",
                     }
                 ],
-                "document_type": "SERIAL_ISSUE",
+                "document_type": "BOOK",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "has_journal": True,
@@ -1264,10 +1280,9 @@ def test_extensions(app):
             """,
             {
                 "extensions": {
-                    "unit_accelerator": ["SPS"],
+                    "unit_accelerator": "CERN SPS",
                     "unit_experiment": ["ATLAS", "CMS"],
                     "unit_project": ["FCC"],
-                    "unit_institution": ["CERN"],
                     "standard_review_applicability": ["NO_LONGER_APPLICABLE"],
                     "standard_review_validity": "withdrawn",
                     "standard_review_checkdate": "2019-04-01",
@@ -1382,9 +1397,8 @@ def test_accelerator_experiments(app):
             """,
             {
                 "extensions": {
-                    "unit_accelerator": ["SPS"],
+                    "unit_accelerator": "CERN SPS",
                     "unit_experiment": ["ATLAS", "CMS"],
-                    "unit_institution": ["CERN"],
                     "unit_project": ["FCC"],
                 }
             },
@@ -1408,9 +1422,8 @@ def test_accelerator_experiments(app):
             """,
             {
                 "extensions": {
-                    "unit_accelerator": ["SPS"],
+                    "unit_accelerator": "CERN SPS; KEK; Fermilab",
                     "unit_experiment": ["ATLAS", "CMS"],
-                    "unit_institution": ["CERN", "KEK", "FERMILAB"],
                     "unit_project": ["FCC"],
                 }
             },
@@ -1437,12 +1450,12 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "medium": "E-BOOK",
+                        "material": "E-BOOK",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "E-BOOK",
+                        "material": "E-BOOK",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1476,12 +1489,12 @@ def test_isbns(app):
                     {"value": "9780691090856", "scheme": "ISBN"},
                     {
                         "value": "9781400889167",
-                        "medium": "E-BOOK",
+                        "material": "E-BOOK",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9780691090849",
-                        "medium": "E-BOOK",
+                        "material": "E-BOOK",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1519,12 +1532,12 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "medium": "E-BOOK",
+                        "material": "E-BOOK",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "E-BOOK",
+                        "material": "E-BOOK",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1553,7 +1566,7 @@ def test_isbns(app):
                     },
                     {
                         "value": "9781630811051",
-                        "medium": "E-BOOK",
+                        "material": "E-BOOK",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1579,12 +1592,12 @@ def test_isbns(app):
                     "identifiers": [
                         {
                             "value": "9781630814434",
-                            "medium": "electronic version",
+                            "material": "electronic version",
                             "scheme": "ISBN",
                         },
                         {
                             "value": "9781630811051",
-                            "medium": "electronic version",
+                            "material": "electronic version",
                             "scheme": "ISBN",
                         },
                     ],
@@ -3462,16 +3475,16 @@ def test_record(app):
                              "roles": ["EDITOR"]}],
                 "created_by": {"type": "batchuploader"},
                 "document_type": "BOOK",
-                "identifiers": [{"medium": "E-BOOK",
+                "identifiers": [{"material": "E-BOOK",
                                  "scheme": "ISBN",
                                  "value": "9789811590344"},
-                                {"medium": "PRINT_VERSION",
+                                {"material": "PRINT_VERSION",
                                  "scheme": "ISBN",
                                  "value": "9789811590337"},
-                                {"medium": "PRINT_VERSION",
+                                {"material": "PRINT_VERSION",
                                  "scheme": "ISBN",
                                  "value": "9789811590351"},
-                                {"medium": "PRINT_VERSION",
+                                {"material": "PRINT_VERSION",
                                  "scheme": "ISBN",
                                  "value": "9789811590368"},
                                 {"material": "E-BOOK",

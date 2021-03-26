@@ -1516,26 +1516,6 @@ ARXIV_CATEGORIES = [
     "stat.TH",
 ]
 
-INSTITUTIONS = [
-    "KEK",
-    "CERN",
-    "DESY",
-    "SLAC",
-    "Fermilab",
-    "Cornell",
-    "BNL",
-    "ANL",
-]
-
-
-ACCELERATORS = ["SPS", "R&D", "OTHER", "RADFAC", "RE"]
-
-SUBJECT_CLASSIFICATION_EXCEPTIONS = [
-    "PACS",
-    "CERN LIBRARY",
-    "CERN YELLOW REPORT",
-]
-
 EXTERNAL_SYSTEM_IDENTIFIERS = [
     "DCL",
     "DESY",
