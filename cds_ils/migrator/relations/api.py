@@ -7,31 +7,30 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator API."""
+import logging
 
 import click
 from elasticsearch_dsl import Q
 from flask import current_app
-from invenio_app_ils.errors import RecordRelationsError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild, \
     RecordRelationsSequence, RecordRelationsSiblings
 from invenio_app_ils.records_relations.indexer import RecordRelationIndexer
-from invenio_app_ils.relations.api import OTHER_RELATION, \
-    SEQUENCE_RELATION_TYPES, SERIAL_RELATION, SIBLINGS_RELATION_TYPES, \
-    ParentChildRelation, Relation
+from invenio_app_ils.relations.api import EDITION_RELATION, SERIAL_RELATION, \
+    Relation
 from invenio_db import db
-from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.default_records import MIGRATION_DESIGN_PID
-from cds_ils.migrator.documents.api import \
-    search_documents_with_siblings_relations
+from cds_ils.migrator.errors import RelationMigrationError
 from cds_ils.migrator.series.api import get_migrated_volume_by_serial_title, \
-    get_serials_by_child_recid, search_series_with_relations
+    get_serials_by_child_recid
 
 
 def create_parent_child_relation(parent, child, relation_type, volume):
     """Create parent child relations."""
+    relations_logger = logging.getLogger("relations_logger")
+
     rr = RecordRelationsParentChild()
     click.echo(
         "Creating relations: {0} - {1}".format(parent["pid"], child["pid"])
@@ -41,6 +40,11 @@ def create_parent_child_relation(parent, child, relation_type, volume):
         child=child,
         relation_type=relation_type,
         volume=str(volume) if volume else None,
+    )
+
+    relations_logger.info(
+        "Created: {0} - {1}".format(parent["pid"], child["pid"]),
+        extra=dict(legacy_id=None, status="SUCCESS", new_pid=parent["pid"])
     )
 
 
@@ -66,6 +70,8 @@ def check_for_special_series(record):
 
 def create_sibling_relation(first, second, relation_type, **kwargs):
     """Create sibling relations."""
+    relations_logger = logging.getLogger("relations_logger")
+
     rr = RecordRelationsSiblings()
     click.echo(
         "Creating relations: {0} - {1}".format(first["pid"], second["pid"])
@@ -77,9 +83,15 @@ def create_sibling_relation(first, second, relation_type, **kwargs):
         **kwargs,
     )
 
+    relations_logger.info(
+        "Created: {0} - {1}".format(first["pid"], second["pid"]),
+        extra=dict(legacy_id=None, status="SUCCESS", new_pid=first["pid"])
+    )
+
 
 def create_sequence_relation(previous_rec, next_rec, relation_type):
     """Create sequence relations."""
+    relations_logger = logging.getLogger("relations_logger")
     rr = RecordRelationsSequence()
     click.echo(
         "Creating relations: {0} - {1}".format(
@@ -93,154 +105,46 @@ def create_sequence_relation(previous_rec, next_rec, relation_type):
             next_rec=next_rec,
             relation_type=relation_type,
         )
+        relations_logger.info(
+            "Created: {0} - {1}".format(previous_rec["pid"], next_rec["pid"]),
+            extra=dict(legacy_id=None, status="SUCCESS",
+                       new_pid=previous_rec["pid"])
+        )
 
 
-def migrate_document_siblings_relation():
-    """Create siblings relations."""
-    document_class = current_app_ils.document_record_cls
-    document_search = current_app_ils.document_search_cls()
-    series_class = current_app_ils.series_record_cls
+def validate_edition_field(current_document_record, related_sibling, relation):
+    """Validate edition field for relation."""
+    edition = current_document_record.get("edition")
+    related_edition = related_sibling.get("edition")
 
-    search = search_documents_with_siblings_relations()
-    results = search.scan()
-    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+    if edition and related_edition:
+        return
 
-    extra_metadata = {}
-    for document in results:
-        relations = document["_migration"]["related"]
+    if not edition:
+        relations_related_sibling = related_sibling["_migration"]["related"]
+        symmetrical_relation = next(
+            (x for x in relations_related_sibling
+             if x["relation_type"] == EDITION_RELATION.name
+             and x["related_recid"] == current_document_record[
+                 "legacy_recid"]), None)
 
-        for relation in relations:
-            related_sibling = None
-            try:
-                related_sibling = get_record_by_legacy_recid(
-                    document_class,
-                    legacy_pid_type,
-                    relation["related_recid"],
-                )
-            except PIDDoesNotExistError as e:
-                # If there is no document it means it can be related to a
-                # multipart. If this is the case we relate it to the first
-                # document of the multipart
-                series_legacy_pid = current_app.config[
-                    "CDS_ILS_SERIES_LEGACY_PID_TYPE"
-                ]
-                try:
-                    # Search for the series with related legacy_recid from
-                    # the document
-                    related_series = get_record_by_legacy_recid(
-                        series_class,
-                        series_legacy_pid,
-                        relation["related_recid"],
-                    )
-                    multipart_relation = Relation.get_relation_by_name(
-                        "multipart_monograph"
-                    )
-                    pcr = ParentChildRelation(multipart_relation)
-                    volumes = pcr.get_children_of(related_series.pid)
+        if not symmetrical_relation:
+            raise RelationMigrationError("Edition information missing.")
+        current_document_record["edition"] = \
+            symmetrical_relation["relation_description"].replace("ed.", "")
+        current_document_record.commit()
+        db.session.commit()
 
-                    if len(volumes) > 0:
-                        # Selects the first volume as the one to be related
-                        # with the document
-                        related_sibling = document_class.get_record_by_pid(
-                            volumes[0].pid_value
-                        )
-                    else:
-                        click.secho(
-                            "No document found with legacy_recid: {}".format(
-                                relation["related_recid"]
-                            ),
-                            fg="red",
-                        )
-                        continue
-                except PIDDoesNotExistError as e:
-                    click.secho(
-                        "No record found with legacy_recid: {}".format(
-                            relation["related_recid"]
-                        ),
-                        fg="red",
-                    )
-                    continue
-
-            # validate relation type
-            relation_type = Relation.get_relation_by_name(
-                relation["relation_type"]
-            )
-
-            if relation_type.name == OTHER_RELATION.name:
-                extra_metadata.update(
-                    {"note": relation["relation_description"]}
-                )
-            # create relation
-            if related_sibling and related_sibling["pid"] != document.pid:
-                current_document_record = document_class.get_record_by_pid(
-                    document.pid
-                )
-
-                try:
-                    create_sibling_relation(
-                        current_document_record,
-                        related_sibling,
-                        relation_type,
-                        **extra_metadata,
-                    )
-                    db.session.commit()
-                except RecordRelationsError as e:
-                    click.secho(e.description, fg="red")
-                    continue
-
-
-def migrate_series_relations():
-    """Create relations for series."""
-    series_class = current_app_ils.series_record_cls
-    search = search_series_with_relations()
-    results = search.scan()
-    legacy_pid_type = current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
-
-    for series in results:
-        relations = series["_migration"]["related"]
-
-        for relation in relations:
-            related_series = get_record_by_legacy_recid(
-                series_class, legacy_pid_type, relation["related_recid"]
-            )
-
-            # validate relation type
-            relation_type = Relation.get_relation_by_name(
-                relation["relation_type"]
-            )
-
-            # create relation
-            current_series_record = series_class.get_record_by_pid(series.pid)
-            try:
-                if relation_type in SIBLINGS_RELATION_TYPES:
-                    create_sibling_relation(
-                        current_series_record,
-                        related_series,
-                        relation_type,
-                        note=relation["relation_description"],
-                    )
-
-                elif relation_type in SEQUENCE_RELATION_TYPES:
-                    if relation["sequence_order"] == "previous":
-                        create_sequence_relation(
-                            current_series_record,
-                            related_series,
-                            relation_type,
-                        )
-                    else:
-                        create_sequence_relation(
-                            related_series,
-                            current_series_record,
-                            relation_type,
-                        )
-                db.session.commit()
-            except RecordRelationsError as e:
-                click.secho(e.description, fg="red")
-                continue
+    if not related_edition:
+        related_sibling["edition"] = relation["relation_description"].replace(
+            "ed.", "")
+        related_sibling.commit()
+        db.session.commit()
 
 
 def link_documents_and_serials():
     """Link documents/multiparts and serials."""
+    relations_logger = logging.getLogger("relations_logger")
     document_class = current_app_ils.document_record_cls
     document_search = current_app_ils.document_search_cls()
     series_class = current_app_ils.series_record_cls
@@ -261,6 +165,12 @@ def link_documents_and_serials():
                 )
                 create_parent_child_relation(
                     serial, record, SERIAL_RELATION, volume
+                )
+                relations_logger.info(
+                    "Created: {0} - {1}".format(serial["pid"],
+                                                record["pid"]),
+                    extra=dict(legacy_id=None, status="SUCCESS",
+                               new_pid=serial["pid"])
                 )
                 RecordRelationIndexer().index(record, serial)
 

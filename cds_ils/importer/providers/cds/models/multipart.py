@@ -22,7 +22,7 @@ from .document import model as books_base
 class CDSMultipart(CdsIlsOverdo):
     """Translation Index for CDS Books."""
 
-    __query__ = "596__:MULTIVOLUMES " "-980__:DELETED -980__:MIGRATED"
+    __query__ = "596__:MULTIVOLUMES -980__:DELETED -980__:MIGRATED"
 
     __ignore_keys__ = CDS_IGNORE_FIELDS
 

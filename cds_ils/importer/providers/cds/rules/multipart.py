@@ -167,7 +167,7 @@ def barcode(self, key, value):
         if val_a or val_9:
             if val_n or val_x or val_a and val_9:
                 raise UnexpectedValue()
-            identifier = {"scheme": "report_number", "value": val_a or val_9}
+            identifier = {"scheme": "REPORT_NUMBER", "value": val_a or val_9}
             if val_9:
                 identifier["hidden"] = True
             identifiers = self.get("identifiers", [])
@@ -344,7 +344,7 @@ def urls(self, key, value):
     if volume_info:
         description = volume_info["description"]
         volume_number = volume_info["volume"]
-        if description != "ebook":
+        if description not in ["ebook", "e-book", "e-proceedings"]:
             raise UnexpectedValue(subfield="y", message=" unsupported value")
         volume_obj = {
             "url": sub_u,

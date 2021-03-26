@@ -20,6 +20,11 @@
     "text": "Print version"
   },
   {
+    "key": "REPRINT_VERSION",
+    "type": "doc_identifiers_materials",
+    "text": "Re-print version"
+  },
+  {
     "key": "REPRINT_HARDBACK",
     "type": "doc_identifiers_materials",
     "text": "Print version, hardback (reprint)"
@@ -28,6 +33,26 @@
     "key": "REPRINT_PAPERBACK",
     "type": "doc_identifiers_materials",
     "text": "Print version, paperback (reprint)"
+  },
+  {
+    "key": "PUBLICATION",
+    "type": "doc_identifiers_materials",
+    "text": "Publication"
+  },
+  {
+    "key": "ADDENDUM",
+    "type": "doc_identifiers_materials",
+    "text": "Addendum"
+  },
+  {
+    "key": "ERRATUM",
+    "type": "doc_identifiers_materials",
+    "text": "Erratum"
+  },
+  {
+    "key": "CORRIGENDUM",
+    "type": "doc_identifiers_materials",
+    "text": "CORRIGENDUM"
   },
   {
     "key": "AUDIO_CD",

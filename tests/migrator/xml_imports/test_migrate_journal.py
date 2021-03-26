@@ -51,7 +51,8 @@ def test_migrate_record(datadir, base_app):
             'subjects': [{'value': '53', 'scheme': 'UDC'}],
             'title': 'British journal of applied physics',
             'identifiers': [
-                {'scheme': 'ISSN', 'value': '0508-3443', 'material': 'print'}],
+                {'scheme': 'ISSN', 'value': '0508-3443',
+                 'material': 'PRINT_VERSION'}],
             'languages': ['ENG'],
             'physical_volumes': [
                 {'description': 'v 1 (1950) - v 18 (1967)',

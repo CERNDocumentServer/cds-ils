@@ -33,7 +33,7 @@ from invenio_indexer.api import RecordIndexer
 from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
-from cds_ils.migrator.config import MIGRATION_DOCUMENT_PID
+from cds_ils.migrator.constants import MIGRATION_DOCUMENT_PID
 from cds_ils.migrator.patrons.api import get_user_by_legacy_id
 
 
@@ -231,7 +231,7 @@ def add_cds_url(json_data):
         _urls = json_data.get('urls', [])
         legacy_recid = json_data["legacy_recid"]
         _urls.append({
-            'value': f'http://cds.cern.ch/record/{legacy_recid}',
+            'value': f'https://cds.cern.ch/record/{legacy_recid}',
             'description': 'See on CDS',
             'meta': 'CDS'
         })

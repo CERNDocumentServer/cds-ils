@@ -33,9 +33,9 @@ class Patron(ILSPatron):
         if hasattr(self, "extra_info") and self.extra_info:
             dump.update(
                 {
-                    "person_id": self.extra_info.get("person_id", ""),
+                    "person_id": str(self.extra_info.get("person_id", "")),
                     "department": self.extra_info.get("department", ""),
-                    "legacy_id": self.extra_info.get("legacy_id", ""),
+                    "legacy_id": str(self.extra_info.get("legacy_id", "")),
                 }
             )
 

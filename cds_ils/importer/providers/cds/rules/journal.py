@@ -19,7 +19,7 @@ from cds_ils.importer.providers.cds.models.journal import model
 from .base import title as base_title
 from .utils import clean_val, filter_list_values, get_week_start, out_strip
 from .values_mapping import ACCESS_TYPE, ACQUISITION_METHOD, COLLECTION, \
-    mapping
+    IDENTIFIERS_MEDIUM_TYPES, mapping
 
 
 @model.over("legacy_recid", "^001", override=True)
@@ -75,10 +75,16 @@ def abbreviated_title(self, key, value):
 def identifiers(self, key, value):
     """Translates identifiers fields."""
     val_a = clean_val("a", value, str, req=True)
+
+    val_b = clean_val("b", value, str)
+    material = mapping(
+        IDENTIFIERS_MEDIUM_TYPES,
+        val_b,
+    )
     return {
         "scheme": "ISSN",
         "value": val_a,
-        "material": clean_val("b", value, str),
+        "material": material,
     }
 
 

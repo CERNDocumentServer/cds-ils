@@ -23,6 +23,7 @@ from cds_ils.migrator.relations.api import create_parent_child_relation
 from cds_ils.migrator.series.api import clean_document_json_for_multipart, \
     exclude_multipart_fields, get_multipart_by_multipart_id, \
     replace_fields_in_volume
+from cds_ils.migrator.utils import add_cds_url
 
 
 def import_multivolume(json_record):
@@ -52,6 +53,7 @@ def import_multivolume(json_record):
             f"Multipart {legacy_recid} was already processed. Aborting."
         )
     except PIDDoesNotExistError as e:
+        add_cds_url(multipart_json)
         multipart_record = import_record(
             multipart_json,
             rectype="multipart",
@@ -126,8 +128,10 @@ def import_multipart(json_record):
     # split json for multipart (series rectype) and
     # document (common data for all volumes, to be stored on document rectype)
     multipart_json = clean_document_json_for_multipart(json_record)
+
     document_json = exclude_multipart_fields(json_record)
     document_json["title"] = volumes[0]["title"]
+    add_cds_url(document_json)
 
     # series with separate record per volume
     # (identified together with multipart id)

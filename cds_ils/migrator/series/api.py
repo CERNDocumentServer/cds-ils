@@ -42,6 +42,7 @@ def clean_document_json_for_multipart(json_record, include_keys=None):
         "note",
         "title",
         "urls",
+        "edition",
         "_created",
         *include_keys
     )
