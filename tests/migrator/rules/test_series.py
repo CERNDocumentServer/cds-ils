@@ -706,7 +706,7 @@ def test_monograph_legacy_representation(app):
         check_transformation(
             """
             <datafield tag="596" ind1=" " ind2=" ">
-            <subfield code="a">MULTIVOLUMES-1</subfield>
+            <subfield code="a">MULTIVOLUMES1</subfield>
             </datafield>
             <datafield tag="597" ind1=" " ind2=" ">
             <subfield code="a">Vol965</subfield>

@@ -308,9 +308,9 @@ def multivolume_record(self, key, value):
     """Mark record with many volumes inside."""
     val_a = clean_val("a", value, str)
     _migration = self["_migration"]
-    if val_a == "MULTIVOLUMES-1":
+    if val_a == "MULTIVOLUMES1":
         parsed = False
-    elif val_a == "MULTIVOLUMES-X" or val_a == "MULTIVOLUMES-x":
+    elif val_a == "MULTIVOLUMESX" or val_a == "MULTIVOLUMESx":
         parsed = True
     elif val_a == "MULTIVOLUMES-MANUAL":
         raise Exception("This record should not be migrated!")
