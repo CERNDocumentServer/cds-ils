@@ -31,7 +31,7 @@ from cds_ils.importer.providers.cds.rules.values_mapping import \
     ACQUISITION_METHOD, APPLICABILITY, ARXIV_CATEGORIES, COLLECTION, \
     DOCUMENT_TYPE, EXPERIMENTS, EXTERNAL_SYSTEM_IDENTIFIERS, \
     EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, IDENTIFIERS_MEDIUM_TYPES, \
-    ITEMS_MEDIUMS, MATERIALS, SERIAL, mapping
+    ITEMS_MEDIUMS, MATERIALS, SERIAL, TAGS_TO_IGNORE, mapping
 
 from ...utils import build_ils_contributor
 from .utils import extract_parts, is_excluded
@@ -158,12 +158,21 @@ def tags(self, key, value):
     """Translates tag field - WARNING - also document type and serial field."""
     _tags = self.get("tags", [])
     for v in force_list(value):
-        result_a = mapping(COLLECTION, clean_val("a", v, str))
-        result_b = mapping(COLLECTION, clean_val("b", v, str))
-        if result_a:
-            _tags.append(result_a) if result_a not in _tags else None
-        if result_b:
-            _tags.append(result_b) if result_b not in _tags else None
+        val_a = clean_val("a", v, str)
+        val_b = clean_val("b", v, str)
+
+        if val_a not in TAGS_TO_IGNORE:
+            result_a = mapping(COLLECTION, val_a)
+            if result_a:
+                _tags.append(result_a) if result_a not in _tags else None
+        else:
+            result_a = True
+        if val_b not in TAGS_TO_IGNORE:
+            result_b = mapping(COLLECTION, val_b)
+            if result_b:
+                _tags.append(result_b) if result_b not in _tags else None
+        else:
+            result_b = True
         if not result_a and not result_b:
             special_serials(self, key, value)
     return _tags
@@ -194,7 +203,7 @@ def special_serials(self, key, value):
     return _migration
 
 
-@model.over("document_type", "(^980__)|(^960__)|(^690C_)")
+@model.over("document_type", "(^980__)|(^960__)")
 @out_strip
 def document_type(self, key, value):
     """Translates document type field."""
@@ -371,7 +380,7 @@ def standard_review(self, key, value):
         clean_val("i", value, str),
         raise_exception=True,
     )
-    if applicability not in applicability_list:
+    if applicability and applicability not in applicability_list:
         applicability_list.append(applicability)
     if "z" in value:
         try:
@@ -646,13 +655,13 @@ def alternative_identifiers(self, key, value):
     if key == "035__":
         if "CERCER" in sub_a:
             raise IgnoreKey("alternative_identifiers")
-        sub_9 = clean_val("9", value, str, req=True)
+        sub_9 = clean_val("9", value, str, req=True).upper()
         if "CERCER" in sub_9:
             raise IgnoreKey("alternative_identifiers")
 
-        if sub_9.upper() in EXTERNAL_SYSTEM_IDENTIFIERS:
+        if sub_9 in EXTERNAL_SYSTEM_IDENTIFIERS:
             indentifier_entry.update({"value": sub_a, "scheme": sub_9})
-        elif sub_9.upper() in EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE:
+        elif sub_9 in EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE:
             raise IgnoreKey("external_system_identifiers")
         else:
             raise UnexpectedValue(subfield="9")
@@ -661,7 +670,7 @@ def alternative_identifiers(self, key, value):
             indentifier_entry.update(
                 {
                     "value": sub_a,
-                    "scheme": clean_val("9", value, str, req=True),
+                    "scheme": clean_val("9", value, str, req=True).upper(),
                 }
             )
 

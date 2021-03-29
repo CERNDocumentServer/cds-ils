@@ -50,10 +50,9 @@ def _extract_json_ils_ids(info, provenance="scheme"):
     """Extract author IDs from MARC tags."""
     SOURCES = {
         "AUTHOR|(INSPIRE)": "INSPIRE ID",
-        "AUTHOR|(CDS)": "CDS",
         "AUTHOR|(SzGeCERN)": "CERN",
     }
-    regex = re.compile(r"(AUTHOR\|\((CDS|INSPIRE|SzGeCERN)\))(.*)")
+    regex = re.compile(r"(AUTHOR\|\((INSPIRE|SzGeCERN)\))(.*)")
     ids = []
     author_ids = force_list(info.get("0", ""))
     for author_id in author_ids:

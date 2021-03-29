@@ -31,10 +31,11 @@ def _insert_volume(_migration, volume_number, volume_obj, field_key="volumes"):
         "volumes_identifiers",
         "volumes_urls",
     ]
-    volumes = _migration[field_key]
+    volumes = _migration.get(field_key, [])
     volume_obj = deepcopy(volume_obj)
     volume_obj["volume"] = volume_number
     volumes.append(volume_obj)
+    _migration[field_key] = volumes
     return volume_obj
 
 

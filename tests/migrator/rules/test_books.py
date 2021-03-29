@@ -457,7 +457,7 @@ def test_tags(app):
             </datafield>
             """,
             {
-                "tags": ["BOOK_SUGGESTION", "DIDATIC_LIBRARY", "ARCHIVES"],
+                "tags": ["BOOK_SUGGESTION", "DIDACTIC_LIBRARY"],
             },
         )
         check_transformation(
@@ -467,7 +467,7 @@ def test_tags(app):
             </datafield>
             """,
             {
-                "tags": ["DIDATIC_LIBRARY"],
+                "tags": ["DIDACTIC_LIBRARY"],
             },
         )
         check_transformation(
@@ -477,7 +477,6 @@ def test_tags(app):
             </datafield>
             """,
             {
-                "tags": ["ARCHIVES"],
             },
         )
 
@@ -920,7 +919,6 @@ def test_authors(app):
                                 "value": "INSPIRE-00341737",
                             },
                             {"scheme": "CERN", "value": "692828"},
-                            {"scheme": "CDS", "value": "2079441"},
                         ],
                     },
                     {
@@ -1856,7 +1854,7 @@ def test_alternative_identifiers(app):
             {
                 "alternative_identifiers": [
                     {
-                        "scheme": "Inspire",
+                        "scheme": "INSPIRE",
                         "value": "2365039",
                     }
                 ],

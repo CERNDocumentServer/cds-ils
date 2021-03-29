@@ -78,7 +78,7 @@ def import_serial_from_file(sources, rectype):
         )
         with click.progressbar(json.load(source).items()) as bar:
             for key, json_record in bar:
-                field = json_record.get("legacy_recid", "title")
+                field = json_record.get("legacy_recid", json_record["title"])
                 click.echo(
                     'Importing serial "{0}({1})"...'.format(field, rectype)
                 )
@@ -90,7 +90,9 @@ def import_serial_from_file(sources, rectype):
                         import_record(
                             json_record,
                             legacy_id=json_record["title"],
-                            rectype=rectype)
+                            rectype=rectype,
+                            mint_legacy_pid=False
+                        )
                     except Exception as exc:
                         handler = json_records_exception_handlers.get(
                             exc.__class__
