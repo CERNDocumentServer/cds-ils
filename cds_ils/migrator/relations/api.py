@@ -152,7 +152,9 @@ def link_documents_and_serials():
     legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
 
     def link_records_and_serial(record_cls, search):
+        click.echo(f"FOUND {search.count()} serial related records.")
         for hit in search.scan():
+            click.echo(f"Processing record {hit.pid}.")
             # Skip linking if the hit doesn't have a legacy recid since it
             # means it's a volume of a multipart
             if "legacy_recid" not in hit:
@@ -166,16 +168,16 @@ def link_documents_and_serials():
                 create_parent_child_relation(
                     serial, record, SERIAL_RELATION, volume
                 )
-                relations_logger.info(
-                    "Created: {0} - {1}".format(serial["pid"],
-                                                record["pid"]),
-                    extra=dict(legacy_id=None, status="SUCCESS",
-                               new_pid=serial["pid"])
-                )
+                # mark done
+                record["_migration"]["has_serial"] = False
+                record.commit()
+                db.session.commit()
                 RecordRelationIndexer().index(record, serial)
 
     def link_record_and_journal(record_cls, search):
+        click.echo(f"FOUND {search.count()} journal related records.")
         for hit in search.scan():
+            click.echo(f"Processing record {hit.pid}.")
             if "legacy_recid" not in hit:
                 continue
             record = record_cls.get_record_by_pid(hit.pid)
@@ -188,6 +190,8 @@ def link_documents_and_serials():
                 )
 
                 del record["publication_info"]
+                # mark done
+                record["_migration"]["has_journal"] = False
                 record.commit()
                 db.session.commit()
 

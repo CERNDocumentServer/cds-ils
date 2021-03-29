@@ -16,11 +16,6 @@
   },
   {
     "type": "tag",
-    "key": "ARCHIVES",
-    "text": "Archives"
-  },
-  {
-    "type": "tag",
     "key": "BOOK_SUGGESTION",
     "text": "Book suggestion"
   }
