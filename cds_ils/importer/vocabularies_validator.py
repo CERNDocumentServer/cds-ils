@@ -30,7 +30,7 @@ VOCABULARIES_TYPE_FILENAME = {
     "author_identifier_scheme": "author_identifier_schemes.json",
     "author_role": "author_roles.json",
     "author_type": "author_types.json",
-    "conference_identifier_scheme": "conference_identifier_schemes",
+    "conference_identifier_scheme": "conference_identifier_schemes.json",
     "currencies": "currencies.json",
     "doc_identifiers_materials": "document_identifiers_materials.json",
     "doc_req_medium": "docreq_mediums.json",
