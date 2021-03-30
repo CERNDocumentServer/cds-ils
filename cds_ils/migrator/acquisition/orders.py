@@ -180,6 +180,17 @@ def get_recipient(record):
     return "PATRON"
 
 
+def get_payment_mode(record):
+    """Return payment mode."""
+    budget_code = record.get("budget_code")
+    if not budget_code:
+        return ''
+    elif budget_code and budget_code.lower() == "cash":
+        return 'INDIVIDUAL_PAYMENT'
+    else:
+        return 'BUDGET_CODE'
+
+
 def create_order_line(record, order_status):
     """Create an OrderLine."""
     document_cls = current_app_ils.document_record_cls
@@ -201,12 +212,15 @@ def create_order_line(record, order_status):
         if document["document_type"] == "BOOK":
             item_medium = "PAPER"
 
+    if record["request_type"] == 'acq-book':
+        item_medium = "PAPER"
+
     new_order_line = dict(
         document_pid=document_pid,
         patron_pid=get_patron_pid(record),
         recipient=get_recipient(record),
         medium=item_medium,
-        payment_mode="MIGRATED_UNKNOWN",
+        payment_mode=get_payment_mode(record),
         copies_ordered=1,  # default 1 because is required
     )
 

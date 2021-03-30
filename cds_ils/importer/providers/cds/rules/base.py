@@ -667,6 +667,9 @@ def alternative_identifiers(self, key, value):
             raise UnexpectedValue(subfield="9")
     if key == "036__":
         if "a" in value and "9" in value:
+            sub_9 = clean_val("9", value, str, req=True).upper()
+            if sub_9 in EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE:
+                raise IgnoreKey("external_system_identifiers")
             indentifier_entry.update(
                 {
                     "value": sub_a,

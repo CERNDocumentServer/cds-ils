@@ -35,6 +35,18 @@ def test_import_ills(test_data_migration, patrons, es_clear):
     assert results.hits.total.value == 1
     assert results[0].status == "RETURNED"
 
+    ill_pid = results[0].pid
+    # make sure no loan created for finished ILLs
+    loan_search = current_circulation.loan_search_cls
+    search = (
+        loan_search()
+            .filter("term", item_pid__value=ill_pid)
+            .filter("term", item_pid__type=BORROWING_REQUEST_PID_TYPE)
+            .filter("term", state="ITEM_ON_LOAN")
+    )
+    results = search.execute()
+    assert results.hits.total.value == 0
+
     search = brw_search().filter("term", legacy_id="55930")
     results = search.execute()
     assert results.hits.total.value == 1

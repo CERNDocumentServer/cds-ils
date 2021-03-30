@@ -1981,13 +1981,14 @@ def test_alternative_identifiers(app):
                 <subfield code="a">92074207</subfield>
             </datafield>
             """,
+            # ignore DLC
             {
-                "alternative_identifiers": [
-                    {
-                        "scheme": "DLC",
-                        "value": "92074207",
-                    }
-                ],
+                # "alternative_identifiers": [
+                #     {
+                #         "scheme": "DLC",
+                #         "value": "92074207",
+                #     }
+                # ],
             },
         )
         # ignore 035__9 == arXiv
