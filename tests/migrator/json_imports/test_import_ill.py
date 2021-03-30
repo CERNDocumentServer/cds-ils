@@ -34,12 +34,20 @@ def test_import_ills(test_data_migration, patrons, es_clear):
 
     assert results.hits.total.value == 1
     assert results[0].status == "RETURNED"
+    assert (
+        results[0].notes
+        == "item info: {'publisher': '', 'isbn': '', 'title': \"Documentation Eaux usées et Stations d'épuration\", 'authors': '', 'edition': '', 'place': '', 'year': ''}\n\nlibrary notes: {}\n"
+    )
 
     search = brw_search().filter("term", legacy_id="55930")
     results = search.execute()
     assert results.hits.total.value == 1
+    assert (
+        results[0].notes
+        == "item info: {'publisher': '', 'isbn': '', 'title': '', 'authors': 'A. Agüero, J.M. Albella', 'edition': '', 'place': '', 'year': ''}\n\nlibrary notes: {'2010-09-28 10:40:50': \"Il libro non e disponibile in italiano, cancellata: la civiltà.\"}\n"
+    )
 
-    assert results[0].status == 'ON_LOAN'
+    assert results[0].status == "ON_LOAN"
     ill_pid = results[0].pid
 
     # check if loan created for ongoing ILL
