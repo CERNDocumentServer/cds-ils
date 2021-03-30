@@ -122,7 +122,7 @@ def provide_valid_loan_state_metadata(record, loan_dict):
     return loan_dict
 
 
-def validate_loan(new_loan_dict, record):
+def validate_loan(new_loan_dict, item_barcode, borrower_id):
     """Validate loan."""
     if (
         new_loan_dict["patron_pid"] in ["-1", "-2"]
@@ -132,7 +132,7 @@ def validate_loan(new_loan_dict, record):
         raise LoanMigrationError(
             "Loan on item {0} has ongoing state "
             "while the patron is anonymous (ccid:{1})".format(
-                record["item_barcode"], record["id_crcBORROWER"]
+                item_barcode, borrower_id
             )
         )
 
@@ -173,7 +173,10 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan",
                 )
                 if not loan_dict:
                     continue
-                validate_loan(loan_dict, record)
+                validate_loan(loan_dict,
+                              record["item_barcode"],
+                              record["id_crcBORROWER"]
+                              )
 
                 import_record(
                     loan_dict,

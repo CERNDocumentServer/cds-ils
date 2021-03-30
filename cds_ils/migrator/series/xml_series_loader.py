@@ -22,7 +22,7 @@ from cds_ils.importer.series.importer import VOCABULARIES_FIELDS
 from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
 from cds_ils.literature.api import get_record_by_legacy_recid
-from cds_ils.migrator.consts import CDS_ILS_FALLBACK_CREATION_DATE
+from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.utils import add_cds_url, add_cover_metadata, \
     clean_created_by_field
 from cds_ils.minters import legacy_recid_minter

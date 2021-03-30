@@ -3,6 +3,7 @@ import os
 import pytest
 from invenio_app_ils.ill.api import BORROWING_REQUEST_PID_TYPE
 from invenio_app_ils.ill.proxies import current_ils_ill
+from invenio_circulation.proxies import current_circulation
 from invenio_indexer.api import RecordIndexer
 from invenio_search import current_search
 
@@ -39,6 +40,19 @@ def test_import_ills(test_data_migration, patrons, es_clear):
     assert results.hits.total.value == 1
 
     assert results[0].status == 'ON_LOAN'
+    ill_pid = results[0].pid
+
+    # check if loan created for ongoing ILL
+    loan_search = current_circulation.loan_search_cls
+    search = (
+        loan_search()
+        .filter("term", item_pid__value=ill_pid)
+        .filter("term", item_pid__type=BORROWING_REQUEST_PID_TYPE)
+        .filter("term", state="ITEM_ON_LOAN")
+    )
+    results = search.execute()
+    assert results.hits.total.value == 1
+
     file.close()
 
 

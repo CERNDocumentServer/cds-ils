@@ -50,7 +50,7 @@ def test_migrate_record(datadir, base_app):
                 {'title': '10th International ISAAC Congress',
                  'place': 'Macau, China',
                  'dates': '2015-08-03 - 2015-08-08',
-                 'identifiers': [{'scheme': 'CERN_CODE',
+                 'identifiers': [{'scheme': 'CERN',
                                   'value': 'macau20150803'}],
                  'series': '10', 'country': 'CHN',
                  'acronym': 'ISAAC 2015'}],

@@ -146,6 +146,14 @@ def get_acq_ill_notes(record):
     """Extract notes for acquisition and ILL records."""
     # NOTE: library notes are usually empty dict stringified '{}'
     result = ""
+    due_date = record.get("due_date")
+    if due_date:
+        result += "due date: {0}\n\n".format(due_date)
+
+    return_date = record.get("return_date")
+    if return_date:
+        result += "return date: {0}\n\n".format(return_date)
+
     cost = record.get("cost")
     if cost:
         result += "cost: {0}\n\n".format(cost)

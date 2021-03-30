@@ -916,7 +916,7 @@ def conference_info(self, key, value):
         val_i = clean_val("i", v, str)
 
         if val_g:
-            conference_identifiers.append({"scheme": "CERN_CODE",
+            conference_identifiers.append({"scheme": "CERN",
                                            "value": val_g})
         if val_i:
             conference_identifiers.append({"scheme": "INSPIRE_CNUM",
