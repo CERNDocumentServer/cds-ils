@@ -144,8 +144,13 @@ def clean_created_by_field(record):
 
 def get_acq_ill_notes(record):
     """Extract notes for acquisition and ILL records."""
-    # NOTE: library notes are usually empty dict stringified '{}'
+    # NOTE: library notes are usually empty dict string field '{}'
     result = ""
+
+    request_type = record.get("request_type")
+    if request_type:
+        result += "request type: {0}\n\n".format(request_type)
+
     due_date = record.get("due_date")
     if due_date:
         result += "due date: {0}\n\n".format(due_date)
