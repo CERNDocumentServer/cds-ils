@@ -161,6 +161,18 @@ def get_acq_ill_notes(record):
     item_info = record.get("item_info")
     if item_info:
         result = "item info: {0}\n\n".format(item_info.strip())
+        try:
+            result = (
+                # any encoding supporting printable ASCII would work e.g. utf-8
+                result.encode("ascii")
+                # unescape the string
+                .decode("unicode-escape")
+                # latin-1 also works
+                .encode("iso-8859-1").decode("utf-8")
+            )
+        except UnicodeEncodeError:
+            # result contains unicode chars that can't be ascii encoded
+            pass
 
     comments = record.get("borrower_comments")
     if comments:
@@ -170,7 +182,19 @@ def get_acq_ill_notes(record):
     if not notes:
         return result
 
-    result += "library notes: {0}\n".format(notes.strip())
+    notes = "library notes: {0}\n".format(notes.strip())
+    try:
+        result += (
+            # any encoding supporting printable ASCII would work e.g. utf-8
+            notes.encode("ascii")
+            # unescape the string
+            .decode("unicode-escape")
+            # latin-1 also works
+            .encode("iso-8859-1").decode("utf-8")
+        )
+    except UnicodeEncodeError:
+        # result contains unicode chars that can't be ascii encoded
+        result += notes
     return result
 
 
@@ -235,14 +259,16 @@ def add_title_from_conference_info(json_data):
 
 def add_cds_url(json_data):
     """Add url pointing back to CDS."""
-    if json_data.get('sync', False):
-        _urls = json_data.get('urls', [])
+    if json_data.get("sync", False):
+        _urls = json_data.get("urls", [])
         legacy_recid = json_data["legacy_recid"]
-        _urls.append({
-            'value': f'https://cds.cern.ch/record/{legacy_recid}',
-            'description': 'See on CDS',
-            'meta': 'CDS'
-        })
+        _urls.append(
+            {
+                "value": f"https://cds.cern.ch/record/{legacy_recid}",
+                "description": "See on CDS",
+                "meta": "CDS",
+            }
+        )
         json_data["urls"] = _urls
         del json_data["sync"]
 
