@@ -24,7 +24,7 @@ from cds_ils.importer.documents.importer import VOCABULARIES_FIELDS
 from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
 from cds_ils.literature.api import get_record_by_legacy_recid
-from cds_ils.migrator.consts import CDS_ILS_FALLBACK_CREATION_DATE
+from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.errors import DumpRevisionException
 from cds_ils.migrator.utils import add_cds_url, add_cover_metadata, \
     add_title_from_conference_info, clean_created_by_field

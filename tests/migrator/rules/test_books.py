@@ -2552,7 +2552,7 @@ def test_conference_info(app):
                  the New Generation of High Energy Gamma-ray Experiments:
                  between Astrophysics and Astroparticle Physics""",
                         "identifiers": [
-                            {"scheme": "CERN_CODE", "value": "bari20040621"},
+                            {"scheme": "CERN", "value": "bari20040621"},
                         ],
                         "place": "Bari, Italy",
                         "dates": "2004-06-21 - 2004-06-21",
@@ -2606,7 +2606,7 @@ def test_conference_info(app):
                 "conference_info": [
                     {
                     "identifiers": [
-                        {"scheme": "CERN_CODE", "value": "bari20040621"},
+                        {"scheme": "CERN", "value": "bari20040621"},
                     ],
                     "title": """2nd Workshop on Science with
                  the New Generation of High Energy Gamma-ray Experiments:
@@ -2648,7 +2648,7 @@ def test_conference_info(app):
                             "place": "Bari, Italy",
                             "identifiers": [
                                 {
-                                    "scheme": "CERN_CODE",
+                                    "scheme": "CERN",
                                     "value": "bari20040621",
                                 },
                             ],
@@ -3273,7 +3273,7 @@ def test_conference_info_multiple_series_number(app):
                         "series": "3, 2",
                         "identifiers": [
                             {
-                                "scheme": "CERN_CODE",
+                                "scheme": "CERN",
                                 "value": "salvador20150708",
                             }
                         ],

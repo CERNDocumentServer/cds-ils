@@ -54,16 +54,21 @@ import json
 import logging
 
 import click
+from invenio_app_ils.patrons.api import SystemAgent
+from invenio_app_ils.proxies import current_app_ils
+from invenio_circulation.proxies import current_circulation
 from invenio_db import db
 
 from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
+from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.default_records import MIGRATION_PROVIDER_PID
 from cds_ils.migrator.errors import BorrowingRequestError, \
     ItemMigrationError, ProviderError
 from cds_ils.migrator.handlers import json_records_exception_handlers
 from cds_ils.migrator.items.api import get_item_by_barcode
+from cds_ils.migrator.loans.api import validate_loan
 from cds_ils.migrator.providers.api import get_provider_by_legacy_id
 from cds_ils.migrator.utils import find_correct_document_pid, \
     get_acq_ill_notes, get_cost, get_date, get_patron_pid
@@ -189,7 +194,8 @@ def clean_record_json(record):
     if request_date:
         new_record.update(request_date=get_date(request_date))
 
-    due_date = record.get("due_date")
+    # former return date is the new due date of the borrowing request
+    due_date = record.get("return_date")
     if due_date:
         new_record.update(due_date=get_date(due_date))
 
@@ -212,6 +218,44 @@ def clean_record_json(record):
     return new_record
 
 
+def create_loan_when_ongoing(ill, legacy_record):
+    """Create a loan for the ongoing borrowing request."""
+    default_location_pid_value, _ = current_app_ils.get_default_location_pid
+
+    if ill["status"] != "ON_LOAN":
+        return
+
+    patron_pid = ill["patron_pid"]
+    item_pid = {
+        "value": ill.pid.pid_value,
+        "type": ill.pid.pid_type
+    }
+    document_pid = ill["document_pid"]
+
+    loan_dict = dict(
+        patron_pid=str(patron_pid),
+        transaction_location_pid=default_location_pid_value,
+        transaction_user_pid=str(SystemAgent.id),
+        document_pid=document_pid,
+        item_pid=item_pid,
+        state="ITEM_ON_LOAN",
+        start_date=ill["received_date"],
+        # former due date of borrowing request becomes due date of the loan
+        end_date=legacy_record.get("due_date", CDS_ILS_FALLBACK_CREATION_DATE)
+    )
+
+    validate_loan(loan_dict, item_pid["value"], borrower_id=patron_pid)
+
+    loan = import_record(
+        loan_dict,
+        rectype="loan",
+        legacy_id="ILL loan",
+        mint_legacy_pid=False
+    )
+    current_circulation.loan_indexer().index(loan)
+    db.session.commit()
+
+
 def import_ill_borrowing_requests_from_json(
     dump_file, raise_exceptions=False, rectype="borrowing-request"
 ):
@@ -220,11 +264,14 @@ def import_ill_borrowing_requests_from_json(
     with click.progressbar(json.load(dump_file)) as input_data:
         for record in input_data:
             try:
-                import_record(
+                ill = import_record(
                     clean_record_json(record),
                     rectype=rectype,
                     legacy_id=record["legacy_id"],
                 )
+                # create a loan for ongoing ILL
+                create_loan_when_ongoing(ill, record)
+
             except Exception as exc:
                 handler = json_records_exception_handlers.get(exc.__class__)
                 if handler:

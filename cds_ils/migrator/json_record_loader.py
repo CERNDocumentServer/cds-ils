@@ -19,7 +19,7 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.literature.api import get_record_by_legacy_recid
-from cds_ils.migrator.consts import CDS_ILS_FALLBACK_CREATION_DATE
+from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.utils import get_legacy_pid_type_by_provider, \
     model_provider_by_rectype
 from cds_ils.minters import legacy_recid_minter
