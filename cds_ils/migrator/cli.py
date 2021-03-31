@@ -372,10 +372,10 @@ def eitems_files():
 @with_appcontext
 def eitems_providers():
     """Create eitems for migrated documents."""
-    migrate_external_links()
     migrate_ezproxy_links()
     migrate_ebl_links()
     migrate_safari_links()
+    migrate_external_links()
 
 
 @migration.command()

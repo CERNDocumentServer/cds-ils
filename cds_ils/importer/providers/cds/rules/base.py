@@ -86,14 +86,15 @@ def created(self, key, value):
                 }
             )
             self["created_by"] = _created_by
-
             date_values = clean_val(
-                "w", value, int, regex_format=r"\d{6}$", multiple_values=True
+                "w", value, int, regex_format=r"^\d{6}$", multiple_values=True
             )
             if type(date_values) is list:
                 date = min(date_values)
             else:
                 date = date_values
+            if not (100000 < date < 999999):
+                raise UnexpectedValue(subfield='w')
             if date:
                 year, week = str(date)[:4], str(date)[4:]
                 date = get_week_start(int(year), int(week))
@@ -378,7 +379,6 @@ def standard_review(self, key, value):
     applicability = mapping(
         APPLICABILITY,
         clean_val("i", value, str),
-        raise_exception=True,
     )
     if applicability and applicability not in applicability_list:
         applicability_list.append(applicability)
