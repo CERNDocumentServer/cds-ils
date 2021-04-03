@@ -13,8 +13,9 @@ from dojson.utils import filter_values, for_each_value, force_list
 from invenio_app_ils.documents.api import Document
 
 from cds_ils.importer.errors import ManualImportRequired, UnexpectedValue
-from cds_ils.importer.providers.cds.rules.utils import clean_val, \
+from cds_ils.importer.providers.cds.helpers.decorators import \
     filter_list_values, out_strip
+from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.springer.springer import model
 from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role
 

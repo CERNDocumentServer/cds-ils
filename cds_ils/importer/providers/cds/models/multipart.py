@@ -24,7 +24,10 @@ class CDSMultipart(CdsIlsOverdo):
 
     __query__ = "596__:MULTIVOLUMES -980__:DELETED -980__:MIGRATED"
 
-    __ignore_keys__ = CDS_IGNORE_FIELDS
+    __ignore_keys__ = CDS_IGNORE_FIELDS | \
+        {
+          "084__c",
+        }
 
     _default_fields = {
         "_migration": {**get_helper_dict(record_type="document")},

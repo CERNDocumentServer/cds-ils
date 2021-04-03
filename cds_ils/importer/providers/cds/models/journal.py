@@ -55,6 +55,7 @@ class CDSJournal(CdsIlsOverdo):
         "939__u",
         "939__v",
         "6531_a",
+        "710__5",
         "770__t",  # title of relation has supplement
         "770__i",  # label of relation has supplement
         "772__i",  # label of relation supplement to

@@ -36,7 +36,6 @@ def clean_document_json_for_multipart(json_record, include_keys=None):
         "mode_of_issuance",
         "_migration",
         "physical_description",
-        "identifiers",
         "languages",
         "internal_notes",
         "note",
@@ -125,18 +124,28 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
 
     # split urls per volume
     volume_urls = [
-        url
-        for url in volumes_urls_list
-        if url.get("volume") == current_volume_index
+        entry.get("urls")
+        for entry in volumes_urls_list
+        if entry.get("urls") and entry.get("volume") == current_volume_index
     ]
     if volume_urls:
-        document_json_template["urls"] = volume_urls
+        document_json_template["urls"] = volume_urls[0]
+
+    volume_eitems = [
+        entry["_migration"]
+        for entry in volumes_urls_list
+        if "_migration" in entry and entry.get("volume")
+           == current_volume_index
+    ]
+
+    if volume_eitems:
+        document_json_template["_migration"] = volume_eitems[0]
 
     # split identifiers per volume
     volume_identifiers = [
-        identifier
-        for identifier in volumes_identifiers_list
-        if identifier.get("volume") == current_volume_index
+        volume_identifier["identifiers"]
+        for volume_identifier in volumes_identifiers_list
+        if volume_identifier.get("volume") == current_volume_index
     ]
     if volume_identifiers:
         document_json_template["identifiers"] = volume_identifiers

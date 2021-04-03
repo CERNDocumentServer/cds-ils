@@ -15,11 +15,15 @@ from dojson.utils import for_each_value, force_list
 
 from cds_ils.importer.errors import MissingRequiredField, UnexpectedValue
 
+from ..cds import get_helper_dict
+from ..helpers.decorators import filter_list_values, out_strip
+from ..helpers.eitems import clean_url_provider
+from ..helpers.parsers import clean_val, extract_parts, extract_volume_info, \
+    extract_volume_number
 from ..models.multipart import model
 from .base import alternative_identifiers as alternative_identifiers_base
+from .base import alternative_titles
 from .base import urls as urls_base
-from .utils import clean_val, extract_parts, extract_volume_info, \
-    extract_volume_number, filter_list_values, out_strip
 from .values_mapping import IDENTIFIERS_MEDIUM_TYPES, mapping
 
 
@@ -69,8 +73,8 @@ def isbns(self, key, value):
         volume_number = extract_volume_number(val_u, search=True)
         if volume_number:
             volume_obj = {
-                "isbn": clean_val("a", value, str),
-                "is_electronic": val_b is not None,
+                "identifiers": [{"value": clean_val("a", value, str),
+                                 "scheme": "ISBN"}],
             }
             if physical_description:
                 volume_obj.update(
@@ -103,6 +107,8 @@ def dois(self, key, value):
     """Translates DOIs."""
     _migration = self["_migration"]
     _identifiers = self.get("identifiers", [])
+    volume_info = None
+    material = None
     for v in force_list(value):
         val_2 = clean_val("2", v, str)
         if val_2 and val_2 != "DOI":
@@ -110,24 +116,28 @@ def dois(self, key, value):
                 subfield="2", message=" field is not equal to DOI"
             )
         val_q = clean_val("q", v, str, transform="lower")
-        volume_info = extract_volume_info(val_q)
+
+        if val_q:
+            volume_info = extract_volume_info(val_q)
+            if volume_info:
+                material = mapping(
+                    IDENTIFIERS_MEDIUM_TYPES,
+                    volume_info["description"].upper(),
+                    raise_exception=True,
+                )
         doi = {
             "value": clean_val("a", v, str, req=True),
-            "source": clean_val("9", v, str),
             "scheme": "DOI",
         }
+
         if volume_info:
             # this identifier is for a specific volume
-            volume_obj = {
-                "doi": doi["value"],
-                # WARNING! vocabulary document_identifiers_materials
-                "material": mapping(
-                    IDENTIFIERS_MEDIUM_TYPES,
-                    volume_info["description"],
-                    raise_exception=True,
-                ),
-                "source": doi["source"],
-            }
+            if material:
+                doi.update(
+                    {  # WARNING! vocabulary document_identifiers_materials
+                        "material": material
+                    })
+            volume_obj = {"identifiers": [doi]}
             _insert_volume(
                 _migration,
                 volume_info["volume"],
@@ -135,15 +145,19 @@ def dois(self, key, value):
                 field_key="volumes_identifiers",
             )
         else:
-            if re.match(r".* \(.*\)", val_q):
-                raise UnexpectedValue(
-                    subfield="q",
-                    message=" found a volume number but could not extract it",
+            # if a value in parentheses but does not match the volume regex
+            if val_q:
+                if re.match(r".* \(.*\)", val_q):
+                    raise UnexpectedValue(
+                        subfield="q",
+                        message=" found a volume "
+                                "number but could not extract it",
+                    )
+                # WARNING! vocabulary document_identifiers_materials
+                doi["material"] = mapping(
+                    IDENTIFIERS_MEDIUM_TYPES, val_q.upper(),
+                    raise_exception=True
                 )
-            # WARNING! vocabulary document_identifiers_materials
-            doi["material"] = mapping(
-                IDENTIFIERS_MEDIUM_TYPES, val_q, raise_exception=True
-            )
             if doi not in _identifiers:
                 _identifiers.append(doi)
     if len(_identifiers) > 0:
@@ -347,13 +361,28 @@ def urls(self, key, value):
         volume_number = volume_info["volume"]
         if description not in ["ebook", "e-book", "e-proceedings"]:
             raise UnexpectedValue(subfield="y", message=" unsupported value")
-        volume_obj = {
-            "url": sub_u,
-            "description": description,
-        }
+
+        # create partial child object for each volume with its own _migration
+        volume_migration_dict = {"_migration": deepcopy(get_helper_dict(
+            record_type='document'))}
+
+        url_obj = clean_url_provider(url_value=sub_u, url_description=sub_y,
+                                     record_dict=volume_migration_dict)
+        volume_obj = {**volume_migration_dict}
+
+        if url_obj:
+            volume_obj.update({"urls": [url_obj]})
+
         _insert_volume(
             _migration, volume_number, volume_obj, field_key="volumes_urls"
         )
         raise IgnoreKey("urls")
     else:
         return urls_base(self, key, value)
+
+
+@model.over("alternative_titles", "^242__")
+@filter_list_values
+def alternative_titles_multipart(self, key, value):
+    """Translate alternative titles."""
+    return alternative_titles(self, key, value)
