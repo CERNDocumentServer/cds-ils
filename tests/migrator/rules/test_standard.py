@@ -188,3 +188,41 @@ def test_publication_info(app):
                 ],
             },
         )
+
+def test_subject_classification(app):
+    """Test subject classification."""
+    with app.app_context():
+        check_transformation(
+            """
+            <datafield tag="084" ind1=" " ind2=" ">
+                <subfield code="c">25040.40</subfield>
+            </datafield>
+            """,
+            {"subjects": [{"value": "25040.40", "scheme": "ICS"}]},
+        )
+        check_transformation(
+            """
+            <datafield tag="084" ind1=" " ind2=" ">
+                <subfield code="2">PACS</subfield>
+                <subfield code="c">13.75.Jz</subfield>
+            </datafield>
+            <datafield tag="084" ind1=" " ind2=" ">
+                <subfield code="2">PACS</subfield>
+                <subfield code="c">13.60.Rj</subfield>
+            </datafield>
+            <datafield tag="084" ind1=" " ind2=" ">
+                <subfield code="2">PACS</subfield>
+                <subfield code="c">14.20.Jn</subfield>
+            </datafield>
+            <datafield tag="084" ind1=" " ind2=" ">
+                <subfield code="2">PACS</subfield>
+                <subfield code="c">25.80.Nv</subfield>
+            </datafield>
+            """,
+            {"subjects": [
+                {"value": "13.75.Jz", "scheme": "ICS"},
+                {"value": "13.60.Rj", "scheme": "ICS"},
+                {"value": "14.20.Jn", "scheme": "ICS"},
+                {"value": "25.80.Nv", "scheme": "ICS"},
+            ]},
+        )

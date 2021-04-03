@@ -13,9 +13,10 @@ from dojson.errors import IgnoreKey
 
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
-from cds_ils.importer.providers.cds.rules.utils import clean_email, \
-    clean_str, clean_val, filter_list_values, get_week_start, out_strip, \
-    related_url, replace_in_result
+from cds_ils.importer.providers.cds.helpers.decorators import \
+    filter_list_values, out_strip, replace_in_result
+from cds_ils.importer.providers.cds.helpers.parsers import clean_email, \
+    clean_str, clean_val, get_week_start, related_url
 
 
 def test_rel_url():

@@ -173,40 +173,6 @@ def test_subject_classification(app):
             """,
             {"subjects": [{"value": "528", "scheme": "UDC"}]},
         )
-        check_transformation(
-            """
-            <datafield tag="084" ind1=" " ind2=" ">
-                <subfield code="c">25040.40</subfield>
-            </datafield>
-            """,
-            {"subjects": [{"value": "25040.40", "scheme": "ICS"}]},
-        )
-        check_transformation(
-            """
-            <datafield tag="084" ind1=" " ind2=" ">
-                <subfield code="2">PACS</subfield>
-                <subfield code="c">13.75.Jz</subfield>
-            </datafield>
-            <datafield tag="084" ind1=" " ind2=" ">
-                <subfield code="2">PACS</subfield>
-                <subfield code="c">13.60.Rj</subfield>
-            </datafield>
-            <datafield tag="084" ind1=" " ind2=" ">
-                <subfield code="2">PACS</subfield>
-                <subfield code="c">14.20.Jn</subfield>
-            </datafield>
-            <datafield tag="084" ind1=" " ind2=" ">
-                <subfield code="2">PACS</subfield>
-                <subfield code="c">25.80.Nv</subfield>
-            </datafield>
-            """,
-            {"subjects": [
-                {"value": "13.75.Jz", "scheme": "ICS"},
-                {"value": "13.60.Rj", "scheme": "ICS"},
-                {"value": "14.20.Jn", "scheme": "ICS"},
-                {"value": "25.80.Nv", "scheme": "ICS"},
-            ]},
-        )
 
 
 def test_created_by_email(app):
@@ -1616,7 +1582,7 @@ def test_report_numbers(app):
             """,
             {
                 "alternative_identifiers": [
-                    {"value": "arXiv:1808.02335", "scheme": "arXiv"}
+                    {"value": "arXiv:1808.02335", "scheme": "ARXIV"}
                 ],
             },
         )
@@ -1644,12 +1610,12 @@ def test_report_numbers(app):
                 "alternative_identifiers": [
                     {
                         "value": "arXiv:1808.02335",
-                        "scheme": "arXiv",
+                        "scheme": "ARXIV",
                     }
                 ],
                 "subjects": [
                     {
-                        "scheme": "arXiv",
+                        "scheme": "ARXIV",
                         "value": "hep-ex",
                     }
                 ],
@@ -1666,7 +1632,7 @@ def test_report_numbers(app):
                 "alternative_identifiers": [
                     {
                         "value": "arXiv:1808.02335",
-                        "scheme": "arXiv",
+                        "scheme": "ARXIV",
                     }
                 ],
             },
@@ -1681,7 +1647,6 @@ def test_report_numbers(app):
                 "identifiers": [
                     {
                         "value": "CERN-THESIS-2018-004",
-                        "hidden": True,
                         "scheme": "REPORT_NUMBER",
                     }
                 ],
@@ -1697,7 +1662,6 @@ def test_report_numbers(app):
                 "identifiers": [
                     {
                         "value": "CERN-ISOLDE-2018-001",
-                        "hidden": True,
                         "scheme": "REPORT_NUMBER",
                     }
                 ],
@@ -1720,12 +1684,10 @@ def test_report_numbers(app):
                     {"value": "NAPAC-2016-MOPOB23", "scheme": "REPORT_NUMBER"},
                     {
                         "value": "ATL-COM-PHYS-2018-980",
-                        "hidden": True,
                         "scheme": "REPORT_NUMBER",
                     },
                     {
                         "value": "ATL-COM-PHYS-2017",
-                        "hidden": True,
                         "scheme": "REPORT_NUMBER",
                     },
                 ],
@@ -2021,11 +1983,11 @@ def test_arxiv_eprints(app):
             {
                 "alternative_identifiers": [
                     {
-                        "scheme": "arXiv",
+                        "scheme": "ARXIV",
                         "value": "arXiv:1209.5665",
                     }
                 ],
-                "subjects": [{"scheme": "arXiv", "value": "math-ph"}],
+                "subjects": [{"scheme": "ARXIV", "value": "math-ph"}],
             },
         )
         check_transformation(
@@ -2043,11 +2005,11 @@ def test_arxiv_eprints(app):
             """,
             {
                 "alternative_identifiers": [
-                    {"value": "arXiv:1209.5665", "scheme": "arXiv"}
+                    {"value": "arXiv:1209.5665", "scheme": "ARXIV"}
                 ],
                 "subjects": [
-                    {"scheme": "arXiv", "value": "math-ph"},
-                    {"scheme": "arXiv", "value": "math.GT"},
+                    {"scheme": "ARXIV", "value": "math-ph"},
+                    {"scheme": "ARXIV", "value": "math.GT"},
                 ],
             },
         )
@@ -2965,7 +2927,6 @@ def test_standard_numbers(app):
                     {"value": "NF-EN-13306", "scheme": "STANDARD_NUMBER"},
                     {
                         "value": "BS-EN-ISO-6507-2",
-                        "hidden": True,
                         "scheme": "STANDARD_NUMBER",
                     },
                 ]
@@ -2984,7 +2945,6 @@ def test_standard_numbers(app):
                         {"value": "NF-EN-13306", "scheme": "STANDARD_NUMBER"},
                         {
                             "value": "BS-EN-ISO-6507-2",
-                            "hidden": True,
                             "scheme": "STANDARD_NUMBER",
                         },
                     ]

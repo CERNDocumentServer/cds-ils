@@ -16,10 +16,11 @@ from invenio_app_ils.relations.api import LANGUAGE_RELATION, OTHER_RELATION, \
 from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
 
+from ..helpers.decorators import filter_list_values, out_strip
+from ..helpers.parsers import clean_val
 from .base import title as base_title
-from .utils import clean_val, filter_list_values, get_week_start, out_strip
 from .values_mapping import ACCESS_TYPE, ACQUISITION_METHOD, COLLECTION, \
-    IDENTIFIERS_MEDIUM_TYPES, mapping
+    IDENTIFIERS_MEDIUM_TYPES, TAGS_TO_IGNORE, mapping
 
 
 @model.over("legacy_recid", "^001", override=True)
@@ -240,12 +241,21 @@ def tags(self, key, value):
     """Translates tag field - WARNING - also document type and serial field."""
     _tags = self.get("tags", [])
     for v in force_list(value):
-        result_a = mapping(COLLECTION, clean_val("a", v, str))
-        result_b = mapping(COLLECTION, clean_val("b", v, str))
-        if result_a:
-            _tags.append(result_a) if result_a not in _tags else None
-        if result_b:
-            _tags.append(result_b) if result_b not in _tags else None
+        val_a = clean_val("a", v, str)
+        val_b = clean_val("b", v, str)
+
+        if val_a not in TAGS_TO_IGNORE:
+            result_a = mapping(COLLECTION, val_a)
+            if result_a:
+                _tags.append(result_a) if result_a not in _tags else None
+        else:
+            result_a = True
+        if val_b not in TAGS_TO_IGNORE:
+            result_b = mapping(COLLECTION, val_b)
+            if result_b:
+                _tags.append(result_b) if result_b not in _tags else None
+        else:
+            result_b = True
         if not result_a and not result_b:
             document_type(self, key, value)
     return _tags

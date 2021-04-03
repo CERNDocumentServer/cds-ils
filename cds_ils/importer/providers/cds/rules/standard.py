@@ -10,13 +10,15 @@
 from __future__ import unicode_literals
 
 from dojson.errors import IgnoreKey
-from dojson.utils import force_list
+from dojson.utils import for_each_value, force_list
 from invenio_app_ils.relations.api import OTHER_RELATION
 
 from cds_ils.importer.errors import UnexpectedValue
+from cds_ils.importer.providers.cds.helpers.decorators import \
+    filter_list_values, out_strip
+from cds_ils.importer.providers.cds.helpers.parsers import clean_val, \
+    extract_parts, is_excluded
 from cds_ils.importer.providers.cds.models.standard import model
-from cds_ils.importer.providers.cds.rules.utils import clean_val, \
-    extract_parts, filter_list_values, is_excluded, out_strip
 
 
 @model.over("alternative_titles", "^246__", override=True)
@@ -105,3 +107,19 @@ def publication_additional(self, key, value):
             _publication_info.append(temp_info)
 
     return _publication_info
+
+
+@model.over("subjects", "^084__")
+@for_each_value
+@out_strip
+def subject_classification(self, key, value):
+    """Translates subject classification field."""
+    prev_subjects = self.get("subjects", [])
+    _subject_classification = {
+        "value": clean_val("c", value, str, req=True),
+        "scheme": "ICS"
+    }
+    if _subject_classification not in prev_subjects:
+        return _subject_classification
+    else:
+        raise IgnoreKey("subjects")

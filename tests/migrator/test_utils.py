@@ -1,8 +1,8 @@
 import pytest
 
 from cds_ils.importer.errors import MissingRequiredField
-from cds_ils.importer.providers.cds.rules.utils import extract_volume_info, \
-    extract_volume_number
+from cds_ils.importer.providers.cds.helpers.parsers import \
+    extract_volume_info, extract_volume_number
 
 volume_params = [
     ("v1", "1", False),

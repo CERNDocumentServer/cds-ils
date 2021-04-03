@@ -13,7 +13,7 @@ from dojson.utils import force_list
 from six import iteritems
 
 from cds_ils.importer.errors import UnexpectedValue
-from cds_ils.importer.providers.cds.rules.utils import clean_val
+from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 
 
 def reverse_replace(s, phrase, replace_with):

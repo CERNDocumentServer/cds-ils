@@ -24,9 +24,6 @@ from invenio_app_ils.relations.api import EDITION_RELATION, \
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
 from cds_ils.importer.providers.cds.cds import model
-from cds_ils.importer.providers.cds.rules.utils import clean_email, \
-    clean_val, extract_volume_number, filter_list_values, get_week_start, \
-    out_strip, replace_in_result
 from cds_ils.importer.providers.cds.rules.values_mapping import \
     ACQUISITION_METHOD, APPLICABILITY, ARXIV_CATEGORIES, COLLECTION, \
     DOCUMENT_TYPE, EXPERIMENTS, EXTERNAL_SYSTEM_IDENTIFIERS, \
@@ -34,7 +31,11 @@ from cds_ils.importer.providers.cds.rules.values_mapping import \
     ITEMS_MEDIUMS, MATERIALS, SERIAL, TAGS_TO_IGNORE, mapping
 
 from ...utils import build_ils_contributor
-from .utils import extract_parts, is_excluded
+from ..helpers.decorators import filter_list_values, out_strip, \
+    replace_in_result
+from ..helpers.eitems import clean_url_provider
+from ..helpers.parsers import clean_email, clean_val, extract_parts, \
+    extract_volume_number, get_week_start, is_excluded
 
 
 @model.over("legacy_recid", "^001")
@@ -526,55 +527,8 @@ def urls(self, key, value):
     # Value of the url
     sub_u = clean_val("u", value, str, req=True)
 
-    eitems_ebl = self["_migration"]["eitems_ebl"]
-    eitems_safari = self["_migration"]["eitems_safari"]
-    eitems_external = self["_migration"]["eitems_external"]
-    eitems_proxy = self["_migration"]["eitems_proxy"]
-    eitems_files = self["_migration"]["eitems_file_links"]
-
-    def translate_open_access(item, field):
-        if field:
-            is_open_access = "open access" in field.lower()
-            item["open_access"] = is_open_access
-
-    eitem_url = {"url": {"value": sub_u}}
-    if sub_y and sub_y != "ebook":
-        eitem_url["url"]["description"] = sub_y
-
-    # EBL publisher login required
-    # No need to check for open_access since EBL is always restricted
-    if all([elem in sub_u for elem in ["cds", ".cern.ch" "/auth.py"]]):
-        eitems_ebl.append(eitem_url)
-        self["_migration"]["eitems_has_ebl"] = True
-    # EzProxy links
-    elif "ezproxy.cern.ch" in sub_u:
-        translate_open_access(eitem_url, sub_y)
-        eitem_url["url"]["value"] = eitem_url["url"]["value"].replace(
-            "https://ezproxy.cern.ch/login?url=", ""
-        )
-        eitems_proxy.append(eitem_url)
-        self["_migration"]["eitems_has_proxy"] = True
-    # Safari links
-    # No need to check for open_access since Safari is always restricted
-    elif sub_u.startswith("https://learning.oreilly.com/library/view/"):
-        eitems_safari.append(eitem_url)
-        self["_migration"]["eitems_has_safari"] = True
-    # local files
-    # No need to check for open_access since for local files open_access is
-    # controlled by files restriction itself
-    elif all(
-        [elem in sub_u for elem in ["cds", ".cern.ch/record/", "/files"]]
-    ):
-        eitems_files.append(eitem_url)
-        self["_migration"]["eitems_has_files"] = True
-    elif sub_y == "ebook" or sub_y == "e-proceedings":
-        translate_open_access(eitem_url, sub_y)
-        eitems_external.append(eitem_url)
-        self["_migration"]["eitems_has_external"] = True
-    else:
-        # if none of the above, it is just external url
-        # attached to the document
-        return eitem_url["url"]
+    return clean_url_provider(url_value=sub_u, url_description=sub_y,
+                              record_dict=self)
 
 
 @model.over(
@@ -628,7 +582,6 @@ def standard_numbers(self, key, value):
             {
                 "value": sn,
                 "scheme": "STANDARD_NUMBER",
-                "hidden": True if b else False,
             }
         )
         return _identifiers
@@ -741,8 +694,6 @@ def report_numbers(self, key, value):
 
     def get_value_rn(f_a, f_z, f_9, rn_obj):
         rn_obj.update({"value": f_a or f_z or f_9, "scheme": "REPORT_NUMBER"})
-        if f_z or f_9:
-            rn_obj.update({"hidden": True})
 
     _identifiers = self.get("identifiers", [])
 
@@ -803,7 +754,7 @@ def arxiv_eprints(self, key, value):
 
     output:
     {
-      'alternative_identifiers': [{'scheme': 'arXiv', 'value': `037__a`}],
+      'alternative_identifiers': [{'scheme': 'ARXIV', 'value': `037__a`}],
     }
     """
 
@@ -826,12 +777,12 @@ def arxiv_eprints(self, key, value):
             ]
             category = check_category("c", v)
             if not duplicated:
-                eprint = {"value": eprint_id, "scheme": "arXiv"}
+                eprint = {"value": eprint_id, "scheme": "ARXIV"}
                 _alternative_identifiers.append(eprint)
                 self["alternative_identifiers"] = _alternative_identifiers
             if category:
                 _subjects = self.get("subjects", [])
-                subject = {"scheme": "arXiv", "value": category}
+                subject = {"scheme": "ARXIV", "value": category}
                 _subjects.append(subject) if subject not in _subjects else None
                 self["subjects"] = _subjects
         raise IgnoreKey("subjects")
@@ -849,32 +800,25 @@ def languages(self, key, value):
         raise UnexpectedValue(subfield="a")
 
 
-@model.over("subjects", "(^050)|(^080__)|(^08204)|(^084__)|(^082__)|(^08200)")
+@model.over("subjects", "(^050)|(^080__)|(^08204)|(^082__)|(^08200)")
 @for_each_value
 @out_strip
 def subject_classification(self, key, value):
     """Translates subject classification field."""
     prev_subjects = self.get("subjects", [])
-
-    if key == "084__":
-        _subject_classification = {
-            "value": clean_val("c", value, str, req=True),
-            "scheme": "ICS"
-        }
-    else:
-        scheme_mapping = {
-            "080__": "UDC",
-            "08204": "DEWEY",
-            "082__": "DEWEY",
-            "08200": "DEWEY",
-            "050_4": "LOC",
-            "050__": "LOC",
-        }
-        scheme = scheme_mapping[key]
-        _subject_classification = {
-            "value": clean_val("a", value, str, req=True),
-            "scheme": scheme
-        }
+    scheme_mapping = {
+        "080__": "UDC",
+        "08204": "DEWEY",
+        "082__": "DEWEY",
+        "08200": "DEWEY",
+        "050_4": "LOC",
+        "050__": "LOC",
+    }
+    scheme = scheme_mapping[key]
+    _subject_classification = {
+        "value": clean_val("a", value, str, req=True),
+        "scheme": scheme
+    }
     if _subject_classification not in prev_subjects:
         return _subject_classification
     else:
@@ -1020,18 +964,29 @@ def edition(self, key, value):
 def imprint(self, key, value):
     """Translates imprints fields."""
     reprint = clean_val("g", value, str)
+    date_value = clean_val("c", value, str, req=True)
     if reprint:
         reprint = reprint.lower().replace("repr.", "").strip()
     try:
-        date = parser.parse(clean_val("c", value, str, req=True),
+        date = parser.parse(date_value,
                             default=datetime.datetime(1954, 1, 1))
+        cleaned_date = date.date().isoformat()
+        pub_year = str(date.date().year)
     except ParserError:
-        raise UnexpectedValue(subfield="c")
+        date_range = date_value.split("-")
+        if len(date_range) == 2:
+            start_date = parser.parse(date_range[0])
+            end_date = parser.parse(date_range[1])
+            cleaned_date = f"{start_date.date().isoformat()} - " \
+                           f"{end_date.date().isoformat()} "
+            pub_year = f"{start_date.date().year} - {end_date.date().year}"
+        else:
+            raise UnexpectedValue(subfield="c")
     except Exception:
         raise UnexpectedValue(subfield="c")
-    self["publication_year"] = str(date.date().year)
+    self["publication_year"] = pub_year
     return {
-        "date": date.date().isoformat() if date else None,
+        "date": cleaned_date if cleaned_date else None,
         "place": clean_val("a", value, str),
         "publisher": clean_val("b", value, str),
         "reprint": reprint,
@@ -1093,6 +1048,8 @@ def licenses(self, key, value):
     """Translates license fields."""
     ARXIV_LICENSE = "arxiv.org/licenses/nonexclusive-distrib/1.0/"
     _license = dict()
+    # license url
+    license_url = clean_val("u", value, str)
 
     material = mapping(
         MATERIALS,
@@ -1110,7 +1067,6 @@ def licenses(self, key, value):
     license_id = clean_val("a", value, str)
     if not license_id:
         # check if there is the URL instead of the id
-        license_url = clean_val("u", value, str)
         # the only known URL at the moment is ArXiv
         if license_url and ARXIV_LICENSE in license_url:
             license_id = "arXiv-nonexclusive-distrib-1.0"

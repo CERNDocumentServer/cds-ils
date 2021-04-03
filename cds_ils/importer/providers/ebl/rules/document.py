@@ -13,8 +13,9 @@ import pycountry
 from dojson.utils import for_each_value, force_list
 
 from cds_ils.importer.errors import UnexpectedValue
-from cds_ils.importer.providers.cds.rules.utils import clean_val, \
+from cds_ils.importer.providers.cds.helpers.decorators import \
     filter_list_values, out_strip
+from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.ebl.ebl import model
 from cds_ils.importer.providers.utils import reverse_replace
 

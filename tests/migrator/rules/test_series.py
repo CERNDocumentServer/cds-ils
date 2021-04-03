@@ -408,39 +408,39 @@ def test_monograph_migration(app):
                     "volumes_identifiers": [
                         {
                             "volume": "3",
-                            "isbn": "1108052819",
+                            "identifiers": [{"scheme": "ISBN",
+                                             "value": "1108052819"}],
                             "physical_description": "print version, paperback",
-                            "is_electronic": False,
                         },
                         {
                             "volume": "3",
-                            "isbn": "9781108052818",
+                            "identifiers": [{"value": "9781108052818",
+                                             "scheme": "ISBN"}],
                             "physical_description": "print version, paperback",
-                            "is_electronic": False,
                         },
                         {
                             "volume": "2",
-                            "isbn": "9781108052801",
+                            "identifiers": [{"value": "9781108052801",
+                                             "scheme": "ISBN"}],
                             "physical_description": "print version, paperback",
-                            "is_electronic": False,
                         },
                         {
                             "volume": "2",
-                            "isbn": "1108052800",
+                            "identifiers": [{"value": "1108052800",
+                                             "scheme": "ISBN"}],
                             "physical_description": "print version, paperback",
-                            "is_electronic": False,
                         },
                         {
                             "volume": "1",
-                            "isbn": "9781108052795",
+                            "identifiers": [{"value": "9781108052795",
+                                             "scheme": "ISBN"}],
                             "physical_description": "print version, paperback",
-                            "is_electronic": False,
                         },
                         {
                             "volume": "1",
-                            "isbn": "1108052797",
+                            "identifiers": [{"value": "1108052797",
+                                             "scheme": "ISBN"}],
                             "physical_description": "print version, paperback",
-                            "is_electronic": False,
                         },
                     ],
                     "volumes": [
@@ -475,7 +475,8 @@ def test_monograph_invalid_volume_migration(app):
             </datafield>
             <datafield tag="020" ind1=" " ind2=" ">
             <subfield code="a">9788808047038</subfield>
-            <subfield code="u">print version, paperback (v.2, CD-ROM)</subfield>
+            <subfield code="u">print version, paperback (v.2, CD-ROM)
+            </subfield>
             </datafield>
             """,
             {
@@ -484,24 +485,24 @@ def test_monograph_invalid_volume_migration(app):
                     "record_type": "multipart",
                     "volumes_identifiers": [
                         {
-                            "is_electronic": False,
-                            "isbn": "9788808175366",
+                            "identifiers": [{"value": "9788808175366",
+                                             "scheme": "ISBN"}],
                             "physical_description": "print "
-                            "version, "
-                            "paperback",
+                                                    "version, "
+                                                    "paperback",
                             "volume": "1",
                         },
                         {
-                            "is_electronic": False,
-                            "isbn": "9788808247049",
+                            "identifiers": [{"value": "9788808247049",
+                                             "scheme": "ISBN"}],
                             "physical_description": "print "
-                            "version, "
-                            "paperback",
+                                                    "version, "
+                                                    "paperback",
                             "volume": "2",
                         },
                         {
-                            "is_electronic": False,
-                            "isbn": "9788808047038",
+                            "identifiers": [{"value": "9788808047038",
+                                             "scheme": "ISBN"}],
                             "volume": "2",
                         },
                     ],
@@ -529,8 +530,8 @@ def test_monograph_volume_migration_no_description(app):
                     "record_type": "multipart",
                     "volumes_identifiers": [
                         {
-                            "is_electronic": False,
-                            "isbn": "1560810726",
+                            "identifiers": [{"value": "1560810726",
+                                             "scheme": "ISBN"}],
                             "volume": "13",
                         }
                     ],
@@ -590,28 +591,28 @@ def test_monograph_with_electronic_isbns(app):
                     "record_type": "multipart",
                     "volumes_identifiers": [
                         {
-                            "is_electronic": False,
                             "physical_description": "print version",
                             "volume": "2",
-                            "isbn": "0817631852",
+                            "identifiers":
+                                [{"value": "0817631852", "scheme": "ISBN"}],
                         },
                         {
-                            "is_electronic": True,
                             "physical_description": "electronic version",
                             "volume": "2",
-                            "isbn": "9781461239406",
+                            "identifiers": [{"value": "9781461239406",
+                                             "scheme": "ISBN"}],
                         },
                         {
-                            "is_electronic": True,
                             "physical_description": "electronic version",
                             "volume": "1",
-                            "isbn": "9781461251545",
+                            "identifiers": [{"value": "9781461251545",
+                                             "scheme": "ISBN"}],
                         },
                         {
-                            "is_electronic": False,
                             "physical_description": "print version",
                             "volume": "1",
-                            "isbn": "9781461295891",
+                            "identifiers": [{"value": "9781461295891",
+                                             "scheme": "ISBN"}],
                         },
                     ],
                 },
@@ -637,9 +638,10 @@ def test_monograph_volume_migration_doi(app):
                     "record_type": "multipart",
                     "volumes_identifiers": [
                         {
-                            "doi": "10.1007/978-3-030-49613-5",
-                            "material": "E-BOOK",
-                            "source": None,
+                            "identifiers":
+                                [{"value": "10.1007/978-3-030-49613-5",
+                                  "material": "E-BOOK",
+                                  "scheme": "DOI"}],
                             "volume": "1",
                         }
                     ],
@@ -684,12 +686,19 @@ def test_monograph_volume_url(app):
             """,
             {
                 "_migration": {
-                    **get_helper_dict(record_type="document"),
-                    "record_type": "multipart",
+                    **get_helper_dict(record_type="multipart"),
                     "volumes_urls": [
                         {
-                            "description": "ebook",
-                            "url": "https://cds.cern.ch/auth.py?r=EBLIB_P_1890382",
+                            "_migration": {
+                                **get_helper_dict(record_type="document"),
+                                "eitems_ebl": [
+                                    {
+                                        "url": {"description": "ebook (v.1)",
+                                                "value":
+                                                    "https://cds.cern.ch/auth.py?r=EBLIB_P_1890382"}
+                                    }
+                                ],
+                                "eitems_has_ebl": True},
                             "volume": "1",
                         }
                     ],
