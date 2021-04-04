@@ -59,6 +59,7 @@ def import_multivolume(json_record):
             rectype="multipart",
             legacy_id=multipart_json["legacy_recid"],
         )
+        series_indexer.index(multipart_record)
     volumes_items_list = json_record["_migration"]["items"]
     volumes_identifiers_list = json_record["_migration"]["volumes_identifiers"]
     volumes_urls_list = json_record["_migration"]["volumes_urls"]
@@ -90,8 +91,8 @@ def import_multivolume(json_record):
             # never were records on legacy, only it's parent multipart was
             mint_legacy_pid=False,
         )
+
         document_indexer.index(document_record)
-        series_indexer.index(multipart_record)
 
         create_parent_child_relation(
             multipart_record,
@@ -99,6 +100,7 @@ def import_multivolume(json_record):
             MULTIPART_MONOGRAPH_RELATION,
             volume.get("volume"),
         )
+        db.session.commit()
 
         RecordRelationIndexer().index(document_record, multipart_record)
     return multipart_record

@@ -54,13 +54,13 @@ def isbns(self, key, value):
     val_u = clean_val("u", value, str)
     val_a = clean_val("a", value, str)
     val_b = clean_val("b", value, str)
+    isbn = {"scheme": "ISBN", "value": val_a}
 
     if val_u:
         # if set found it means that the isbn is for the whole multipart
         set_search = re.search(r"(.*?)\(set\.*\)", val_u)
         if set_search:
             self["physical_description"] = set_search.group(1).strip()
-            isbn = {"scheme": "ISBN", "value": val_a}
             return isbn if isbn not in _identifiers else None
 
         # try to extract volume description
@@ -73,8 +73,7 @@ def isbns(self, key, value):
         volume_number = extract_volume_number(val_u, search=True)
         if volume_number:
             volume_obj = {
-                "identifiers": [{"value": clean_val("a", value, str),
-                                 "scheme": "ISBN"}],
+                "identifiers": [isbn],
             }
             if physical_description:
                 volume_obj.update(
@@ -90,12 +89,10 @@ def isbns(self, key, value):
             # if no volume number, then the physical
             # description and id belongs to the multipart
             self["physical_description"] = val_u
-            isbn = {"scheme": "ISBN", "value": val_a}
             return isbn if isbn not in _identifiers else None
     elif not val_u and val_a:
         # if no volume info but only isbn,
         # it belongs to the multipart
-        isbn = {"scheme": "ISBN", "value": val_a}
         return isbn if isbn not in _identifiers else None
     else:
         raise UnexpectedValue(subfield="a", message=" isbn not provided")

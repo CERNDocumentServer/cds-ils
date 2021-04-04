@@ -148,7 +148,7 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
         if volume_identifier.get("volume") == current_volume_index
     ]
     if volume_identifiers:
-        document_json_template["identifiers"] = volume_identifiers
+        document_json_template["identifiers"] = volume_identifiers[0]
 
 
 def get_serials_by_child_recid(recid):
