@@ -169,7 +169,7 @@ SQLAlchemy-Utils==0.35.0
 traitlets==4.3.3
 ua-parser==0.10.0
 uritools==3.0.0
-urllib3==1.26.2
+urllib3==1.26.4
 uWSGI==2.0.19.1
 uwsgi-tools==1.1.1
 uwsgitop==0.11
