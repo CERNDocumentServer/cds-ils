@@ -20,6 +20,11 @@
     "text": "DVD"
   },
   {
+    "key": "AUDIO_CD",
+    "type": "item_medium",
+    "text": "Audio CD"
+  },
+  {
     "key": "VHS",
     "type": "item_medium",
     "text": "VHS"

@@ -95,7 +95,7 @@ def created(self, key, value):
             else:
                 date = date_values
             if not (100000 < date < 999999):
-                raise UnexpectedValue(subfield='w')
+                raise UnexpectedValue("Wrong date format", subfield='w')
             if date:
                 year, week = str(date)[:4], str(date)[4:]
                 date = get_week_start(int(year), int(week))
@@ -222,9 +222,7 @@ def document_type(self, key, value):
         val_b = doc_type_mapping(sub_b)
 
         if not val_a and not val_b and not _doc_type:
-            if sub_a == 'REPORT' or sub_b == 'REPORT':
-                continue
-            raise UnexpectedValue(subfield="a")
+            continue
 
         if val_a and val_b and val_b != "STANDARD" \
                 and (val_a != val_b != _doc_type):
@@ -472,16 +470,8 @@ def accelerator_experiments(self, key, value):
     projects = _extensions.get("unit_project", [])  # subfield p
 
     val_a = clean_val("a", value, str)
-    val_e = clean_val("e", value, str)
+    experiment = clean_val("e", value, str)
 
-    experiment = None
-
-    if val_e:
-        experiment = mapping(
-            EXPERIMENTS,
-            val_e,
-            raise_exception=True,
-        )
     project = clean_val("p", value, str)
 
     if not accelerators:
@@ -793,7 +783,9 @@ def arxiv_eprints(self, key, value):
 @out_strip
 def languages(self, key, value):
     """Translates languages fields."""
-    lang = clean_val("a", value, str).lower()
+    lang = clean_val("a", value, str)
+    if lang:
+        lang = lang.lower()
     try:
         return pycountry.languages.lookup(lang).alpha_3.upper()
     except (KeyError, AttributeError, LookupError):
@@ -954,9 +946,9 @@ def conference_info(self, key, value):
 def edition(self, key, value):
     """Translates edition indicator field."""
     sub_a = clean_val("a", value, str)
-    if not sub_a:
-        raise UnexpectedValue(subfield="a")
-    return sub_a.replace("ed.", "")
+    if sub_a:
+        return sub_a.replace("ed.", "")
+    raise IgnoreKey("edition")
 
 
 @model.over("imprint", "^260__")
@@ -1212,22 +1204,26 @@ def medium(self, key, value):
     _migration = self.get("_migration", {})
     item_mediums = _migration.get("item_medium", [])
     barcodes = []
+    _medium = None
     val_x = value.get("x")
 
     if val_x:
         barcodes = [barcode for barcode in force_list(val_x) if barcode]
 
-    _medium = mapping(
-        ITEMS_MEDIUMS,
-        clean_val("a", value, str).upper().replace("-", ""),
-        raise_exception=True,
-    )
+    val_a = clean_val("a", value, str)
+    if val_a:
+        _medium = mapping(
+            ITEMS_MEDIUMS,
+            val_a.upper().replace("-", ""),
+            raise_exception=True,
+        )
 
     for barcode in barcodes:
         current_item = {
             "barcode": barcode,
-            "medium": _medium,
         }
+        if _medium:
+            current_item.update({"medium": _medium})
         if current_item not in item_mediums:
             item_mediums.append(current_item)
     if item_mediums:

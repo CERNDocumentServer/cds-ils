@@ -42,7 +42,7 @@ def _get_correct_ils_contributor_role(subfield, role):
     else:
         raise UnexpectedValue(subfield=subfield, message=" unknown role")
     if clean_role not in translations:
-        raise UnexpectedValue(subfield=subfield, message=" unknown role")
+        return
     return translations[clean_role]
 
 
@@ -50,9 +50,8 @@ def _extract_json_ils_ids(info, provenance="scheme"):
     """Extract author IDs from MARC tags."""
     SOURCES = {
         "AUTHOR|(INSPIRE)": "INSPIRE ID",
-        "AUTHOR|(SzGeCERN)": "CERN",
     }
-    regex = re.compile(r"(AUTHOR\|\((INSPIRE|SzGeCERN)\))(.*)")
+    regex = re.compile(r"(AUTHOR\|\((INSPIRE)\))(.*)")
     ids = []
     author_ids = force_list(info.get("0", ""))
     for author_id in author_ids:
@@ -85,6 +84,7 @@ def build_ils_contributor(value):
             _get_correct_ils_contributor_role("e", value.get("e", "author"))
         ],
         "alternative_names": [],
+        "type": "PERSON",
     }
 
     subfield_q = clean_val('q', value, str)

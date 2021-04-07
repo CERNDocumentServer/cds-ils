@@ -51,9 +51,13 @@ def test_migrate_record(datadir, base_app):
                        'provider_recid': '2758857', 'legacy_recid': 2758857,
                        'agency_code': 'SzGeCERN', 'document_type': 'BOOK',
                        'authors': [{'full_name': 'Teich, Malvin Carl',
-                                    'roles': ['AUTHOR']},
+                                    'roles': ['AUTHOR'],
+                                    "type": "PERSON"
+                                    },
                                    {'full_name': 'Saleh, Bahaa E A',
-                                    'roles': ['AUTHOR']}], 'edition': '3rd',
+                                    'roles': ['AUTHOR'],
+                                    "type": "PERSON"
+                                    }], 'edition': '3rd',
                        'created_by': {'type': 'user'},
                        '_created': '2021-03-29',
                        'title': 'Fundamentals of photonics',

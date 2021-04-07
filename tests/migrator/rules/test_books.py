@@ -43,7 +43,8 @@ marcxml = (
 def check_transformation(marcxml_body, json_body):
     """Check transformation."""
     blob = create_record(marcxml.format(marcxml_body))
-    model._default_fields = {"_migration": {**get_helper_dict(record_type="document")}}
+    model._default_fields = {
+        "_migration": {**get_helper_dict(record_type="document")}}
 
     record = model.do(blob, ignore_missing=False)
 
@@ -224,10 +225,10 @@ def test_created(app):
                 "source": "SPR",
                 "_created": "2017-01-01",
                 "_migration": {
-                     **get_helper_dict(record_type="document"),
-                     'eitems_internal_notes': 'SPR201701',
+                    **get_helper_dict(record_type="document"),
+                    'eitems_internal_notes': 'SPR201701',
                 }
-             },
+            },
         )
         check_transformation(
             """
@@ -523,33 +524,31 @@ def test_document_type(app):
             """,
             {"document_type": "BOOK"},
         )
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="697" ind1="C" ind2=" ">
-                    <subfield code="a">virTScvyb</subfield>
-                </datafield>
-                """,
-                {"document_type": "BOOK"},
-            )
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="697" ind1="C" ind2=" ">
-                    <subfield code="b">ENGLISH BOOK CLUB</subfield>
-                </datafield>
-                <datafield tag="960" ind1=" " ind2=" ">
-                    <subfield code="a">21</subfield>
-                </datafield>
-                """,
-                {
-                     "_migration": {
-                        **get_helper_dict(record_type="document"),
-                        "tags": ["ENGLISH_BOOK_CLUB"],
-                     },
-                     "document_type": "BOOK"
+        check_transformation(
+            """
+            <datafield tag="697" ind1="C" ind2=" ">
+                <subfield code="a">virTScvyb</subfield>
+            </datafield>
+            """,
+            {},
+        )
+        check_transformation(
+            """
+            <datafield tag="697" ind1="C" ind2=" ">
+                <subfield code="b">ENGLISH BOOK CLUB</subfield>
+            </datafield>
+            <datafield tag="960" ind1=" " ind2=" ">
+                <subfield code="a">21</subfield>
+            </datafield>
+            """,
+            {
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "tags": [],
                 },
-            )
+                "document_type": "BOOK"
+            },
+        )
 
 
 def test_document_type_collection(app):
@@ -867,16 +866,22 @@ def test_authors(app):
                     {
                         "full_name": "Frampton, Paul H",
                         "roles": ["EDITOR"],
+                        "type": "PERSON",
                         "alternative_names": ["Neubert, Matthias"],
                     },
-                    {"full_name": "Glashow, Sheldon Lee", "roles": ["EDITOR"]},
+                    {"full_name": "Glashow, Sheldon Lee",
+                     "roles": ["EDITOR"],
+                     "type": "PERSON",
+                     },
                     {"full_name": "Van Dam, Hendrik", "roles": ["EDITOR"],
+                     "type": "PERSON",
                      "identifiers": [
                          {"scheme": "ORCID", "value":
                              "ORCID:0000-0003-1346-5133"}]},
                     {
                         "full_name": "Seyfert, Paul",
                         "roles": ["AUTHOR"],
+                        "type": "PERSON",
                         "affiliations": [{"name": "CERN"}],
                         "alternative_names": ["Hillman, Jonathan"],
                         "identifiers": [
@@ -884,12 +889,12 @@ def test_authors(app):
                                 "scheme": "INSPIRE ID",
                                 "value": "INSPIRE-00341737",
                             },
-                            {"scheme": "CERN", "value": "692828"},
                         ],
                     },
                     {
                         "full_name": "John Doe",
                         "roles": ["AUTHOR"],
+                        "type": "PERSON",
                         "affiliations": [
                             {"name": "CERN"},
                             {"name": "Univ. Gent"},
@@ -898,6 +903,7 @@ def test_authors(app):
                     {
                         "full_name": "Jane Doe",
                         "roles": ["AUTHOR"],
+                        "type": "PERSON",
                         "affiliations": [
                             {"name": "CERN"},
                             {"name": "Univ. Gent"},
@@ -924,26 +930,37 @@ def test_authors(app):
                     {
                         "full_name": "Frampton, Paul H",
                         "roles": ["EDITOR"],
+                        "type": "PERSON",
                     },
-                    {"full_name": "Glashow, Sheldon Lee", "roles": ["EDITOR"]},
+                    {"full_name": "Glashow, Sheldon Lee",
+                     "roles": ["EDITOR"],
+                     "type": "PERSON",
+                     },
                 ],
                 "other_authors": True,
             },
         )
 
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="700" ind1=" " ind2=" ">
-                    <subfield code="a">Langrognat, B</subfield>
-                </datafield>
-                <datafield tag="700" ind1=" " ind2=" ">
-                    <subfield code="a">Sauniere, J</subfield>
-                    <subfield code="e">et al.</subfield>
-                </datafield>
-                """,
-                {},
-            )
+        check_transformation(
+            """
+            <datafield tag="700" ind1=" " ind2=" ">
+                <subfield code="a">Langrognat, B</subfield>
+            </datafield>
+            <datafield tag="700" ind1=" " ind2=" ">
+                <subfield code="a">Sauniere, J</subfield>
+                <subfield code="e">et al.</subfield>
+            </datafield>
+            """,
+            {'authors': [
+                {'full_name': 'Langrognat, B',
+                 'roles': ['AUTHOR'],
+                 'type': 'PERSON'},
+                {'full_name': 'Sauniere, J',
+                 'roles': [None],
+                 'type': 'PERSON'}],
+                'other_authors': True,
+            }
+        )
 
 
 # better example to be provided
@@ -1254,16 +1271,6 @@ def test_extensions(app):
                 }
             },
         )
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="693" ind1=" " ind2=" ">
-                    <subfield code="a">CERN LHC</subfield>
-                    <subfield code="e">PS34221</subfield>
-                </datafield>
-                """,
-                {},
-            )
 
 
 def test_related_record(app):
@@ -1745,7 +1752,7 @@ def test_dois(app):
                         {
                             'url': {
                                 'description': 'ebook',
-                                 'value': 'http://dx.doi.org/10.1007/978-1-4613-0247-6'
+                                'value': 'http://dx.doi.org/10.1007/978-1-4613-0247-6'
                             },
                             "open_access": False,
                         }
@@ -1776,8 +1783,8 @@ def test_dois(app):
                         {
                             "url": {
                                 'description': 'ebook',
-                                 'value':'http://dx.doi.org/10.3390/books978-3-03943-243-1'
-                                },
+                                'value': 'http://dx.doi.org/10.3390/books978-3-03943-243-1'
+                            },
                             "open_access": True,
                         }
                     ]
@@ -1928,11 +1935,11 @@ def test_alternative_identifiers(app):
                             {
                                 "url": {
                                     'description': 'ebook',
-                                     'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'
+                                    'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'
                                 },
                                 "open_access": False,
                             }
-                    ]
+                        ]
                 }
             },
         )
@@ -2568,18 +2575,18 @@ def test_conference_info(app):
                 },
                 "conference_info": [
                     {
-                    "identifiers": [
-                        {"scheme": "CERN", "value": "bari20040621"},
-                    ],
-                    "title": """2nd Workshop on Science with
+                        "identifiers": [
+                            {"scheme": "CERN", "value": "bari20040621"},
+                        ],
+                        "title": """2nd Workshop on Science with
                  the New Generation of High Energy Gamma-ray Experiments:
                  between Astrophysics and Astroparticle Physics""",
-                    "place": "Bari, Italy",
-                    "dates": "2004-06-21 - 2004-06-21",
-                    "series": "2",
-                    "country": "ITA",
-                    "acronym": "SNGHEGE2004",
-                }
+                        "place": "Bari, Italy",
+                        "dates": "2004-06-21 - 2004-06-21",
+                        "series": "2",
+                        "country": "ITA",
+                        "acronym": "SNGHEGE2004",
+                    }
                 ]
             },
         )
@@ -3431,7 +3438,7 @@ def test_record(app):
                     }
                 ],
                 "authors": [{"full_name": "Volchenkov, Dimitri",
-                             "roles": ["EDITOR"]}],
+                             "roles": ["EDITOR"], "type": "PERSON"}],
                 "created_by": {"type": "batchuploader"},
                 "document_type": "BOOK",
                 "identifiers": [{"material": "E-BOOK",

@@ -52,11 +52,13 @@ def test_migrate_record(datadir, base_app):
             "authors": [
                 {
                     "full_name": "Baez, John C",
-                    "roles": ["AUTHOR"]
+                    "roles": ["AUTHOR"],
+                    "type": "PERSON"
                 },
                 {
                     "full_name": "Muniain, Javier P",
-                    "roles": ["AUTHOR"]
+                    "roles": ["AUTHOR"],
+                    "type": "PERSON"
                 }
             ],
             "keywords": [

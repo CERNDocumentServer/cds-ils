@@ -58,6 +58,7 @@ ITEMS_MEDIUMS = {
     "DVD": ["DVD VIDEO", "DVD"],
     "VHS": ["VHS"],
     "ONLINE": ["EBOOK"],
+    "AUDIO_CD": ["Audio CD"]
 }
 
 # can be inconsistent with the medium types
