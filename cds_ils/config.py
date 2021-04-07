@@ -37,6 +37,7 @@ from invenio_app_ils.patrons.api import PATRON_PID_TYPE
 from invenio_app_ils.permissions import authenticated_user_permission, \
     backoffice_permission, loan_extend_circulation_permission, \
     patron_owner_permission
+from invenio_app_ils.series.api import SERIES_PID_TYPE
 from invenio_circulation.transitions.transitions import CreatedToPending, \
     ItemOnLoanToItemReturned, ToCancelled
 from invenio_oauthclient.contrib import cern_openid
@@ -394,6 +395,13 @@ RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["record_serializers"] = {
 RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.literature.serializers:json_v1_search",
     "text/csv": "cds_ils.literature.serializers:csv_v1_search",
+}
+RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["record_serializers"] = {
+    "application/json": "cds_ils.series.serializers" ":json_v1_response"
+}
+RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_serializers"] = {
+    "application/json": "cds_ils.series.serializers:json_v1_search",
+    "text/csv": "cds_ils.series.serializers:csv_v1_search",
 }
 
 ###############################################################################

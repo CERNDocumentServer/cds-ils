@@ -12,7 +12,7 @@ from invenio_app_ils.literature.serializers.custom_fields import \
 from invenio_app_ils.literature.serializers.json import \
     JSONSerializer as IlsJSONSerializer
 
-from cds_ils.eitems.serializers.custom_fields import format_login_required_urls
+from cds_ils.utils import format_login_required_urls
 
 
 class LiteratureJSONSerializer(IlsJSONSerializer):
@@ -25,7 +25,7 @@ class LiteratureJSONSerializer(IlsJSONSerializer):
         )
         eitems = literature["metadata"].get("eitems", {}).get("hits", [])
         for eitem in eitems:
-            format_login_required_urls(eitem)
+            format_login_required_urls(eitem.get("urls", []))
         field_cover_metadata(literature["metadata"])
         return literature
 
@@ -38,6 +38,6 @@ class LiteratureJSONSerializer(IlsJSONSerializer):
         )
         eitems = hit["metadata"].get("eitems", {}).get("hits", [])
         for eitem in eitems:
-            format_login_required_urls(eitem)
+            format_login_required_urls(eitem.get("urls", []))
         field_cover_metadata(hit["metadata"])
         return hit

@@ -426,7 +426,7 @@ def test_migrate_record(datadir, base_app):
                 {'type': 'SUBTITLE', 'value': 'collected works'}],
             'title': 'Niels Bohr',
             'publication_year': '1976 - 2006',
-            'imprint': {'date': '1976-04-04 - 2006-04-04 ',
+            'imprint': {'date': '1976-04-07 - 2006-04-07 ',
                         'place': 'Amsterdam',
                         'publisher': 'North-Holland'},
             'number_of_volumes': '12',
