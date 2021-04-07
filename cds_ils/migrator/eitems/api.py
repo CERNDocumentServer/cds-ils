@@ -270,7 +270,7 @@ def migrate_ezproxy_links(raise_exceptions=True):
         click.echo("Processing document {}...".format(document["pid"]))
         open_access = document["_migration"]["eitems_open_access"]
         for item in document["_migration"]["eitems_proxy"]:
-            # ExProxy links require login and therefore they need to be
+            # EzProxy links require login and therefore they need to be
             # restricted
             try:
                 if open_access or item["open_access"]:

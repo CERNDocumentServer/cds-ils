@@ -226,6 +226,7 @@ def test_access_urls(app):
                         "access_restriction": ['RESTRICTED_PACKAGE_DEAL'],
                         "description": "some notes (some text)",
                         "value": "https://url.cern.ch/journal",
+                        "login_required": False,
                         "open_access": False,
                     },
                 ],
@@ -245,6 +246,7 @@ def test_access_urls(app):
                         "access_restriction": ['OPEN_ACCESS'],
                         "description": "some notes",
                         "value": "https://url.cern.ch/journal",
+                        "login_required": False,
                         "open_access": True,
                     },
                 ],
@@ -255,7 +257,7 @@ def test_access_urls(app):
                 """
                 <datafield tag="856" ind1="4" ind2="1">
                     <subfield code="3">some notes</subfield>
-                    <subfield code="u">https://url.cern.ch/journal</subfield>
+                    <subfield code="u">https://ezproxy.cern.ch/login?url=https://url.cern.ch/journal</subfield>
                     <subfield code="x">8</subfield>
                     <subfield code="z">some text</subfield>
                 </datafield>
@@ -271,11 +273,13 @@ def test_access_urls(app):
                         {
                             "access_restriction": ['RESTRICTED_PACKAGE_DEAL'],
                             "description": "some text",
+                            "login_required": True,
                             "value": "https://url.cern.ch/journal",
                         },
                         {
                             "access_restriction": [None],
                             "description": "some other text",
+                            "login_required": False,
                             "value": "https://url.cern.ch/serial",
                         },
                     ],
@@ -320,6 +324,7 @@ def test_urls(app):
                                                 "RESTRICTED_UNDEFINED"],
                         "description": "v 1 (1992) - (tada)",
                         "value": "https://www.radioeng.cz/search.htm",
+                        'login_required': False,
                         'open_access': False,
                     },
                 ],

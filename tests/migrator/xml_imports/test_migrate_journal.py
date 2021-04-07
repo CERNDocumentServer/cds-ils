@@ -22,14 +22,20 @@ def test_migrate_record(datadir, base_app):
         assert res['legacy_recid'] == 229384
         assert res == {
             '_created': '1992-01-21',
-            '_migration': {
-                'is_multipart': False,
-                'has_related': True,
-                'related': [{'related_recid': '229630',
-                             'relation_type': 'sequence',
-                             'relation_description': None,
-                             'sequence_order': 'previous'}],
-                'record_type': 'journal', 'volumes': []},
+            "_migration": {
+                "is_multipart": False,
+                "has_related": True,
+                "related": [
+                    {
+                        "related_recid": "229630",
+                        "relation_type": "sequence",
+                        "relation_description": None,
+                        "sequence_order": "previous",
+                    }
+                ],
+                "record_type": "journal",
+                "volumes": [],
+            },
             'mode_of_issuance': 'SERIAL', 'legacy_recid': 229384,
             'agency_code': 'SzGeCERN', 'alternative_titles': [
                 {'type': 'ABBREVIATION', 'value': 'Br. J. Appl. Phys.'}],
@@ -41,11 +47,12 @@ def test_migrate_record(datadir, base_app):
             'internal_notes': [{'value': 'Online archives purchased 2014'}],
             'access_urls': [
                 {
-                    'value': 'https://ezproxy.cern.ch/login?url=http://iopscience.iop.org/0508-3443',
+                    'value': 'http://iopscience.iop.org/0508-3443',
                     'description': 'v 1 (1950) - v 18 (1967)',
                     'access_restriction': [
                         'RESTRICTED_PERPETUAL_ACCESS_BACKFILES'],
                     'open_access': False,
+                    'login_required': True,
                 }
             ],
             'subjects': [{'value': '53', 'scheme': 'UDC'}],

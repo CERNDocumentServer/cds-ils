@@ -9,7 +9,7 @@
 
 from invenio_records_rest.serializers.json import JSONSerializer
 
-from .custom_fields import format_login_required_urls
+from cds_ils.utils import format_login_required_urls
 
 
 class EItemJSONSerializer(JSONSerializer):
@@ -20,7 +20,7 @@ class EItemJSONSerializer(JSONSerializer):
         eitem = super().transform_record(
             pid, record, links_factory=links_factory, **kwargs
         )
-        format_login_required_urls(eitem["metadata"])
+        format_login_required_urls(eitem["metadata"].get("urls", []))
         return eitem
 
     def transform_search_hit(
@@ -30,5 +30,5 @@ class EItemJSONSerializer(JSONSerializer):
         hit = super().transform_search_hit(
             pid, record_hit, links_factory=links_factory, **kwargs
         )
-        format_login_required_urls(hit["metadata"])
+        format_login_required_urls(hit["metadata"].get("urls", []))
         return hit

@@ -153,12 +153,20 @@ def access_urls(self, key, value):
 
     open_access = "OPEN_ACCESS" in access_type_mapped
 
+    url_value = clean_val("u", value, str, req=True)
+    login_required = False
+
+    # EzProxy links
+    if "ezproxy.cern.ch" in url_value:
+        url_value = url_value.replace("https://ezproxy.cern.ch/login?url=", "")
+        login_required = True
+
     url_dict = {
-        "value": clean_val("u", value, str, req=True),
+        "value": url_value,
         "description": electronic_volumes_description.strip(),
         "access_restriction": access_type_mapped,
-        "open_access": open_access
-
+        "open_access": open_access,
+        "login_required": login_required,
     }
     _access_urls.append(url_dict)
 

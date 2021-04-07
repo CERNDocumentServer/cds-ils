@@ -10,7 +10,7 @@
 from invenio_app_ils.literature.serializers.csv import \
     LiteratureCSVSerializer as IlsLiteratureCSVSerializer
 
-from cds_ils.eitems.serializers.custom_fields import format_login_required_urls
+from cds_ils.utils import format_login_required_urls
 
 
 class LiteratureCSVSerializer(IlsLiteratureCSVSerializer):
@@ -21,7 +21,7 @@ class LiteratureCSVSerializer(IlsLiteratureCSVSerializer):
         literature = super().transform_record(
             pid, record, links_factory=links_factory, **kwargs
         )
-        format_login_required_urls(literature["metadata"])
+        format_login_required_urls(literature["metadata"].get("urls", []))
         return literature
 
     def transform_search_hit(
@@ -31,5 +31,5 @@ class LiteratureCSVSerializer(IlsLiteratureCSVSerializer):
         hit = super().transform_search_hit(
             pid, record_hit, links_factory=links_factory, **kwargs
         )
-        format_login_required_urls(hit["metadata"])
+        format_login_required_urls(hit["metadata"].get("urls", []))
         return hit
