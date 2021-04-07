@@ -21,7 +21,10 @@ def test_migrate_record(datadir, base_app):
         assert res['legacy_recid'] == 213298
         assert res == {'_migration': {'record_type': 'serial', 'children': []},
                        'mode_of_issuance': 'SERIAL', 'legacy_recid': 213298,
-                       'title': ['CERN Yellow Reports: Monographs']}
+                       'title': ['Cern yellow reports'],
+                       'alternative_titles': [{"type": "SUBTITLE",
+                                               "value": "monographs"}]
+                       }
 
         data = load_json(datadir, 'serial2.json')
         dump = CDSRecordDump(data=data[0], dojson_model=serial_marc21)
@@ -30,7 +33,4 @@ def test_migrate_record(datadir, base_app):
         assert res['legacy_recid'] == 436242
         assert res == {'_migration': {'record_type': 'serial', 'children': []},
                        'mode_of_issuance': 'SERIAL', 'legacy_recid': 436242,
-                       'physical_description': 'print version, paperback',
-                       'identifiers': [
-                           {'scheme': 'ISBN', 'value': '9782275010984'}],
                        'title': ['Traité de droit civil']}

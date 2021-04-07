@@ -27,6 +27,7 @@ from .values_mapping import ACCESS_TYPE, ACQUISITION_METHOD, COLLECTION, \
 def recid(self, key, value):
     """Record Identifier."""
     self["mode_of_issuance"] = "SERIAL"
+    self["series_type"] = "PERIODICAL"
     return int(value)
 
 
