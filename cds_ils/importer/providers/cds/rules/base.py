@@ -698,7 +698,7 @@ def report_numbers(self, key, value):
         if all_empty:
             raise MissingRequiredField(subfield="9 or a or z")
 
-        if sub_9 == "arXiv":
+        if sub_9 in ["arXiv", "ARXIV", "arxiv"]:
             arxiv_eprints(self, key, value)
             raise IgnoreKey("identifiers")
         else:
@@ -967,8 +967,10 @@ def imprint(self, key, value):
     except ParserError:
         date_range = date_value.split("-")
         if len(date_range) == 2:
-            start_date = parser.parse(date_range[0])
-            end_date = parser.parse(date_range[1])
+            start_date = parser.parse(date_range[0],
+                                      default=datetime.datetime(1954, 1, 1))
+            end_date = parser.parse(date_range[1],
+                                    default=datetime.datetime(1954, 1, 1))
             cleaned_date = f"{start_date.date().isoformat()} - " \
                            f"{end_date.date().isoformat()} "
             pub_year = f"{start_date.date().year} - {end_date.date().year}"
