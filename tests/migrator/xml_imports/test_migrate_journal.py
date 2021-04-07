@@ -54,6 +54,7 @@ def test_migrate_record(datadir, base_app):
                 {'scheme': 'ISSN', 'value': '0508-3443',
                  'material': 'PRINT_VERSION'}],
             'languages': ['ENG'],
+            'series_type': 'PERIODICAL',
             'physical_volumes': [
                 {'description': 'v 1 (1950) - v 18 (1967)',
                  'location': 'DE2'}]}

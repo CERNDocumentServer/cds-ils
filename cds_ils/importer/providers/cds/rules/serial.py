@@ -32,11 +32,10 @@ def title(self, key, value):
         _identifiers.append({"scheme": "ISSN", "value": issn})
         self["identifiers"] = _identifiers
     self["mode_of_issuance"] = "SERIAL"
-    return clean_val("a", value, str, req=True)
-
-
-@model.over("identifiers", "^020__")
-@filter_list_values
-def identifiers(self, key, value):
-    """Translates identifiers fields."""
-    return multipart_identifiers(self, key, value)
+    _title = clean_val("a", value, str, req=True).capitalize()
+    if ':' in _title:
+        titles = _title.split(':')
+        self["alternative_titles"] = [{"type": "SUBTITLE",
+                                       "value": ":".join(titles[1:]).strip()}]
+        return titles[0]
+    return _title
