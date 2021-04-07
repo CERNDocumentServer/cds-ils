@@ -30,9 +30,10 @@ def test_migrate_record(datadir, base_app):
             'volume': '(v.1)',
             'source': 'SPR',
             'authors': [
-                {'full_name': 'Qian, Tao', 'roles': ['EDITOR']},
+                {'full_name': 'Qian, Tao', 'roles': ['EDITOR'],
+                 "type": "PERSON"},
                 {'full_name': 'Rodino, Luigi',
-                 'roles': ['EDITOR']}],
+                 'roles': ['EDITOR'], "type": "PERSON"}],
             'document_type': 'PROCEEDINGS',
             'identifiers': [
                 {'value': '9783319419435', 'scheme': 'ISBN',

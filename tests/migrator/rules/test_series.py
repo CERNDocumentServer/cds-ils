@@ -778,10 +778,14 @@ def test_monograph_series_authors(app):
                     "record_type": "multipart",
                 },
                 "authors": [
-                    {"full_name": "Mehra, Jagdish", "roles": ["AUTHOR"]},
+                    {"full_name": "Mehra, Jagdish",
+                     "roles": ["AUTHOR"],
+                     "type": "PERSON"
+                     },
                     {
                         "full_name": "Rechenberg, Helmut",
                         "roles": ["AUTHOR"],
+                        "type": "PERSON"
                     },
                 ],
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",

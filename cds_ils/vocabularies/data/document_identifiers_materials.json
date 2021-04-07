@@ -35,6 +35,11 @@
     "text": "Print version, paperback (reprint)"
   },
   {
+    "key": "PREPRINT",
+    "type": "doc_identifiers_materials",
+    "text": "Preprint"
+  },
+  {
     "key": "PUBLICATION",
     "type": "doc_identifiers_materials",
     "text": "Publication"
