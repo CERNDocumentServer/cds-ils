@@ -70,10 +70,6 @@ VOCABULARIES_FIELDS = {
         },
     },
     "extensions": {
-        "unit_accelerator": {
-            "source": "json",
-            "type": "document_accelerators",
-        },
         "unit_experiment": {
             "source": "json",
             "type": "document_experiments",
