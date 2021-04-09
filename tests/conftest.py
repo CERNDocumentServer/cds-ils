@@ -45,6 +45,8 @@ def app_config(app_config):
         "APP_ALLOWED_HOSTS": "localhost",
         "CELERY_TASK_ALWAYS_EAGER": True,
         "CDS_ILS_LITERATURE_UPDATE_COVERS": False,
+        "SQLALCHEMY_DATABASE_URI":
+            "postgresql+psycopg2://invenio:invenio@localhost/invenio",
         "EXTEND_LOANS_LOCATION_UPDATED": False,
         "JSONSCHEMAS_SCHEMAS": [
             "acquisition",

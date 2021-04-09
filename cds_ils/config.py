@@ -172,7 +172,7 @@ CELERY_BEAT_SCHEDULE = {
 ###############################################################################
 #: Database URI including user and password
 SQLALCHEMY_DATABASE_URI = (
-    "postgresql+psycopg2://cds-ils:cds-ils@localhost/cds-ils"
+    "postgresql+psycopg2://invenio:invenio@localhost/invenio"
 )
 
 ###############################################################################

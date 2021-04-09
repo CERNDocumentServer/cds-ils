@@ -17,9 +17,9 @@ services:
     image: postgres:12.4
     restart: "always"
     environment:
-      - "POSTGRES_USER=cds-ils"
-      - "POSTGRES_PASSWORD=cds-ils"
-      - "POSTGRES_DB=cds-ils"
+      - "POSTGRES_USER=invenio"
+      - "POSTGRES_PASSWORD=invenio"
+      - "POSTGRES_DB=invenio"
     ports:
       - "5432:5432"
   mq:
