@@ -319,36 +319,31 @@ def test_monograph(app):
                 multipart_model,
             )
 
-        with pytest.raises(MissingRequiredField):
-            check_transformation(
-                """
-                <datafield tag="246" ind1=" " ind2=" ">
-                    <subfield code="n">v.2</subfield>
-                    <subfield code="p">Termologia, onde, relatività</subfield>
-                </datafield>
-                <datafield tag="300" ind1=" " ind2=" ">
-                    <subfield code="a">2 v. ; 2 CD-ROM suppl</subfield>
-                </datafield>
-                """,
-                {
-                    "title": "La fisica di Amaldi",
-                    "alternative_titles": [
-                        {
-                            "value": "idee ed esperimenti : con CD-ROM",
-                            "type": "SUBTITLE",
-                        }
+        check_transformation(
+            """
+            <datafield tag="246" ind1=" " ind2=" ">
+                <subfield code="n">v.2</subfield>
+                <subfield code="p">Termologia, onde, relatività</subfield>
+            </datafield>
+            <datafield tag="300" ind1=" " ind2=" ">
+                <subfield code="a">2 v. ; 2 CD-ROM suppl</subfield>
+            </datafield>
+            """,
+            {
+                "mode_of_issuance": "MULTIPART_MONOGRAPH",
+                "number_of_volumes": "2",
+                "_migration": {
+                    **get_helper_dict(record_type="document"),
+                    "is_multipart": True,
+                    "record_type": "multipart",
+                    "volumes": [
+                        {'title': 'Termologia, onde, relatività',
+                         'volume': '2'}
                     ],
-                    "mode_of_issuance": "MULTIPART_MONOGRAPH",
-                    "number_of_volumes": "2",
-                    "_migration": {
-                        **get_helper_dict(record_type="document"),
-                        "is_multipart": True,
-                        "record_type": "multipart",
-                        "volumes": [],
-                    },
                 },
-                multipart_model,
-            )
+            },
+            multipart_model,
+        )
 
 
 def test_monograph_migration(app):
@@ -503,7 +498,8 @@ def test_monograph_invalid_volume_migration(app):
                         {
                             "identifiers": [{"value": "9788808047038",
                                              "scheme": "ISBN"}],
-                            "volume": "2",
+                            "volume": "2, CD-ROM",
+                            "physical_description": 'print version, paperback'
                         },
                     ],
                     "volumes_urls": [],
@@ -666,7 +662,7 @@ def test_monograph_volume_barcode(app):
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "record_type": "multipart",
-                    "items": [{"barcode": "73-0089-0", "volume": "A"}],
+                    "items": [{"barcode": "73-0089-0", "volume": "pt.A"}],
                 },
                 "mode_of_issuance": "MULTIPART_MONOGRAPH",
             },

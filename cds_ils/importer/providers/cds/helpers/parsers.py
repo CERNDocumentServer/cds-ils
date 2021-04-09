@@ -97,35 +97,28 @@ def extract_parts(value):
     }
 
 
-def extract_volume_number(
-    value, search=False, raise_exception=False, subfield=None
-):
-    """Extract the volume number from a string, returns None if not matched."""
+def is_volume_index(value):
+    """Determine if the string is a volume number."""
     regex = RE_VOLUME_NUMBER
-    if search:
-        func = regex.search
-    else:
-        func = regex.match
-
-    result = func(value.strip())
+    result = regex.search(value.strip())
     if result:
-        return result.group(1)
+        return True
+    else:
+        return False
 
-    if raise_exception:
-        raise MissingRequiredField(
-            subfield=subfield, message=" failed to parse volume number"
-        )
 
-    return None
+def extract_volume_number(value):
+    """Extract the volume number from a string, returns None if not matched."""
+    return value.replace("v.", "").replace("v .", "").strip()
 
 
 def extract_volume_info(value):
-    """Extract ISBN, volume number and physical description from 020__u."""
-    result = RE_VOLUME_INFO.search(value.strip())
+    """Extract volume number and physical description."""
+    result = re.search(r'(.*?)\(+(?P<volume>[^\(]+)\)+', value.strip())
     if result:
         return dict(
             description=result.group(1).strip(),
-            volume=result.group(2),
+            volume=extract_volume_number(result.groupdict()['volume']),
         )
     return None
 
@@ -231,7 +224,7 @@ def clean_email(value):
 
 
 def get_week_start(year, week):
-    """Translates cds book yearweek format to starting date."""
+    """Translates cds book year week format to starting date."""
     d = date(year, 1, 1)
     if d.weekday() > 3:
         d = d + timedelta(7 - d.weekday())

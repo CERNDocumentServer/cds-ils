@@ -27,6 +27,7 @@ class CDSMultipart(CdsIlsOverdo):
     __ignore_keys__ = CDS_IGNORE_FIELDS | \
         {
           "084__c",
+          "084__b",
         }
 
     _default_fields = {

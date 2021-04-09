@@ -21,9 +21,9 @@ def test_migrate_record(datadir, base_app):
         assert res['legacy_recid'] == 213298
         assert res == {'_migration': {'record_type': 'serial', 'children': []},
                        'mode_of_issuance': 'SERIAL', 'legacy_recid': 213298,
-                       'title': ['Cern yellow reports'],
+                       'title': ['CERN Yellow Reports'],
                        'alternative_titles': [{"type": "SUBTITLE",
-                                               "value": "monographs"}]
+                                               "value": "Monographs"}]
                        }
 
         data = load_json(datadir, 'serial2.json')

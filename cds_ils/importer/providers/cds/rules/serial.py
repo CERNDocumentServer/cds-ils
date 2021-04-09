@@ -32,7 +32,7 @@ def title(self, key, value):
         _identifiers.append({"scheme": "ISSN", "value": issn})
         self["identifiers"] = _identifiers
     self["mode_of_issuance"] = "SERIAL"
-    _title = clean_val("a", value, str, req=True).capitalize()
+    _title = clean_val("a", value, str, req=True)
     if ':' in _title:
         titles = _title.split(':')
         self["alternative_titles"] = [{"type": "SUBTITLE",

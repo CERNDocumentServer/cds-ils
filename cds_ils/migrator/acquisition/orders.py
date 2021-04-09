@@ -184,7 +184,7 @@ def get_payment_mode(record):
     """Return payment mode."""
     budget_code = record.get("budget_code")
     if not budget_code:
-        return ''
+        return 'INDIVIDUAL_PAYMENT'
     elif budget_code and budget_code.lower() == "cash":
         return 'INDIVIDUAL_PAYMENT'
     else:

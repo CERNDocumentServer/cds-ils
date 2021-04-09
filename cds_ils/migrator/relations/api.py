@@ -153,7 +153,7 @@ def link_documents_and_serials():
 
     def link_records_and_serial(record_cls, search):
         click.echo(f"FOUND {search.count()} serial related records.")
-        for hit in search.scan():
+        for hit in search.params(scroll='1h').scan():
             click.echo(f"Processing record {hit.pid}.")
             # Skip linking if the hit doesn't have a legacy recid since it
             # means it's a volume of a multipart
@@ -168,15 +168,15 @@ def link_documents_and_serials():
                 create_parent_child_relation(
                     serial, record, SERIAL_RELATION, volume
                 )
-                # mark done
-                record["_migration"]["has_serial"] = False
-                record.commit()
-                db.session.commit()
                 RecordRelationIndexer().index(record, serial)
+            # mark done
+            record["_migration"]["has_serial"] = False
+            record.commit()
+            db.session.commit()
 
     def link_record_and_journal(record_cls, search):
         click.echo(f"FOUND {search.count()} journal related records.")
-        for hit in search.scan():
+        for hit in search.params(scroll='1h').scan():
             click.echo(f"Processing record {hit.pid}.")
             if "legacy_recid" not in hit:
                 continue
@@ -198,7 +198,7 @@ def link_documents_and_serials():
     click.echo("Creating serial relations...")
     link_records_and_serial(
         document_class,
-        document_search.filter("term", _migration__has_serial=True),
+        document_search.filter("term", _migration__has_serial=True)
     )
     link_records_and_serial(
         series_class,
