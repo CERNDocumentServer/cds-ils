@@ -19,7 +19,7 @@ from ..cds import get_helper_dict
 from ..helpers.decorators import filter_list_values, out_strip
 from ..helpers.eitems import clean_url_provider
 from ..helpers.parsers import clean_val, extract_parts, extract_volume_info, \
-    extract_volume_number
+    extract_volume_number, is_volume_index
 from ..models.multipart import model
 from .base import alternative_identifiers as alternative_identifiers_base
 from .base import alternative_titles
@@ -50,6 +50,8 @@ def isbns(self, key, value):
     """Translates isbns stored in the record."""
     _migration = self["_migration"]
     _identifiers = self.get("identifiers", [])
+    physical_description = None
+    volume_number = None
 
     val_u = clean_val("u", value, str)
     val_a = clean_val("a", value, str)
@@ -65,12 +67,15 @@ def isbns(self, key, value):
 
         # try to extract volume description
         volume_info = extract_volume_info(val_u)
-        physical_description = None
+
         if volume_info:
             physical_description = volume_info["description"].strip()
+            volume_number = volume_info["volume"]
+        else:
+            if is_volume_index(val_u):
+                # extract volume number
+                volume_number = extract_volume_number(val_u)
 
-        # extract volume number
-        volume_number = extract_volume_number(val_u, search=True)
         if volume_number:
             volume_obj = {
                 "identifiers": [isbn],
@@ -180,17 +185,13 @@ def barcode(self, key, value):
             if val_n or val_x or val_a and val_9:
                 raise UnexpectedValue()
             identifier = {"scheme": "REPORT_NUMBER", "value": val_a or val_9}
-            if val_9:
-                identifier["hidden"] = True
             identifiers = self.get("identifiers", [])
             identifiers.append(identifier)
             self["identifiers"] = identifiers
             raise IgnoreKey("barcode")
 
         if val_n and val_x:
-            volume_number = extract_volume_number(
-                val_n, raise_exception=True, subfield="n"
-            )
+            volume_number = extract_volume_number(val_n)
             _insert_volume(
                 _migration,
                 volume_number,
@@ -240,6 +241,7 @@ def volumes_titles(self, key, value):
 
         val_a = clean_val("a", v, str)
         val_b = clean_val("b", v, str)
+        val_z = clean_val("z", v, str)
 
         if not val_n and not val_p:
             raise UnexpectedValue(
@@ -251,9 +253,7 @@ def volumes_titles(self, key, value):
                 message=" volume title exists but no volume number",
             )
 
-        volume_number = extract_volume_number(
-            val_n, raise_exception=True, subfield="n"
-        )
+        volume_number = extract_volume_number(val_n)
         obj = {"title": val_p or volume_title}
         if val_y:
             if re.match("\\d+", val_y) and len(val_y) == 4:
@@ -262,6 +262,8 @@ def volumes_titles(self, key, value):
                 raise UnexpectedValue(
                     subfield="y", message=" unrecognized publication year"
                 )
+        if val_z:
+            obj["physical_description"] = val_z
         _insert_volume(_migration, volume_number, obj)
         if val_a:
             _alternative_titles.append(
@@ -292,11 +294,6 @@ def volumes_titles(self, key, value):
 @out_strip
 def number_of_volumes(self, key, value):
     """Translates number of volumes."""
-    _series_title = self.get("title", None)
-    if not _series_title:
-        raise MissingRequiredField(
-            subfield="a", message=" this record is missing a main title"
-        )
     val_a = clean_val("a", value, str)
     val_x = clean_val("x", value, str)
     parsed_a = extract_parts(val_a)

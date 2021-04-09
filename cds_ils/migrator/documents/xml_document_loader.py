@@ -48,7 +48,8 @@ class CDSDocumentDumpLoader(object):
         record["_migration"]["files"] = []
         for key, meta in files.items():
             obj = cls.create_file(None, key, meta)
-            if obj.get("format") == ".ps.gz":
+            if obj.get("format").lower() in \
+                    [".ps.gz", ".png", '.jpg', ".jpeg"]:
                 continue
             # remove not needed, ES cannot handle list of lists
             del obj["recids_doctype"]

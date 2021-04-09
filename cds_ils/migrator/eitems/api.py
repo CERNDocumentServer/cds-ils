@@ -158,7 +158,7 @@ def process_files_from_legacy():
     """
     search = get_all_documents_with_files()
     click.echo("Found {} documents with files.".format(search.count()))
-    for hit in search.scan():
+    for hit in search.params(scroll='4h').scan():
         # try not to kill legacy server
         time.sleep(3)
         # make sure the document is in DB not only ES
@@ -185,7 +185,8 @@ def process_files_from_legacy():
 
                 click.echo("File: {}".format(file_dump["url"]))
 
-                is_restricted = file_dump.get("status") == "SSO"
+                is_restricted = file_dump.get("status").upper() in \
+                    ["SSO", "RESTRICTED"]
                 eitem, bucket = create_eitem_with_bucket_for_document(
                     document["pid"], open_access=not is_restricted
                 )
@@ -194,7 +195,9 @@ def process_files_from_legacy():
                 eitem.commit()
 
                 # get filename
-                file_name = file_dump["full_name"]
+                file_description = url_in_marc[0].get("description")
+                file_name = file_description if file_description else \
+                    file_dump["full_name"]
 
                 file_stream = import_legacy_files(file_dump["url"])
 
@@ -225,7 +228,7 @@ def migrate_external_links(raise_exceptions=True):
         "Found {} documents with external links.".format(search.count())
     )
 
-    for hit in search.scan():
+    for hit in search.params(scroll='2h').scan():
         # make sure the document is in DB not only ES
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
@@ -263,7 +266,7 @@ def migrate_ezproxy_links(raise_exceptions=True):
     """Migrate external links from documents."""
     search = get_documents_with_proxy_eitems()
     click.echo("Found {} documents with ezproxy links.".format(search.count()))
-    for hit in search.scan():
+    for hit in search.params(scroll='2h').scan():
         # make sure the document is in DB not only ES
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
@@ -359,7 +362,7 @@ def migrate_ebl_links(raise_exceptions=True):
     search = get_documents_with_ebl_eitems()
     click.echo("Found {} documents with ebl links.".format(search.count()))
 
-    for hit in search.scan():
+    for hit in search.params(scroll='2h').scan():
         # make sure the document is in DB not only ES
         document = document_class.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
@@ -403,7 +406,7 @@ def migrate_safari_links(raise_exceptions=True):
     search = get_documents_with_safari_eitems()
     click.echo("Found {} documents with safari links.".format(search.count()))
 
-    for hit in search.scan():
+    for hit in search.params(scroll='2h').scan():
         # make sure the document is in DB not only ES
         document = document_class.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))

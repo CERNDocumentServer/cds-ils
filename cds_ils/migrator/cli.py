@@ -37,8 +37,7 @@ from cds_ils.migrator.relations.api import link_documents_and_serials
 from cds_ils.migrator.relations.documents import \
     migrate_document_siblings_relation
 from cds_ils.migrator.relations.series import migrate_series_relations
-from cds_ils.migrator.series.api import validate_multipart_records, \
-    validate_serial_records
+from cds_ils.migrator.series.api import validate_serial_records
 from cds_ils.migrator.series.series_import import import_serial_from_file, \
     import_series_from_dump
 from cds_ils.migrator.series.xml_multipart_loader import CDSMultipartDumpLoader
@@ -352,13 +351,6 @@ def validate():
 def validate_serial():
     """Validate migrated serials."""
     validate_serial_records()
-
-
-@validate.command(name="multipart")
-@with_appcontext
-def validate_multipart():
-    """Validate migrated multiparts."""
-    validate_multipart_records()
 
 
 @migration.command()

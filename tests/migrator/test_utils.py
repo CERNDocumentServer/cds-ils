@@ -5,24 +5,24 @@ from cds_ils.importer.providers.cds.helpers.parsers import \
     extract_volume_info, extract_volume_number
 
 volume_params = [
-    ("v1", "1", False),
-    ("v 1", "1", False),
+    ("v1", "v1", False),
+    ("v 1", "v 1", False),
     ("v.1", "1", False),
     ("v. 1", "1", False),
     ("v . 1", "1", False),
-    ("vol.1", "1", False),
-    ("Vol. 2", "2", False),
-    ("voL . 1", None, False),
-    ("volume.1", "1", False),
-    ("Volume. 1", "1", False),
-    ("volume . 3", "3", False),
-    ("pt 5", "5", False),
-    ("part 5", "5", False),
-    ("par 5", None, False),
+    ("vol.1", "vol.1", False),
+    ("Vol. 2", "Vol. 2", False),
+    ("voL . 1", "voL . 1", False),
+    ("volume.1", "volume.1", False),
+    ("Volume. 1", "Volume. 1", False),
+    ("volume . 3", "volume . 3", False),
+    ("pt 5", "pt 5", False),
+    ("part 5", "part 5", False),
+    ("par 5", "par 5", False),
     ("v. A", "A", False),
-    ("val. 5", None, False),
-    ("part III", "III", False),
-    ("March 1996", None, False),
+    ("val. 5", "val. 5", False),
+    ("part III", "part III", False),
+    ("March 1996", "March 1996", False),
 ]
 
 
@@ -32,7 +32,7 @@ def test_extract_volume_number(value, expected, raise_exception):
     if raise_exception:
         with pytest.raises(MissingRequiredField):
             assert (
-                extract_volume_number(value, raise_exception=raise_exception)
+                extract_volume_number(value)
                 == expected
             )
     else:

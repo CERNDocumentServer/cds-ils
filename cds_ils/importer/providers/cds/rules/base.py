@@ -728,9 +728,7 @@ def barcodes(self, key, value):
     _migration = self["_migration"]
     _migration["volumes"].append(
         dict(
-            volume=extract_volume_number(
-                val_n, raise_exception=True, subfield="n"
-            ),
+            volume=extract_volume_number(val_n),
             barcode=val_x,
         )
     )

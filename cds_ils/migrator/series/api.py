@@ -162,14 +162,14 @@ def get_serials_by_child_recid(recid):
             Q("term", _migration__children=recid),
         ],
     )
-    for hit in search.scan():
+    for hit in search.params(scroll='1h').scan():
         yield series_class.get_record_by_pid(hit.pid)
 
 
 def get_migrated_volume_by_serial_title(record, title):
     """Get volume number by serial title."""
     for serial in record["_migration"]["serials"]:
-        if serial["title"] == title:
+        if serial["title"].capitalize() == title.capitalize():
             return serial.get("volume", None)
     raise DocumentMigrationError(
         'Unable to find volume number in record {} by title "{}"'.format(
@@ -212,7 +212,7 @@ def validate_serial_records():
     series_search = current_app_ils.series_search_cls()
 
     search = series_search.filter("term", mode_of_issuance="SERIAL")
-    for serial_hit in search.scan():
+    for serial_hit in search.params(scroll='1h').scan():
         # Store titles and check for duplicates
         if "title" in serial_hit:
             title = serial_hit.title
@@ -228,47 +228,6 @@ def validate_serial_records():
         validate_serial_relation(serial, children)
 
     click.echo("Serial validation check done!")
-
-
-def validate_multipart_records():
-    """Validate that multiparts were migrated successfully.
-
-    Performs the following checks:
-    * Ensure all volumes of migrated multiparts were migrated
-    """
-
-    def validate_multipart_relation(multipart, volumes):
-        document_cls = current_app_ils.document_record_cls
-        relations = multipart.relations.get().get("multipart_monograph", [])
-        titles = [volume["title"] for volume in volumes if "title" in volume]
-        count = len(set(v["volume"] for v in volumes))
-        if count != len(relations):
-            click.echo(
-                "[Multipart {}] Incorrect number of volumes: {} "
-                "(expected {})".format(multipart["pid"], len(relations), count)
-            )
-        for relation in relations:
-
-            child = document_cls.get_record_by_pid(
-                relation["pid"], pid_type=relation["pid_type"]
-            )
-            if child["title"] not in titles:
-                click.echo(
-                    '[Multipart {}] Title "{}" does not exist in '
-                    "migration data".format(multipart["pid"], child["title"])
-                )
-
-    search = SeriesSearch().filter(
-        "term", mode_of_issuance="MULTIPART_MONOGRAPH"
-    )
-    for multipart_hit in search.scan():
-        # Check if any child is missing
-        if "volumes" in multipart_hit._migration:
-            volumes = multipart_hit._migration.volumes
-            multipart = Series.get_record_by_pid(multipart_hit.pid)
-            validate_multipart_relation(multipart, volumes)
-
-    click.echo("Multipart validation check done!")
 
 
 def search_series_with_relations():

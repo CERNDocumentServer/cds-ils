@@ -77,15 +77,15 @@ def build_ils_contributor(value):
     if not value.get("a"):
         return []
 
+    role = _get_correct_ils_contributor_role("e", value.get("e", "author"))
     contributor = {
         "identifiers": _extract_json_ils_ids(value, "scheme") or None,
         "full_name": value.get("name") or clean_val("a", value, str),
-        "roles": [
-            _get_correct_ils_contributor_role("e", value.get("e", "author"))
-        ],
         "alternative_names": [],
         "type": "PERSON",
     }
+    if role:
+        contributor.update({"roles": [role]})
 
     subfield_q = clean_val('q', value, str)
     if subfield_q:

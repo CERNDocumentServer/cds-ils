@@ -956,7 +956,6 @@ def test_authors(app):
                  'roles': ['AUTHOR'],
                  'type': 'PERSON'},
                 {'full_name': 'Sauniere, J',
-                 'roles': [None],
                  'type': 'PERSON'}],
                 'other_authors': True,
             }
