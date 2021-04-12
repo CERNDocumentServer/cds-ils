@@ -58,7 +58,7 @@ def migrate_series_relations(raise_exceptions=False):
     """Create relations for series."""
     series_class = current_app_ils.series_record_cls
     search = search_series_with_relations()
-    results = search.params(scroll='1h').scan()
+    results = search.params(scroll='4h').scan()
 
     for series in results:
         current_series_record = series_class.get_record_by_pid(

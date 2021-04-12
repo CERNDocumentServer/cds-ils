@@ -94,7 +94,7 @@ def migrate_document_siblings_relation(raise_exceptions=False):
     document_class = current_app_ils.document_record_cls
 
     search = search_documents_with_siblings_relations()
-    results = search.params(scroll='1h').scan()
+    results = search.params(scroll='4h').scan()
     extra_metadata = {}
     for document in results:
         current_document_record = document_class.get_record_by_pid(

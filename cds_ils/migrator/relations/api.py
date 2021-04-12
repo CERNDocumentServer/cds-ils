@@ -23,6 +23,7 @@ from invenio_db import db
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.default_records import MIGRATION_DESIGN_PID
 from cds_ils.migrator.errors import RelationMigrationError
+from cds_ils.migrator.handlers import relation_exception_handlers
 from cds_ils.migrator.series.api import get_migrated_volume_by_serial_title, \
     get_serials_by_child_recid
 
@@ -154,48 +155,64 @@ def link_documents_and_serials():
     def link_records_and_serial(record_cls, search):
         click.echo(f"FOUND {search.count()} serial related records.")
         for hit in search.params(scroll='1h').scan():
-            click.echo(f"Processing record {hit.pid}.")
-            # Skip linking if the hit doesn't have a legacy recid since it
-            # means it's a volume of a multipart
-            if "legacy_recid" not in hit:
-                continue
-            record = record_cls.get_record_by_pid(hit.pid)
-            check_for_special_series(record)
-            for serial in get_serials_by_child_recid(hit.legacy_recid):
-                volume = get_migrated_volume_by_serial_title(
-                    record, serial["title"]
-                )
-                create_parent_child_relation(
-                    serial, record, SERIAL_RELATION, volume
-                )
-                RecordRelationIndexer().index(record, serial)
-            # mark done
-            record["_migration"]["has_serial"] = False
-            record.commit()
-            db.session.commit()
+            try:
+                click.echo(f"Processing record {hit.pid}.")
+                # Skip linking if the hit doesn't have a legacy recid since it
+                # means it's a volume of a multipart
+                if "legacy_recid" not in hit:
+                    continue
+                record = record_cls.get_record_by_pid(hit.pid)
+                check_for_special_series(record)
+                for serial in get_serials_by_child_recid(hit.legacy_recid):
+                    volume = get_migrated_volume_by_serial_title(
+                        record, serial["title"]
+                    )
+                    create_parent_child_relation(
+                        serial, record, SERIAL_RELATION, volume
+                    )
+                    RecordRelationIndexer().index(record, serial)
+                # mark done
+                record["_migration"]["has_serial"] = False
+                record.commit()
+                db.session.commit()
+            except Exception as exc:
+                handler = relation_exception_handlers.get(exc.__class__)
+                if handler:
+                    handler(exc, new_pid=hit.pid)
+                else:
+                    raise exc
 
     def link_record_and_journal(record_cls, search):
         click.echo(f"FOUND {search.count()} journal related records.")
         for hit in search.params(scroll='1h').scan():
             click.echo(f"Processing record {hit.pid}.")
-            if "legacy_recid" not in hit:
-                continue
-            record = record_cls.get_record_by_pid(hit.pid)
-            for journal in hit["_migration"]["journal_record_legacy_recids"]:
-                serial = get_record_by_legacy_recid(
-                    series_class, legacy_pid_type, journal["recid"]
-                )
-                create_parent_child_relation(
-                    serial, record, SERIAL_RELATION, journal["volume"]
-                )
+            try:
+                if "legacy_recid" not in hit:
+                    continue
+                record = record_cls.get_record_by_pid(hit.pid)
+                for journal in \
+                        hit["_migration"]["journal_record_legacy_recids"]:
+                    serial = get_record_by_legacy_recid(
+                        series_class, legacy_pid_type, journal["recid"]
+                    )
+                    create_parent_child_relation(
+                        serial, record, SERIAL_RELATION, journal["volume"]
+                    )
 
-                del record["publication_info"]
-                # mark done
-                record["_migration"]["has_journal"] = False
-                record.commit()
-                db.session.commit()
+                    del record["publication_info"]
+                    # mark done
+                    record["_migration"]["has_journal"] = False
+                    record.commit()
+                    db.session.commit()
+            except Exception as exc:
+                handler = relation_exception_handlers.get(exc.__class__)
+                if handler:
+                    handler(exc, new_pid=hit.pid)
+                else:
+                    raise exc
 
     click.echo("Creating serial relations...")
+
     link_records_and_serial(
         document_class,
         document_search.filter("term", _migration__has_serial=True)
