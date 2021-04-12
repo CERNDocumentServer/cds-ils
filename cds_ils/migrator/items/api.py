@@ -94,7 +94,7 @@ def import_items_from_json(dump_file, rectype="item"):
                         exc,
                         document_legacy_recid=record.get("id_bibrec")
                         or record.get("document_pid"),
-                        barcode=record["barcode"],
+                        legacy_id=record["barcode"],
                         rectype=rectype,
                     ),
                 else:

@@ -672,7 +672,8 @@ def test_urls(app):
                     "eitems_ebl": [
                         {
                             "url": {
-                                "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560"
+                                "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560",
+                                "description": "ebook"
                             },
                         }
                     ],
@@ -693,7 +694,8 @@ def test_urls(app):
                     "eitems_safari": [
                         {
                             "url": {
-                                "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar"
+                                "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar",
+                                "description": "ebook"
                             },
                         }
                     ],
@@ -716,7 +718,8 @@ def test_urls(app):
                     "eitems_proxy": [
                         {
                             "url": {
-                                "value": "https://www.worldscientific.com/toc/rast/10"
+                                "value": "https://www.worldscientific.com/toc/rast/10",
+                                "description": "ebook"
                             },
                             "open_access": False,
                         }
@@ -746,14 +749,16 @@ def test_urls(app):
                     "eitems_ebl": [
                         {
                             "url": {
-                                "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560"
+                                "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560",
+                                         "description": "ebook"
                             },
                         },
                     ],
                     "eitems_safari": [
                         {
                             "url": {
-                                "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar"
+                                "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar",
+                                "description": "ebook"
                             },
                         },
                     ],
@@ -774,7 +779,8 @@ def test_urls(app):
                     "eitems_safari": [
                         {
                             "url": {
-                                "value": "https://learning.oreilly.com/library/view/-/9781119745228/?ar"
+                                "value": "https://learning.oreilly.com/library/view/-/9781119745228/?ar",
+                                "description": "ebook"
                             },
                         },
                     ],
@@ -795,7 +801,8 @@ def test_urls(app):
                     "eitems_external": [
                         {
                             "url": {
-                                "value": "https://external.com"
+                                "value": "https://external.com",
+                                "description": "ebook"
                             },
                             "open_access": False,
                         },
@@ -1619,12 +1626,6 @@ def test_report_numbers(app):
                         "scheme": "ARXIV",
                     }
                 ],
-                "subjects": [
-                    {
-                        "scheme": "ARXIV",
-                        "value": "hep-ex",
-                    }
-                ],
             },
         )
         check_transformation(
@@ -1993,7 +1994,6 @@ def test_arxiv_eprints(app):
                         "value": "arXiv:1209.5665",
                     }
                 ],
-                "subjects": [{"scheme": "ARXIV", "value": "math-ph"}],
             },
         )
         check_transformation(
@@ -2013,30 +2013,25 @@ def test_arxiv_eprints(app):
                 "alternative_identifiers": [
                     {"value": "arXiv:1209.5665", "scheme": "ARXIV"}
                 ],
-                "subjects": [
-                    {"scheme": "ARXIV", "value": "math-ph"},
-                    {"scheme": "ARXIV", "value": "math.GT"},
+            },
+        )
+        check_transformation(
+            """
+            <datafield tag="037" ind1=" " ind2=" ">
+                <subfield code="9">arXiv</subfield>
+                <subfield code="a">arXiv:1209.5665</subfield>
+                <subfield code="c">math-phss</subfield>
+            </datafield>
+            """,
+            {
+                "alternative_identifiers": [
+                    {
+                        "value": "arXiv:1209.5665",
+                        "scheme": "ARXIV"
+                    }
                 ],
             },
         )
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="037" ind1=" " ind2=" ">
-                    <subfield code="9">arXiv</subfield>
-                    <subfield code="a">arXiv:1209.5665</subfield>
-                    <subfield code="c">math-phss</subfield>
-                </datafield>
-                """,
-                {
-                    "arxiv_eprints": [
-                        {
-                            "categories": ["math-ph"],
-                            "value": "arXiv:1209.5665",
-                        }
-                    ],
-                },
-            )
 
 
 def test_languages(app):

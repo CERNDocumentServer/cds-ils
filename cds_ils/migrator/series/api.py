@@ -104,6 +104,7 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
 
     current_volume_index = volume_json.get("volume")
     volume_title = volume_json.get("title")
+    volume_publication_year = volume_json.get("publication_year")
 
     # additional info for each volume
     volumes_items_list = json_record["_migration"]["items"]
@@ -149,6 +150,8 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
     ]
     if volume_identifiers:
         document_json_template["identifiers"] = volume_identifiers[0]
+    if volume_publication_year:
+        document_json_template["publication_year"] = volume_publication_year
 
 
 def get_serials_by_child_recid(recid):
