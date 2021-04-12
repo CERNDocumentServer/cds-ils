@@ -34,6 +34,7 @@ from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.constants import MIGRATION_DOCUMENT_PID
+from cds_ils.migrator.errors import AcqOrderError
 from cds_ils.migrator.patrons.api import get_user_by_legacy_id
 
 
@@ -165,33 +166,22 @@ def get_acq_ill_notes(record):
 
     item_info = record.get("item_info")
     if item_info:
-        result = "item info: {0}\n\n".format(item_info.strip())
-        try:
-            result = (
-                # any encoding supporting printable ASCII would work e.g. utf-8
-                result.encode("ascii")
-                # unescape the string
-                .decode("unicode-escape")
-                # latin-1 also works
-                .encode("iso-8859-1").decode("utf-8")
-            )
-        except UnicodeEncodeError:
-            # result contains unicode chars that can't be ascii encoded
-            pass
+        result += "item info: {0}\n\n".format(item_info.strip())
 
     comments = record.get("borrower_comments")
     if comments:
-        result = "borrower comments: {0}\n\n".format(comments.strip())
+        result += "borrower comments: {0}\n\n".format(comments.strip())
 
     notes = record.get("library_notes")
     if not notes:
         return result
 
-    notes = "library notes: {0}\n".format(notes.strip())
+    result += "library notes: {0}\n".format(notes.strip())
+
     try:
-        result += (
+        result = (
             # any encoding supporting printable ASCII would work e.g. utf-8
-            notes.encode("ascii")
+            result.encode("ascii")
             # unescape the string
             .decode("unicode-escape")
             # latin-1 also works
@@ -199,7 +189,7 @@ def get_acq_ill_notes(record):
         )
     except UnicodeEncodeError:
         # result contains unicode chars that can't be ascii encoded
-        result += notes
+        pass
     return result
 
 
