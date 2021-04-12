@@ -276,18 +276,9 @@ def migrate_ezproxy_links(raise_exceptions=True):
             # EzProxy links require login and therefore they need to be
             # restricted
             try:
-                if open_access or item["open_access"]:
-                    raise EItemMigrationError(
-                        "Document {pid} has EzProxy "
-                        "links that are not restricted "
-                        "(Open Access) while it should be restricted".format(
-                            pid=document["pid"]
-                        )
-                    )
-
                 eitem = create_eitem(
                     document["pid"],
-                    open_access=False,
+                    open_access=open_access or item["open_access"],
                 )
                 item["url"]["login_required"] = True
                 eitem["urls"] = [item["url"]]
@@ -334,12 +325,15 @@ def create_ebl_eitem(item, ebl_id_list, document, raise_exceptions=True):
                 )
             )
         eitem = create_eitem(document["pid"], open_access=False)
-        eitem["urls"] = [
-            {
-                "value": url_template.format(matched_ebl_id[0]),
-                "login_required": True,
-            }
-        ]
+        url_dict = {
+            "value": url_template.format(matched_ebl_id[0]),
+            "login_required": True,
+        }
+        description = item.get("url").get("description")
+        if description:
+            url_dict.update({"description": description})
+
+        eitem["urls"] = [url_dict]
         add_eitem_extra_metadata(eitem, document)
         eitem.model.created = document.model.created
         eitem.commit()

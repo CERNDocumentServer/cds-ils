@@ -745,14 +745,6 @@ def arxiv_eprints(self, key, value):
       'alternative_identifiers': [{'scheme': 'ARXIV', 'value': `037__a`}],
     }
     """
-
-    def check_category(field, val):
-        category = clean_val(field, val, str)
-        if category:
-            if category in ARXIV_CATEGORIES:
-                return category
-            raise UnexpectedValue(subfield=field)
-
     if key == "037__":
         _alternative_identifiers = self.get("alternative_identifiers", [])
         for v in force_list(value):
@@ -763,16 +755,10 @@ def arxiv_eprints(self, key, value):
                 if elem["value"] == eprint_id
                 and elem["scheme"].lower() == "arxiv"
             ]
-            category = check_category("c", v)
             if not duplicated:
                 eprint = {"value": eprint_id, "scheme": "ARXIV"}
                 _alternative_identifiers.append(eprint)
                 self["alternative_identifiers"] = _alternative_identifiers
-            if category:
-                _subjects = self.get("subjects", [])
-                subject = {"scheme": "ARXIV", "value": category}
-                _subjects.append(subject) if subject not in _subjects else None
-                self["subjects"] = _subjects
         raise IgnoreKey("subjects")
 
 

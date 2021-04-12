@@ -33,7 +33,7 @@ def clean_url_provider(url_value,
     eitems_files = record_dict["_migration"]["eitems_file_links"]
 
     eitem_dict = {"url": {"value": url_value}}
-    if url_description and url_description != "ebook":
+    if url_description:
         eitem_dict["url"]["description"] = url_description
 
     # EBL publisher login required
