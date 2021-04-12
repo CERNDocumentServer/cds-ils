@@ -29,6 +29,39 @@
     -->
     <title>CERN Library Catalogue</title>
   </head>
+  <!-- Piwik -->
+  <script type="text/javascript">
+    if (%REACT_APP_INVENIO_PIWIK_ID%) {
+      var pkBaseURL =
+        'https:' == document.location.protocol
+          ? 'https://piwik.web.cern.ch/'
+          : 'http://piwik.web.cern.ch/';
+      document.write(
+        unescape(
+          "%3Cscript src='" +
+            pkBaseURL +
+            "piwik.js' type='text/javascript'%3E%3C/script%3E"
+        )
+      );
+      try {
+        var piwikTracker = Piwik.getTracker(
+          pkBaseURL + 'piwik.php',
+          %REACT_APP_INVENIO_PIWIK_ID%
+        );
+        piwikTracker.trackPageView();
+        piwikTracker.enableLinkTracking();
+      } catch (err) {}
+    }
+  </script>
+  <noscript
+    ><p>
+      <img
+        src="http://piwik.web.cern.ch/piwik.php?idsite=%REACT_APP_INVENIO_PIWIK_ID%"
+        style="border:0"
+        alt=""
+      /></p
+  ></noscript>
+  <!-- End Piwik Tracking Code -->
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="app"></div>
