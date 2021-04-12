@@ -68,7 +68,7 @@ from cds_ils.migrator.providers.api import get_provider_by_legacy_id
 from cds_ils.migrator.utils import find_correct_document_pid, \
     get_acq_ill_notes, get_cost, get_date, get_patron_pid
 
-DEFAULT_ITEM_MEDIUM = "E-BOOK"
+DEFAULT_ITEM_MEDIUM = "DIGITAL"
 LIBRARIAN_IDS = [
     5,
     7,

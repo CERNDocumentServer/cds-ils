@@ -39,10 +39,10 @@ def test_migrate_record(datadir, base_app):
                 {'value': '9783319419435', 'scheme': 'ISBN',
                  'material': 'PRINT_VERSION'},
                 {'value': '10.1007/978-3-319-41945-9',
-                 'material': 'E-BOOK',
+                 'material': 'DIGITAL',
                  'scheme': 'DOI'},
                 {'value': '10.1007/978-3-319-48812-7',
-                 'material': 'E-BOOK',
+                 'material': 'DIGITAL',
                  'scheme': 'DOI'}],
             'subjects': [
                 {'value': 'QA370-380', 'scheme': 'LOC'},

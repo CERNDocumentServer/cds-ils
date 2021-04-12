@@ -5,13 +5,13 @@
     "text": "Paper"
   },
   {
-    "key": "E-BOOK",
+    "key": "DIGITAL",
     "type": "doc_req_medium",
-    "text": "E-book"
+    "text": "Digital"
   },
   {
-    "key": "PAPER_E-BOOK",
+    "key": "PAPER_DIGITAL",
     "type": "doc_req_medium",
-    "text": "Paper + e-book"
+    "text": "Paper + digital"
   }
 ]
