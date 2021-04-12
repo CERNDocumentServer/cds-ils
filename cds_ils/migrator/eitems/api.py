@@ -160,7 +160,7 @@ def process_files_from_legacy():
     click.echo("Found {} documents with files.".format(search.count()))
     for hit in search.params(scroll='4h').scan():
         # try not to kill legacy server
-        time.sleep(3)
+        time.sleep(2)
         # make sure the document is in DB not only ES
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
