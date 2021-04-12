@@ -286,5 +286,6 @@ eitems_exception_handlers = {
 relation_exception_handlers = {
     RecordRelationsError: relation_exception_handler,
     RelationMigrationError: related_record_not_found,
-    PIDDoesNotExistError: related_record_not_found
+    PIDDoesNotExistError: related_record_not_found,
+    DocumentMigrationError: relation_exception_handler
 }

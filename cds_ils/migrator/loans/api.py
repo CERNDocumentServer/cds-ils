@@ -18,6 +18,7 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
 from cds_ils.migrator.api import import_record
+from cds_ils.migrator.constants import MIGRATION_DOCUMENT_PID
 from cds_ils.migrator.default_records import MIGRATION_ITEM_PID
 from cds_ils.migrator.errors import LoanMigrationError
 from cds_ils.migrator.handlers import json_records_exception_handlers
@@ -86,7 +87,9 @@ def provide_valid_loan_state_metadata(record, loan_dict):
             )
         )
         item_pid = record.get("item_pid")
-        if item_pid and item_pid["value"] == MIGRATION_ITEM_PID:
+        document_pid = record.get("document_pid")
+        if (item_pid and item_pid["value"] == MIGRATION_ITEM_PID) or \
+                document_pid == MIGRATION_DOCUMENT_PID:
             loan_dict.update(
                 dict(state="CANCELLED",
                      cancel_reason="Migration: unknown item"))
