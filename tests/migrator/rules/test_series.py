@@ -636,7 +636,7 @@ def test_monograph_volume_migration_doi(app):
                         {
                             "identifiers":
                                 [{"value": "10.1007/978-3-030-49613-5",
-                                  "material": "E-BOOK",
+                                  "material": "DIGITAL",
                                   "scheme": "DOI"}],
                             "volume": "1",
                         }

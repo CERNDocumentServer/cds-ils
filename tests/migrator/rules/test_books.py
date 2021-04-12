@@ -1420,12 +1420,12 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1459,12 +1459,12 @@ def test_isbns(app):
                     {"value": "9780691090856", "scheme": "ISBN"},
                     {
                         "value": "9781400889167",
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9780691090849",
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1502,12 +1502,12 @@ def test_isbns(app):
                 "identifiers": [
                     {
                         "value": "9781630814434",
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "scheme": "ISBN",
                     },
                     {
                         "value": "9781630811051",
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1536,7 +1536,7 @@ def test_isbns(app):
                     },
                     {
                         "value": "9781630811051",
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "scheme": "ISBN",
                     },
                 ],
@@ -1739,7 +1739,7 @@ def test_dois(app):
             {
                 "identifiers": [
                     {
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "value": "10.1007/978-1-4613-0247-6",
                         "scheme": "DOI",
                     }
@@ -1770,7 +1770,7 @@ def test_dois(app):
             {
                 "identifiers": [
                     {
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                         "value": "10.3390/books978-3-03943-243-1",
                         "scheme": "DOI",
                     }
@@ -1909,7 +1909,7 @@ def test_alternative_identifiers(app):
                     {
                         "value": "10.1103/PhysRevLett.121.052004",
                         "scheme": "DOI",
-                        "material": "E-BOOK",
+                        "material": "DIGITAL",
                     },
                 ],
                 "_migration": {
@@ -3440,7 +3440,7 @@ def test_record(app):
                              "roles": ["EDITOR"], "type": "PERSON"}],
                 "created_by": {"type": "batchuploader"},
                 "document_type": "BOOK",
-                "identifiers": [{"material": "E-BOOK",
+                "identifiers": [{"material": "DIGITAL",
                                  "scheme": "ISBN",
                                  "value": "9789811590344"},
                                 {"material": "PRINT_VERSION",
@@ -3452,7 +3452,7 @@ def test_record(app):
                                 {"material": "PRINT_VERSION",
                                  "scheme": "ISBN",
                                  "value": "9789811590368"},
-                                {"material": "E-BOOK",
+                                {"material": "DIGITAL",
                                  "scheme": "DOI",
                                  "value": "10.1007/978-981-15-9034-4"}],
                 "internal_notes": [{"value": "Physics and astronomy"}],
