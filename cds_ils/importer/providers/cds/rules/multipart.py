@@ -12,6 +12,7 @@ from copy import deepcopy
 
 from dojson.errors import IgnoreKey
 from dojson.utils import for_each_value, force_list
+from flask import current_app
 
 from cds_ils.importer.errors import MissingRequiredField, UnexpectedValue
 
@@ -111,6 +112,26 @@ def dois(self, key, value):
     _identifiers = self.get("identifiers", [])
     volume_info = None
     material = None
+    dois_url_prefix = current_app.config['CDS_ILS_DOI_URL_PREFIX']
+
+    def _clean_doi_access(subfield):
+        return subfield.lower().replace("(open access)", "").strip()
+
+    def create_eitem(subfield_a, subfield_q, migration_dict):
+        eitems_proxy = migration_dict["_migration"]["eitems_proxy"]
+        open_access = False
+        if subfield_q:
+            open_access = "open access" in subfield_q.lower()
+            subfield_q = _clean_doi_access(subfield_q)
+        eitem = {
+            "url": {
+                "description": subfield_q,
+                "value": dois_url_prefix.format(doi=subfield_a),
+            },
+            "open_access": open_access
+        }
+        eitems_proxy.append(eitem)
+
     for v in force_list(value):
         val_2 = clean_val("2", v, str)
         if val_2 and val_2 != "DOI":
@@ -118,6 +139,7 @@ def dois(self, key, value):
                 subfield="2", message=" field is not equal to DOI"
             )
         val_q = clean_val("q", v, str, transform="lower")
+        val_a = clean_val("a", v, str, req=True)
 
         if val_q:
             volume_info = extract_volume_info(val_q)
@@ -128,24 +150,31 @@ def dois(self, key, value):
                     raise_exception=True,
                 )
         doi = {
-            "value": clean_val("a", v, str, req=True),
+            "value": val_a,
             "scheme": "DOI",
         }
 
         if volume_info:
+            # create partial child object for each
+            # volume with its own _migration
+            volume_migration_dict = {"_migration": {'eitems_proxy': []}}
             # this identifier is for a specific volume
+            create_eitem(subfield_a=val_a, subfield_q=val_q,
+                         migration_dict=volume_migration_dict)
+            volume_migration_dict["_migration"]["eitems_has_proxy"] = True
             if material:
                 doi.update(
                     {  # WARNING! vocabulary document_identifiers_materials
                         "material": material
                     })
-            volume_obj = {"identifiers": [doi]}
+            volume_obj = {"identifiers": [doi], **volume_migration_dict}
             _insert_volume(
                 _migration,
                 volume_info["volume"],
                 volume_obj,
                 field_key="volumes_identifiers",
             )
+
         else:
             # if a value in parentheses but does not match the volume regex
             if val_q:
@@ -357,9 +386,14 @@ def urls(self, key, value):
             raise UnexpectedValue(subfield="y", message=" unsupported value")
 
         # create partial child object for each volume with its own _migration
-        volume_migration_dict = {"_migration": deepcopy(get_helper_dict(
-            record_type='document'))}
-
+        volume_migration_dict = {"_migration": {
+            "record_type": "document",
+            "eitems_ebl": [],
+            "eitems_safari": [],
+            "eitems_external": [],
+            "eitems_proxy": [],
+            "eitems_file_links": []
+        }}
         url_obj = clean_url_provider(url_value=sub_u, url_description=sub_y,
                                      record_dict=volume_migration_dict)
         volume_obj = {**volume_migration_dict}

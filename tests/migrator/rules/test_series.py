@@ -639,6 +639,13 @@ def test_monograph_volume_migration_doi(app):
                                   "material": "E-BOOK",
                                   "scheme": "DOI"}],
                             "volume": "1",
+                            '_migration': {'eitems_has_proxy': True,
+                                           'eitems_proxy': [
+                                               {'open_access': False,
+                                                'url': {
+                                                    'description': 'ebook '
+                                                                   '(v.1)',
+                                                    'value': 'http://dx.doi.org/10.1007/978-3-030-49613-5'}}]}
                         }
                     ],
                 },
@@ -686,7 +693,6 @@ def test_monograph_volume_url(app):
                     "volumes_urls": [
                         {
                             "_migration": {
-                                **get_helper_dict(record_type="document"),
                                 "eitems_ebl": [
                                     {
                                         "url": {"description": "ebook (v.1)",
@@ -694,7 +700,13 @@ def test_monograph_volume_url(app):
                                                     "https://cds.cern.ch/auth.py?r=EBLIB_P_1890382"}
                                     }
                                 ],
-                                "eitems_has_ebl": True},
+                                "eitems_has_ebl": True,
+                                "eitems_external": [],
+                                "eitems_file_links": [],
+                                "eitems_proxy": [],
+                                "eitems_safari": [],
+                                "record_type": "document"
+                            },
                             "volume": "1",
                         }
                     ],

@@ -36,7 +36,8 @@ def import_multivolume(json_record):
 
     # build multipart dict - leave the legacy_recid attached
     multipart_json = clean_document_json_for_multipart(
-        json_record, include_keys=["legacy_recid", "alternative_titles"]
+        json_record,
+        include_keys=["legacy_recid", "alternative_titles", "publication_year"]
     )
 
     # prepare json for each volume
