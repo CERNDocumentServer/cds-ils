@@ -174,7 +174,7 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
 
     # split identifiers per volume
     volume_identifiers = [
-        volume_identifier["identifiers"]
+        volume_identifier["identifiers"][0]
         for volume_identifier in volumes_identifiers_list
         if volume_identifier.get("volume") == current_volume_index
     ]
