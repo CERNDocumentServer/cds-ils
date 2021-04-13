@@ -37,7 +37,6 @@ VOCABULARIES_TYPE_FILENAME = {
     "doc_req_payment_method": "docreq_payment_methods.json",
     "doc_req_type": "docreq_request_types.json",
     "doc_subjects": "document_subjects.json",
-    "document_experiments": "document_experiments.json",
     "document_institutions": "document_institutions.json",
     "document_standard_reviews": "document_standard_reviews.json",
     "identifier_scheme": "identifier_schemes.json",
