@@ -524,7 +524,6 @@ ILS_VOCABULARIES = [
     "doc_req_payment_method",
     "doc_identifiers_materials",
     "doc_req_medium",
-    "document_experiments",
     "document_institutions",
     "document_standard_reviews",
     "doc_subjects",

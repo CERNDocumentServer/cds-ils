@@ -70,10 +70,6 @@ VOCABULARIES_FIELDS = {
         },
     },
     "extensions": {
-        "unit_experiment": {
-            "source": "json",
-            "type": "document_experiments",
-        },
         "standard_review_applicability": {
             "source": "json",
             "type": "document_standard_reviews",

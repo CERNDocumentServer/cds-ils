@@ -80,8 +80,6 @@ export const config = {
           items: {
             label: 'Experiment',
             type: 'string',
-            widget: 'vocabularySearch',
-            vocabularyType: 'document_experiments',
           },
           label: 'Experiments',
           type: 'array',
