@@ -18,6 +18,8 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.series.api import Series
 from invenio_app_ils.series.search import SeriesSearch
 
+from cds_ils.importer.errors import ManualImportRequired
+from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.migrator.errors import DocumentMigrationError, \
     MultipartMigrationError, SeriesMigrationError
 from cds_ils.migrator.utils import pick
@@ -92,7 +94,8 @@ def get_multipart_by_multipart_id(multipart_id):
 def replace_fields_in_volume(document_json_template, volume_json, json_record):
     """Replace values of volume json template with new data."""
     # clean the template
-    document_json_template["_migration"]["items"] = []
+    document_json_template["_migration"] = \
+        get_helper_dict(record_type="document")
     document_json_template["_migration"]["legacy_recid"] = json_record[
         "legacy_recid"
     ]
@@ -139,8 +142,35 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
            == current_volume_index
     ]
 
-    if volume_eitems:
+    if len(volume_eitems) == 1:
         document_json_template["_migration"] = volume_eitems[0]
+    else:
+        for entry in volumes_urls_list:
+            if entry.get("volume") == current_volume_index:
+                document_json_template["_migration"]["eitems_ebl"] \
+                    += entry.get("_migration", {}).get("eitems_ebl", [])
+                document_json_template["_migration"]["eitems_safari"] \
+                    += entry.get("_migration", {}).get("eitems_safari", [])
+                document_json_template["_migration"]["eitems_external"] \
+                    += entry.get("_migration", {}).get("eitems_external", [])
+                document_json_template["_migration"]["eitems_proxy"] \
+                    += entry.get("_migration", {}).get("eitems_proxy", [])
+                document_json_template["_migration"]["eitems_file_links"] \
+                    += entry.get("_migration", {}).get("eitems_file_links", [])
+                document_json_template["_migration"]["eitems_has_ebl"] = bool(
+                    document_json_template["_migration"]["eitems_ebl"])
+                document_json_template["_migration"][
+                    "eitems_has_proxy"] = bool(
+                    document_json_template["_migration"]["eitems_proxy"])
+                document_json_template["_migration"][
+                    "eitems_has_safari"] = bool(
+                    document_json_template["_migration"]["eitems_safari"])
+                document_json_template["_migration"][
+                    "eitems_has_files"] = bool(
+                    document_json_template["_migration"]["eitems_file_links"])
+                document_json_template["_migration"][
+                    "eitems_has_external"] = bool(
+                    document_json_template["_migration"]["eitems_external"])
 
     # split identifiers per volume
     volume_identifiers = [
@@ -148,8 +178,17 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
         for volume_identifier in volumes_identifiers_list
         if volume_identifier.get("volume") == current_volume_index
     ]
+    # add DOIs to the future eitems
+    for volume_identifier in volumes_identifiers_list:
+        if volume_identifier.get("volume") == current_volume_index:
+            eitems_proxy = volume_identifier.get("_migration", {}) \
+                .get("eitems_proxy")
+            if eitems_proxy:
+                document_json_template["_migration"]["eitems_proxy"] += \
+                    eitems_proxy
+                document_json_template["_migration"]["eitems_has_proxy"] = True
     if volume_identifiers:
-        document_json_template["identifiers"] = volume_identifiers[0]
+        document_json_template["identifiers"] = volume_identifiers
     if volume_publication_year:
         document_json_template["publication_year"] = volume_publication_year
 
