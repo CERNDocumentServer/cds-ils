@@ -102,7 +102,7 @@ def add_eitem_extra_metadata(eitem, document):
         "springer": "SPR",
         "ebl": "EBL"
     }
-    internal_notes = document["_migration"]["eitems_internal_notes"]
+    internal_notes = document["_migration"].get("eitems_internal_notes")
     if internal_notes:
         eitem["internal_notes"] = internal_notes
         # It must be only one value to update created_by
@@ -233,7 +233,7 @@ def migrate_external_links(raise_exceptions=True):
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
-        open_access = document["_migration"]["eitems_open_access"]
+        open_access = document["_migration"].get("eitems_open_access")
         for item in document["_migration"]["eitems_external"]:
             try:
                 eitem = create_eitem(
