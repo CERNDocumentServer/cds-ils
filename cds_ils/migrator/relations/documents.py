@@ -95,15 +95,18 @@ def migrate_document_siblings_relation(raise_exceptions=False):
 
     search = search_documents_with_siblings_relations()
     results = search.params(scroll='4h').scan()
-    extra_metadata = {}
+
     for document in results:
+
         current_document_record = document_class.get_record_by_pid(
             document.pid
         )
         relations = current_document_record["_migration"]["related"]
         for relation in relations:
-
             try:
+                # clean the found sibling
+                related_sibling = None
+                extra_metadata = {}
                 related_sibling = find_related_record(relation)
                 if not related_sibling:
                     continue
@@ -135,7 +138,10 @@ def migrate_document_siblings_relation(raise_exceptions=False):
                 click.secho(str(exc), fg="red")
                 handler = relation_exception_handlers.get(exc.__class__)
                 if handler:
-                    handler(exc, new_pid=document["pid"])
+                    handler(exc,
+                            new_pid=current_document_record["pid"],
+                            legacy_id=current_document_record
+                            .get("legacy_recid"))
                 else:
                     if raise_exceptions:
                         raise exc

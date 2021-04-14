@@ -92,9 +92,18 @@ def isbns(self, key, value):
                 field_key="volumes_identifiers",
             )
         else:
-            # if no volume number, then the physical
-            # description and id belongs to the multipart
-            self["physical_description"] = val_u
+            # check if material
+            # WARNING! vocabulary document_identifiers_materials
+            material = mapping(
+                IDENTIFIERS_MEDIUM_TYPES,
+                val_u,
+            )
+            if material:
+                isbn.update({"material": material})
+            else:
+                # if no volume number, then the physical
+                # description and id belongs to the multipart
+                self["physical_description"] = val_u
             return isbn if isbn not in _identifiers else None
     elif not val_u and val_a:
         # if no volume info but only isbn,

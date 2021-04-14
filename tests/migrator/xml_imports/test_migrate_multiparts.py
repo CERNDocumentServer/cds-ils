@@ -65,7 +65,7 @@ def test_migrate_record(datadir, base_app):
                        'imprint': {'date': '2019-01-01',
                                    'place': 'Hoboken, NJ',
                                    'publisher': 'Wiley'},
-                       'physical_description': 'print version, hardback',
                        'identifiers': [
-                           {'scheme': 'ISBN', 'value': '9781119506874'}],
+                           {'scheme': 'ISBN', 'value': '9781119506874',
+                            "material": "HARDBACK"}],
                        'languages': ['ENG']}

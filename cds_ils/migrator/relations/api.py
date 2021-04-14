@@ -178,7 +178,11 @@ def link_documents_and_serials():
             except Exception as exc:
                 handler = relation_exception_handlers.get(exc.__class__)
                 if handler:
-                    handler(exc, new_pid=hit.pid)
+                    legacy_recid = None
+                    if hasattr(hit, "legacy_recid"):
+                        legacy_recid = hit.legacy_recid
+                    handler(exc, new_pid=hit.pid,
+                            legacy_id=legacy_recid)
                 else:
                     raise exc
 
@@ -207,7 +211,11 @@ def link_documents_and_serials():
             except Exception as exc:
                 handler = relation_exception_handlers.get(exc.__class__)
                 if handler:
-                    handler(exc, new_pid=hit.pid)
+                    legacy_recid = None
+                    if hasattr(hit, "legacy_recid"):
+                        legacy_recid = hit.legacy_recid
+                    handler(exc, new_pid=hit.pid,
+                            legacy_id=legacy_recid)
                 else:
                     raise exc
 

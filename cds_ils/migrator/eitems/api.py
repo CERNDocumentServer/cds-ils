@@ -271,7 +271,7 @@ def migrate_ezproxy_links(raise_exceptions=True):
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
-        open_access = document["_migration"]["eitems_open_access"]
+        open_access = document["_migration"].get("eitems_open_access")
         for item in document["_migration"]["eitems_proxy"]:
             # EzProxy links require login and therefore they need to be
             # restricted

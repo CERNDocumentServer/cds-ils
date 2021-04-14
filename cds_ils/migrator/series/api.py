@@ -211,7 +211,8 @@ def get_serials_by_child_recid(recid):
 def get_migrated_volume_by_serial_title(record, title):
     """Get volume number by serial title."""
     for serial in record["_migration"]["serials"]:
-        if serial["title"].capitalize() == title.capitalize():
+        if serial["title"] and title and \
+                serial["title"].capitalize() == title.capitalize():
             return serial.get("volume", None)
     raise DocumentMigrationError(
         'Unable to find volume number in record {} by title "{}"'.format(
