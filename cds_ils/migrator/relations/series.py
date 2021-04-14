@@ -105,7 +105,8 @@ def migrate_series_relations(raise_exceptions=False):
                 handler = relation_exception_handlers.get(exc.__class__)
                 if handler:
                     handler(exc, new_pid=series["pid"],
-                            legacy_id=series.get("legacy_recid"))
+                            legacy_id=current_series_record.get("legacy_recid")
+                            )
                 else:
                     raise exc
         current_series_record["_migration"]["has_related"] = False
