@@ -203,7 +203,7 @@ def relation_exception_handler(exc, **kwargs):
     """Handle relation already exists exception."""
     relations_logger = logging.getLogger("relations_logger")
     relations_logger.warning(
-        str(exc), extra=dict(legacy_id=None, status="ERROR",
+        str(exc), extra=dict(legacy_id=kwargs.get("legacy_id"), status="ERROR",
                              new_pid=kwargs.get("new_pid"))
     )
 
@@ -217,7 +217,7 @@ def related_record_not_found(exc, raise_exceptions=False, **kwargs):
     else:
         message = str(exc)
     relations_logger.error(
-        message, extra=dict(legacy_id=None, status="ERROR",
+        message, extra=dict(legacy_id=kwargs.get("legacy_id"), status="ERROR",
                             new_pid=kwargs.get("new_pid"))
     )
 

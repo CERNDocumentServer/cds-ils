@@ -58,7 +58,7 @@ ITEMS_MEDIUMS = {
     "DVD": ["DVD VIDEO", "DVD"],
     "VHS": ["VHS"],
     "ONLINE": ["EBOOK"],
-    "AUDIO_CD": ["Audio CD"]
+    "AUDIO_CD": ["AUDIO CD"]
 }
 
 # can be inconsistent with the medium types
@@ -95,7 +95,6 @@ IDENTIFIERS_MEDIUM_TYPES = {
     "ERRATUM": ["ERRATUM"],
     "ADDENDUM": ["ADDENDUM"],
     "PREPRINT": ["PREPRINT"],
-
 }
 
 APPLICABILITY = {

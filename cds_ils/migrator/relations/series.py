@@ -67,6 +67,8 @@ def migrate_series_relations(raise_exceptions=False):
 
         for relation in relations:
             try:
+                # clean the found sibling
+                related_series = None
                 related_series = find_related_record(relation, series)
                 if not related_series:
                     continue
@@ -102,7 +104,8 @@ def migrate_series_relations(raise_exceptions=False):
                 click.secho(str(exc), fg="red")
                 handler = relation_exception_handlers.get(exc.__class__)
                 if handler:
-                    handler(exc, new_pid=series["pid"])
+                    handler(exc, new_pid=series["pid"],
+                            legacy_id=series.get("legacy_recid"))
                 else:
                     raise exc
         current_series_record["_migration"]["has_related"] = False
