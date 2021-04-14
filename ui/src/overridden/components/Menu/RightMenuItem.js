@@ -10,6 +10,33 @@ import { Dropdown, Menu } from 'semantic-ui-react';
 const DropdownItems = () => {
   return (
     <>
+      <Dropdown.Item as={Link} to={getStaticPageByName('faq').route}>
+        Frequently asked questions (F.A.Q.)
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item as={Link} to={getStaticPageByName('search-guide').route}>
+        Search guide
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item as={Link} to={FrontSiteRoutes.documentRequestForm}>
+        Request new document (loan or purchase)
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item as={Link} to={getStaticPageByName('contact').route}>
+        Ask a librarian
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item
+        as="a"
+        href="https://mattermost.web.cern.ch/sis-team/channels/library-requests"
+      >
+        Contact
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item as={Link} to={FrontSiteRoutes.openingHours}>
+        Opening hours
+      </Dropdown.Item>
+      <Dropdown.Divider />
       <Dropdown.Item as="a" href="https://library.web.cern.ch/resources/remote">
         Remote access to e-resources
       </Dropdown.Item>
@@ -19,22 +46,6 @@ const DropdownItems = () => {
         href="https://scientific-info.cern/search-and-read/online-resources"
       >
         CERN Library online resources
-      </Dropdown.Item>
-      <Dropdown.Divider />
-      <Dropdown.Item as={Link} to={getStaticPageByName('faq').route}>
-        F.A.Q.
-      </Dropdown.Item>
-      <Dropdown.Divider />
-      <Dropdown.Item as={Link} to={getStaticPageByName('search-guide').route}>
-        Search guide
-      </Dropdown.Item>
-      <Dropdown.Divider />
-      <Dropdown.Item as={Link} to={getStaticPageByName('contact').route}>
-        Ask a librarian
-      </Dropdown.Item>
-      <Dropdown.Divider />
-      <Dropdown.Item as={Link} to={FrontSiteRoutes.documentRequestForm}>
-        Request new literature
       </Dropdown.Item>
     </>
   );
