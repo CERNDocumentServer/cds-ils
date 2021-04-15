@@ -195,9 +195,12 @@ def process_files_from_legacy():
                 eitem.commit()
 
                 # get filename
-                file_description = url_in_marc[0].get("description")
-                file_name = file_description if file_description else \
-                    file_dump["full_name"]
+                file_description = file_dump.get("description")
+                file_format = file_dump.get("superformat")
+                if file_description and file_format:
+                    file_name = f"{file_description}{file_format}"
+                else:
+                    file_name = file_dump["full_name"]
 
                 file_stream = import_legacy_files(file_dump["url"])
 
