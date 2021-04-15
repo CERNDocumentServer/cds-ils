@@ -88,7 +88,7 @@ def test_migrate_record(datadir, base_app):
                 'has_journal': False,
                 'tags': [],
                 'journal_record_legacy_recids': [],
-                'eitems_proxy': [
+                'eitems_external': [
                     {
                         'url': {
                             'description': 'e-proceedings (v.1)',
@@ -104,11 +104,11 @@ def test_migrate_record(datadir, base_app):
                         "open_access": False,
                     }
                 ],
-                'eitems_has_proxy': True,
+                'eitems_has_proxy': False,
                 'eitems_file_links': [],
                 'eitems_has_files': False,
-                'eitems_external': [],
-                'eitems_has_external': False,
+                'eitems_proxy': [],
+                'eitems_has_external': True,
                 'eitems_ebl': [],
                 'eitems_has_ebl': False,
                 'eitems_safari': [],

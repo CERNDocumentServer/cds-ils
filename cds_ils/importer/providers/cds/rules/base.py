@@ -637,7 +637,7 @@ def dois(self, key, value):
         return re.sub(r'\([^)]*\)', '', subfield_q).strip()
 
     def create_eitem(subfield_a, subfield_q):
-        eitems_proxy = self["_migration"]["eitems_proxy"]
+        eitems_external = self["_migration"]["eitems_external"]
         open_access = False
         if subfield_q:
             open_access = "open access" in subfield_q.lower()
@@ -649,7 +649,7 @@ def dois(self, key, value):
             },
             "open_access": open_access
         }
-        eitems_proxy.append(eitem)
+        eitems_external.append(eitem)
 
     for v in force_list(value):
         subfield_q = clean_val("q", v, str)
@@ -672,7 +672,7 @@ def dois(self, key, value):
         if doi not in _identifiers:
             _identifiers.append(doi)
 
-    self["_migration"]["eitems_has_proxy"] = True
+    self["_migration"]["eitems_has_external"] = True
 
     return _identifiers
 
