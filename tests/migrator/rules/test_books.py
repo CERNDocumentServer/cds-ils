@@ -1747,8 +1747,8 @@ def test_dois(app):
                 ],
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    'eitems_has_proxy': True,
-                    'eitems_proxy': [
+                    'eitems_has_external': True,
+                    'eitems_external': [
                         {
                             'url': {
                                 'description': 'ebook',
@@ -1778,8 +1778,8 @@ def test_dois(app):
                 ],
                 "_migration": {
                     **get_helper_dict(record_type='document'),
-                    'eitems_has_proxy': True,
-                    'eitems_proxy': [
+                    'eitems_has_external': True,
+                    'eitems_external': [
                         {
                             "url": {
                                 'description': 'ebook',
@@ -1915,8 +1915,8 @@ def test_alternative_identifiers(app):
                 ],
                 "_migration": {
                     **get_helper_dict(record_type='document'),
-                    "eitems_has_proxy": True,
-                    "eitems_proxy":
+                    "eitems_has_external": True,
+                    "eitems_external":
                         [
                             {
                                 "url": {
@@ -3377,9 +3377,9 @@ def test_record(app):
                 "_created": "2021-01-04",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    'eitems_has_proxy': True,
+                    'eitems_has_external': True,
                     'eitems_internal_notes': 'SPR202101',
-                    'eitems_proxy': [
+                    'eitems_external': [
                         {
                             'url': {
                                 'description': 'ebook',
