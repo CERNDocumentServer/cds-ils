@@ -143,7 +143,7 @@ def replace_fields_in_volume(document_json_template, volume_json, json_record):
     ]
 
     if len(volume_eitems) == 1:
-        document_json_template["_migration"] = volume_eitems[0]
+        document_json_template["_migration"].update(**volume_eitems[0])
     else:
         for entry in volumes_urls_list:
             if entry.get("volume") == current_volume_index:
