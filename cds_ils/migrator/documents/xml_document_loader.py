@@ -31,6 +31,7 @@ from cds_ils.migrator.utils import add_cds_url, add_cover_metadata, \
 from cds_ils.minters import legacy_recid_minter
 
 documents_logger = logging.getLogger("documents_logger")
+files_logger = logging.getLogger("files_logger")
 
 
 class CDSDocumentDumpLoader(object):
@@ -53,7 +54,17 @@ class CDSDocumentDumpLoader(object):
                 continue
             # remove not needed, ES cannot handle list of lists
             del obj["recids_doctype"]
+            # get filesystem path
+            full_file_path = obj["full_path"].split(";")[0]
+            # create a relative path
+            relative_path = full_file_path.replace("/opt/cdsweb/var/data", "")
+            obj["ils_relative_path"] = relative_path
+            # add to the dump
             record["_migration"]["files"].append(obj)
+            # log the path and recid into a file
+            files_logger.error(
+                f"\"{record['legacy_recid']};{full_file_path};{relative_path}\""  # noqa
+            )
         if record["_migration"]["files"]:
             record["_migration"]["has_files"] = True
 

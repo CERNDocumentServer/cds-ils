@@ -33,9 +33,4 @@ def title(self, key, value):
         self["identifiers"] = _identifiers
     self["mode_of_issuance"] = "SERIAL"
     _title = clean_val("a", value, str, req=True)
-    if ':' in _title:
-        titles = _title.split(':')
-        self["alternative_titles"] = [{"type": "SUBTITLE",
-                                       "value": ":".join(titles[1:]).strip()}]
-        return titles[0]
     return _title

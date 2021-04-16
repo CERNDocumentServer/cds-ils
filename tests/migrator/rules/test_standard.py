@@ -9,6 +9,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from cds_dojson.marc21.utils import create_record
+from flask import current_app
 
 from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.importer.providers.cds.models.standard import model
@@ -161,6 +162,7 @@ def test_title(app):
 def test_publication_info(app):
     """Test publication info."""
     with app.app_context():
+        host = current_app.config["SPA_HOST"]
         check_transformation(
             """
             <datafield tag="962" ind1=" " ind2=" ">
@@ -172,15 +174,13 @@ def test_publication_info(app):
             {
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    "related": [
-                        {
-                            "related_recid": "2155631",
-                            "relation_type": "other",
-                            "relation_description": "is chapter of"
-                        }
-                    ],
-                    "has_related": True,
                 },
+                "urls": [
+                    {
+                        "value": f"{host}/legacy/2155631",
+                        "description": "is chapter of"
+                    }
+                ],
                 "publication_info": [
                     {
                         "pages": '1',
