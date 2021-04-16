@@ -81,6 +81,10 @@ def migration():
         record_logger.addHandler(record_logger_handler)
         record_logger.setLevel("INFO")
 
+    files_logger_handler = FileHandler(f"/tmp/file_list.log")
+    files_logger = logging.getLogger(f"files_logger")
+    files_logger.addHandler(files_logger_handler)
+
     # reset vocabularies validator cache
     vocabulary_validator.reset()
 

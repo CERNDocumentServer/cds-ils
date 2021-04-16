@@ -10,18 +10,22 @@
 
 import io
 import logging
+import os
 import re
 import time
 import uuid
 
 import click
 import requests
+from flask import current_app
 from invenio_app_ils.documents.indexer import DocumentIndexer
 from invenio_app_ils.eitems.api import EItem, EItemIdProvider
 from invenio_app_ils.eitems.indexer import EItemIndexer
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_files_rest.models import Bucket, ObjectVersion
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 from cds_ils.importer.providers.cds.rules.values_mapping import mapping
 from cds_ils.migrator.documents.api import get_all_documents_with_files, \
@@ -37,15 +41,10 @@ eitems_logger = logging.getLogger("eitems_logger")
 def import_legacy_files(file_link):
     """Download file from legacy."""
     # needed to ignore the migrator in the legacy statistics
-    download_request_headers = {"User-Agent": "CDS-ILS Migrator"}
+    files_dir = current_app.config["CDS_ILS_MIGRATION_FILES_DIR"]
+    file = open(os.path.join(files_dir, file_link))
 
-    file_response = requests.get(
-        file_link, stream=True, headers=download_request_headers
-    )
-
-    file_content_stream = io.BytesIO(file_response.content)
-
-    return file_content_stream
+    return file
 
 
 def create_file(bucket, file_stream, filename, dump_file_checksum):
@@ -160,7 +159,7 @@ def process_files_from_legacy():
     click.echo("Found {} documents with files.".format(search.count()))
     for hit in search.params(scroll='4h').scan():
         # try not to kill legacy server
-        time.sleep(2)
+        time.sleep(3)
         # make sure the document is in DB not only ES
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
@@ -196,17 +195,19 @@ def process_files_from_legacy():
 
                 # get filename
                 file_description = file_dump.get("description")
-                file_format = file_dump.get("superformat")
+                file_format = file_dump.get("format")
                 if file_description and file_format:
                     file_name = f"{file_description}{file_format}"
                 else:
                     file_name = file_dump["full_name"]
 
-                file_stream = import_legacy_files(file_dump["url"])
+                file_stream = import_legacy_files(
+                    file_dump["ils_relative_path"])
 
                 file = create_file(
                     bucket, file_stream, file_name, file_dump["checksum"]
                 )
+                file_stream.close()
                 click.echo("Indexing...")
                 EItemIndexer().index(eitem)
 

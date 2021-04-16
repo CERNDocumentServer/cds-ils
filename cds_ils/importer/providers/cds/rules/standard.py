@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 
 from dojson.errors import IgnoreKey
 from dojson.utils import for_each_value, force_list
-from invenio_app_ils.relations.api import OTHER_RELATION
+from flask import current_app
 
 from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.helpers.decorators import \
@@ -83,29 +83,27 @@ def title(self, key, value):
 def publication_additional(self, key, value):
     """Translates additional publication info & other related_records field."""
     _publication_info = self.get("publication_info", [])
-    _migration = self["_migration"]
-    _related = _migration["related"]
+    _urls = self.get("urls", [])
     empty = not bool(_publication_info)
+    host = current_app.config["SPA_HOST"]
     for i, v in enumerate(force_list(value)):
         temp_info = {}
         pages = clean_val("k", v, str)
         if pages:
             temp_info.update(pages=pages)
-        rel_recid = clean_val("b", v, str)
-        if rel_recid:
-            _related.append(
+        related_recid = clean_val("b", v, str)
+        if related_recid:
+            _urls.append(
                 {
-                    "related_recid": rel_recid,
-                    "relation_type": OTHER_RELATION.name,
-                    "relation_description": "is chapter of"
+                    "value": f"{host}/legacy/{related_recid}",
+                    "description": "is chapter of"
                 }
             )
-            _migration.update({"related": _related, "has_related": True})
         if not empty and i < len(_publication_info):
             _publication_info[i].update(temp_info)
         else:
             _publication_info.append(temp_info)
-
+    self["urls"] = _urls
     return _publication_info
 
 
