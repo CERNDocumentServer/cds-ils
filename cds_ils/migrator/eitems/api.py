@@ -199,13 +199,18 @@ def process_files_from_legacy():
                 else:
                     file_name = file_dump["full_name"]
 
-                file_stream = import_legacy_files(
-                    file_dump["ils_relative_path"])
+                relative_path = file_dump.get("ils_relative_path")
+                if relative_path:
+                    if relative_path.startswith("/"):
+                        relative_path = relative_path.replace("/", "", 1)
+                    file_stream = import_legacy_files(relative_path)
 
-                file = create_file(
-                    bucket, file_stream, file_name, file_dump["checksum"]
-                )
-                file_stream.close()
+                    file = create_file(
+                        bucket, file_stream, file_name, file_dump["checksum"]
+                    )
+                    file_stream.close()
+                else:
+                    raise FileMigrationError("Source file path incorrect")
                 click.echo("Indexing...")
                 EItemIndexer().index(eitem)
 
