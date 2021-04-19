@@ -42,7 +42,7 @@ def import_legacy_files(file_link):
     """Download file from legacy."""
     # needed to ignore the migrator in the legacy statistics
     files_dir = current_app.config["CDS_ILS_MIGRATION_FILES_DIR"]
-    file = open(os.path.join(files_dir, file_link))
+    file = open(os.path.join(files_dir, file_link), 'rb')
 
     return file
 
