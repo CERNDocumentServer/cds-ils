@@ -182,12 +182,12 @@ def test_created_by_email(app):
         check_transformation(
             """
             <datafield tag="859" ind1=" " ind2=" ">
-                <subfield code="f">karolina.przerwa@cern.ch</subfield>
+                <subfield code="f">john.doe@cern.ch</subfield>
             </datafield>
             """,
             {
                 "created_by": {
-                    "_email": "karolina.przerwa@cern.ch",
+                    "_email": "john.doe@cern.ch",
                     "type": "user",
                 },
             },
@@ -199,13 +199,13 @@ def test_created_by_email(app):
                 <subfield code="w">201829</subfield>
             </datafield>
             <datafield tag="859" ind1=" " ind2=" ">
-                <subfield code="f">karolina.przerwa@cern.ch</subfield>
+                <subfield code="f">john.doe@cern.ch</subfield>
             </datafield>
             """,
             {
                 "created_by": {
                     "type": "user",
-                    "_email": "karolina.przerwa@cern.ch",
+                    "_email": "john.doe@cern.ch",
                 },
                 "_created": "2018-07-16",
             },
