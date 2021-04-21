@@ -16,9 +16,7 @@ from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.series.api import Series
-from invenio_app_ils.series.search import SeriesSearch
 
-from cds_ils.importer.errors import ManualImportRequired
 from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.migrator.errors import DocumentMigrationError, \
     MultipartMigrationError, SeriesMigrationError
@@ -283,3 +281,20 @@ def search_series_with_relations():
         ],
     )
     return search
+
+
+def search_serial_by_title(title):
+    """Return serial search by title."""
+    series_search = current_app_ils.series_search_cls()
+    search = series_search\
+        .query("query_string", query=f'title:"{title}"')\
+        .filter("term", mode_of_issuance="SERIAL")
+    return search
+
+
+def serial_already_exists(title):
+    """Check if serial with title exists."""
+    search = search_serial_by_title(title)
+    if search.count() > 0:
+        return True
+    return False

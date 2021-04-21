@@ -23,6 +23,7 @@ from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
+from cds_ils.migrator.series.api import serial_already_exists
 from cds_ils.migrator.utils import add_cds_url, add_cover_metadata, \
     clean_created_by_field
 from cds_ils.minters import legacy_recid_minter
@@ -52,16 +53,22 @@ class CDSSeriesDumpLoader(object):
         records_logger = logging.getLogger(f"{rectype}s_logger")
         series_cls = current_app_ils.series_record_cls
         record_uuid = uuid.uuid4()
+
         try:
             with db.session.begin_nested():
+                timestamp, json_data = dump.revisions[-1]
+
+                if rectype == 'serial'\
+                        and serial_already_exists(json_data["title"]):
+                    return
+
+                json_data = clean_created_by_field(json_data)
+                vocabulary_validator.validate(VOCABULARIES_FIELDS, json_data)
+
                 provider = SeriesIdProvider.create(
                     object_type="rec",
                     object_uuid=record_uuid,
                 )
-                timestamp, json_data = dump.revisions[-1]
-                json_data = clean_created_by_field(json_data)
-
-                vocabulary_validator.validate(VOCABULARIES_FIELDS, json_data)
 
                 add_cds_url(json_data)
                 json_data["pid"] = provider.pid.pid_value
