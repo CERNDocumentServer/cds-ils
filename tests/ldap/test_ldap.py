@@ -156,6 +156,15 @@ def test_update_users(app, db, testdata, mocker):
             "cernAccountType": [b"Primary"],
             "employeeID": [b"9152364"],
         },
+        {
+            "displayName": [b"Name"],
+            "department": [b"Department"],
+            "uidNumber": [b"444"],
+            # empty email should be skipped
+            "mail": [b""],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00444"],
+        },
     ]
 
     def _prepare():
@@ -197,15 +206,15 @@ def test_update_users(app, db, testdata, mocker):
 
     current_search.flush_and_refresh(index="*")
 
-    assert n_ldap == 8
+    assert n_ldap == 9
     assert n_updated == 1  # 00222
-    assert n_added == 2  # 00111, 00555
+    assert n_added == 3  # 00111, 00555, 00999
 
     invenio_users = User.query.all()
     # 2 are already in test data
-    # 3 in the prepared data
+    # 4 in the prepared data
     # 2 newly added from LDAP
-    assert len(invenio_users) == 7
+    assert len(invenio_users) == 8
 
     patrons_search = PatronsSearch()
 

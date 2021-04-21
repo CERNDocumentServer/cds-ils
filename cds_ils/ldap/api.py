@@ -213,10 +213,11 @@ def import_users():
     imported = 0
     importer = LdapUserImporter()
     for ldap_user in ldap_users:
+        employee_id = ldap_user_get(ldap_user, "employeeID")
         if "mail" not in ldap_user:
             print(
                 "User with employee ID {} does not have an email".format(
-                    ldap_user_get(ldap_user, "employeeID")
+                    employee_id
                 ),
                 file=sys.stderr,
             )
@@ -224,8 +225,8 @@ def import_users():
 
         email = ldap_user_get_email(ldap_user)
 
-        if not email.endswith("@cern.ch"):
-            print("Not a CERN email {}, skipping.".format(email))
+        if not email:
+            print("Mail field empty {}, skipping.".format(employee_id))
             continue
 
         if User.query.filter_by(email=email).count() > 0:
@@ -304,9 +305,9 @@ def update_users():
 
             email = ldap_user_get_email(ldap_user)
 
-            # check if email not ending with cern.ch. It should never happen
-            # for primary accounts
-            if not email.endswith("@cern.ch"):
+            # check if email is empty string.
+            # It happens when the account is not fully created on LDAP
+            if not email:
                 log_func("ldap_user_skipped_not_cern_email", dict(email=email))
                 continue
 
