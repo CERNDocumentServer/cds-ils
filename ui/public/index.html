@@ -31,7 +31,7 @@
   </head>
   <!-- Piwik -->
   <script type="text/javascript">
-    if (%REACT_APP_INVENIO_PIWIK_ID%) {
+    if (%REACT_APP_INVENIO_PIWIK_ID% !== undefined) {
       var pkBaseURL =
         'https:' == document.location.protocol
           ? 'https://piwik.web.cern.ch/'
