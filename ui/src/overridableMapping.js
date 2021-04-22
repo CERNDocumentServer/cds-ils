@@ -22,7 +22,7 @@ import { Slogan } from './overridden/frontsite/Home/Slogan';
 import { SideBarMenuItem } from './overridden/backoffice/Sidebar/SideBarMenuItem';
 import { ImporterRoute } from './overridden/routes/ImporterRoute';
 import { overriddenSearchAppCmps } from './overridden/frontsite/LiteratureSearch/LiteratureSearch';
-import { StandardCardView } from './overridden/frontsite//DocumentSearch/StandardCardView';
+import { StandardCardView } from './overridden/frontsite/DocumentSearch/StandardCardView';
 
 export const overriddenCmps = {
   'Backoffice.PatronDetails.Metadata': PatronMetadata,
