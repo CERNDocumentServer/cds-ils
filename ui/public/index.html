@@ -28,41 +28,35 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>CERN Library Catalogue</title>
+    <!-- Piwik -->
+    <script type="text/javascript" src="https://piwik.web.cern.ch/piwik.js"></script>
   </head>
+  <body>
   <!-- Piwik -->
   <script type="text/javascript">
-    if (%REACT_APP_INVENIO_PIWIK_ID% !== undefined) {
-      var pkBaseURL =
-        'https:' == document.location.protocol
-          ? 'https://piwik.web.cern.ch/'
-          : 'http://piwik.web.cern.ch/';
-      document.write(
-        unescape(
-          "%3Cscript src='" +
-            pkBaseURL +
-            "piwik.js' type='text/javascript'%3E%3C/script%3E"
-        )
-      );
+      var pkBaseURL = "https://piwik.web.cern.ch/";
       try {
-        var piwikTracker = Piwik.getTracker(
-          pkBaseURL + 'piwik.php',
-          %REACT_APP_INVENIO_PIWIK_ID%
-        );
-        piwikTracker.trackPageView();
-        piwikTracker.enableLinkTracking();
-      } catch (err) {}
-    }
+        if ("%REACT_APP_INVENIO_PIWIK_ID%" !== undefined)
+          {
+            var piwikTracker = Piwik.getTracker(
+            pkBaseURL + 'piwik.php', %REACT_APP_INVENIO_PIWIK_ID%);
+            piwikTracker.trackPageView();
+            piwikTracker.enableLinkTracking();
+          }
+      } catch (err) {
+        console.error(err);
+      }
   </script>
-  <noscript
-    ><p>
+  <noscript>
+    <p>
       <img
         src="http://piwik.web.cern.ch/piwik.php?idsite=%REACT_APP_INVENIO_PIWIK_ID%"
         style="border:0"
         alt=""
-      /></p
-  ></noscript>
+      />
+    </p>
+  </noscript>
   <!-- End Piwik Tracking Code -->
-  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="app"></div>
     <!--
