@@ -1,3 +1,4 @@
+import { Loader } from 'semantic-ui-react';
 import { FrontSiteRoutes as CdsFrontSiteRoutes } from '../frontsiteUrls';
 import {
   NotFound,
@@ -8,6 +9,7 @@ import {
 import { Route, Redirect } from 'react-router-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
+import _isEmpty from 'lodash/isEmpty';
 import { legacyApi } from '../../../api/legacy/legacy';
 
 export const LegacyRecordRoute = ({ ...props }) => {
@@ -18,9 +20,6 @@ export const LegacyRecordRoute = ({ ...props }) => {
         path={CdsFrontSiteRoutes.legacyRecordDetails}
         component={LegacyRecordCmp}
       />
-      <Route>
-        <NotFound />
-      </Route>
     </>
   );
 };
@@ -50,6 +49,9 @@ export class LegacyRecordCmp extends React.Component {
 
   render() {
     const { record } = this.state;
+    if (_isEmpty(record)) {
+      return <Loader active />;
+    }
     if (record.id && recordToPidType(record) === 'docid') {
       return <Redirect to={FrontSiteRoutes.documentDetailsFor(record.id)} />;
     } else if (record.id && recordToPidType(record) === 'serid') {
