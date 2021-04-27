@@ -203,7 +203,6 @@ def link_documents_and_serials():
                         serial, record, SERIAL_RELATION, journal["volume"]
                     )
 
-                    del record["publication_info"]
                     # mark done
                     record["_migration"]["has_journal"] = False
                     record.commit()
