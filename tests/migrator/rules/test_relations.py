@@ -74,7 +74,7 @@ def test_journal_relation_from_publication_info(app):
         SERIES_PID_TYPE, "pid", {"pid": journal_data["pid"]}
     )
     journal = Series.create(journal_data, record_uuid)
-    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+    legacy_pid_type = current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
     legacy_recid_minter(journal["legacy_recid"], legacy_pid_type, record_uuid)
     db.session.commit()
     ri = RecordIndexer()
