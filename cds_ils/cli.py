@@ -277,9 +277,10 @@ def recreate(pid, pid_type, all):
                 object_type="rec", status=PIDStatus.REGISTERED
             )
             .filter(PersistentIdentifier.pid_type == pid_type)
-            .values(PersistentIdentifier.pid_value)[0]
+            .values(PersistentIdentifier.pid_value)
         )
-        for pid_entry in pid_list:
+        pid_values = [pid[0] for pid in pid_list]
+        for pid_entry in pid_values:
             recreate_cover(pid_entry, record_class)
     else:
         recreate_cover(pid, record_class)
