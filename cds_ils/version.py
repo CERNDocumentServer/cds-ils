@@ -11,4 +11,4 @@ This file is imported by ``cds_ils.__init__``,
 and parsed by ``setup.py``.
 """
 
-__version__ = "1.0.6"
+__version__ = "1.0.7"
