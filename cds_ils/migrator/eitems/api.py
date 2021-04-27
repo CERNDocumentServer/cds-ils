@@ -287,7 +287,8 @@ def migrate_ezproxy_links(raise_exceptions=True):
                     document["pid"],
                     open_access=open_access or item["open_access"],
                 )
-                item["url"]["login_required"] = True
+                if "login_required" not in item["url"]:
+                    item["url"]["login_required"] = not open_access
                 eitem["urls"] = [item["url"]]
                 add_eitem_extra_metadata(eitem, document)
                 eitem.model.created = document.model.created
