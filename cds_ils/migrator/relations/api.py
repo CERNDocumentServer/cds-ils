@@ -145,12 +145,12 @@ def validate_edition_field(current_document_record, related_sibling, relation):
 
 def link_documents_and_serials():
     """Link documents/multiparts and serials."""
-    relations_logger = logging.getLogger("relations_logger")
     document_class = current_app_ils.document_record_cls
     document_search = current_app_ils.document_search_cls()
     series_class = current_app_ils.series_record_cls
     series_search = current_app_ils.series_search_cls()
-    legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+    journal_legacy_pid_type =\
+        current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
 
     def link_records_and_serial(record_cls, search):
         click.echo(f"FOUND {search.count()} serial related records.")
@@ -197,7 +197,7 @@ def link_documents_and_serials():
                 for journal in \
                         hit["_migration"]["journal_record_legacy_recids"]:
                     serial = get_record_by_legacy_recid(
-                        series_class, legacy_pid_type, journal["recid"]
+                        series_class, journal_legacy_pid_type, journal["recid"]
                     )
                     create_parent_child_relation(
                         serial, record, SERIAL_RELATION, journal["volume"]
