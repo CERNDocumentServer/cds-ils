@@ -6,7 +6,8 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Series JSON serializers."""
-
+from invenio_app_ils.literature.serializers.custom_fields import \
+    field_cover_metadata
 from invenio_records_rest.serializers.json import JSONSerializer
 
 from cds_ils.utils import format_login_required_urls
@@ -21,6 +22,7 @@ class SeriesJSONSerializer(JSONSerializer):
             pid, record, links_factory=links_factory, **kwargs
         )
         format_login_required_urls(series["metadata"].get("access_urls", []))
+        field_cover_metadata(series["metadata"])
         return series
 
     def transform_search_hit(
@@ -31,4 +33,5 @@ class SeriesJSONSerializer(JSONSerializer):
             pid, record_hit, links_factory=links_factory, **kwargs
         )
         format_login_required_urls(hit["metadata"].get("access_urls", []))
+        field_cover_metadata(hit["metadata"])
         return hit
