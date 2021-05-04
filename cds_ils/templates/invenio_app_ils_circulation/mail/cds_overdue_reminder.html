@@ -5,7 +5,7 @@ CERN Library: loan overdue for "{{ document.title|safe }}"
 {% block body_plain %}
 Dear {{ patron.name }},
 
-your loan of "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> expired {{ days_ago }} days ago.
+Your loan of "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> expired {{ days_ago }} days ago.
 
 You are kindly requested to return it at the Library or to extend it online in your profile page.
 {% endblock %}
@@ -13,7 +13,7 @@ You are kindly requested to return it at the Library or to extend it online in y
 {% block body_html %}
 Dear {{ patron.name }}, <br/><br/>
 
-your loan of <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> <b>expired {{ days_ago }} days ago </b>. <br/><br/>
+Your loan of <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> <b>expired {{ days_ago }} days ago </b>. <br/><br/>
 
 You are kindly requested to return it at the Library or to extend it online in your profile page. <br/><br/>
 {% endblock %}
