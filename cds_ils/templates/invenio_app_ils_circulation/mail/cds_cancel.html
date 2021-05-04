@@ -5,7 +5,7 @@ CERN Library: loan request cancelled for "{{ document.title|safe }}"
 {% block body_plain %}
 Dear {{ patron.name }},
 
-your loan request for "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> has been cancelled.
+Your loan request for "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> has been cancelled.
 {% if "cancel_reason" in loan %}
 Cancel reason: {{loan.cancel_reason}}
 {% endif -%}
@@ -14,7 +14,7 @@ Cancel reason: {{loan.cancel_reason}}
 {% block body_html %}
 Dear {{ patron.name }}, <br/><br/>
 
-your loan request for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has been <b>cancelled</b>. <br/>
+Your loan request for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has been <b>cancelled</b>. <br/>
 {% if "cancel_reason" in loan %}
 <b>Cancel reason: {{loan.cancel_reason}}</b>
 {% endif -%}

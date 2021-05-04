@@ -5,11 +5,11 @@ CERN Library: loan completed for "{{ document.title|safe }}"
 {% block body_plain %}
 Dear {{ patron.name }},
 
-your loan for "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> is now completed.
+The book you had on loan: "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> has been returned to the CERN Library.
 {% endblock %}
 
 {% block body_html %}
 Dear {{ patron.name }}, <br/><br/>
 
-your loan for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> is now <b>completed</b>.
+The book you had on loan: <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has been <b>returned</b> to the CERN Library.
 {% endblock %}
