@@ -16,6 +16,7 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
+from sqlalchemy.exc import IntegrityError
 
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
 from cds_ils.ldap.api import LdapUserImporter, _delete_invenio_user, \
@@ -142,7 +143,7 @@ def test_update_users(app, db, testdata, mocker):
             "displayName": [b"Name"],
             "department": [b"Department"],
             "uidNumber": [b"999"],
-            # wrong email, should be skipped
+            # custom emails allowed
             "mail": [b"ldap.user999@test.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00999"],
@@ -194,6 +195,20 @@ def test_update_users(app, db, testdata, mocker):
         db.session.commit()
         current_app_ils.patron_indexer.reindex_patrons()
 
+    def _prepare_duplicate():
+        duplicated = {
+            "displayName": [b"Name 2"],
+            "department": [b"Department 2"],
+            # same id as one of the previous, different emails
+            # should be skipped
+            "uidNumber": [b"555"],
+            "mail": [b"other555@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00555"],
+        }
+        importer = LdapUserImporter()
+        importer.import_user(duplicated)
+        db.session.commit()
     _prepare()
 
     # mock LDAP response
@@ -251,6 +266,10 @@ def test_update_users(app, db, testdata, mocker):
         "ldap.user444@cern.ch", "old user left CERN", "Department", "00444"
     )
     check_existence("ldap.user555@cern.ch", "Name 1", "Department 1", "00555")
+
+    # try ot import duplicated userUID
+    with pytest.raises(IntegrityError):
+        _prepare_duplicate()
 
 
 def test_log_table(app):
