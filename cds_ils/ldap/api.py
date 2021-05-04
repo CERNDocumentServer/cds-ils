@@ -419,19 +419,29 @@ def update_users():
             # Apparently, in some cases, there could be multiple LDAP users
             # with different person id but same email.
             email = ldap_user_get_email(ldap_user)
+            employee_id = ldap_user_get(ldap_user, "employeeID")
+            uid_number = ldap_user_get(ldap_user, "uidNumber")
+
             email_exists = User.query.filter_by(email=email).count() > 0
+
+            user_identity_exists = UserIdentity.query.filter_by(
+                id_user=uid_number).count() > 0
+
             if email_exists:
-                ldap_person_id = ldap_user_get(ldap_user, "employeeID")
                 log_func(
                     "ldap_user_skipped_email_exists_different_person_id",
-                    dict(email=email, person_id=ldap_person_id),
+                    dict(email=email, person_id=employee_id),
+                )
+                continue
+            if user_identity_exists:
+                log_func(
+                    "ldap_user_skipped_identity_exists_changed_email",
+                    dict(email=email, person_id=employee_id),
                 )
                 continue
 
             user_id = importer.import_user(ldap_user)
-
             email = ldap_user_get_email(ldap_user)
-            employee_id = ldap_user_get(ldap_user, "employeeID")
             log_func(
                 "invenio_user_added",
                 dict(email=email, employee_id=employee_id),
