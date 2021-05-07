@@ -1,0 +1,20 @@
+{% block subject %}
+CERN Library: request declined for "{{ request.title|safe }}"
+{% endblock %}
+
+{% block body_plain %}
+Dear {{ patron.name }},
+
+Your request for "{{ request.title }}" has been declined. The library will contact you in order to discuss possible solutions.
+
+Please let us know if another literature could fulfill your needs.
+{% endblock %}
+
+
+{% block body_html %}
+Dear {{ patron.name }}, <br/><br/>
+
+Your literature request for "{{ request.title }}" has been declined. The library will contact you in order to discuss possible solutions.<br/><br/>
+
+Please let us know if another literature could fulfill your needs.<br/>
+{% endblock %}
