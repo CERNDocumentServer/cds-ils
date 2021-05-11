@@ -8,7 +8,7 @@
 from flask import Blueprint, abort, current_app, redirect
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
 from invenio_app_ils.series.api import SERIES_PID_TYPE
-from invenio_pidstore.errors import PIDDoesNotExistError
+from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError
 from invenio_records.api import Record
 
 from cds_ils.literature.api import get_record_by_legacy_recid
@@ -41,6 +41,8 @@ def legacy_redirect(id):
         is_series = True
     except PIDDoesNotExistError:
         pass
+    except PIDDeletedError as e:
+        abort(410)
 
     if not is_document and not is_series:
         abort(404)
