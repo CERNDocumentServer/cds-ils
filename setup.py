@@ -37,7 +37,8 @@ install_requires = [
     "uwsgi-tools>=1.1.1",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a40",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a41",
+    "invenio-base>=1.2.4",
     "sentry-sdk>=0.10.2",
     # migrator deps
     "cds-dojson==0.9.0",
@@ -46,6 +47,9 @@ install_requires = [
     # temporarily breaking the builds, remove when fixed
     "sqlalchemy>=1.3,<1.4",
     "flask-sqlalchemy>=2.4,<2.5",
+    'Flask>=1.0.4,<2.0',
+    'Werkzeug>=1.0.1,<2.0',
+    'Jinja2>=2.11,<3'
 ]
 
 packages = find_packages()
