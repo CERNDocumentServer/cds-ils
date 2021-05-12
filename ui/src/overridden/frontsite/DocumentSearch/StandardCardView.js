@@ -11,16 +11,14 @@ export const StandardCardView = ({ metadata, ...props }) => {
     : null;
 
   return first ? (
-    <div>
-      <Label
-        basic
-        size="small"
-        color="grey"
-        className="margin-bottom-with-standard-number"
-      >
-        {first}
-      </Label>
-    </div>
+    <Label
+      basic
+      size="small"
+      color="grey"
+      className="margin-bottom-with-standard-number"
+    >
+      {first}
+    </Label>
   ) : null;
 };
 
