@@ -7,7 +7,9 @@ Dear {{ patron.name }},
 
 Your loan for "{{ document.full_title }}" <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}> has started.
 
+{% if 'delivery' in loan %}
 You selected: {{ circulation_delivery_methods[loan.delivery.method] }}
+{% endif %}}
 
 The due date is {{ loan.end_date }}.
 
@@ -22,8 +24,10 @@ Dear {{ patron.name }}, <br/><br/>
 
 Your loan for <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=document.pid) }}">"{{ document.full_title }}"</a> has <b>started</b>. <br/><br/>
 
+{% if 'delivery' in loan %}
 <br/><br/>
 You selected: <b>{{ circulation_delivery_methods[loan.delivery.method] }}</b>
+{% endif %}
 <br/><br/>
 The due date is <b>{{ loan.end_date }}</b>. <br/><br/>
 
