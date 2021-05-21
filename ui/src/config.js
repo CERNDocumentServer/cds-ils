@@ -141,6 +141,7 @@ export const config = {
         field: 'person_id',
       },
     },
+    phonebookURLPrefix: 'https://phonebook.cern.ch/search?q=',
   },
   ITEMS: {
     editorSchema: {

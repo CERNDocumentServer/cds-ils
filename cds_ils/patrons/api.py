@@ -36,6 +36,7 @@ class Patron(ILSPatron):
                     "person_id": str(self.extra_info.get("person_id", "")),
                     "department": self.extra_info.get("department", ""),
                     "legacy_id": str(self.extra_info.get("legacy_id", "")),
+                    "mailbox": str(self.extra_info.get("mailbox", "")),
                 }
             )
 
@@ -62,6 +63,7 @@ class AnonymousPatron(ILSAnonymousPatron):
                 "person_id": "anonymous",
                 "department": "anonymous",
                 "legacy_id": "anonymous",
+                "mailbox": "anonymous",
             }
         )
 
