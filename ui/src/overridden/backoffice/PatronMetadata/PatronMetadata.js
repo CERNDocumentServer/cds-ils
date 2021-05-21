@@ -5,15 +5,29 @@ import {
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Grid, Header, Segment } from 'semantic-ui-react';
+import { config } from '../../../config';
 
 export const PatronMetadata = ({ patron, ...props }) => {
   const leftTable = [
     { name: 'Name', value: patron.metadata.name },
     { name: 'Email', value: patron.metadata.email },
+    { name: 'Mailbox', value: patron.metadata.mailbox },
   ];
   const rightTable = [
     { name: 'Person ID', value: patron.metadata.person_id },
     { name: 'Department', value: patron.metadata.department },
+    {
+      name: 'CERN Profile',
+      value: patron.metadata.person_id ? (
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href={config.PATRONS.phonebookURLPrefix + patron.metadata.person_id}
+        >
+          Phonebook
+        </a>
+      ) : null,
+    },
   ];
   return (
     <>

@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Invenio.
-# Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2019-2020 CERN.
 #
-# cds-migrator-kit is free software; you can redistribute it and/or modify it
-# under the terms of the MIT License; see LICENSE file for more details.
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS ldap API."""
 
 import json
-import sys
 import time
 import uuid
 from functools import partial
 
-import ldap
 from flask import current_app
 from invenio_accounts.models import User
 from invenio_app_ils.errors import AnonymizationActiveLoansError
@@ -22,183 +19,13 @@ from invenio_app_ils.patrons.anonymization import anonymize_patron_data
 from invenio_app_ils.patrons.indexer import PatronBaseIndexer
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
-from invenio_oauthclient.models import RemoteAccount, UserIdentity
-from invenio_userprofiles.models import UserProfile
+from invenio_oauthclient.models import RemoteAccount
 
-from cds_ils.config import OAUTH_REMOTE_APP_NAME
+from cds_ils.ldap.client import LdapClient
+from cds_ils.ldap.serializers import InvenioUser, serialize_ldap_user, \
+    user_exists
+from cds_ils.ldap.user_importer import LdapUserImporter
 from cds_ils.mail.tasks import send_warning_mail_patron_has_active_loans
-
-
-def ldap_user_get(user, field_name):
-    """Get first value of the given field from the LDAP user object."""
-    return user[field_name][0].decode("utf8")
-
-
-def ldap_user_get_email(user):
-    """Get the normalized email attribute from the LDAP user object."""
-    return ldap_user_get(user, "mail").lower()
-
-
-class LdapClient(object):
-    """Ldap client class for user importation/synchronization.
-
-    Response example:
-        [
-            {'displayName': [b'Joe Foe'],
-             'department': [b'IT/CDA'],
-             'uidNumber': [b'100000'],
-             'mail': [b'joe.foe@cern.ch'],
-             'cernAccountType': [b'Primary'],
-             'employeeID': [b'101010']
-            },...
-        ]
-    """
-
-    LDAP_BASE = "OU=Users,OU=Organic Units,DC=cern,DC=ch"
-
-    LDAP_CERN_PRIMARY_ACCOUNTS_FILTER = "(&(cernAccountType=Primary))"
-
-    LDAP_USER_RESP_FIELDS = [
-        "mail",
-        "displayName",
-        "department",
-        "cernAccountType",
-        "employeeID",
-        "uidNumber",
-    ]
-
-    def __init__(self, ldap_url=None):
-        """Initialize ldap connection."""
-        ldap_url = ldap_url or current_app.config["CDS_ILS_LDAP_URL"]
-        self.ldap = ldap.initialize(ldap_url)
-
-    def _search_paginated_primary_account(self, page_control):
-        """Execute search to get primary accounts."""
-        return self.ldap.search_ext(
-            self.LDAP_BASE,
-            ldap.SCOPE_ONELEVEL,
-            self.LDAP_CERN_PRIMARY_ACCOUNTS_FILTER,
-            self.LDAP_USER_RESP_FIELDS,
-            serverctrls=[page_control],
-        )
-
-    def get_primary_accounts(self):
-        """Retrieve all primary accounts from ldap."""
-        page_control = ldap.controls.SimplePagedResultsControl(
-            True, size=1000, cookie=""
-        )
-
-        result = []
-        while True:
-            response = self._search_paginated_primary_account(page_control)
-            rtype, rdata, rmsgid, serverctrls = self.ldap.result3(response)
-            result.extend([x[1] for x in rdata])
-
-            ldap_page_control = ldap.controls.SimplePagedResultsControl
-            ldap_page_control_type = ldap_page_control.controlType
-            controls = [
-                control
-                for control in serverctrls
-                if control.controlType == ldap_page_control_type
-            ]
-            if not controls:
-                print("The server ignores RFC 2696 control")
-                break
-            if not controls[0].cookie:
-                break
-            page_control.cookie = controls[0].cookie
-
-        return result
-
-    # Kept as example if needed to fetch a specific user by a field
-    # def get_user_by_person_id(self, person_id):
-    #     """Query ldap to retrieve user by person id."""
-    #     self.ldap.search_ext(
-    #         "OU=Users,OU=Organic Units,DC=cern,DC=ch",
-    #         ldap.SCOPE_ONELEVEL,
-    #         "(&(cernAccountType=Primary)(employeeID={}))".format(person_id),
-    #         self.LDAP_USER_RESP_FIELDS,
-    #         serverctrls=[
-    #             ldap.controls.SimplePagedResultsControl(
-    #                 True, size=7, cookie=""
-    #             )
-    #         ],
-    #     )
-    #
-    #     res = self.ldap.result()[1]
-    #
-    #     return [x[1] for x in res]
-
-
-class LdapUserImporter:
-    """Import ldap users to Invenio ILS records.
-
-    Expected input format for ldap users:
-        [
-            {'displayName': [b'Joe Foe'],
-             'department': [b'IT/CDA'],
-             'uidNumber': [b'100000'],
-             'mail': [b'joe.foe@cern.ch'],
-             'cernAccountType': [b'Primary'],
-             'employeeID': [b'101010']
-            },...
-        ]
-    """
-
-    def __init__(self):
-        """Constructor."""
-        self.client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
-            "consumer_key"
-        ]
-
-    def create_invenio_user(self, ldap_user):
-        """Commit new user in db."""
-        email = ldap_user_get_email(ldap_user)
-        user = User(email=email, active=True)
-        db.session.add(user)
-        db.session.commit()
-        return user.id
-
-    def create_invenio_user_identity(self, user_id, ldap_user):
-        """Return new user identity entry."""
-        uid_number = ldap_user_get(ldap_user, "uidNumber")
-        return UserIdentity(
-            id=uid_number, method=OAUTH_REMOTE_APP_NAME, id_user=user_id
-        )
-
-    def create_invenio_user_profile(self, user_id, ldap_user):
-        """Return new user profile."""
-        display_name = ldap_user_get(ldap_user, "displayName")
-        return UserProfile(
-            user_id=user_id,
-            _displayname="id_{}".format(user_id),
-            full_name=display_name,
-        )
-
-    def create_invenio_remote_account(self, user_id, ldap_user):
-        """Return new user entry."""
-        employee_id = ldap_user_get(ldap_user, "employeeID")
-        department = ldap_user_get(ldap_user, "department")
-        return RemoteAccount(
-            client_id=self.client_id,
-            user_id=user_id,
-            extra_data=dict(person_id=employee_id, department=department),
-        )
-
-    def import_user(self, ldap_user):
-        """Create Invenio users from LDAP export."""
-        user_id = self.create_invenio_user(ldap_user)
-
-        identity = self.create_invenio_user_identity(user_id, ldap_user)
-        db.session.add(identity)
-
-        profile = self.create_invenio_user_profile(user_id, ldap_user)
-        db.session.add(profile)
-
-        remote_account = self.create_invenio_remote_account(user_id, ldap_user)
-        db.session.add(remote_account)
-
-        return user_id
 
 
 def import_users():
@@ -212,30 +39,14 @@ def import_users():
 
     imported = 0
     importer = LdapUserImporter()
-    for ldap_user in ldap_users:
-        employee_id = ldap_user_get(ldap_user, "employeeID")
-        if "mail" not in ldap_user:
-            print(
-                "User with employee ID {} does not have an email".format(
-                    employee_id
-                ),
-                file=sys.stderr,
-            )
+    for ldap_user_data in ldap_users:
+        ldap_user = serialize_ldap_user(ldap_user_data)
+        already_exists = user_exists(ldap_user)
+
+        if not ldap_user or already_exists:
             continue
 
-        email = ldap_user_get_email(ldap_user)
-
-        if not email:
-            print("Mail field empty {}, skipping.".format(employee_id))
-            continue
-
-        if User.query.filter_by(email=email).count() > 0:
-            print(
-                "User with email {} already imported, skipping.".format(email)
-            )
-            continue
-
-        employee_id = ldap_user_get(ldap_user, "employeeID")
+        employee_id = ldap_user["remote_account_person_id"]
         print("Importing user with person id {}".format(employee_id))
         importer.import_user(ldap_user)
         imported += 1
@@ -248,16 +59,6 @@ def import_users():
     current_app_ils.patron_indexer.reindex_patrons()
 
     print("--- Finished in %s seconds ---" % (time.time() - start_time))
-
-
-def _update_invenio_user(
-    invenio_remote_account_id, invenio_user_profile, invenio_user, ldap_user
-):
-    """Check if the LDAP user has more updated info and update the Invenio."""
-    invenio_user_profile.full_name = ldap_user_get(ldap_user, "displayName")
-    ra = RemoteAccount.query.filter_by(id=invenio_remote_account_id).one()
-    ra.extra_data["department"] = ldap_user_get(ldap_user, "department")
-    invenio_user.email = ldap_user_get_email(ldap_user)
 
 
 def _delete_invenio_user(user_id):
@@ -280,69 +81,51 @@ def _log_info(log_uuid, action, extra=dict(), is_error=False):
         current_app.logger.info(structured_msg_str)
 
 
+def remap_invenio_users(log_func):
+    """Create and return a list of all Invenio users."""
+    invenio_remote_accounts_list = []
+    remote_accounts = RemoteAccount.query.all()
+
+    log_func(
+        "invenio_users_fetched", dict(users_fetched=len(remote_accounts))
+    )
+
+    # get all Invenio remote accounts and prepare a list with needed info
+    for remote_account in remote_accounts:
+        invenio_remote_accounts_list.append(
+            remote_account
+        )
+    log_func("invenio_users_cached")
+    return invenio_remote_accounts_list
+
+
+def get_ldap_users(log_func):
+    """Create and return a map of all LDAP users."""
+    ldap_users_emails = set()
+    ldap_users_map = {}
+
+    # get all CERN users from LDAP
+    ldap_client = LdapClient()
+    ldap_users = ldap_client.get_primary_accounts()
+    ldap_users_count = len(ldap_users)
+
+    log_func("ldap_users_fetched", dict(users_fetched=ldap_users_count))
+
+    for ldap_user_data in ldap_users:
+
+        ldap_user = serialize_ldap_user(ldap_user_data, log_func=log_func)
+
+        if ldap_user and ldap_user["user_email"] not in ldap_users_emails:
+            ldap_person_id = ldap_user["remote_account_person_id"]
+            ldap_users_map[ldap_person_id] = ldap_user
+            ldap_users_emails.add(ldap_user["user_email"])
+
+    log_func("ldap_users_cached")
+    return ldap_users_count, ldap_users_map, ldap_users_emails
+
+
 def update_users():
     """Sync LDAP users with local users in the DB."""
-
-    def get_ldap_users(log_func):
-        """Create and return a map of all LDAP users."""
-        # get all CERN users from LDAP
-        ldap_client = LdapClient()
-        ldap_users = ldap_client.get_primary_accounts()
-        ldap_users_count = len(ldap_users)
-
-        log_func("ldap_users_fetched", dict(users_fetched=ldap_users_count))
-
-        ldap_users_emails = set()
-        ldap_users_map = {}
-        for ldap_user in ldap_users:
-            # check if email exists in the user data
-            if "mail" not in ldap_user:
-                log_func(
-                    "ldap_user_skipped_missing_email",
-                    dict(employee_id=ldap_user_get(ldap_user, "employeeID")),
-                )
-                continue
-
-            email = ldap_user_get_email(ldap_user)
-
-            # check if email is empty string.
-            # It happens when the account is not fully created on LDAP
-            if not email:
-                log_func("ldap_user_skipped_not_cern_email", dict(email=email))
-                continue
-
-            if email not in ldap_users_emails:
-                ldap_person_id = ldap_user_get(ldap_user, "employeeID")
-                ldap_users_map[ldap_person_id] = ldap_user
-                ldap_users_emails.add(email)
-
-        log_func("ldap_users_cached")
-        return ldap_users_count, ldap_users_map, ldap_users_emails
-
-    def remap_invenio_users(log_func):
-        """Create and return a list of all Invenio users."""
-        remote_accounts = RemoteAccount.query.all()
-        log_func(
-            "invenio_users_fetched", dict(users_fetched=len(remote_accounts))
-        )
-
-        # get all Invenio remote accounts and prepare a list with needed info
-        invenio_users = []
-        for remote_account in remote_accounts:
-            invenio_users.append(
-                dict(
-                    remote_account_id=remote_account.id,
-                    remote_account_person_id=remote_account.extra_data[
-                        "person_id"
-                    ],
-                    remote_account_department=remote_account.extra_data.get(
-                        "department"
-                    ),
-                    user_id=remote_account.user_id,
-                )
-            )
-        log_func("invenio_users_cached")
-        return invenio_users
 
     def update_invenio_users_from_ldap(
         invenio_users, ldap_users_map, log_func
@@ -353,55 +136,36 @@ def update_users():
         # Note: cannot iterate on the db query here, because when a user is
         # deleted, db session will expire, causing a DetachedInstanceError when
         # fetching the user on the next iteration
-        for invenio_user in invenio_users:
+        for remote_account in invenio_users:
+            invenio_user = InvenioUser(remote_account)
+
             # use `dict.pop` to remove from `ldap_users_map` the users found
             # in Invenio, so the remaining will be the ones to be added
             # later on
             ldap_user = ldap_users_map.pop(
-                invenio_user["remote_account_person_id"], None
+                invenio_user.data["remote_account_person_id"], None
             )
             if not ldap_user:
                 continue
 
-            # the imported LDAP user is already in the Invenio db
-            ldap_user_display_name = ldap_user_get(ldap_user, "displayName")
-            user_id = invenio_user["user_id"]
-            user_profile = UserProfile.query.filter_by(user_id=user_id).one()
-            invenio_full_name = user_profile.full_name
+            invenio_user.data.pop("remote_account_id")
+            ldap_user.pop("cern_account_type")
+            has_changed = invenio_user.data != ldap_user
 
-            ldap_user_department = ldap_user_get(ldap_user, "department")
-            invenio_user_department = invenio_user["remote_account_department"]
-
-            user = User.query.filter_by(id=user_id).one()
-            ldap_user_email = ldap_user_get_email(ldap_user)
-            invenio_user_email = user.email
-
-            has_changed = (
-                ldap_user_display_name != invenio_full_name
-                or ldap_user_department != invenio_user_department
-                or ldap_user_email != invenio_user_email
-            )
             if has_changed:
-                _update_invenio_user(
-                    invenio_remote_account_id=invenio_user[
-                        "remote_account_id"
-                    ],
-                    invenio_user_profile=user_profile,
-                    invenio_user=user,
-                    ldap_user=ldap_user,
-                )
-
+                invenio_user.update(ldap_user)
                 log_func(
-                    "department_updated",
+                    "user_updated",
                     dict(
-                        user_id=invenio_user["user_id"],
-                        previous_department=invenio_user_department,
-                        new_department=ldap_user_department,
+                        user_id=invenio_user.user_id,
+                        previous_department=invenio_user
+                        .data["remote_account_department"],
+                        new_department=ldap_user["remote_account_department"],
                     ),
                 )
 
                 # re-index modified patron
-                patron_indexer.index(patron_cls(invenio_user["user_id"]))
+                patron_indexer.index(patron_cls(invenio_user.user_id))
 
                 updated_count += 1
 
@@ -418,30 +182,19 @@ def update_users():
             # Check if email already exists in Invenio.
             # Apparently, in some cases, there could be multiple LDAP users
             # with different person id but same email.
-            email = ldap_user_get_email(ldap_user)
-            employee_id = ldap_user_get(ldap_user, "employeeID")
-            uid_number = ldap_user_get(ldap_user, "uidNumber")
-
-            email_exists = User.query.filter_by(email=email).count() > 0
-
-            user_identity_exists = UserIdentity.query.filter_by(
-                id_user=uid_number).count() > 0
-
-            if email_exists:
+            if not ldap_user:
+                continue
+            if user_exists(ldap_user):
                 log_func(
-                    "ldap_user_skipped_email_exists_different_person_id",
-                    dict(email=email, person_id=employee_id),
+                    "ldap_user_skipped_user_exists",
+                    dict(email=ldap_user["user_email"],
+                         person_id=ldap_user["remote_account_person_id"]),
                 )
                 continue
-            if user_identity_exists:
-                log_func(
-                    "ldap_user_skipped_identity_exists_changed_email",
-                    dict(email=email, person_id=employee_id),
-                )
-                continue
+            email = ldap_user["user_email"]
+            employee_id = ldap_user["remote_account_person_id"]
 
             user_id = importer.import_user(ldap_user)
-            email = ldap_user_get_email(ldap_user)
             log_func(
                 "invenio_user_added",
                 dict(email=email, employee_id=employee_id),
@@ -481,10 +234,9 @@ def update_users():
     # STEP 2 - import any new LDAP user not in Invenio yet
     invenio_users_added = 0
     new_ldap_users = ldap_users_map.values()
+
     if new_ldap_users:
-        invenio_users_added = import_new_ldap_users(
-            new_ldap_users, log_func
-        )
+        invenio_users_added = import_new_ldap_users(new_ldap_users, log_func)
 
     total_time = time.time() - start_time
 
@@ -506,36 +258,12 @@ def delete_users(dry_run=True):
 
     invenio_users_deleted_count = 0
 
-    # get all CERN users from LDAP
-    ldap_client = LdapClient()
-    ldap_users = ldap_client.get_primary_accounts()
-
-    if not ldap_users:
-        return 0, 0
-
-    # create a map by employeeID for fast lookup
-    ldap_users_map = {}
-    for ldap_user in ldap_users:
-        ldap_person_id = ldap_user_get(ldap_user, "employeeID")
-        ldap_users_map[ldap_person_id] = ldap_user
-
-    remote_accounts = RemoteAccount.query.all()
+    ldap_users_count, ldap_users_map, ldap_users_emails = get_ldap_users(
+        log_func
+    )
 
     # get all Invenio remote accounts and prepare a list with needed info
-    invenio_users = []
-    for remote_account in remote_accounts:
-        invenio_users.append(
-            dict(
-                remote_account_id=remote_account.id,
-                remote_account_person_id=remote_account.extra_data[
-                    "person_id"
-                ],
-                remote_account_department=remote_account.extra_data.get(
-                    "department"
-                ),
-                user_id=remote_account.user_id,
-            )
-        )
+    invenio_users = remap_invenio_users(log_func)
 
     for invenio_user in invenio_users:
         ldap_user = ldap_users_map.get(
@@ -545,9 +273,8 @@ def delete_users(dry_run=True):
             # the user in Invenio does not exist in LDAP, delete it
 
             # fetch user and needed values before deletion
-            user_id = invenio_user["user_id"]
+            user_id = invenio_user.user_id
             user = User.query.filter_by(id=user_id).one()
-            email = user.email
 
             if not dry_run:
                 success = _delete_invenio_user(user_id)

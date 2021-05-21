@@ -20,8 +20,9 @@ from sqlalchemy.exc import IntegrityError
 
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
 from cds_ils.ldap.api import LdapUserImporter, _delete_invenio_user, \
-    import_users, ldap_user_get, update_users
+    import_users, update_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
+from cds_ils.ldap.serializers import serialize_ldap_user
 
 
 def test_send_email_delete_user_with_loans(app, patrons, testdata):
@@ -58,6 +59,7 @@ def test_import_users(app, db, testdata, mocker):
             "mail": [b"ldap.user@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"111"],
+            "postOfficeBox": [b"M12345"]
         }
     ]
 
@@ -72,14 +74,16 @@ def test_import_users(app, db, testdata, mocker):
 
     import_users()
 
-    ldap_user = ldap_users[0]
-    email = ldap_user_get(ldap_user, "mail").lower()
+    ldap_user_data = ldap_users[0]
+
+    ldap_user = serialize_ldap_user(ldap_user_data)
+    email = ldap_user["user_email"]
     user = User.query.filter(User.email == email).one()
     assert user
 
     assert UserProfile.query.filter(UserProfile.user_id == user.id).one()
 
-    uid_number = ldap_user_get(ldap_user, "uidNumber")
+    uid_number = ldap_user["user_identity_id"]
     user_identity = UserIdentity.query.filter(
         UserIdentity.id == uid_number
     ).one()
@@ -98,6 +102,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user111@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00111"],
+            "postOfficeBox": [b"M12345"]
         },
         {
             "displayName": [b"A new name"],
@@ -106,6 +111,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user222@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00222"],
+            "postOfficeBox": [b"M12345"]
         },
         {
             "displayName": [b"Nothing changed"],
@@ -114,6 +120,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user333@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00333"],
+            "postOfficeBox": [b"M12345"]
         },
         {
             "displayName": [b"Name 1"],
@@ -122,6 +129,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user555@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00555"],
+            "postOfficeBox": [b"M12345"]
         },
         {
             "displayName": [b"Name 2"],
@@ -130,6 +138,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user555@cern.ch"],  # same email as 555
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00666"],
+            "postOfficeBox": [b"M12345"]
         },
         {
             "displayName": [b"Name"],
@@ -138,6 +147,7 @@ def test_update_users(app, db, testdata, mocker):
             # missing email, should be skipped
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00777"],
+            "postOfficeBox": [b"M12345"]
         },
         {
             "displayName": [b"Name"],
@@ -147,6 +157,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user999@test.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00999"],
+            "postOfficeBox": [b"M12345"]
         },
         {
             "displayName": [b"Nothing changed"],
@@ -156,6 +167,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user333@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"9152364"],
+            "postOfficeBox": [b"M12345"]
         },
         {
             "displayName": [b"Name"],
@@ -165,6 +177,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b""],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00444"],
+            "postOfficeBox": [b"M12345"]
         },
     ]
 
@@ -176,10 +189,12 @@ def test_update_users(app, db, testdata, mocker):
         WILL_BE_UPDATED = deepcopy(ldap_users[1])
         WILL_BE_UPDATED["displayName"] = [b"Previous name"]
         WILL_BE_UPDATED["department"] = [b"Old department"]
-        importer.import_user(WILL_BE_UPDATED)
+        ldap_user = serialize_ldap_user(WILL_BE_UPDATED)
+        importer.import_user(ldap_user)
 
         WILL_NOT_CHANGE = deepcopy(ldap_users[2])
-        importer.import_user(WILL_NOT_CHANGE)
+        ldap_user = serialize_ldap_user(WILL_NOT_CHANGE)
+        importer.import_user(ldap_user)
 
         # create a user that does not exist anymore in LDAP, but will not
         # be deleted for safety
@@ -190,8 +205,10 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user444@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00444"],
+            "postOfficeBox": [b"M12345"]
         }
-        importer.import_user(COULD_BE_DELETED)
+        ldap_user = serialize_ldap_user(COULD_BE_DELETED)
+        importer.import_user(ldap_user)
         db.session.commit()
         current_app_ils.patron_indexer.reindex_patrons()
 
@@ -205,9 +222,11 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"other555@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00555"],
+            "postOfficeBox": [b"M12345"]
         }
         importer = LdapUserImporter()
-        importer.import_user(duplicated)
+        ldap_user = serialize_ldap_user(duplicated)
+        importer.import_user(ldap_user)
         db.session.commit()
     _prepare()
 
@@ -234,7 +253,8 @@ def test_update_users(app, db, testdata, mocker):
     patrons_search = PatronsSearch()
 
     def check_existence(
-        expected_email, expected_name, expected_department, expected_person_id
+        expected_email, expected_name, expected_department, expected_person_id,
+        expected_mailbox
     ):
         """Assert exist in DB and ES."""
         # check if saved in DB
@@ -252,20 +272,25 @@ def test_update_users(app, db, testdata, mocker):
         assert patron_hit["email"] == expected_email
         assert patron_hit["department"] == expected_department
         assert patron_hit["person_id"] == expected_person_id
+        assert patron_hit["mailbox"] == expected_mailbox
 
     check_existence(
-        "ldap.user111@cern.ch", "New user", "A department", "00111"
+        "ldap.user111@cern.ch", "New user", "A department", "00111", "M12345"
     )
     check_existence(
-        "ldap.user222@cern.ch", "A new name", "A new department", "00222"
+        "ldap.user222@cern.ch", "A new name", "A new department", "00222",
+        "M12345"
     )
     check_existence(
-        "ldap.user333@cern.ch", "Nothing changed", "Same department", "00333"
+        "ldap.user333@cern.ch", "Nothing changed", "Same department", "00333",
+        "M12345"
     )
     check_existence(
-        "ldap.user444@cern.ch", "old user left CERN", "Department", "00444"
+        "ldap.user444@cern.ch", "old user left CERN", "Department", "00444",
+        "M12345"
     )
-    check_existence("ldap.user555@cern.ch", "Name 1", "Department 1", "00555")
+    check_existence("ldap.user555@cern.ch", "Name 1", "Department 1", "00555",
+                    "M12345")
 
     # try ot import duplicated userUID
     with pytest.raises(IntegrityError):
