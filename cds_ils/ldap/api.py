@@ -83,6 +83,7 @@ def _log_info(log_uuid, action, extra=dict(), is_error=False):
 
 def remap_invenio_users(log_func):
     """Create and return a list of all Invenio users."""
+    print("FETCH REMOTE ACCOUNTS")
     invenio_remote_accounts_list = []
     remote_accounts = RemoteAccount.query.all()
 
@@ -138,7 +139,6 @@ def update_users():
         # fetching the user on the next iteration
         for remote_account in invenio_users:
             invenio_user = InvenioUser(remote_account)
-
             # use `dict.pop` to remove from `ldap_users_map` the users found
             # in Invenio, so the remaining will be the ones to be added
             # later on
@@ -147,13 +147,16 @@ def update_users():
             )
             if not ldap_user:
                 continue
-
+            print("Processing user with person id {}".format(
+                ldap_user["remote_account_person_id"]))
             invenio_user.data.pop("remote_account_id")
             ldap_user.pop("cern_account_type")
+
             has_changed = invenio_user.data != ldap_user
 
             if has_changed:
                 invenio_user.update(ldap_user)
+                db.session.commit()
                 log_func(
                     "user_updated",
                     dict(
