@@ -31,7 +31,7 @@ def serialize_ldap_user(ldap_user_data, log_func=None):
             cern_account_type=decoded_data["cernAccountType"],
             remote_account_person_id=str(decoded_data["employeeID"]),
             remote_account_department=decoded_data["department"],
-            remote_account_mailbox=decoded_data.get("postOfficeBox", None),
+            remote_account_mailbox=decoded_data.get("postOfficeBox"),
         )
 
         return serialized_data
@@ -106,9 +106,9 @@ class InvenioUser:
             user_email=self.user.email,
             user_identity_id=self.user_identity.id,
             remote_account_id=self.remote_account.id,
-            remote_account_person_id=self.remote_account.extra_data[
+            remote_account_person_id=str(self.remote_account.extra_data[
                 "person_id"
-            ],
+            ]),
             remote_account_department=self.remote_account.extra_data.get(
                 "department"
             ),
