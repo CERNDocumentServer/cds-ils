@@ -39,7 +39,7 @@
   {
     "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
     "created_by": {"type": "script", "value":  "test"},
-    "title": "amer ecuipment bacis hotograpic technicues",
+    "title": "Camera, equipment and basic photographi techniques",
     "authors": [
       { "full_name": "Einstein Alb" },
       { "full_name": "Stachel" }

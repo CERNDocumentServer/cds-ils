@@ -26,7 +26,7 @@ from cds_ils.importer.providers.utils import \
 def recid(self, key, value):
     """Record Identifier."""
     self["provider_recid"] = value
-    return [{"scheme": "EBL", "value": value}]
+    return [{"scheme": "SAFARI", "value": value}]
 
 
 @model.over("agency_code", "^003")

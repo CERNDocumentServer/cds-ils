@@ -11,6 +11,7 @@ from copy import deepcopy
 
 import click
 from invenio_app_ils.documents.api import DocumentIdProvider
+from invenio_jsonschemas import current_jsonschemas
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.vocabularies.api import VOCABULARY_TYPE_LICENSE
@@ -165,7 +166,7 @@ class DocumentImporter(object):
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
             click.secho(e.original_exception.message, fg="red")
             db.session.rollback()
-            # raise e TODO handle the incorrect records in the logging
+            raise e
 
     def _update_field_identifiers(self, matched_document):
         """Update isbns of a given document."""
@@ -266,3 +267,24 @@ class DocumentImporter(object):
         fuzzy_results = fuzzy_search_document(title, authors).scan()
 
         return fuzzy_results
+
+    def preview_document_import(self):
+        """Preview document import JSON."""
+        document_cls = current_app_ils.document_record_cls
+        doc = document_cls(self._before_create())
+        doc['pid'] = "preview"
+        doc["$schema"] = current_jsonschemas.path_to_url(document_cls._schema)
+        doc.validate()
+        return doc
+
+    def preview_document_update(self, matched_document):
+        """Preview document update JSON."""
+        for field in self.update_document_fields:
+            update_field_method = getattr(
+                self, "_update_field_{}".format(field), None
+            )
+            if update_field_method:
+                matched_document[field] = update_field_method(matched_document)
+            else:
+                matched_document[field] = self.json_data[field]
+        return matched_document
