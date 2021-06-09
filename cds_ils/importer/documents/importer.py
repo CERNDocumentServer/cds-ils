@@ -11,6 +11,7 @@ from copy import deepcopy
 
 import click
 from invenio_app_ils.documents.api import DocumentIdProvider
+from invenio_jsonschemas import current_jsonschemas
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.vocabularies.api import VOCABULARY_TYPE_LICENSE
