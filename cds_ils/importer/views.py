@@ -123,11 +123,10 @@ class ImporterListView(ContentNegotiatedMethodView):
                 )
                 file.save(source_path)
 
-                source_type = "marcxml"
                 log = create_import_task(source_path,
                                          original_filename,
-                                         source_type,
-                                         provider, mode)
+                                         provider, mode,
+                                         )
 
                 return self.make_response(log)
             else:

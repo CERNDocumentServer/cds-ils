@@ -191,6 +191,17 @@ class SeriesImporter(object):
         except RecordRelationsError as e:
             click.secho(str(e), fg="red")
 
+    def _record_summary(self, json,
+                        series_record, output_pid, action,
+                        matching_series_pid_list=None):
+        return {
+            "series_json": self._before_create(json),
+            "series_record": series_record,
+            "action": action,
+            "output_pid": output_pid,
+            "duplicates": matching_series_pid_list
+        }
+
     def import_series(self, document):
         """Import series."""
         series_class = current_app_ils.series_record_cls
@@ -206,17 +217,61 @@ class SeriesImporter(object):
                     matching_series_pids[0]
                 )
                 self.update_series(matching_series, json_series)
-                series.append(matching_series)
                 self.import_serial_relation(
                     matching_series, document, json_series
                 )
+                series.append(
+                    self._record_summary(json_series,
+                                         matching_series,
+                                         matching_series_pids[0],
+                                         action="update"
+                                         ))
 
             elif len(matching_series_pids) == 0:
                 series_record = self.create_series(json_series)
-                series.append(series_record)
                 self.import_serial_relation(
                     series_record, document, json_series
                 )
+                series.append(
+                    self._record_summary(json_series,
+                                         series_record=series_record,
+                                         output_pid=None, action="create"))
             else:
                 raise SeriesImportError(message="Multiple series found.")
         return series
+
+    def preview_series(self):
+        """Preview of series import."""
+        series_class = current_app_ils.series_record_cls
+        series_preview = []
+        if self.json_data is None:
+            return []
+
+        for json_series in self.json_data:
+            matching_series_pids = self.search_for_matching_series(json_series)
+            if len(matching_series_pids) == 1:
+                matched_series = series_class.get_record_by_pid(
+                    matching_series_pids[0]
+                )
+                matched_series["identifiers"] = self._update_field_identifiers(
+                    matched_series, json_series
+                )
+                series_preview.append(
+                    self._record_summary(json_series,
+                                         matched_series,
+                                         matching_series_pids[0],
+                                         action="update"
+                                         ))
+            elif len(matching_series_pids) == 0:
+                json_series = self._before_create(json_series)
+                series_preview.append(
+                    self._record_summary(json_series, series_record=None,
+                                         output_pid=None, action="create"))
+            else:
+                series_preview.append(
+                    self._record_summary(
+                        json_series, series_record=None,
+                        output_pid=None, action="create",
+                        matching_series_pid_list=matching_series_pids)
+                )
+        return series_preview

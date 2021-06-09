@@ -6,29 +6,25 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Importer serializers."""
+
 from invenio_app_ils.documents.loaders import DocumentSchemaV1
 from invenio_app_ils.eitems.loaders import EItemSchemaV1
 from invenio_app_ils.series.loaders import SeriesSchemaV1
-from marshmallow import EXCLUDE, Schema, fields, post_dump
+from marshmallow import EXCLUDE, Schema, fields, post_dump, types
 
-from cds_ils.importer.models import ImporterTaskEntry
-
-
-class ImportedDocumentSchema(DocumentSchemaV1):
-    """Imported document schema."""
-
-    pid = fields.String(dump_only=True)
-
-    class Meta:
-        """Meta attributes for the schema."""
-
-        unknown = EXCLUDE
+from cds_ils.importer.models import ImportRecordLog
 
 
-class ImportedEItemSchema(EItemSchemaV1):
+class ImportedEItemSchema(Schema):
     """Imported EItem Schema."""
 
-    pid = fields.String(dump_only=True)
+    output_pid = fields.String(dump_only=True)
+    action = fields.String(dump_only=True)
+    priority_provider = fields.Bool()
+    duplicates = fields.List(fields.String)
+    deleted_eitems = fields.List(fields.String)
+    eitem = fields.Nested(EItemSchemaV1)
+    json = fields.Raw()
 
     class Meta:
         """Meta attributes for the schema."""
@@ -36,10 +32,27 @@ class ImportedEItemSchema(EItemSchemaV1):
         unknown = EXCLUDE
 
 
-class ImportedSeriesSchema(SeriesSchemaV1):
+class ImportedSeriesSchema(Schema):
     """Imported series schema."""
 
     pid = fields.String(dump_only=True)
+    series_json = fields.Raw()
+    series_record = fields.Nested(SeriesSchemaV1)
+    action = fields.String()
+    output_pid = fields.String()
+    duplicates = fields.List(fields.String)
+
+    class Meta:
+        """Meta attributes for the schema."""
+
+        unknown = EXCLUDE
+
+
+class PartialMatchesSchema(Schema):
+    """Partial matches schema."""
+
+    pid = fields.String(dump_only=True)
+    type = fields.String()
 
     class Meta:
         """Meta attributes for the schema."""
@@ -50,16 +63,17 @@ class ImportedSeriesSchema(SeriesSchemaV1):
 class ImporterRecordReportSchemaV1(Schema):
     """Schema for an importer task log."""
 
-    entry_index = fields.Integer()
-    ambiguous_documents = fields.List(fields.String)
-    ambiguous_eitems = fields.List(fields.String)
-    created_document = fields.Nested(ImportedDocumentSchema)
-    created_eitem = fields.Nested(ImportedEItemSchema)
-    updated_document = fields.Nested(ImportedDocumentSchema)
-    updated_eitem = fields.Nested(ImportedEItemSchema)
-    deleted_eitems = fields.List(fields.String)
+    entry_recid = fields.String()
+    output_pid = fields.String()
+    action = fields.String()
+    document = fields.Nested(DocumentSchemaV1)
+    eitem = fields.Nested(ImportedEItemSchema)
     series = fields.List(fields.Nested(ImportedSeriesSchema))
-    fuzzy_documents = fields.List(fields.String)
+    partial_matches = fields.List(fields.Nested(PartialMatchesSchema))
+    raw_json = fields.Raw()
+    document_json = fields.Raw()
+    success = fields.Bool(default=True)
+    error = fields.Str(required=False)
 
     class Meta:
         """Meta attributes for the schema."""
@@ -72,9 +86,6 @@ class ImporterRecordReportSchemaV1(Schema):
         error = data.get("error")
         if error:
             data["success"] = False
-            data["message"] = error
-        else:
-            data["success"] = True
         return data
 
 
@@ -108,11 +119,11 @@ class ImporterTaskDetailLogV1(ImporterTaskLogV1):
     @post_dump
     def records_statuses(self, data, **kwargs):
         """Return correct record statuses."""
-        children_entries_query = ImporterTaskEntry.query \
+        children_entries_query = ImportRecordLog.query \
             .filter_by(import_id=data.get('id'))
         entries = children_entries_query \
-            .filter(ImporterTaskEntry.entry_index >= self.records_offset) \
-            .order_by(ImporterTaskEntry.entry_index.asc()) \
+            .filter(ImportRecordLog.id >= self.records_offset) \
+            .order_by(ImportRecordLog.id.asc()) \
             .all()
         data["loaded_entries"] = children_entries_query.count()
         data["records"] = ImporterRecordReportSchemaV1(many=True).dump(entries)

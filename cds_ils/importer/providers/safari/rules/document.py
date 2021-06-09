@@ -25,7 +25,7 @@ from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role
 def recid(self, key, value):
     """Record Identifier."""
     self["provider_recid"] = value
-    return [{"scheme": "EBL", "value": value}]
+    return [{"scheme": "SAFARI", "value": value}]
 
 
 @model.over("agency_code", "^003")

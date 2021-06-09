@@ -134,51 +134,48 @@ class ImporterTaskLog(db.Model):
         self.message = _format_exception(exception)
         db.session.commit()
 
+    def set_entries_count(self, entries):
+        """Set logged entries count."""
+        self.entries_count = len(entries)
+        db.session.commit()
 
-class ImporterTaskEntry(db.Model):
+
+class ImportRecordLog(db.Model):
     """Entry log of one imported record."""
 
-    __tablename__ = "import_task_entry"
+    id = db.Column(db.Integer, primary_key=True)
+    __tablename__ = "import_record_log"
 
     # Ensure the entries are uniquely defined
-    __table_args__ = (db.PrimaryKeyConstraint('import_id', 'entry_index'),)
+    __table_args__ = (db.UniqueConstraint('import_id', 'entry_recid'),)
 
     import_id = db.Column(db.Integer, db.ForeignKey('importer_task.id'))
     """The parent task."""
 
-    entry_index = db.Column(db.Integer, nullable=False)
+    entry_recid = db.Column(db.String, nullable=False)
     """The index of the entry in the source."""
 
     error = db.Column(db.String, nullable=True)
     """In case of an error."""
 
-    ambiguous_documents = db.Column(db.JSON, nullable=True)
-
-    ambiguous_eitems = db.Column(db.JSON, nullable=True)
-
-    created_document = db.Column(db.JSON, nullable=True)
-
-    created_eitem = db.Column(db.JSON, nullable=True)
-
-    updated_document = db.Column(db.JSON, nullable=True)
-
-    updated_eitem = db.Column(db.JSON, nullable=True)
-
-    deleted_eitems = db.Column(db.JSON, nullable=True)
-
-    series = db.Column(db.JSON, nullable=True)
-
-    fuzzy_documents = db.Column(db.JSON, nullable=True)
-
     importer_task = db.relationship(
         ImporterTaskLog,
-        backref=db.backref('entries', lazy='dynamic')
+        backref=db.backref('records', lazy='dynamic')
     )
     """Relationship."""
 
+    document_json = db.Column(db.JSON, nullable=True)
+    document = db.Column(db.JSON, nullable=True)
+    raw_json = db.Column(db.JSON, nullable=True)
+    output_pid = db.Column(db.String, nullable=True)
+    action = db.Column(db.String, nullable=True)
+    partial_matches = db.Column(db.JSON, nullable=True)
+    eitem = db.Column(db.JSON, nullable=True)
+    series = db.Column(db.JSON, nullable=True)
+
     # default ordering
     __mapper_args__ = {
-        "order_by": entry_index
+        "order_by": id
     }
 
     @classmethod
@@ -190,23 +187,25 @@ class ImporterTaskEntry(db.Model):
         return entry
 
     @classmethod
-    def create_success(cls, base_data, report):
+    def create_success(cls, import_id, entry_recid, report):
         """Mark this record as successfully imported."""
         return cls.__create(
             {
-                **base_data,
+                **dict(import_id=import_id,
+                       entry_recid=entry_recid),
                 **report
             }
         )
 
     @classmethod
-    def create_failure(cls, base_data, exception):
+    def create_failure(cls, import_id, entry_recid, exception, report={}):
         """Mark this record as failed."""
         return cls.__create(
             {
-                **base_data,
-                **dict(
-                    error=_format_exception(exception)
-                )
+                **dict(import_id=import_id,
+                       entry_recid=entry_recid,
+                       error=_format_exception(exception)
+                       ),
+                **report
             }
         )
