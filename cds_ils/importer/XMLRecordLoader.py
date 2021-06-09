@@ -9,6 +9,7 @@
 import pkg_resources
 
 from cds_ils.importer.errors import RecordNotDeletable
+from cds_ils.importer.models import ImporterMode
 
 
 class XMLRecordDumpLoader(object):
@@ -22,14 +23,24 @@ class XMLRecordDumpLoader(object):
         )
 
     @classmethod
-    def process(cls, dump_model, provider, mode):
+    def create_json(cls, dump_model):
         """Process the JSON dump."""
         timestamp, json_data, is_deletable = dump_model.dump()
+        return json_data, is_deletable
+
+    @classmethod
+    def import_from_json(cls, json_data, is_deletable, provider, mode):
+        """Import records."""
         importer_class = cls.get_importer_class(provider)
-        if mode == "delete" and not is_deletable:
+
+        if mode == ImporterMode.DELETE.value and not is_deletable:
             raise RecordNotDeletable()
-        if mode == "create":
+        elif mode == ImporterMode.CREATE.value:
             report = importer_class(json_data, provider).import_record()
-        elif mode == "delete" and is_deletable:
+        elif mode == ImporterMode.DELETE.value and is_deletable:
             report = importer_class(json_data, provider).delete_record()
+        elif mode == ImporterMode.PREVIEW.value:
+            report = importer_class(json_data, provider).preview_record()
+        else:
+            report = None
         return report

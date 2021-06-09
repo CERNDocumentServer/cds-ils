@@ -84,3 +84,12 @@ def out_strip(fn_decorated):
             return res
 
     return proxy
+
+
+def filter_empty_dict_values(f):
+    """Remove None values from dictionary."""
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        out = f(*args, **kwargs)
+        return dict((k, v) for k, v in out.items() if v)
+    return wrapper

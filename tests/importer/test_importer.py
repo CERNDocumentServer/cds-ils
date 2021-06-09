@@ -18,10 +18,11 @@ def test_modify_documents(importer_test_data):
 
     importer = Importer(json_data[0], "springer")
     report = importer.import_record()
-    assert report["updated_document"]
+    assert report["document_json"]
+    assert report["action"] == "update"
 
     updated_document = document_cls.get_record_by_pid(
-        report["updated_document"]["pid"])
+        report["document_json"]["pid"])
     # wait for indexing
     time.sleep(1)
 
@@ -54,10 +55,11 @@ def test_import_documents(app, db):
     )
     importer = Importer(json_data[0], "springer")
     report = importer.import_record()
-    assert report["created_document"]
+    assert report["document_json"]
+    assert report["action"] == "create"
 
     document = document_cls.get_record_by_pid(
-        report["created_document"]["pid"])
+        report["document_json"]["pid"])
     time.sleep(1)
     search = eitem_search_cls().search_by_document_pid(
         document_pid=document["pid"]
@@ -102,10 +104,11 @@ def test_replace_eitems_by_provider_priority(importer_test_data):
     ProviderImporter.IS_PROVIDER_PRIORITY_SENSITIVE = True
     importer = ProviderImporter(json_data[1], "springer")
     report = importer.import_record()
-    assert report["updated_document"]
+    assert report["document_json"]
+    assert report["action"] == "update"
 
     updated_document = document_cls.get_record_by_pid(
-        report["updated_document"]["pid"])
+        report["document_json"]["pid"])
     # wait for indexing
     time.sleep(1)
 
@@ -136,15 +139,17 @@ def test_add_document_to_serial(app, db):
     importer = Importer(json_data[0], "springer")
 
     report = importer.import_record()
-    assert report["created_document"]
+    assert report["document_json"]
+    assert report["action"] == "create"
     assert report["series"]
 
     created_document = document_cls.get_record_by_pid(
-        report["created_document"]["pid"])
+        report["document_json"]["pid"])
 
     series_list = []
     for series in report["series"]:
-        series_list.append(series_cls.get_record_by_pid(series["pid"]))
+        series_list.append(series_cls.get_record_by_pid(
+            series["series_record"]["pid"]))
 
     assert series_list[0]["title"] == "Advances in Nuclear Physics ;"
     assert series_list[0]["identifiers"] == [

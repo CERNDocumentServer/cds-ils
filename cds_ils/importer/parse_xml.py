@@ -18,3 +18,10 @@ def get_records_list(xml_file):
     # namespaced XMLs
     for record in root.xpath(record_tag_path):
         yield record
+
+
+def get_record_recid_from_xml(xml_record):
+    """Get provider recid from the xml file."""
+    recid_controlfield = xml_record.xpath(
+        "*[local-name()='controlfield'][@tag='001']")[0]
+    return recid_controlfield.text

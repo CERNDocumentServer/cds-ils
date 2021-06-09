@@ -48,7 +48,7 @@ def test_safari_transformation(app):
                 "fair, responsible, and legally defensible way.",
                 "agency_code": "CaSebORM",
                 "alternative_identifiers": [
-                    {"scheme": "EBL", "value": "9780814415467"}
+                    {"scheme": "SAFARI", "value": "9780814415467"}
                 ],
                 "alternative_titles": [
                     {
