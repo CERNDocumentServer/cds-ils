@@ -14,7 +14,7 @@ from dojson.utils import for_each_value, force_list
 
 from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.helpers.decorators import \
-    filter_list_values, out_strip
+    filter_empty_dict_values, filter_list_values, out_strip
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.ebl.ebl import model
 
@@ -172,7 +172,7 @@ def edition(self, key, value):
 
 
 @model.over("imprint", "^264_1")
-@out_strip
+@filter_empty_dict_values
 def imprint(self, key, value):
     """Translate imprint field."""
     _publication_year = self.get("publication_year")

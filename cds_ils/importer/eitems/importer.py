@@ -39,8 +39,10 @@ class EItemImporter(object):
         self.open_access = open_access
         self.login_required = login_required
 
-        self.created = None
-        self.updated = None
+        self.eitem_json = self.json_data.get("_eitem", None)
+        self.output_pid = None
+        self.action = None
+        self.eitem_record = None
         self.ambiguous_list = []
         self.deleted_list = []
 
@@ -112,6 +114,8 @@ class EItemImporter(object):
                 self.deleted_list.append(eitem)
                 eitem.delete()
                 eitem_indexer.delete(eitem)
+        if self.deleted_list:
+            self.action = "replace"
 
     def _build_eitem_dict(self, eitem_json, document_pid):
         """Provide initial metadata dictionary."""
@@ -141,46 +145,70 @@ class EItemImporter(object):
         for url in eitem.get("urls", []):
             url["login_required"] = self.login_required
 
+    def eitems_search(self, matched_document):
+        """Search items for given document."""
+        if matched_document:
+            document_pid = matched_document["pid"]
+
+            # get eitems for current provider
+            search = get_eitems_for_document_by_provider(
+                document_pid, self.metadata_provider
+            )
+            return search
+
+    def import_eitem_action(self, search):
+        """Determine import action."""
+        if search:
+            hits_total = search.count()
+            if hits_total == 0:
+                self.action = "create"
+            elif hits_total == 1:
+                self.action = "update"
+        else:
+            self.action = "create"
+
+    def get_first_match(self, search):
+        """Return first matched record from search."""
+        eitem_cls = current_app_ils.eitem_record_cls
+        results = search.execute()
+        record = results.hits[0]
+        return eitem_cls.get_record_by_pid(record["pid"])
+
     def update_eitems(self, matched_document):
         """Update eitems for a given document."""
-        eitem_cls = current_app_ils.eitem_record_cls
-        document_pid = matched_document["pid"]
+        search = self.eitems_search(matched_document)
+        self.import_eitem_action(search)
 
-        # get eitems for current provider
-        search = get_eitems_for_document_by_provider(
-            document_pid, self.metadata_provider
-        )
-        results = search.scan()
-        hits_total = search.count()
-
-        if hits_total == 0:
-            self.created = self.create_eitem(matched_document)
-        elif hits_total == 1:
-            record = [result for result in results][0]
-            existing_eitem = eitem_cls.get_record_by_pid(record["pid"])
-            self.updated = self._update_existing_record(
+        if self.action == "create":
+            self.eitem_record = self.create_eitem(matched_document)
+        elif self.action == "update":
+            existing_eitem = self.get_first_match(search)
+            self.eitem_record = self._update_existing_record(
                 existing_eitem, matched_document
             )
         else:
+            results = search.scan()
             self._report_ambiguous_records(results)
-            self.created = self.create_eitem(matched_document)
+            # still creates an item, even ambiguous eitems found
+            self.eitem_record = self.create_eitem(matched_document)
+
+        #
         if self.is_provider_priority_sensitive:
             self._replace_lower_priority_eitems(matched_document)
 
     def delete_eitems(self, matched_document):
-        """Deltes eitems for a given document."""
+        """Deletes eitems for a given document."""
         eitem_cls = current_app_ils.eitem_record_cls
         document_pid = matched_document["pid"]
+        self.action = "delete"
 
         # get eitems for current provider
         search = get_eitems_for_document_by_provider(
             document_pid, self.metadata_provider
         )
         results = search.scan()
-        hits_total = search.count()
 
-        if hits_total > 0:
-            record = [result for result in results][0]
+        for record in results:
             existing_eitem = eitem_cls.get_record_by_pid(record["pid"])
             self.deleted_list.append(
                 self._delete_existing_record(existing_eitem)
@@ -189,10 +217,9 @@ class EItemImporter(object):
     def create_eitem(self, new_document):
         """Update eitems for given document."""
         eitem_cls = current_app_ils.eitem_record_cls
-        eitem_json = self.json_data.get("_eitem", None)
-        if eitem_json:
+        if self.eitem_json:
             try:
-                self._build_eitem_dict(eitem_json, new_document["pid"])
+                self._build_eitem_dict(self.eitem_json, new_document["pid"])
                 record_uuid = uuid.uuid4()
                 with db.session.begin_nested():
                     provider = EItemIdProvider.create(
@@ -200,10 +227,12 @@ class EItemImporter(object):
                         object_uuid=record_uuid,
                     )
 
-                    eitem_json["pid"] = provider.pid.pid_value
-                    self.created = eitem_cls.create(eitem_json, record_uuid)
+                    self.eitem_json["pid"] = provider.pid.pid_value
+                    self.eitem_record = eitem_cls.create(
+                        self.eitem_json, record_uuid)
                 db.session.commit()
-                return self.created
+                self.action = "create"
+                return self.eitem_record
             except IlsValidationError as e:
                 click.secho(
                     "Field: {}".format(e.errors[0].res["field"]), fg="red"
@@ -211,3 +240,43 @@ class EItemImporter(object):
                 click.secho(e.original_exception.message, fg="red")
                 db.session.rollback()
                 raise e
+
+    def summary(self):
+        """Summarize the import."""
+        return {
+            "eitem": self.eitem_record,
+            "json": self.eitem_json,
+            "output_pid": self.output_pid,
+            "duplicates": self.ambiguous_list,
+            "action": self.action,
+            "deleted_eitems": self.deleted_list
+        }
+
+    def preview(self, matched_document):
+        """Preview eitem JSON."""
+        if matched_document:
+            pid = matched_document["pid"]
+        else:
+            pid = "preview-doc-pid"
+        self._build_eitem_dict(self.eitem_json, pid)
+        search = self.eitems_search(matched_document)
+        self.import_eitem_action(search)
+
+        if self.action == "update":
+            self.output_pid = self.get_first_match(search)["pid"]
+
+            # check if any existing items will be replaced
+            eitem_search = current_app_ils.eitem_search_cls()
+            eitem_cls = current_app_ils.eitem_record_cls
+
+            document_eitems = eitem_search.search_by_document_pid(
+                matched_document["pid"]
+            )
+            for hit in document_eitems:
+                eitem = eitem_cls.get_record_by_pid(hit.pid)
+                if self._should_replace_eitems(eitem):
+                    self.deleted_list.append(eitem)
+            if self.deleted_list:
+                self.action = "replace"
+
+        return self.summary()

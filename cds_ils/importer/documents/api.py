@@ -85,15 +85,15 @@ def search_document_by_title_authors(title, authors, subtitle=None):
     document_search = current_app_ils.document_search_cls()
     if subtitle:
         search = (
-            document_search.query("match", title=title)
+            document_search.query("bool", filter=[Q("term", title=title)])
             .filter("match", alternative_titles__value=subtitle)
             .filter("match", authors__full_name=" ".join(authors))
         )
     else:
-        search = document_search.query("match", title=title).filter(
-            "match", authors__full_name=" ".join(authors)
+        search = (
+            document_search.query("bool", filter=[Q("term", title=title)])
+            .filter("match", authors__full_name=" ".join(authors))
         )
-
     return search
 
 
@@ -104,7 +104,7 @@ def fuzzy_search_document(title, authors):
     document_search = current_app_ils.document_search_cls()
     search = document_search.query(
         Match(
-            title={
+            title__keyword={
                 "fuzziness": "AUTO",
                 "fuzzy_transpositions": "true",
                 "query": title,
@@ -113,7 +113,7 @@ def fuzzy_search_document(title, authors):
     ).filter(
         Match(
             authors__full_name={
-                "query": "".join(authors),
+                "query": " ".join(authors),
                 "fuzziness": "AUTO",
                 "fuzzy_transpositions": "true",
             }

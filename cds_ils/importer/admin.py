@@ -13,7 +13,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_babelex import gettext as _
 from markupsafe import Markup
 
-from cds_ils.importer.models import ImporterTaskEntry, ImporterTaskLog
+from cds_ils.importer.models import ImporterTaskLog, ImportRecordLog
 
 
 def render_html_link(func):
@@ -44,7 +44,7 @@ class ImporterTaskModelView(ModelView):
     column_formatters = dict(
         records=render_html_link(
             lambda o: ("Record updates",
-                       url_for("importertaskentry.index_view", flt0_0=o.id)),
+                       url_for("importrecordlog.index_view", flt0_0=o.id)),
         )
     )
 
@@ -76,7 +76,7 @@ def _json_code_formatter(view, context, model, name):
     )
 
 
-class ImporterTaskEntryModelView(ModelView):
+class ImporterRecordLogModelView(ModelView):
     """Invenio admin view for importer tasks."""
 
     def is_visible(self):
@@ -92,13 +92,10 @@ class ImporterTaskEntryModelView(ModelView):
 
     column_display_pk = True
 
-    column_default_sort = (ImporterTaskEntry.import_id,
-                           ImporterTaskEntry.entry_index)
+    column_default_sort = (ImportRecordLog.id, ImportRecordLog.import_id)
 
-    _json_object_columns = ["created_document", "created_eitem",
-                            "updated_document", "updated_eitem", "series"]
-    _json_array_columns = ["ambiguous_documents", "ambiguous_eitems",
-                           "deleted_eitems", "fuzzy_documents"]
+    _json_object_columns = ["eitem", "document_json", "raw_json", "document"]
+    _json_array_columns = ["partial_matches", "series"]
     _json_columns = [*_json_object_columns, *_json_array_columns]
 
     # display the id instead of __str__
@@ -139,8 +136,8 @@ importer_tasks = {
 }
 
 importer_records = {
-    "model": ImporterTaskEntry,
-    "modelview": ImporterTaskEntryModelView,
+    "model": ImportRecordLog,
+    "modelview": ImporterRecordLogModelView,
     "name": "Record updates",
     "category": _("Importer"),
 }

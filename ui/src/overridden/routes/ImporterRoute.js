@@ -1,6 +1,6 @@
 import React from 'react';
-import { Importer } from '../../Importer';
-import { ImporterTaskDetails } from '../../Importer/ImporterTaskDetails';
+import { Importer } from '../../importer';
+import { ImporterTaskDetails } from '../../importer/importerTaskDetails';
 import { CdsBackOfficeRoutes } from './BackofficeUrls';
 import { Switch, Route } from 'react-router-dom';
 import { NotFound } from '@inveniosoftware/react-invenio-app-ils';

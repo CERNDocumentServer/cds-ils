@@ -7,33 +7,36 @@
 
 """CDS-ILS Importer API module."""
 
-import logging
 import uuid
 
+import click
 from celery import shared_task
 from flask import current_app
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
 from cds_ils.importer.errors import LossyConversion, \
-    ProviderNotAllowedDeletion, RecordNotDeletable
-from cds_ils.importer.models import ImporterTaskEntry, ImporterTaskLog
-from cds_ils.importer.parse_xml import get_records_list
+    ProviderNotAllowedDeletion, RecordNotDeletable, SeriesImportError
+from cds_ils.importer.models import ImportRecordLog
+from cds_ils.importer.parse_xml import get_record_recid_from_xml, \
+    get_records_list
 from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
 from cds_ils.importer.XMLRecordToJson import XMLRecordToJson
 
-records_logger = logging.getLogger("records_errored")
+from cds_ils.importer.vocabularies_validator import \
+    validator as vocabulary_validator
 
 
-@shared_task()
-def process_dump(data, provider, mode, source_type):
+def create_json(data, source_type):
     """Process record dump."""
-    recorddump = XMLRecordToJson(
-        data,
-        source_type=source_type,
-    )
+    record_dump = XMLRecordToJson(data, source_type=source_type)
+    return XMLRecordDumpLoader.create_json(record_dump)
+
+
+def import_from_json(json_data, is_deletable, provider, mode):
     try:
-        report = XMLRecordDumpLoader.process(recorddump, provider, mode)
+        report = XMLRecordDumpLoader.import_from_json(json_data, is_deletable,
+                                                      provider, mode)
         db.session.commit()
         return report
     except Exception as e:
@@ -41,63 +44,59 @@ def process_dump(data, provider, mode, source_type):
         raise e
 
 
-def import_record(data, provider, mode, source_type=None, eager=False):
-    """Import record from dump."""
+def validate_import(provider, mode, source_type):
+    """Validate import."""
     source_type = source_type or "marcxml"
     assert source_type in ["marcxml"]
 
+    # check if the record is in delete mode
     if provider not in current_app.config[
         "CDS_ILS_IMPORTER_PROVIDERS_ALLOWED_TO_DELETE_RECORDS"
-    ] and mode == 'delete':
+    ] and mode == 'DELETE':
         raise ProviderNotAllowedDeletion(provider=provider)
-    if eager:
-        return process_dump(data, provider, mode, source_type=source_type)
-    else:
-        process_dump.delay(data, provider, mode, source_type=source_type)
 
 
-def import_from_xml(log_id, source_path, source_type, provider, mode):
+def import_from_xml(log, source_path, source_type, provider, mode,
+                    eager=False):
     """Load a single xml file."""
-    log = ImporterTaskLog.query.filter_by(id=log_id).first()
-    entry_data = None
     try:
-        with open(source_path) as source:
+        # reset vocabularies validator cache
+        vocabulary_validator.reset()
+        validate_import(provider, mode, source_type)
+
+        with open(source_path, "r") as source:
             records_list = list(get_records_list(source))
 
             # update the entries count now that we know it
-            log.entries_count = len(records_list)
-            db.session.commit()
+            log.set_entries_count(records_list)
+            for record in records_list:
+                record_recid = get_record_recid_from_xml(record)
 
-            for i, record in enumerate(records_list):
-                entry_data = dict(
-                    import_id=log.id,
-                    entry_index=i,
-                )
                 try:
-                    report = import_record(record, provider, mode,
-                                           source_type=source_type,
-                                           eager=True)
-                except (LossyConversion, RecordNotDeletable,
-                        ProviderNotAllowedDeletion) as e:
-                    ImporterTaskEntry.create_failure(entry_data, e)
+                    json_data, is_deletable = create_json(record, source_type)
+                except LossyConversion as e:
+                    ImportRecordLog.create_failure(log.id, record_recid,
+                                                   str(e.message))
+                    continue
+                try:
+                    report = import_from_json(json_data, is_deletable,
+                                              provider, mode)
+                    ImportRecordLog.create_success(
+                        log.id, record_recid, report)
+                except (RecordNotDeletable,
+                        ProviderNotAllowedDeletion, SeriesImportError) as e:
+                    ImportRecordLog.create_failure(
+                        log.id, record_recid,
+                        str(e.message), report={"raw_json": json_data})
                     continue
                 except IlsValidationError as e:
-                    records_logger.error(
-                        "@FILE TASK: {0} FATAL: {1}".format(
-                            log_id,
-                            str(e.original_exception.message),
-                        )
+                    ImportRecordLog.create_failure(
+                        log.id, record_recid,
+                        str(e.original_exception.message),
+                        report={"raw_json": json_data}
                     )
-                    ImporterTaskEntry.create_failure(entry_data, e)
                     continue
-
-                ImporterTaskEntry.create_success(entry_data, report)
     except Exception as e:
-        records_logger.error(
-            "@FILE TASK: {0} ERROR: {1}".format(log_id, str(e))
-        )
-        if entry_data:
-            ImporterTaskEntry.create_failure(entry_data, e)
         log.set_failed(e)
         raise e
 
