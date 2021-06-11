@@ -21,7 +21,6 @@ export class ImportedDocuments extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeIndex: -1,
       importCompleted: false,
       data: null,
       isLoading: true,
@@ -71,14 +70,6 @@ export class ImportedDocuments extends React.Component {
     } else {
       this.intervalId && clearInterval(this.intervalId);
     }
-  };
-
-  handleClick = (e, titleProps) => {
-    const { index } = titleProps;
-    const { activeIndex } = this.state;
-    const newIndex = activeIndex === index ? -1 : index;
-
-    this.setState({ activeIndex: newIndex });
   };
 
   renderErrorMessage = data => {
@@ -140,7 +131,7 @@ export class ImportedDocuments extends React.Component {
     const { data, activePage } = this.state;
     console.log(data.records[6]);
     return (
-      <Table className="importer" styled fluid striped celled structured>
+      <Table styled fluid striped celled structured>
         <Table.Header className="sticky-table-header">
           <Table.Row>
             <Table.HeaderCell collapsing rowspan="3" textAlign="center">

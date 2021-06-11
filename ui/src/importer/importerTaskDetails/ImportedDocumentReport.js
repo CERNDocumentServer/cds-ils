@@ -2,9 +2,11 @@ import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Button, Header, Icon, Label, Table } from 'semantic-ui-react';
+import { Header, Icon, Label, Table } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
+import { SeriesImportDetails } from './SeriesImportDetails';
+import { EitemImportDetails } from './EitemImportDetails';
 import { JsonViewModal } from './JsonViewModal';
 
 export class ImportedDocumentReport extends Component {
@@ -71,20 +73,40 @@ export class ImportedDocumentReport extends Component {
           )}
         </Table.Cell>
         <Table.Cell>
-          {!_isEmpty(documentReport.eitem) &&
-            this.renderActionLabel(documentReport.eitem.action)}
-          {!_isEmpty(_get(documentReport, 'eitem.deleted_eitems')) && (
+          {!_isEmpty(documentReport.eitem) && (
+            <>
+              {!_isEmpty(documentReport.eitem.output_pid) && (
+                <Link
+                  key={documentReport.eitem.output_pid}
+                  to={BackOfficeRoutes.eitemDetailsFor(
+                    documentReport.eitem.output_pid
+                  )}
+                  target="_blank"
+                >
+                  {documentReport.eitem.output_pid}
+                </Link>
+              )}
+              <br />
+
+              {this.renderActionLabel(documentReport.eitem.action)}
+            </>
+          )}
+          {!_isEmpty(_get(documentReport, 'eitem.deleted_eitems', [])) && (
             <>
               {_get(documentReport, 'eitem.deleted_eitems').map(pid => (
                 <Link
                   key={pid}
-                  to={BackOfficeRoutes.documentDetailsFor(pid)}
+                  to={BackOfficeRoutes.eitemDetailsFor(pid)}
                   target="_blank"
                 >
                   {pid}
                 </Link>
               ))}
             </>
+          )}
+          {(_get(documentReport, 'eitem.deleted_eitems', []).length > 1 ||
+            !_isEmpty(_get(documentReport, 'eitem.duplicates', []))) && (
+            <EitemImportDetails eitemReport={documentReport.eitem} />
           )}
           <JsonViewModal
             title="E-item JSON"
@@ -121,13 +143,13 @@ export class ImportedDocumentReport extends Component {
                     </>
                   )}{' '}
                   {this.renderActionLabel(documentReport.series[0].action)}{' '}
-                  {!_isEmpty(documentReport.series[0].duplicates) && (
-                    <Icon color="red" name="exclamation" size="large" />
-                  )}
                   <JsonViewModal
                     title="Series JSON"
                     jsonData={_get(documentReport, 'series[0].series_json', {})}
                   />
+                  {!_isEmpty(documentReport.series[0].duplicates) && (
+                    <SeriesImportDetails seriesReport={documentReport.series} />
+                  )}
                 </>
               )}
             </>

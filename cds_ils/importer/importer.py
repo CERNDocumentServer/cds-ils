@@ -137,7 +137,7 @@ class Importer(object):
         for series in self.series_list:
             series_indexer.index(series["series_record"])
         # give ES chance to catch up
-        time.sleep(1)
+        time.sleep(2)
 
     def import_record(self):
         """Import record."""
