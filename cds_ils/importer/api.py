@@ -9,8 +9,6 @@
 
 import uuid
 
-import click
-from celery import shared_task
 from flask import current_app
 from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
@@ -20,11 +18,10 @@ from cds_ils.importer.errors import LossyConversion, \
 from cds_ils.importer.models import ImportRecordLog
 from cds_ils.importer.parse_xml import get_record_recid_from_xml, \
     get_records_list
-from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
-from cds_ils.importer.XMLRecordToJson import XMLRecordToJson
-
 from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
+from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
+from cds_ils.importer.XMLRecordToJson import XMLRecordToJson
 
 
 def create_json(data, source_type):
@@ -34,6 +31,7 @@ def create_json(data, source_type):
 
 
 def import_from_json(json_data, is_deletable, provider, mode):
+    """Import from Json."""
     try:
         report = XMLRecordDumpLoader.import_from_json(json_data, is_deletable,
                                                       provider, mode)

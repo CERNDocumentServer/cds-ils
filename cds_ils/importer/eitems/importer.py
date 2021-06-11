@@ -232,6 +232,7 @@ class EItemImporter(object):
                         self.eitem_json, record_uuid)
                 db.session.commit()
                 self.action = "create"
+                self.output_pid = self.eitem_record["pid"]
                 return self.eitem_record
             except IlsValidationError as e:
                 click.secho(
