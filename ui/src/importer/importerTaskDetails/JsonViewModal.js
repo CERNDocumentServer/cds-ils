@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Header, Modal } from 'semantic-ui-react';
+import { Button, Modal } from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 
 export class JsonViewModal extends Component {
