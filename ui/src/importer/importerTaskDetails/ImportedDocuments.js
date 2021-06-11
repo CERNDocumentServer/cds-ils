@@ -1,20 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Accordion,
   Button,
   Divider,
   Header,
   Icon,
   Message,
+  Pagination,
+  Table,
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
+import { ImportedDocumentReport } from './ImportedDocumentReport';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
-import { ReportDetails } from './ReportDetails';
 import { Link } from 'react-router-dom';
-import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
-import { DocumentIcon } from '@inveniosoftware/react-invenio-app-ils';
 import { importerApi } from '../../api/importer';
 import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
 
@@ -26,6 +25,7 @@ export class ImportedDocuments extends React.Component {
       importCompleted: false,
       data: null,
       isLoading: true,
+      activePage: 1,
     };
   }
 
@@ -134,46 +134,70 @@ export class ImportedDocuments extends React.Component {
     );
   };
 
+  handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
+
   renderResultsContent = () => {
-    const { data, activeIndex } = this.state;
+    const { data, activePage } = this.state;
+    console.log(data.records[6]);
     return (
-      <Accordion className="importer" styled fluid>
-        {data.records.map((elem, index) => {
-          const importSuccess = _get(elem, 'success', null);
-          const document = importSuccess
-            ? elem.created_document
-              ? elem.created_document
-              : elem.updated_document
-            : null;
-          return (
-            <div key={elem.index}>
-              <Accordion.Title
-                active={activeIndex === index}
-                index={index}
-                onClick={this.handleClick}
-              >
-                <Icon name="dropdown" />
-                {!_isEmpty(document) ? (
-                  <Link
-                    to={BackOfficeRoutes.documentDetailsFor(document.pid)}
-                    target="_blank"
-                  >
-                    <DocumentIcon />
-                    {document.title}
-                  </Link>
-                ) : importSuccess ? (
-                  'No document created or updated'
-                ) : (
-                  <span className="danger">Error on importing this record</span>
-                )}
-              </Accordion.Title>
-              <Accordion.Content active={activeIndex === index}>
-                <ReportDetails item={elem} />
-              </Accordion.Content>
-            </div>
-          );
-        })}
-      </Accordion>
+      <Table className="importer" styled fluid striped celled structured>
+        <Table.Header className="sticky-table-header">
+          <Table.Row>
+            <Table.HeaderCell collapsing rowspan="3" textAlign="center">
+              No
+            </Table.HeaderCell>
+            <Table.HeaderCell width="6" rowspan="3">
+              Title [Provider recid]
+            </Table.HeaderCell>
+
+            <Table.HeaderCell width="1" rowspan="3">
+              Action
+            </Table.HeaderCell>
+            <Table.HeaderCell width="1" rowspan="3">
+              Output document
+            </Table.HeaderCell>
+            <Table.HeaderCell colspan="4">Dependent records</Table.HeaderCell>
+            <Table.HeaderCell rowspan="3">Partial matches</Table.HeaderCell>
+            <Table.HeaderCell rowspan="3">Error</Table.HeaderCell>
+          </Table.Row>
+          <Table.Row>
+            <Table.HeaderCell colspan="2">E-item</Table.HeaderCell>
+            <Table.HeaderCell colspan="2">Serials</Table.HeaderCell>
+          </Table.Row>
+          <Table.Row>
+            <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
+            <Table.HeaderCell width="1">Action and details</Table.HeaderCell>
+            <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
+            <Table.HeaderCell width="1">Details</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        {data.records
+          .slice((activePage - 1) * 20, (activePage - 1) * 20 + 20)
+          .map((elem, index) => {
+            return (
+              !_isEmpty(elem) && (
+                <ImportedDocumentReport
+                  documentReport={elem}
+                  listIndex={index + (activePage - 1) * 20}
+                />
+              )
+            );
+          })}
+
+        <Table.Footer>
+          <Table.Row>
+            <Table.HeaderCell colspan="10">
+              <Pagination
+                defaultActivePage={1}
+                totalPages={Math.floor(data.records.length / 20)}
+                activePage={activePage}
+                onPageChange={this.handlePaginationChange}
+                floated="right"
+              />
+            </Table.HeaderCell>
+          </Table.Row>
+        </Table.Footer>
+      </Table>
     );
   };
 
