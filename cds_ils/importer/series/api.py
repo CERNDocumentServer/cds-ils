@@ -40,5 +40,6 @@ def search_series_by_issn(issn):
 def search_series_by_title(title):
     """Find series by title."""
     series_search = current_app_ils.series_search_cls()
-    search = series_search.query("query_string", query=f"title:\"{title}\"")
+    search = series_search.query("bool", filter=[Q("term",
+                                                   title__keyword=title)])
     return search
