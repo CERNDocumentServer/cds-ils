@@ -163,8 +163,7 @@ export const config = {
       { key: 'safari', text: 'Safari', value: 'safari' },
     ],
     modes: [
-      { key: 'preview', text: 'Preview', value: 'PREVIEW' },
-      { key: 'create', text: 'Create', value: 'CREATE' },
+      { key: 'create', text: 'Import', value: 'IMPORT' },
       { key: 'delete', text: 'Delete', value: 'DELETE' },
     ],
     fetchTaskStatusIntervalSecs: 5000,

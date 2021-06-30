@@ -11,7 +11,8 @@ import click
 from flask.cli import with_appcontext
 
 from cds_ils.importer.api import import_from_xml
-from cds_ils.importer.models import ImporterAgent, ImporterTaskLog
+from cds_ils.importer.models import ImporterAgent, ImporterMode, \
+    ImporterTaskLog
 from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
 
@@ -37,7 +38,7 @@ def importer():
     "--mode",
     "-m",
     required=True,
-    type=click.Choice(["CREATE", "DELETE", "PREVIEW"]),
+    type=click.Choice(ImporterMode.get_options()),
     help="Choose the mode",
 )
 @with_appcontext

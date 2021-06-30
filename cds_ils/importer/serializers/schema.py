@@ -22,7 +22,7 @@ class ImportedEItemSchema(Schema):
     action = fields.String(dump_only=True)
     priority_provider = fields.Bool()
     duplicates = fields.List(fields.String)
-    deleted_eitems = fields.List(fields.String)
+    deleted_eitems = fields.List(fields.Dict)
     eitem = fields.Nested(EItemSchemaV1)
     json = fields.Raw()
 

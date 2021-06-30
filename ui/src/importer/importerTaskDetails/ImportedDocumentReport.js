@@ -24,18 +24,24 @@ export class ImportedDocumentReport extends Component {
 
   render() {
     const { documentReport, listIndex } = this.props;
-    // console.log(documentReport);
+
+    let title;
+
+    if (!_isEmpty(documentReport.document)) {
+      let volume = _get(documentReport, 'raw_json._serial[0].volume', '');
+      volume = volume ? `v. ${volume}` : '';
+      title = `${documentReport.document_json.title} ${volume}`;
+    } else {
+      title = documentReport.entry_recid;
+    }
+
     return (
       <Table.Row negative={!documentReport.success}>
         <Table.Cell collapsing textAlign="center">
           {listIndex}
         </Table.Cell>
         <Table.Cell>
-          <Header as="h4">
-            {documentReport.document
-              ? `${documentReport.document_json.title} [${documentReport.entry_recid}]`
-              : documentReport.entry_recid}
-          </Header>
+          <Header as="h4">{title}</Header>
         </Table.Cell>
         <Table.Cell>
           {this.renderActionLabel(documentReport.action)}
@@ -59,10 +65,13 @@ export class ImportedDocumentReport extends Component {
           ) : (
             '-'
           )}
-          <JsonViewModal
-            title="Document JSON"
-            jsonData={documentReport.document_json}
-          />
+
+          {!_isEmpty(documentReport.document_json) && (
+            <JsonViewModal
+              title="Document JSON"
+              jsonData={documentReport.document_json}
+            />
+          )}
         </Table.Cell>
         <Table.Cell collapsing textAlign="center">
           {!_isEmpty(documentReport.eitem) && (
@@ -86,27 +95,28 @@ export class ImportedDocumentReport extends Component {
                   {documentReport.eitem.output_pid}
                 </Link>
               )}
+
+              {!_isEmpty(_get(documentReport, 'eitem.deleted_eitems', [])) && (
+                <>
+                  {_get(documentReport, 'eitem.deleted_eitems').map(eitem => (
+                    <Link
+                      key={eitem.pid}
+                      to={BackOfficeRoutes.eitemDetailsFor(eitem.pid)}
+                      target="_blank"
+                    >
+                      {eitem.pid}
+                    </Link>
+                  ))}
+                </>
+              )}
+              {(_get(documentReport, 'eitem.deleted_eitems', []).length > 1 ||
+                !_isEmpty(_get(documentReport, 'eitem.duplicates', []))) && (
+                <EitemImportDetails eitemReport={documentReport.eitem} />
+              )}
               <br />
 
               {this.renderActionLabel(documentReport.eitem.action)}
             </>
-          )}
-          {!_isEmpty(_get(documentReport, 'eitem.deleted_eitems', [])) && (
-            <>
-              {_get(documentReport, 'eitem.deleted_eitems').map(pid => (
-                <Link
-                  key={pid}
-                  to={BackOfficeRoutes.eitemDetailsFor(pid)}
-                  target="_blank"
-                >
-                  {pid}
-                </Link>
-              ))}
-            </>
-          )}
-          {(_get(documentReport, 'eitem.deleted_eitems', []).length > 1 ||
-            !_isEmpty(_get(documentReport, 'eitem.duplicates', []))) && (
-            <EitemImportDetails eitemReport={documentReport.eitem} />
           )}
           <JsonViewModal
             title="E-item JSON"
