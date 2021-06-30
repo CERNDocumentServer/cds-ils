@@ -214,6 +214,21 @@ class EItemImporter(object):
                 self._delete_existing_record(existing_eitem)
             )
 
+    def preview_delete(self, matched_document):
+        """Preview delete action on eitems for given document."""
+        eitem_cls = current_app_ils.eitem_record_cls
+        document_pid = matched_document["pid"]
+        self.action = "delete"
+        search = get_eitems_for_document_by_provider(
+            document_pid, self.metadata_provider
+        )
+        results = search.scan()
+        for record in results:
+            existing_eitem = eitem_cls.get_record_by_pid(record["pid"])
+            self.deleted_list.append(existing_eitem)
+
+        return self.summary()
+
     def create_eitem(self, new_document):
         """Update eitems for given document."""
         eitem_cls = current_app_ils.eitem_record_cls
@@ -253,7 +268,7 @@ class EItemImporter(object):
             "deleted_eitems": self.deleted_list
         }
 
-    def preview(self, matched_document):
+    def preview_import(self, matched_document):
         """Preview eitem JSON."""
         if matched_document:
             pid = matched_document["pid"]
