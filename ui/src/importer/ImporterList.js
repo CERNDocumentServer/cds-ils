@@ -10,6 +10,41 @@ import { Button, Grid, Icon, Label, Loader } from 'semantic-ui-react';
 import { importerApi } from '../api/importer';
 import { BackOfficeRouteGenerators } from '../overridden/routes/BackofficeUrls';
 
+export const modeFormatter = mode => {
+  switch (mode) {
+    case 'IMPORT':
+      return (
+        <Label color="blue" basic>
+          <Icon name="plus" />
+          Import
+        </Label>
+      );
+    case 'DELETE':
+      return (
+        <Label color="red" basic>
+          <Icon name="minus" />
+          Delete
+        </Label>
+      );
+    case 'PREVIEW_IMPORT':
+      return (
+        <Label color="teal" basic>
+          <Icon name="plus" />
+          Preview (import)
+        </Label>
+      );
+    case 'PREVIEW_DELETE':
+      return (
+        <Label color="teal" basic>
+          <Icon name="plus" />
+          Preview (delete)
+        </Label>
+      );
+    default:
+      return null;
+  }
+};
+
 export class ImporterList extends Component {
   state = {
     isLoading: true,
@@ -85,27 +120,6 @@ export class ImporterList extends Component {
     }
   };
 
-  modeFormatter = ({ col, row }) => {
-    switch (row[col.field]) {
-      case 'CREATE':
-        return (
-          <Label color="blue" basic>
-            <Icon name="plus" />
-            Create
-          </Label>
-        );
-      case 'DELETE':
-        return (
-          <Label color="red" basic>
-            <Icon name="minus" />
-            Delete
-          </Label>
-        );
-      default:
-        return null;
-    }
-  };
-
   labelFormatter = ({ col, row }) => <Label>{row[col.field]}</Label>;
 
   optionalFormatter = ({ col, row }) => {
@@ -135,7 +149,11 @@ export class ImporterList extends Component {
       formatter: this.optionalFormatter,
     },
     { title: 'Provider', field: 'provider', formatter: this.labelFormatter },
-    { title: 'Mode', field: 'mode', formatter: this.modeFormatter },
+    {
+      title: 'Mode',
+      field: 'mode',
+      formatter: ({ col, row }) => modeFormatter(row[col.field]),
+    },
     {
       title: 'Source type',
       field: 'source_type',

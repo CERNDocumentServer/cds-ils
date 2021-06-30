@@ -240,7 +240,7 @@ class SeriesImporter(object):
                 raise SeriesImportError(message="Multiple series found.")
         return series
 
-    def preview_series(self):
+    def preview_import_series(self):
         """Preview of series import."""
         series_class = current_app_ils.series_record_cls
         series_preview = []
@@ -249,6 +249,7 @@ class SeriesImporter(object):
 
         for json_series in self.json_data:
             matching_series_pids = self.search_for_matching_series(json_series)
+
             if len(matching_series_pids) == 1:
                 matched_series = series_class.get_record_by_pid(
                     matching_series_pids[0]

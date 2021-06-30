@@ -58,11 +58,19 @@ class ImporterTaskStatus(ImporterEnum):
 class ImporterMode(ImporterEnum):
     """The mode of an importation task."""
 
-    PREVIEW = "PREVIEW"
+    PREVIEW_IMPORT = "PREVIEW_IMPORT"
 
-    CREATE = "CREATE"
+    PREVIEW_DELETE = "PREVIEW_DELETE"
+
+    IMPORT = "IMPORT"
 
     DELETE = "DELETE"
+
+    @classmethod
+    def get_options(cls):
+        """Return possible import modes."""
+        cls_defined_members = cls.__members__.keys()
+        return [getattr(cls, member).value for member in cls_defined_members]
 
 
 class ImporterTaskLog(db.Model):

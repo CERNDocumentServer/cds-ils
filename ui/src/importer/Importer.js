@@ -56,12 +56,19 @@ export class Importer extends Component {
     }
   };
 
-  handleSubmit = () => {
+  handleSubmit = (e, { action }) => {
     const { provider, mode, file } = this.state;
+    let importMode = mode;
+    if (action === 'PREVIEW' && mode === 'IMPORT') {
+      importMode = 'PREVIEW_IMPORT';
+    } else if (action === 'PREVIEW' && mode === 'DELETE') {
+      importMode = 'PREVIEW_DELETE';
+    }
+
     if (!_isEmpty(provider) && !_isEmpty(mode) && file) {
       const formData = new FormData();
       formData.append('provider', provider);
-      formData.append('mode', mode);
+      formData.append('mode', importMode);
       formData.append('file', file);
       this.postData(formData);
     } else {
@@ -106,7 +113,11 @@ export class Importer extends Component {
         onOpen={() => this.setState({ openModal: true })}
         open={openModal}
         size="small"
-        trigger={<Button primary>Import</Button>}
+        trigger={
+          <Button secondary action="IMPORT">
+            Import
+          </Button>
+        }
       >
         <Header>Deleting Records</Header>
         <Modal.Content>
@@ -121,9 +132,10 @@ export class Importer extends Component {
           </Button>
           <Button
             primary
-            onClick={() => {
+            action="DELETE"
+            onClick={(e, props) => {
               this.setState({ openModal: false });
-              this.handleSubmit();
+              this.handleSubmit(e, props);
             }}
           >
             <Icon name="checkmark" /> Yes
@@ -142,66 +154,82 @@ export class Importer extends Component {
       modeMissing,
       fileMissing,
     } = this.state;
+
     return (
-      <Form onSubmit={mode !== 'delete' ? this.handleSubmit : null}>
-        <Segment>
-          <Form.Group widths="equal">
-            <Form.Select
-              placeholder="Select a provider ..."
-              label="Provider"
-              search
-              selection
-              name="provider"
-              value={provider}
-              options={invenioConfig.IMPORTER.providers}
-              onChange={this.handleChange}
-              required
-              error={providerMissing ? 'Please enter a provider' : null}
+      <>
+        <Form>
+          <Segment>
+            <Form.Group widths="equal">
+              <Form.Select
+                placeholder="Select a provider ..."
+                label="Provider"
+                search
+                selection
+                name="provider"
+                value={provider}
+                options={invenioConfig.IMPORTER.providers}
+                onChange={this.handleChange}
+                required
+                error={providerMissing ? 'Please enter a provider' : null}
+              />
+              <Form.Select
+                placeholder="Select a mode ..."
+                label="Mode"
+                search
+                selection
+                name="mode"
+                value={mode}
+                options={invenioConfig.IMPORTER.modes}
+                onChange={this.handleChange}
+                required
+                error={modeMissing ? 'Please enter a mode' : null}
+              />
+            </Form.Group>
+            <Form.Group widths="equal">
+              <Form.Field className="default-margin-top">
+                <Button
+                  icon="file"
+                  content="Choose File"
+                  labelPosition="left"
+                  onClick={e => {
+                    e.preventDefault();
+                    this.filesRef.current.click();
+                  }}
+                />
+                <input
+                  hidden
+                  ref={this.filesRef}
+                  id="upload"
+                  type="file"
+                  accept=".xml"
+                  onChange={this.onFileChange}
+                />
+                <Label basic prompt={fileMissing} pointing="left">
+                  {file ? file.name : 'No file selected.'}
+                </Label>
+              </Form.Field>
+            </Form.Group>
+          </Segment>
+          <>
+            <Button
+              primary
+              content="Preview"
+              onClick={this.handleSubmit}
+              action="PREVIEW"
             />
-            <Form.Select
-              placeholder="Select a mode ..."
-              label="Mode"
-              search
-              selection
-              name="mode"
-              value={mode}
-              options={invenioConfig.IMPORTER.modes}
-              onChange={this.handleChange}
-              required
-              error={modeMissing ? 'Please enter a mode' : null}
-            />
-          </Form.Group>
-          <Form.Group widths="equal">
-            <Form.Field className="default-margin-top">
+            {mode === 'DELETE' ? (
+              this.renderModal()
+            ) : (
               <Button
-                icon="file"
-                content="Choose File"
-                labelPosition="left"
-                onClick={e => {
-                  e.preventDefault();
-                  this.filesRef.current.click();
-                }}
+                secondary
+                content="Import"
+                onClick={this.handleSubmit}
+                action="IMPORT"
               />
-              <input
-                hidden
-                ref={this.filesRef}
-                id="upload"
-                type="file"
-                accept=".xml"
-                onChange={this.onFileChange}
-              />
-              <Label basic prompt={fileMissing} pointing="left">
-                {file ? file.name : 'No file selected.'}
-              </Label>
-            </Form.Field>
-          </Form.Group>
-        </Segment>
-        {mode === 'delete' ? (
-          this.renderModal()
-        ) : (
-          <Form.Button primary content="Import" />
-        )}
-      </Form>
+            )}
+          </>
+        </Form>
+      </>
     );
   };
 

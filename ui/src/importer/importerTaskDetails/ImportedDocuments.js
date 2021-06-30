@@ -11,6 +11,7 @@ import {
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
+import { modeFormatter } from '../ImporterList';
 import { ImportedDocumentReport } from './ImportedDocumentReport';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
 import { Link } from 'react-router-dom';
@@ -72,7 +73,7 @@ export class ImportedDocuments extends React.Component {
     }
   };
 
-  renderErrorMessage = data => {
+  renderErrorMessage = () => {
     return (
       <Message negative>
         <Message.Header>Failed to import</Message.Header>
@@ -129,31 +130,30 @@ export class ImportedDocuments extends React.Component {
 
   renderResultsContent = () => {
     const { data, activePage } = this.state;
-    console.log(data.records[6]);
     return (
-      <Table styled fluid striped celled structured>
+      <Table styled="true" fluid="true" striped celled structured>
         <Table.Header className="sticky-table-header">
           <Table.Row>
-            <Table.HeaderCell collapsing rowspan="3" textAlign="center">
+            <Table.HeaderCell collapsing rowSpan="3" textAlign="center">
               No
             </Table.HeaderCell>
-            <Table.HeaderCell width="6" rowspan="3">
+            <Table.HeaderCell width="6" rowSpan="3">
               Title [Provider recid]
             </Table.HeaderCell>
 
-            <Table.HeaderCell width="1" rowspan="3">
+            <Table.HeaderCell width="1" rowSpan="3">
               Action
             </Table.HeaderCell>
-            <Table.HeaderCell width="1" rowspan="3">
+            <Table.HeaderCell width="1" rowSpan="3">
               Output document
             </Table.HeaderCell>
-            <Table.HeaderCell colspan="4">Dependent records</Table.HeaderCell>
-            <Table.HeaderCell rowspan="3">Partial matches</Table.HeaderCell>
-            <Table.HeaderCell rowspan="3">Error</Table.HeaderCell>
+            <Table.HeaderCell colSpan="4">Dependent records</Table.HeaderCell>
+            <Table.HeaderCell rowSpan="3">Partial matches</Table.HeaderCell>
+            <Table.HeaderCell rowSpan="3">Error</Table.HeaderCell>
           </Table.Row>
           <Table.Row>
-            <Table.HeaderCell colspan="2">E-item</Table.HeaderCell>
-            <Table.HeaderCell colspan="2">Serials</Table.HeaderCell>
+            <Table.HeaderCell colSpan="2">E-item</Table.HeaderCell>
+            <Table.HeaderCell colSpan="2">Serials</Table.HeaderCell>
           </Table.Row>
           <Table.Row>
             <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
@@ -162,22 +162,25 @@ export class ImportedDocuments extends React.Component {
             <Table.HeaderCell width="1">Details</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
-        {data.records
-          .slice((activePage - 1) * 20, (activePage - 1) * 20 + 20)
-          .map((elem, index) => {
-            return (
-              !_isEmpty(elem) && (
-                <ImportedDocumentReport
-                  documentReport={elem}
-                  listIndex={index + (activePage - 1) * 20}
-                />
-              )
-            );
-          })}
+        <Table.Body>
+          {data.records
+            .slice((activePage - 1) * 20, (activePage - 1) * 20 + 20)
+            .map((elem, index) => {
+              return (
+                !_isEmpty(elem) && (
+                  <ImportedDocumentReport
+                    key={index}
+                    documentReport={elem}
+                    listIndex={index + (activePage - 1) * 20}
+                  />
+                )
+              );
+            })}
+        </Table.Body>
 
         <Table.Footer>
           <Table.Row>
-            <Table.HeaderCell colspan="10">
+            <Table.HeaderCell colSpan="10">
               <Pagination
                 defaultActivePage={1}
                 totalPages={Math.floor(data.records.length / 20)}
@@ -199,19 +202,20 @@ export class ImportedDocuments extends React.Component {
         {this.renderResultsHeader()}
         {!_isEmpty(data) && data.status !== 'FAILED' ? (
           <>
-            <Header as="h2">Literature</Header>
+            <Header as="h2">Import</Header>
+            {modeFormatter(data.mode)}{' '}
             {!_isEmpty(data) ? (
               (data.loaded_entries || data.loaded_entries === 0) &&
               data.entries_count ? (
-                <p>
+                <span>
                   {'Processed ' +
                     data.loaded_entries +
                     ' records out of ' +
                     data.entries_count +
                     '.'}
-                </p>
+                </span>
               ) : (
-                <p>Processing file...</p>
+                <span>Processing file...</span>
               )
             ) : null}
             {!_isEmpty(data.records) ? this.renderResultsContent() : null}

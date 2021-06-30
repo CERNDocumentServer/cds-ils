@@ -85,13 +85,15 @@ def search_document_by_title_authors(title, authors, subtitle=None):
     document_search = current_app_ils.document_search_cls()
     if subtitle:
         search = (
-            document_search.query("bool", filter=[Q("term", title=title)])
+            document_search.query("bool", filter=[Q("term",
+                                                    title__keyword=title)])
             .filter("match", alternative_titles__value=subtitle)
             .filter("match", authors__full_name=" ".join(authors))
         )
     else:
         search = (
-            document_search.query("bool", filter=[Q("term", title=title)])
+            document_search.query("bool", filter=[Q("term",
+                                                    title__keyword=title)])
             .filter("match", authors__full_name=" ".join(authors))
         )
     return search
