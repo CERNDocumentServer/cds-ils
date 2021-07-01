@@ -32,42 +32,50 @@
     <script type="text/javascript" src="https://piwik.web.cern.ch/piwik.js"></script>
   </head>
   <body>
-  <!-- Piwik -->
-  <script type="text/javascript">
-      var pkBaseURL = "https://piwik.web.cern.ch/";
-      try {
-        if ("%REACT_APP_INVENIO_PIWIK_ID%" !== undefined)
-          {
-            var piwikTracker = Piwik.getTracker(
-            pkBaseURL + 'piwik.php', %REACT_APP_INVENIO_PIWIK_ID%);
-            piwikTracker.trackPageView();
-            piwikTracker.enableLinkTracking();
-          }
-      } catch (err) {
-        console.error(err);
-      }
-  </script>
-  <noscript>
-    <p>
-      <img
-        src="http://piwik.web.cern.ch/piwik.php?idsite=%REACT_APP_INVENIO_PIWIK_ID%"
-        style="border:0"
-        alt=""
-      />
-    </p>
-  </noscript>
-  <!-- End Piwik Tracking Code -->
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="app"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <!-- Piwik -->
+    <script type="text/javascript">
+        var pkBaseURL = "https://piwik.web.cern.ch/";
+        try {
+          if ("%REACT_APP_INVENIO_PIWIK_ID%" !== undefined)
+            {
+              var piwikTracker = Piwik.getTracker(
+              pkBaseURL + 'piwik.php', %REACT_APP_INVENIO_PIWIK_ID%);
+              piwikTracker.trackPageView();
+              piwikTracker.enableLinkTracking();
+            }
+        } catch (err) {
+          console.error(err);
+        }
+    </script>
+    <noscript>
+      <p>
+        <img
+          src="http://piwik.web.cern.ch/piwik.php?idsite=%REACT_APP_INVENIO_PIWIK_ID%"
+          style="border:0"
+          alt=""
+        />
+      </p>
+    </noscript>
+    <!-- End Piwik Tracking Code -->
+    <!-- Begin Matomo tracking Code -->
+    <script type="text/javascript">
+      if ("%REACT_APP_INVENIO_MATOMO_ID%" !== undefined){
+          var _paq = window._paq = window._paq || [];
+          /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          (function() {
+            var u="https://webanalytics.web.cern.ch/";
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', %REACT_APP_INVENIO_MATOMO_ID%]);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+          })();
+        }
+    </script>
+    <!-- End Matomo Tracking Code -->
   </body>
 </html>
