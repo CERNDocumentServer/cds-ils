@@ -58,30 +58,14 @@ class XMLRecordToJson(object):
             is_deletable = True
         else:
             is_deletable = False
-        try:
 
-            # MARCXML -> JSON fields translation
-            val = self.dojson_model.do(
-                marc_record, exception_handlers=exception_handlers
-            )
-            # check for missing rules
-            missing = self.dojson_model.missing(marc_record)
+        # MARCXML -> JSON fields translation
+        val = self.dojson_model.do(
+            marc_record, exception_handlers=exception_handlers
+        )
+        # check for missing rules
+        missing = self.dojson_model.missing(marc_record)
 
-            if missing:
-                raise LossyConversion(missing=missing)
-            return dt, val, is_deletable
-
-        except LossyConversion as e:
-            current_app.logger.error(
-                "MIGRATION RULE MISSING {0} - {1}".format(
-                    e.missing, marc_record
-                )
-            )
-            raise e
-        except Exception as e:
-            current_app.logger.error(
-                "Impossible to convert to JSON {0} - {1}".format(
-                    e, marc_record
-                )
-            )
-            raise e
+        if missing:
+            raise LossyConversion(missing=missing)
+        return dt, val, is_deletable

@@ -157,7 +157,8 @@ class ImportRecordLog(db.Model):
     # Ensure the entries are uniquely defined
     __table_args__ = (db.UniqueConstraint('import_id', 'entry_recid'),)
 
-    import_id = db.Column(db.Integer, db.ForeignKey('importer_task.id'))
+    import_id = db.Column(db.Integer, db.ForeignKey('importer_task.id',
+                                                    ondelete="CASCADE"))
     """The parent task."""
 
     entry_recid = db.Column(db.String, nullable=False)
@@ -168,7 +169,7 @@ class ImportRecordLog(db.Model):
 
     importer_task = db.relationship(
         ImporterTaskLog,
-        backref=db.backref('records', lazy='dynamic')
+        backref=db.backref('records', lazy='dynamic', passive_deletes=True)
     )
     """Relationship."""
 
