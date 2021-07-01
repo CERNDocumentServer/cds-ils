@@ -165,6 +165,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "cds_ils.ldap.tasks.synchronize_users_task",
         "schedule": crontab(minute=0, hour=4),  # every day, 4am
     },
+    "clean_stale_logs": {
+        "task": "cds_ils.importer.tasks.clean_preview_logs",
+        "schedule": crontab(day_of_week='mon', minute=0, hour=6),
+        # every Monday, 6am
+    }
 }
 
 ###############################################################################
