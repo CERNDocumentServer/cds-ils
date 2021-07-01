@@ -30,7 +30,8 @@ export class ImportedDocumentReport extends Component {
     if (!_isEmpty(documentReport.document)) {
       let volume = _get(documentReport, 'raw_json._serial[0].volume', '');
       volume = volume ? `v. ${volume}` : '';
-      title = `${documentReport.document_json.title} ${volume}`;
+      title = `${documentReport.document_json.title} (${volume})
+      [${documentReport.entry_recid}]`;
     } else {
       title = documentReport.entry_recid;
     }

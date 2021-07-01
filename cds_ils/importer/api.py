@@ -15,7 +15,7 @@ from invenio_db import db
 
 from cds_ils.importer.errors import LossyConversion, \
     ProviderNotAllowedDeletion, RecordNotDeletable, SeriesImportError
-from cds_ils.importer.models import ImportRecordLog
+from cds_ils.importer.models import ImporterMode, ImportRecordLog
 from cds_ils.importer.parse_xml import get_record_recid_from_xml, \
     get_records_list
 from cds_ils.importer.vocabularies_validator import \
@@ -50,7 +50,7 @@ def validate_import(provider, mode, source_type):
     # check if the record is in delete mode
     if provider not in current_app.config[
         "CDS_ILS_IMPORTER_PROVIDERS_ALLOWED_TO_DELETE_RECORDS"
-    ] and mode == 'DELETE':
+    ] and mode == ImporterMode.DELETE.value:
         raise ProviderNotAllowedDeletion(provider=provider)
 
 
