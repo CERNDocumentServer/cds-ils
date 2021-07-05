@@ -17,7 +17,6 @@ from cds_ils.importer.providers.cds.helpers.decorators import \
     filter_empty_dict_values, filter_list_values, out_strip
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.ebl.ebl import model
-from cds_ils.importer.providers.utils import reverse_replace
 
 # REQUIRED_FIELDS
 
@@ -43,9 +42,8 @@ def authors(self, key, value):
     _authors = self.get("authors", [])
 
     author = {
-        "full_name": reverse_replace(
-            clean_val("a", value, str, req=True), ".", ""
-        ),
+        "full_name":
+            clean_val("a", value, str, req=True).rstrip(".")
     }
     _authors.append(author)
     return _authors
@@ -62,12 +60,12 @@ def title(self, key, value):
         _alternative_titles = self.get("alternative_titles", [])
         _alternative_titles.append(
             {
-                "value": reverse_replace(clean_val("b", value, str), ".", ""),
+                "value": clean_val("b", value, str).rstrip('.'),
                 "type": "SUBTITLE",
             }
         )
         self["alternative_titles"] = _alternative_titles
-    return reverse_replace(clean_val("a", value, str, req=True), ".", "")
+    return clean_val("a", value, str, req=True).rstrip('.')
 
 
 # EITEM fields
@@ -93,7 +91,6 @@ def eitem(self, key, value):
 
 # OPTIONAL FIELDS
 
-
 @model.over("identifiers", "^020__")
 @filter_list_values
 def identifiers(self, key, value):
@@ -103,6 +100,7 @@ def identifiers(self, key, value):
         isbn = {
             "scheme": "ISBN",
             "value": clean_val("a", value, str, req=True),
+            "material": "DIGITAL"
         }
         if isbn not in _identifiers:
             _identifiers.append(isbn)
@@ -110,10 +108,28 @@ def identifiers(self, key, value):
         isbn = {
             "scheme": "ISBN",
             "value": clean_val("z", value, str, req=True),
+            "material": "PRINT_VERSION"
         }
         if isbn not in _identifiers:
             _identifiers.append(isbn)
     return _identifiers
+
+
+@model.over("alternative_identifiers", "^035__")
+@filter_list_values
+def alternative_identifiers(self, key, value):
+    """Translate alternative identifiers."""
+    _alternative_identifiers = self.get("alternative_identifiers", [])
+
+    if "a" in value:
+        val_a = clean_val("a", value, str, req=True)
+        if "(Au-PeEL)" in val_a:
+            val_a = val_a.replace("(Au-PeEL)", "").replace("EBL", "")
+            _alternative_identifiers.append({
+                "scheme": "EBL",
+                "value": val_a
+            })
+    return _alternative_identifiers
 
 
 @model.over("languages", "^040__")
@@ -162,12 +178,12 @@ def imprint(self, key, value):
     _publication_year = self.get("publication_year")
     if _publication_year:
         raise UnexpectedValue(subfield="e", message="doubled publication year")
-    pub_year = reverse_replace(clean_val("c", value, str), ".", "")
+    pub_year = clean_val("c", value, str).rstrip('.')
     self["publication_year"] = pub_year
 
     return {
-        "place": reverse_replace(clean_val("a", value, str), ":", ""),
-        "publisher": reverse_replace(clean_val("b", value, str), ",", ""),
+        "place": clean_val("a", value, str).rstrip(':'),
+        "publisher": clean_val("b", value, str).rstrip(','),
         "date": pub_year,
     }
 
@@ -221,7 +237,8 @@ def keywords(self, key, value):
     """Translate keywords."""
     _keywords = self.get("keywords", [])
 
-    keyword = {"source": "EBL", "value": clean_val("a", value, str, req=True)}
+    keyword = {"source": "EBL",
+               "value": clean_val("a", value, str, req=True).rstrip(':')}
 
     if keyword not in _keywords:
         _keywords.append(keyword)

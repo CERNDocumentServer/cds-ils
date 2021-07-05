@@ -63,7 +63,7 @@ def authors(self, key, value):
     if orcid:
         identifiers = [{"scheme": "ORCID", "value": orcid}]
     author = {
-        "full_name": clean_val("a", value, str, req=True),
+        "full_name": clean_val("a", value, str, req=True).rstrip('.'),
         "identifiers": identifiers,
         "roles": [
             _get_correct_ils_contributor_role("e", clean_val("e", value, str))
@@ -94,11 +94,10 @@ def imprint(self, key, value):
         raise UnexpectedValue(subfield="e", message="doubled publication year")
     self["publication_year"] = clean_val("c", value, str)
 
-    publisher = ", ".join([entry for entry in value.get("b")])
     return {
         "place": clean_val("a", value, str),
-        "publisher": publisher,
-        "date": clean_val("c", value, str),
+        "publisher": "Springer",
+        "date": clean_val("c", value, str).rstrip('.'),
     }
 
 
@@ -263,7 +262,8 @@ def keywords(self, key, value):
     """Translate keywords."""
     _keywords = self.get("keywords", [])
 
-    keyword = {"source": "SPR", "value": clean_val("a", value, str, req=True)}
+    keyword = {"source": "SPR",
+               "value": clean_val("a", value, str, req=True).rstrip('.')}
 
     if keyword not in _keywords:
         _keywords.append(keyword)
