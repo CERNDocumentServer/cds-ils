@@ -58,18 +58,22 @@ def test_ebl_transformation(app):
                 "nanosized materialsMagnetic refrigerationConclusions.",
                 "agency_code": "MiAaPQ",
                 "alternative_identifiers": [
-                    {"scheme": "EBL", "value": "EBC263817"}
+                    {"scheme": "EBL", "value": "EBC263817"},
+                    {"scheme": "EBL", "value": "263817"},
                 ],
                 "authors": [
-                    {"full_name": "Tishin, A M."},
-                    {"full_name": "Spichkin, Y I."},
-                    {"full_name": "Tishin, AM."},
-                    {"full_name": "Spichkin, YI."},
+                    {"full_name": "Tishin, A. M"},
+                    {"full_name": "Spichkin, Y. I"},
+                    {"full_name": "Tishin, A.M"},
+                    {"full_name": "Spichkin, Y.I"},
                 ],
                 "edition": "1st",
                 "identifiers": [
-                    {"scheme": "ISBN", "value": "9781420033373"},
-                    {"scheme": "ISBN", "value": "9780750309226"},
+                    {"scheme": "ISBN", "value": "9781420033373",
+                     "material": "DIGITAL"},
+                    {"scheme": "ISBN", "value": "9780750309226",
+                     "material": "PRINT_VERSION"
+                     },
                 ],
                 "imprint": {
                     "date": "2003",
