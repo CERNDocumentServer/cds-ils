@@ -58,8 +58,8 @@ def test_springer_transformation(app):
                     {"scheme": "SPRINGER", "value": "978-0-306-47915-1"}
                 ],
                 "authors": [
-                    {"full_name": "Negele, J.W.", "roles": ["EDITOR"]},
-                    {"full_name": "Vogt, Erich W.", "roles": ["EDITOR"]},
+                    {"full_name": "Negele, J.W", "roles": ["EDITOR"]},
+                    {"full_name": "Vogt, Erich W", "roles": ["EDITOR"]},
                 ],
                 "document_type": "BOOK",
                 "edition": "1st  2001.",
@@ -68,16 +68,16 @@ def test_springer_transformation(app):
                     {"scheme": "ISBN", "value": "9780306479151X"},
                 ],
                 "imprint": {
-                    "date": "2001.",
+                    "date": "2001",
                     "place": "New York, NY :",
-                    "publisher": "Springer US :, Imprint: Springer,",
+                    "publisher": "Springer",
                 },
                 "keywords": [
-                    {"source": "SPR", "value": "Nuclear physics."},
-                    {"source": "SPR", "value": "Heavy ions."},
+                    {"source": "SPR", "value": "Nuclear physics"},
+                    {"source": "SPR", "value": "Heavy ions"},
                     {
                         "source": "SPR",
-                        "value": "Nuclear Physics, Heavy Ions, Hadrons.",
+                        "value": "Nuclear Physics, Heavy Ions, Hadrons",
                     },
                 ],
                 "number_of_pages": "386",

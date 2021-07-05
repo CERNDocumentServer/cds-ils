@@ -17,8 +17,7 @@ from cds_ils.importer.providers.cds.helpers.decorators import \
     filter_list_values, out_strip
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.safari.safari import model
-from cds_ils.importer.providers.utils import \
-    _get_correct_ils_contributor_role, reverse_replace
+from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role
 
 
 @model.over("alternative_identifiers", "^001")
@@ -42,7 +41,7 @@ def authors(self, key, value):
     _authors = self.get("authors", [])
 
     author = {
-        "full_name": clean_val("a", value, str, req=True),
+        "full_name": clean_val("a", value, str, req=True).rstrip(','),
         "roles": [
             _get_correct_ils_contributor_role("e", clean_val("e", value, str))
         ],
@@ -62,12 +61,12 @@ def title(self, key, value):
         _alternative_titles = self.get("alternative_titles", [])
         _alternative_titles.append(
             {
-                "value": reverse_replace(clean_val("b", value, str), ".", ""),
+                "value": clean_val("b", value, str).rstrip("."),
                 "type": "SUBTITLE",
             }
         )
         self["alternative_titles"] = _alternative_titles
-    return reverse_replace(clean_val("a", value, str, req=True), ".", "")
+    return clean_val("a", value, str, req=True).rstrip('.')
 
 
 # EITEM fields
@@ -134,12 +133,13 @@ def imprint(self, key, value):
     _publication_year = self.get("publication_year")
     if _publication_year:
         raise UnexpectedValue(subfield="e", message="doubled publication year")
-    pub_year = reverse_replace(clean_val("c", value, str), ".", "")
+    pub_year = clean_val("c", value, str).rstrip('.')
     self["publication_year"] = pub_year
 
     return {
-        "publisher": reverse_replace(clean_val("b", value, str), ",", ""),
+        "publisher": clean_val("b", value, str).rstrip('.').rstrip(','),
         "date": pub_year,
+        "place": "S.L.",
     }
 
 
