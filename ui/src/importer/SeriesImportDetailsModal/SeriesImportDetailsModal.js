@@ -4,31 +4,12 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Button, Header, Modal, Table } from 'semantic-ui-react';
 import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
-import { JsonViewModal } from './JsonViewModal';
 
-export class SeriesImportDetails extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { open: false };
-  }
+export default class SeriesImportDetails extends Component {
   render() {
-    const { seriesReport } = this.props;
-    const { open } = this.state;
+    const { seriesReport, open, modalClose, openJsonModal } = this.props;
     return (
-      <Modal
-        onClose={() => this.setState({ open: false })}
-        onOpen={() => this.setState({ open: true })}
-        open={open}
-        trigger={
-          <Button
-            color="red"
-            icon="exclamation"
-            floated="right"
-            size="mini"
-            basic
-          />
-        }
-      >
+      <Modal onClose={modalClose} onOpen={modalClose} open={open}>
         <Modal.Header>Series - attention required</Modal.Header>
         <Modal.Content>
           <Modal.Description>
@@ -39,9 +20,13 @@ export class SeriesImportDetails extends Component {
                   <Table.Row key={series.output_pid}>
                     <Table.Cell>
                       {series.series_json.title}
-                      <JsonViewModal
-                        title="Series JSON"
-                        jsonData={_get(series, 'series_json', {})}
+                      <Button
+                        onClick={() =>
+                          openJsonModal(
+                            'Series JSON',
+                            _get(series, 'series_json', {})
+                          )
+                        }
                       />
                     </Table.Cell>
                     {series.duplicates.map(pid => (
@@ -62,7 +47,7 @@ export class SeriesImportDetails extends Component {
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={() => this.setState({ open: false })}>Close</Button>
+          <Button onClick={modalClose}>Close</Button>
         </Modal.Actions>
       </Modal>
     );
@@ -71,4 +56,7 @@ export class SeriesImportDetails extends Component {
 
 SeriesImportDetails.propTypes = {
   seriesReport: PropTypes.object.isRequired,
+  open: PropTypes.bool.isRequired,
+  modalClose: PropTypes.func.isRequired,
+  openJsonModal: PropTypes.func.isRequired,
 };

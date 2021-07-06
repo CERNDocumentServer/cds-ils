@@ -11,6 +11,9 @@ import {
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
+import { EitemImportDetailsModal } from '../EitemImportDetailsModal';
+import { SeriesImportDetailsModal } from '../SeriesImportDetailsModal';
+import { JsonViewModal } from '../JsonViewModal';
 import { modeFormatter } from '../ImporterList';
 import { ImportedDocumentReport } from './ImportedDocumentReport';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
@@ -21,6 +24,7 @@ import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
 export class ImportedDocuments extends React.Component {
   constructor(props) {
     super(props);
+    this.pageSize = 20;
     this.state = {
       importCompleted: false,
       data: null,
@@ -131,67 +135,75 @@ export class ImportedDocuments extends React.Component {
   renderResultsContent = () => {
     const { data, activePage } = this.state;
     return (
-      <Table styled="true" fluid="true" striped celled structured>
-        <Table.Header className="sticky-table-header">
-          <Table.Row>
-            <Table.HeaderCell collapsing rowSpan="3" textAlign="center">
-              No
-            </Table.HeaderCell>
-            <Table.HeaderCell width="6" rowSpan="3">
-              Title [Provider recid]
-            </Table.HeaderCell>
+      <>
+        <Table styled="true" fluid="true" striped celled structured>
+          <Table.Header className="sticky-table-header">
+            <Table.Row>
+              <Table.HeaderCell collapsing rowSpan="3" textAlign="center">
+                No
+              </Table.HeaderCell>
+              <Table.HeaderCell width="6" rowSpan="3">
+                Title [Provider recid]
+              </Table.HeaderCell>
 
-            <Table.HeaderCell width="1" rowSpan="3">
-              Action
-            </Table.HeaderCell>
-            <Table.HeaderCell width="1" rowSpan="3">
-              Output document
-            </Table.HeaderCell>
-            <Table.HeaderCell colSpan="4">Dependent records</Table.HeaderCell>
-            <Table.HeaderCell rowSpan="3">Partial matches</Table.HeaderCell>
-            <Table.HeaderCell rowSpan="3">Error</Table.HeaderCell>
-          </Table.Row>
-          <Table.Row>
-            <Table.HeaderCell colSpan="2">E-item</Table.HeaderCell>
-            <Table.HeaderCell colSpan="2">Serials</Table.HeaderCell>
-          </Table.Row>
-          <Table.Row>
-            <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
-            <Table.HeaderCell width="1">Action and details</Table.HeaderCell>
-            <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
-            <Table.HeaderCell width="1">Details</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {data.records
-            .slice((activePage - 1) * 20, (activePage - 1) * 20 + 20)
-            .map((elem, index) => {
-              return (
-                !_isEmpty(elem) && (
-                  <ImportedDocumentReport
-                    key={index}
-                    documentReport={elem}
-                    listIndex={index + (activePage - 1) * 20}
-                  />
-                )
-              );
-            })}
-        </Table.Body>
+              <Table.HeaderCell width="1" rowSpan="3">
+                Action
+              </Table.HeaderCell>
+              <Table.HeaderCell width="1" rowSpan="3">
+                Output document
+              </Table.HeaderCell>
+              <Table.HeaderCell colSpan="4">Dependent records</Table.HeaderCell>
+              <Table.HeaderCell rowSpan="3">Partial matches</Table.HeaderCell>
+              <Table.HeaderCell rowSpan="3">Error</Table.HeaderCell>
+            </Table.Row>
+            <Table.Row>
+              <Table.HeaderCell colSpan="2">E-item</Table.HeaderCell>
+              <Table.HeaderCell colSpan="2">Serials</Table.HeaderCell>
+            </Table.Row>
+            <Table.Row>
+              <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
+              <Table.HeaderCell width="1">Action and details</Table.HeaderCell>
+              <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
+              <Table.HeaderCell width="1">Details</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {data.records
+              .slice(
+                activePage * this.pageSize - this.pageSize + 1,
+                activePage * this.pageSize
+              )
+              .map((elem, index) => {
+                return (
+                  !_isEmpty(elem) && (
+                    <ImportedDocumentReport
+                      key={index}
+                      documentReport={elem}
+                      listIndex={index + (activePage - 1) * this.pageSize}
+                    />
+                  )
+                );
+              })}
+          </Table.Body>
 
-        <Table.Footer>
-          <Table.Row>
-            <Table.HeaderCell colSpan="10">
-              <Pagination
-                defaultActivePage={1}
-                totalPages={Math.floor(data.records.length / 20)}
-                activePage={activePage}
-                onPageChange={this.handlePaginationChange}
-                floated="right"
-              />
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Footer>
-      </Table>
+          <Table.Footer>
+            <Table.Row>
+              <Table.HeaderCell colSpan="10">
+                <Pagination
+                  defaultActivePage={1}
+                  totalPages={Math.ceil(data.records.length / this.pageSize)}
+                  activePage={activePage}
+                  onPageChange={this.handlePaginationChange}
+                  floated="right"
+                />
+              </Table.HeaderCell>
+            </Table.Row>
+          </Table.Footer>
+        </Table>
+        <JsonViewModal />
+        <SeriesImportDetailsModal />
+        <EitemImportDetailsModal />
+      </>
     );
   };
 

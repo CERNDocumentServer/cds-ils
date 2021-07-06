@@ -55,12 +55,12 @@ def import_from_xml_task(log_id, source_path, source_type, provider, mode):
 def clean_preview_logs():
     """Clean stale preview logs."""
     # take tasks older than 7 days
-    stale_logs_date = datetime.datetime.now() - datetime.timedelta(days=7)
+    seven_days_ago = datetime.datetime.now() - datetime.timedelta(days=7)
 
     # find and delete all the stale preview logs
     ImporterTaskLog.query.filter(
         or_(ImporterTaskLog.mode == ImporterMode.PREVIEW_DELETE,
             ImporterTaskLog.mode == ImporterMode.PREVIEW_IMPORT),
-        ImporterTaskLog.start_time < stale_logs_date).delete()
+        ImporterTaskLog.start_time < seven_days_ago).delete()
 
     db.session.commit()

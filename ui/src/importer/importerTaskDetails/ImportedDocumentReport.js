@@ -1,15 +1,16 @@
 import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Header, Icon, Label, Table } from 'semantic-ui-react';
+import { Button, Header, Icon, Label, Table } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
-import { SeriesImportDetails } from './SeriesImportDetails';
-import { EitemImportDetails } from './EitemImportDetails';
-import { JsonViewModal } from './JsonViewModal';
+import { openJsonModal as openJsonModalAction } from '../JsonViewModal/actions';
+import { openSeriesDetailsModal as openSeriesDetailsModalAction } from '../SeriesImportDetailsModal/actions';
+import { openEitemDetailsModal as openEitemDetailsModalAction } from '../EitemImportDetailsModal/actions';
 
-export class ImportedDocumentReport extends Component {
+class ImportedDocumentReportComponent extends Component {
   renderActionLabel = action => {
     let color;
     if (action === 'create') {
@@ -23,8 +24,13 @@ export class ImportedDocumentReport extends Component {
   };
 
   render() {
-    const { documentReport, listIndex } = this.props;
-
+    const {
+      documentReport,
+      listIndex,
+      openJsonModal,
+      openSeriesDetailsModal,
+      openEitemModal,
+    } = this.props;
     let title;
 
     if (!_isEmpty(documentReport.document)) {
@@ -47,9 +53,17 @@ export class ImportedDocumentReport extends Component {
         <Table.Cell>
           {this.renderActionLabel(documentReport.action)}
           {documentReport.raw_json && (
-            <JsonViewModal
-              title="Raw import JSON"
-              jsonData={_get(documentReport, 'raw_json', {})}
+            <Button
+              icon="code"
+              floated="right"
+              size="mini"
+              basic
+              onClick={(e, { title, jsonData }) =>
+                openJsonModal(
+                  'Raw import JSON',
+                  _get(documentReport, 'raw_json', {})
+                )
+              }
             />
           )}
         </Table.Cell>
@@ -68,9 +82,14 @@ export class ImportedDocumentReport extends Component {
           )}
 
           {!_isEmpty(documentReport.document_json) && (
-            <JsonViewModal
-              title="Document JSON"
-              jsonData={documentReport.document_json}
+            <Button
+              icon="code"
+              floated="right"
+              size="mini"
+              basic
+              onClick={() =>
+                openJsonModal('Document JSON', documentReport.document_json)
+              }
             />
           )}
         </Table.Cell>
@@ -110,18 +129,33 @@ export class ImportedDocumentReport extends Component {
                   ))}
                 </>
               )}
+
               {(_get(documentReport, 'eitem.deleted_eitems', []).length > 1 ||
                 !_isEmpty(_get(documentReport, 'eitem.duplicates', []))) && (
-                <EitemImportDetails eitemReport={documentReport.eitem} />
+                <Button
+                  icon="exclamation"
+                  floated="right"
+                  size="mini"
+                  basic
+                  onClick={() => openEitemModal(documentReport.eitem)}
+                />
               )}
               <br />
 
               {this.renderActionLabel(documentReport.eitem.action)}
             </>
           )}
-          <JsonViewModal
-            title="E-item JSON"
-            jsonData={_get(documentReport, 'eitem.json', {})}
+          <Button
+            icon="code"
+            floated="right"
+            size="mini"
+            basic
+            onClick={() =>
+              openJsonModal(
+                'E-item JSON',
+                _get(documentReport, 'eitem.json', {})
+              )
+            }
           />
         </Table.Cell>
         <Table.Cell collapsing textAlign="center">
@@ -154,12 +188,28 @@ export class ImportedDocumentReport extends Component {
                     </>
                   )}{' '}
                   {this.renderActionLabel(documentReport.series[0].action)}{' '}
-                  <JsonViewModal
-                    title="Series JSON"
-                    jsonData={_get(documentReport, 'series[0].series_json', {})}
+                  <Button
+                    icon="code"
+                    floated="right"
+                    size="mini"
+                    basic
+                    onClick={() =>
+                      openJsonModal(
+                        'Series JSON',
+                        _get(documentReport, 'series[0].series_json', {})
+                      )
+                    }
                   />
                   {!_isEmpty(documentReport.series[0].duplicates) && (
-                    <SeriesImportDetails seriesReport={documentReport.series} />
+                    <Button
+                      icon="exclamation"
+                      floated="right"
+                      size="mini"
+                      basic
+                      onClick={() =>
+                        openSeriesDetailsModal(documentReport.series)
+                      }
+                    />
                   )}
                 </>
               )}
@@ -203,7 +253,23 @@ export class ImportedDocumentReport extends Component {
   }
 }
 
-ImportedDocumentReport.propTypes = {
+ImportedDocumentReportComponent.propTypes = {
   documentReport: PropTypes.object.isRequired,
   listIndex: PropTypes.number.isRequired,
+  openJsonModal: PropTypes.func.isRequired,
+  openEitemModal: PropTypes.func.isRequired,
+  openSeriesDetailsModal: PropTypes.func.isRequired,
 };
+
+const mapDispatchToProps = dispatch => ({
+  openJsonModal: (title, json) => dispatch(openJsonModalAction(title, json)),
+  openEitemModal: eitemReport =>
+    dispatch(openEitemDetailsModalAction(eitemReport)),
+  openSeriesDetailsModal: seriesReport =>
+    dispatch(openSeriesDetailsModalAction(seriesReport)),
+});
+
+export const ImportedDocumentReport = connect(
+  null,
+  mapDispatchToProps
+)(ImportedDocumentReportComponent);
