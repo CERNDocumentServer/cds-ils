@@ -3,23 +3,11 @@ import PropTypes from 'prop-types';
 import { Button, Modal } from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 
-export class JsonViewModal extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { open: false };
-  }
-
+export default class JsonViewModal extends Component {
   render() {
-    const { title, jsonData } = this.props;
-    const { open } = this.state;
-
+    const { title, jsonData, open, onCloseHandler } = this.props;
     return (
-      <Modal
-        onClose={() => this.setState({ open: false })}
-        onOpen={() => this.setState({ open: true })}
-        open={open}
-        trigger={<Button icon="code" floated="right" size="mini" basic />}
-      >
+      <Modal onClose={onCloseHandler} onOpen={onCloseHandler} open={open}>
         <Modal.Header>{title}</Modal.Header>
         <Modal.Content>
           <Modal.Description>
@@ -27,7 +15,7 @@ export class JsonViewModal extends Component {
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={() => this.setState({ open: false })}>Close</Button>
+          <Button onClick={onCloseHandler}>Close</Button>
         </Modal.Actions>
       </Modal>
     );
@@ -37,4 +25,6 @@ export class JsonViewModal extends Component {
 JsonViewModal.propTypes = {
   title: PropTypes.string.isRequired,
   jsonData: PropTypes.object.isRequired,
+  open: PropTypes.bool.isRequired,
+  onCloseHandler: PropTypes.func.isRequired,
 };

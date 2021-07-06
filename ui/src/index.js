@@ -10,11 +10,13 @@ import ReactDOM from 'react-dom';
 import { OverridableContext } from 'react-overridable';
 import { Router } from 'react-router-dom';
 import 'semantic-ui-less/semantic.less';
+import { initialiseReducers } from './reducers';
 import { config } from './config';
 import { overriddenCmps } from './overridableMapping';
 
 // Checks if browser is IE (unsupported)
 const isIE = !!document.documentMode;
+initialiseReducers();
 
 if (!isIE) {
   ReactDOM.render(
