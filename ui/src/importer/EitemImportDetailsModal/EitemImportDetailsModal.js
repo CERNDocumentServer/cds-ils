@@ -5,29 +5,11 @@ import { Link } from 'react-router-dom';
 import { Button, Header, List, Modal } from 'semantic-ui-react';
 import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
 
-export class EitemImportDetails extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { open: false };
-  }
+export default class EitemImportDetails extends Component {
   render() {
-    const { eitemReport } = this.props;
-    const { open } = this.state;
+    const { eitemReport, open, modalClose } = this.props;
     return (
-      <Modal
-        onClose={() => this.setState({ open: false })}
-        onOpen={() => this.setState({ open: true })}
-        open={open}
-        trigger={
-          <Button
-            color="red"
-            icon="exclamation"
-            floated="right"
-            size="mini"
-            basic
-          />
-        }
-      >
+      <Modal onClose={modalClose} onOpen={modalClose} open={open}>
         <Modal.Header>EItem - attention required</Modal.Header>
         <Modal.Content>
           <Modal.Description>
@@ -59,11 +41,10 @@ export class EitemImportDetails extends Component {
                 </List>
               </>
             )}
-            {/*<ReactJson src={jsonData} name={null} />*/}
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={() => this.setState({ open: false })}>Close</Button>
+          <Button onClick={modalClose}>Close</Button>
         </Modal.Actions>
       </Modal>
     );
@@ -72,4 +53,6 @@ export class EitemImportDetails extends Component {
 
 EitemImportDetails.propTypes = {
   eitemReport: PropTypes.object.isRequired,
+  open: PropTypes.bool,
+  modalClose: PropTypes.func.isRequired,
 };

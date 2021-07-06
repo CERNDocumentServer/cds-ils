@@ -1,9 +1,9 @@
 import time
 
 from invenio_app_ils.proxies import current_app_ils
+from invenio_search import current_search
 
 from cds_ils.importer.importer import Importer
-from cds_ils.importer.series.importer import SeriesImporter
 from tests.helpers import load_json_from_datadir
 
 
@@ -24,7 +24,7 @@ def test_modify_documents(importer_test_data):
     updated_document = document_cls.get_record_by_pid(
         report["document_json"]["pid"])
     # wait for indexing
-    time.sleep(1)
+    current_search.flush_and_refresh(index="*")
 
     search = eitem_search_cls().search_by_document_pid(
         document_pid=updated_document["pid"]
