@@ -84,6 +84,7 @@ setup(
             "importer = cds_ils.importer.cli:importer",
             "fixtures = cds_ils.cli:fixtures",
             "covers = cds_ils.cli:covers",
+            "maintenance = cds_ils.cli:maintenance",
         ],
         "invenio_db.models": [
             "cds_ils_ldap = cds_ils.ldap.models",

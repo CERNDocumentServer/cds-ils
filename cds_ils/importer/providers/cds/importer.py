@@ -16,7 +16,7 @@ from cds_ils.literature.api import get_record_by_legacy_recid
 class CDSImporter(Importer):
     """CDS importer class."""
 
-    def _match(self):
+    def _match_document(self):
         """CDS importer match document."""
         legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
         document_class = current_app_ils.document_record_cls
