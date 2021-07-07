@@ -37,6 +37,7 @@ from invenio_db import db
 from invenio_pages import Page
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
+from invenio_records import Record
 from invenio_search import current_search
 from invenio_userprofiles import UserProfile
 
@@ -595,3 +596,38 @@ def clean(user_email, given_date, verbose):
         + " --given-date "
         + given_date
     )
+
+
+@click.group()
+def maintenance():
+    """Maintenance commands."""
+
+
+@maintenance.command()
+@click.option("-p", "--pid")
+@with_appcontext
+def revert_delete_record(pid):
+    """Reverts deletion action of a record."""
+    pid_obj = PersistentIdentifier.query.filter_by(pid_value=pid).one()
+
+    record_uuid = pid_obj.object_uuid
+    deleted = Record.get_record(record_uuid, with_deleted=True)
+
+    if not deleted.is_deleted:
+        click.secho(f"Record {pid} was not deleted. Aborting.", fg="red")
+        return
+
+    # revert to previous revision
+    record = deleted.revert(deleted.revision_id - 1)
+
+    all_pid_objects = PersistentIdentifier.query.filter_by(
+        object_uuid=record_uuid)
+    for pid_obj in all_pid_objects:
+        pid_obj.status = PIDStatus.REGISTERED
+
+    db.session.commit()
+
+    indexer_class = current_app_ils.indexer_by_pid_type(pid_obj.pid_type)
+    indexer_class.index(record)
+    click.secho(f"Record {pid} is reverted from deletion.", fg="green")
+
