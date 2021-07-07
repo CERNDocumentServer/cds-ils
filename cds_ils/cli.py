@@ -630,4 +630,3 @@ def revert_delete_record(pid):
     indexer_class = current_app_ils.indexer_by_pid_type(pid_obj.pid_type)
     indexer_class.index(record)
     click.secho(f"Record {pid} is reverted from deletion.", fg="green")
-
