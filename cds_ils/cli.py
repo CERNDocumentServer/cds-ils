@@ -622,8 +622,10 @@ def revert_delete_record(pid):
 
     all_pid_objects = PersistentIdentifier.query.filter_by(
         object_uuid=record_uuid)
-    for pid_obj in all_pid_objects:
-        pid_obj.status = PIDStatus.REGISTERED
+
+    # trying to get all the pid types (including legacy pids)
+    for pid_object in all_pid_objects:
+        pid_object.status = PIDStatus.REGISTERED
 
     db.session.commit()
 
