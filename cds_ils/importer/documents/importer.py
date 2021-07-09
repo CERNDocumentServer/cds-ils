@@ -171,7 +171,7 @@ class DocumentImporter(object):
 
     def _update_field_identifiers(self, matched_document):
         """Update isbns of a given document."""
-        existing_identifiers = matched_document["identifiers"]
+        existing_identifiers = matched_document.get("identifiers", [])
         new_identifiers = [
             elem
             for elem in self.json_data["identifiers"]

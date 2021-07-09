@@ -84,3 +84,9 @@ class SeriesImportError(CDSImporterException):
     """Document import exception."""
 
     message = "[SERIES IMPORT ERROR]"
+
+
+class UnknownProvider(CDSImporterException):
+    """Unknown provider exception."""
+
+    message = "Invalid provider."
