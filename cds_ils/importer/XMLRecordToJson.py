@@ -11,14 +11,11 @@
 import datetime
 
 from cds_dojson.marc21.utils import create_record
-from flask import current_app
 from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
 
 from cds_ils.importer import marc21
-from cds_ils.importer.errors import LossyConversion, ManualImportRequired, \
-    MissingRequiredField, UnexpectedValue
-from cds_ils.importer.handlers import importer_exception_handler
+from cds_ils.importer.errors import LossyConversion
 
 
 class XMLRecordToJson(object):
@@ -47,12 +44,6 @@ class XMLRecordToJson(object):
         """Perform record dump."""
         dt = datetime.datetime.utcnow()
 
-        exception_handlers = {
-            UnexpectedValue: importer_exception_handler,
-            MissingRequiredField: importer_exception_handler,
-            ManualImportRequired: importer_exception_handler,
-        }
-
         marc_record = create_record(self.data)
         if "d" in marc_record.get("leader", []):
             is_deletable = True
@@ -61,7 +52,7 @@ class XMLRecordToJson(object):
 
         # MARCXML -> JSON fields translation
         val = self.dojson_model.do(
-            marc_record, exception_handlers=exception_handlers
+            marc_record,
         )
         # check for missing rules
         missing = self.dojson_model.missing(marc_record)
