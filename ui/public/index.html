@@ -28,36 +28,25 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>CERN Library Catalogue</title>
-    <!-- Piwik -->
-    <script type="text/javascript" src="https://piwik.web.cern.ch/piwik.js"></script>
   </head>
   <body>
-
-    <!-- Piwik -->
+    <!-- Begin Matomo tracking Code -->
     <script type="text/javascript">
-        var pkBaseURL = "https://piwik.web.cern.ch/";
-        try {
-          if ("%REACT_APP_INVENIO_PIWIK_ID%" !== undefined)
-            {
-              var piwikTracker = Piwik.getTracker(
-              pkBaseURL + 'piwik.php', %REACT_APP_INVENIO_PIWIK_ID%);
-              piwikTracker.trackPageView();
-              piwikTracker.enableLinkTracking();
-            }
-        } catch (err) {
-          console.error(err);
+      if ("%REACT_APP_INVENIO_MATOMO_ID%" !== undefined){
+          var _paq = window._paq = window._paq || [];
+          /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          (function() {
+            var u="https://webanalytics.web.cern.ch/";
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', %REACT_APP_INVENIO_MATOMO_ID%]);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+          })();
         }
     </script>
-    <noscript>
-      <p>
-        <img
-          src="http://piwik.web.cern.ch/piwik.php?idsite=%REACT_APP_INVENIO_PIWIK_ID%"
-          style="border:0"
-          alt=""
-        />
-      </p>
-    </noscript>
-    <!-- End Piwik Tracking Code -->
+    <!-- End Matomo Tracking Code -->
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="app"></div>
   </body>
