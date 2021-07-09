@@ -8,7 +8,7 @@
 """CDS-ILS RecordDumpLoader module."""
 import pkg_resources
 
-from cds_ils.importer.errors import RecordNotDeletable
+from cds_ils.importer.errors import RecordNotDeletable, UnknownProvider
 from cds_ils.importer.models import ImporterMode
 
 
@@ -18,9 +18,12 @@ class XMLRecordDumpLoader(object):
     @classmethod
     def get_importer_class(cls, provider):
         """Load importer for a given provider."""
-        return pkg_resources.load_entry_point(
-            "cds-ils", "cds_ils.importers", provider
-        )
+        try:
+            return pkg_resources.load_entry_point(
+                "cds-ils", "cds_ils.importers", provider
+            )
+        except Exception:
+            raise UnknownProvider
 
     @classmethod
     def create_json(cls, dump_model):
