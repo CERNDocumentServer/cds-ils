@@ -26,7 +26,7 @@ class CDSDocument(CdsIlsOverdo):
         "980__:PROCEEDINGS OR "
         "(-980:STANDARD 980:BOOK) OR "
         "697C_:LEGSERLIB AND "
-        "(-980__:DELETED -980__:MIGRATED -980__:STANDARD "
+        "(-980__:STANDARD "
         "-596__:MULTIVOLUMES1 -596__:MULTIVOLUMESX)"
     )
 

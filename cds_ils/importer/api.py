@@ -14,7 +14,8 @@ from invenio_app_ils.errors import IlsValidationError
 from invenio_db import db
 
 from cds_ils.importer.errors import LossyConversion, \
-    ProviderNotAllowedDeletion, RecordNotDeletable, SeriesImportError
+    ProviderNotAllowedDeletion, RecordNotDeletable, SeriesImportError, \
+    UnexpectedValue
 from cds_ils.importer.models import ImporterMode, ImportRecordLog
 from cds_ils.importer.parse_xml import get_record_recid_from_xml, \
     get_records_list
@@ -24,9 +25,10 @@ from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
 from cds_ils.importer.XMLRecordToJson import XMLRecordToJson
 
 
-def create_json(data, source_type):
+def create_json(data, source_type, ignore_missing_rules=False):
     """Process record dump."""
-    record_dump = XMLRecordToJson(data, source_type=source_type)
+    record_dump = XMLRecordToJson(data, source_type=source_type,
+                                  ignore_missing=ignore_missing_rules)
     return XMLRecordDumpLoader.create_json(record_dump)
 
 
@@ -55,6 +57,7 @@ def validate_import(provider, mode, source_type):
 
 
 def import_from_xml(log, source_path, source_type, provider, mode,
+                    ignore_missing_rules=False,
                     eager=False):
     """Load a single xml file."""
     try:
@@ -71,11 +74,16 @@ def import_from_xml(log, source_path, source_type, provider, mode,
                 record_recid = get_record_recid_from_xml(record)
 
                 try:
-                    json_data, is_deletable = create_json(record, source_type)
-                except LossyConversion as e:
+                    json_data, is_deletable = \
+                        create_json(record,
+                                    source_type,
+                                    ignore_missing_rules=ignore_missing_rules
+                                    )
+                except (LossyConversion, UnexpectedValue) as e:
                     ImportRecordLog.create_failure(log.id, record_recid,
                                                    str(e.message))
                     continue
+
                 try:
                     report = import_from_json(json_data, is_deletable,
                                               provider, mode)

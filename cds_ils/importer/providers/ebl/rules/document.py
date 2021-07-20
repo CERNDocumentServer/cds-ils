@@ -26,6 +26,7 @@ from cds_ils.importer.providers.ebl.ebl import model
 def recid(self, key, value):
     """Record Identifier."""
     self["provider_recid"] = value
+    value = value.replace("EBC", "")
     return [{"scheme": "EBL", "value": value}]
 
 
@@ -49,7 +50,7 @@ def authors(self, key, value):
     return _authors
 
 
-@model.over("title", "^24510")
+@model.over("title", "^245")
 @out_strip
 def title(self, key, value):
     """Translates title."""
@@ -81,7 +82,7 @@ def eitem(self, key, value):
     for v in force_list(value):
         urls.append(
             {
-                "description": "E-book by EbookCentral",
+                "description": "ebook",
                 "value": clean_val("u", v, str),
             }
         )
@@ -149,8 +150,9 @@ def languages(self, key, value):
 def subjects_loc(self, key, value):
     """Translates subject classification."""
     _subjects = self.get("subjects", [])
-
-    _subjects.append({"scheme": "LOC", "value": clean_val("a", value, str)})
+    subject = {"scheme": "LOC", "value": clean_val("a", value, str)}
+    if subject not in _subjects:
+        _subjects.append(subject)
     return _subjects
 
 
@@ -159,8 +161,9 @@ def subjects_loc(self, key, value):
 def subjects_dewey(self, key, value):
     """Translates subject classification."""
     _subjects = self.get("subjects", [])
-
-    _subjects.append({"scheme": "DEWEY", "value": clean_val("a", value, str)})
+    subject = {"scheme": "DEWEY", "value": clean_val("a", value, str)}
+    if subject not in _subjects:
+        _subjects.append(subject)
     return _subjects
 
 
@@ -168,7 +171,8 @@ def subjects_dewey(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translate edition field."""
-    return clean_val("a", value, str).replace("ed.", "").replace("edition", "")
+    return clean_val("a", value, str)\
+        .replace("ed.", "").replace("edition", "")
 
 
 @model.over("imprint", "^264_1")
@@ -211,7 +215,7 @@ def serial(self, key, value):
         volume = re.findall(r"\d+", volume)
 
     return {
-        "title": clean_val("a", value, str, req=True),
+        "title": clean_val("a", value, str, req=True).rstrip(',').rstrip(';'),
         "identifiers": identifiers,
         "volume": volume[0] if volume else None,
     }

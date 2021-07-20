@@ -20,8 +20,7 @@ class CDSStandard(CdsIlsOverdo):
     """CDS Standard Overdo model."""
 
     __query__ = (
-        "003:SzGeCERN 690C_:STANDARD OR 980__:STANDARD "
-        "-980__:DELETED -980__:MIGRATED"
+        "003:SzGeCERN 690C_:STANDARD OR 980__:STANDARD"
     )
 
     __ignore_keys__ = CDS_IGNORE_FIELDS

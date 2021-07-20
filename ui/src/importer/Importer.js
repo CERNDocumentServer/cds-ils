@@ -10,6 +10,7 @@ import {
   Label,
   Message,
   Divider,
+  Table,
 } from 'semantic-ui-react';
 import { invenioConfig, history } from '@inveniosoftware/react-invenio-app-ils';
 import { ImporterList } from './ImporterList';
@@ -24,6 +25,7 @@ export class Importer extends Component {
     this.filesRef = React.createRef();
     this.state = {
       provider: '',
+      ignoreMissingRules: false,
       mode: '',
       file: null,
       openModal: false,
@@ -31,16 +33,24 @@ export class Importer extends Component {
       modeMissing: false,
       fileMissing: false,
       error: {},
+      confirmImportOpen: false,
     };
   }
 
-  handleChange = (e, { name, value }) =>
+  handleChange = (e, { name, value }) => {
     this.setState({
       [name]: value,
-      providerMissing: false,
-      modeMissing: false,
-      fileMissing: false,
     });
+  };
+
+  handleCheckboxChange = (e, { name, value }) => {
+    this.setState({
+      [name]: !value,
+    });
+  };
+
+  handleModalOpen = () => this.setState({ openModal: true });
+  handleModalClose = () => this.setState({ openModal: false });
 
   postData = async formData => {
     try {
@@ -57,7 +67,7 @@ export class Importer extends Component {
   };
 
   handleSubmit = action => {
-    const { provider, mode, file } = this.state;
+    const { provider, mode, file, ignoreMissingRules } = this.state;
     let importMode = mode;
     if (action === 'PREVIEW' && mode === 'IMPORT') {
       importMode = 'PREVIEW_IMPORT';
@@ -70,6 +80,7 @@ export class Importer extends Component {
       formData.append('provider', provider);
       formData.append('mode', importMode);
       formData.append('file', file);
+      formData.append('ignore_missing_rules', ignoreMissingRules);
       this.postData(formData);
     } else {
       if (_isEmpty(provider)) {
@@ -88,9 +99,6 @@ export class Importer extends Component {
     const file = this.filesRef.current.files[0];
     this.setState({
       file: file,
-      providerMissing: false,
-      modeMissing: false,
-      fileMissing: false,
     });
   };
 
@@ -109,36 +117,98 @@ export class Importer extends Component {
 
     return (
       <Modal
-        onClose={() => this.setState({ openModal: false })}
-        onOpen={() => this.setState({ openModal: true })}
+        onClose={this.handleModalClose}
+        onOpen={this.handleModalOpen}
         open={openModal}
         size="small"
-        trigger={
-          <Button secondary action="IMPORT">
-            Import
-          </Button>
-        }
+        trigger={<Button secondary>Import</Button>}
       >
         <Header>Deleting Records</Header>
         <Modal.Content>
           <p>Are you sure you want to delete records?</p>
         </Modal.Content>
         <Modal.Actions>
-          <Button
-            color="red"
-            onClick={() => this.setState({ openModal: false })}
-          >
+          <Button color="red" onClick={this.handleModalClose}>
             <Icon name="remove" /> No
           </Button>
           <Button
             primary
             action="DELETE"
             onClick={() => {
-              this.setState({ openModal: false });
+              this.handleModalClose();
               this.handleSubmit('DELETE');
             }}
           >
             <Icon name="checkmark" /> Yes
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    );
+  };
+
+  handleImportConfirmOpen = () => this.setState({ confirmImportOpen: true });
+  handleImportConfirmClose = () => this.setState({ confirmImportOpen: false });
+
+  renderImportConfirm = () => {
+    const {
+      confirmImportOpen,
+      provider,
+      mode,
+      file,
+      ignoreMissingRules,
+    } = this.state;
+
+    return (
+      <Modal
+        open={confirmImportOpen}
+        onOpen={this.handleImportConfirmOpen}
+        onClose={this.handleImportConfirmClose}
+      >
+        <Modal.Header>Confirm import parameters</Modal.Header>
+        <Modal.Content>
+          <Header as="h4">
+            You are about to import records, using parameters:
+          </Header>
+          <Table>
+            <Table.Body>
+              <Table.Row>
+                <Table.Cell width="6">Provider</Table.Cell>
+                <Table.Cell negative={!provider}>{provider}</Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Mode</Table.Cell>
+                <Table.Cell negative={!mode}>
+                  {mode && <Label>{mode}</Label>}
+                </Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>File name</Table.Cell>
+                <Table.Cell negative={!file}>{file?.name}</Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Strict JSON rules</Table.Cell>
+                <Table.Cell>
+                  {!ignoreMissingRules ? (
+                    <Icon name="checkmark box" color="green" />
+                  ) : (
+                    <Icon name="close" color="red" />
+                  )}
+                </Table.Cell>
+              </Table.Row>
+            </Table.Body>
+          </Table>
+          <Header as="h4">Are you sure you want to proceed?</Header>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button onClick={this.handleImportConfirmClose}>Cancel</Button>
+          <Button
+            primary
+            disabled={!mode || !provider || !file}
+            onClick={() => {
+              this.handleSubmit('IMPORT');
+            }}
+          >
+            Confirm
           </Button>
         </Modal.Actions>
       </Modal>
@@ -150,6 +220,7 @@ export class Importer extends Component {
       provider,
       mode,
       file,
+      ignoreMissingRules,
       providerMissing,
       modeMissing,
       fileMissing,
@@ -186,6 +257,13 @@ export class Importer extends Component {
               />
             </Form.Group>
             <Form.Group widths="equal">
+              <Form.Checkbox
+                className="default-margin-top"
+                label="Ignore missing import rules"
+                checked={ignoreMissingRules}
+                name="ignoreMissingRules"
+                onChange={this.handleCheckboxChange}
+              />
               <Form.Field className="default-margin-top">
                 <Button
                   icon="file"
@@ -219,11 +297,16 @@ export class Importer extends Component {
             {mode === 'DELETE' ? (
               this.renderModal()
             ) : (
-              <Button
-                secondary
-                content="Import"
-                onClick={() => this.handleSubmit('IMPORT')}
-              />
+              <>
+                <Button
+                  secondary
+                  content="Import"
+                  onClick={(e, props) => {
+                    this.handleImportConfirmOpen();
+                  }}
+                />
+                {this.renderImportConfirm()}
+              </>
             )}
           </>
         </Form>
@@ -234,18 +317,19 @@ export class Importer extends Component {
   render() {
     const { error } = this.state;
     return (
-      <Container id="importer" className="spaced">
+      <Container id="importer" fluid>
         <Header as="h2">Literature Importer</Header>
-        <Header as="h3">Import from a file</Header>
-        <p>
-          {!_isEmpty(error)
-            ? 'Fill in the form below to import literature.'
-            : null}
-        </p>
-        {!_isEmpty(error) ? this.renderErrorMessage(error) : null}
-        {this.renderForm()}
-
-        <Divider />
+        <Container>
+          <Header as="h3">Import from a file</Header>
+          <p>
+            {!_isEmpty(error)
+              ? 'Fill in the form below to import literature.'
+              : null}
+          </p>
+          {!_isEmpty(error) ? this.renderErrorMessage(error) : null}
+          {this.renderForm()}
+        </Container>
+        <Divider section />
 
         <Header as="h3">Previous imports</Header>
         <ImporterList />

@@ -28,6 +28,7 @@ class XMLRecordToJson(object):
         latest_only=False,
         pid_fetchers=None,
         dojson_model=marc21,
+        ignore_missing=False
     ):
         """Initialize class."""
         self.resolver = Resolver(
@@ -39,6 +40,7 @@ class XMLRecordToJson(object):
         self.dojson_model = dojson_model
         self.revisions = None
         self.pid_fetchers = pid_fetchers or []
+        self.ignore_missing = ignore_missing
 
     def dump(self):
         """Perform record dump."""
@@ -52,11 +54,13 @@ class XMLRecordToJson(object):
 
         # MARCXML -> JSON fields translation
         val = self.dojson_model.do(
-            marc_record,
+            marc_record
         )
-        # check for missing rules
-        missing = self.dojson_model.missing(marc_record)
 
-        if missing:
-            raise LossyConversion(missing=missing)
+        if not self.ignore_missing:
+            # check for missing rules
+            missing = self.dojson_model.missing(marc_record)
+
+            if missing:
+                raise LossyConversion(missing=missing)
         return dt, val, is_deletable
