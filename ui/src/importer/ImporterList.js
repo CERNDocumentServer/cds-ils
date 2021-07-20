@@ -122,6 +122,15 @@ export class ImporterList extends Component {
 
   labelFormatter = ({ col, row }) => <Label>{row[col.field]}</Label>;
 
+  ignoreMissingFormatter = ({ col, row }) => {
+    const ignoreMissingRules = row[col.field];
+    return !ignoreMissingRules ? (
+      <Icon name="checkmark box" color="green" />
+    ) : (
+      <Icon name="close" color="red" />
+    );
+  };
+
   optionalFormatter = ({ col, row }) => {
     const value = row[col.field];
     return value != null ? value : '';
@@ -144,7 +153,7 @@ export class ImporterList extends Component {
     { title: 'Date', field: 'start_time', formatter: this.datetimeFormatter },
     { title: 'Duration', field: 'end_time', formatter: this.durationFormatter },
     {
-      title: 'Literature in file',
+      title: 'Records in file',
       field: 'entries_count',
       formatter: this.optionalFormatter,
     },
@@ -158,6 +167,11 @@ export class ImporterList extends Component {
       title: 'Source type',
       field: 'source_type',
       formatter: this.labelFormatter,
+    },
+    {
+      title: 'Strict JSON rules',
+      field: 'ignore_missing_rules',
+      formatter: this.ignoreMissingFormatter,
     },
     {
       title: '',

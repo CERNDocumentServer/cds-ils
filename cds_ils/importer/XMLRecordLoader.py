@@ -36,6 +36,11 @@ class XMLRecordDumpLoader(object):
         """Import records."""
         importer_class = cls.get_importer_class(provider)
 
+        # ignore the leader XML tag for CDS provider (delete mode indicator),
+        # as cds does not include it in the MARCXML
+        if provider == "cds" and mode == ImporterMode.DELETE.value:
+            is_deletable = True
+
         if mode == ImporterMode.DELETE.value and not is_deletable:
             raise RecordNotDeletable()
         elif mode == ImporterMode.IMPORT.value:

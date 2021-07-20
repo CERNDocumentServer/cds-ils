@@ -73,10 +73,10 @@ class ImporterMode(ImporterEnum):
         return [getattr(cls, member).value for member in cls_defined_members]
 
 
-class ImporterTaskLog(db.Model):
+class ImporterImportLog(db.Model):
     """Store the ldap synchronization task history."""
 
-    __tablename__ = "importer_task"
+    __tablename__ = "importer_import_log"
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -114,6 +114,8 @@ class ImporterTaskLog(db.Model):
 
     entries_count = db.Column(db.Integer, nullable=True)
     """Number of entries in source file."""
+
+    ignore_missing_rules = db.Column(db.Boolean)
 
     @classmethod
     def create(cls, data):
@@ -154,10 +156,7 @@ class ImportRecordLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     __tablename__ = "import_record_log"
 
-    # Ensure the entries are uniquely defined
-    __table_args__ = (db.UniqueConstraint('import_id', 'entry_recid'),)
-
-    import_id = db.Column(db.Integer, db.ForeignKey('importer_task.id',
+    import_id = db.Column(db.Integer, db.ForeignKey('importer_import_log.id',
                                                     ondelete="CASCADE"))
     """The parent task."""
 
@@ -168,7 +167,7 @@ class ImportRecordLog(db.Model):
     """In case of an error."""
 
     importer_task = db.relationship(
-        ImporterTaskLog,
+        ImporterImportLog,
         backref=db.backref('records', lazy='dynamic', passive_deletes=True)
     )
     """Relationship."""

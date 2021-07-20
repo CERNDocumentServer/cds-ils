@@ -60,7 +60,7 @@ class EItemImporter(object):
             "value": self.metadata_provider,
         }
 
-    def _should_replace_eitems(self, eitem):
+    def _should_replace_eitem(self, eitem):
         """Replace the eitems with higher priority providers."""
         existing_provider = self._get_record_import_provider(eitem)
         if not existing_provider:
@@ -100,8 +100,7 @@ class EItemImporter(object):
             existing_eitem = eitem_cls.get_record_by_pid(hit["pid"])
             self.ambiguous_list.append(existing_eitem)
 
-    def _replace_lower_priority_eitems(self, matched_document):
-        eitem_indexer = current_app_ils.eitem_indexer
+    def _get_other_eitems_of_document(self, matched_document):
         eitem_search = current_app_ils.eitem_search_cls()
         eitem_cls = current_app_ils.eitem_record_cls
 
@@ -109,13 +108,24 @@ class EItemImporter(object):
             matched_document["pid"]
         )
         for hit in document_eitems:
-            eitem = eitem_cls.get_record_by_pid(hit.pid)
-            if self._should_replace_eitems(eitem):
+            yield eitem_cls.get_record_by_pid(hit.pid)
+
+    def _replace_lower_priority_eitems(self, matched_document):
+        eitem_indexer = current_app_ils.eitem_indexer
+
+        for eitem in self._get_other_eitems_of_document(matched_document):
+            if self._should_replace_eitem(eitem):
                 self.deleted_list.append(eitem)
                 eitem.delete()
                 eitem_indexer.delete(eitem)
         if self.deleted_list:
             self.action = "replace"
+
+    def _should_import_eitem_by_priority(self, matched_document):
+        """Check if current eitem has higher priority than any existing."""
+        for eitem in self._get_other_eitems_of_document(matched_document):
+            if self._should_replace_eitem(eitem):
+                return True
 
     def _build_eitem_dict(self, eitem_json, document_pid):
         """Provide initial metadata dictionary."""
@@ -179,7 +189,11 @@ class EItemImporter(object):
         search = self.eitems_search(matched_document)
         self.import_eitem_action(search)
 
-        if self.action == "create":
+        # determine currently imported eitem provider priority
+        should_eitem_be_imported = self.is_provider_priority_sensitive and \
+                self._should_import_eitem_by_priority(matched_document)
+
+        if self.action == "create" and should_eitem_be_imported:
             self.eitem_record = self.create_eitem(matched_document)
         elif self.action == "update":
             existing_eitem = self.get_first_match(search)
@@ -190,9 +204,10 @@ class EItemImporter(object):
             results = search.scan()
             self._report_ambiguous_records(results)
             # still creates an item, even ambiguous eitems found
-            self.eitem_record = self.create_eitem(matched_document)
+            # checks if there are higher priority eitems
+            if should_eitem_be_imported:
+                self.eitem_record = self.create_eitem(matched_document)
 
-        #
         if self.is_provider_priority_sensitive:
             self._replace_lower_priority_eitems(matched_document)
 
@@ -290,7 +305,7 @@ class EItemImporter(object):
             )
             for hit in document_eitems:
                 eitem = eitem_cls.get_record_by_pid(hit.pid)
-                if self._should_replace_eitems(eitem):
+                if self._should_replace_eitem(eitem):
                     self.deleted_list.append(eitem)
             if self.deleted_list:
                 self.action = "replace"

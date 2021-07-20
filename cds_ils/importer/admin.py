@@ -13,7 +13,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_babelex import gettext as _
 from markupsafe import Markup
 
-from cds_ils.importer.models import ImporterTaskLog, ImportRecordLog
+from cds_ils.importer.models import ImporterImportLog, ImportRecordLog
 
 
 def render_html_link(func):
@@ -38,7 +38,7 @@ class ImporterTaskModelView(ModelView):
 
     column_display_pk = True
 
-    column_default_sort = (ImporterTaskLog.id, True)
+    column_default_sort = (ImporterImportLog.id, True)
 
     # Link to filter by import_id
     column_formatters = dict(
@@ -49,7 +49,7 @@ class ImporterTaskModelView(ModelView):
     )
 
     column_details_list = [
-        *[c.key for c in ImporterTaskLog.__table__.columns], "records"
+        *[c.key for c in ImporterImportLog.__table__.columns], "records"
     ]
     column_list = column_details_list
 
@@ -129,7 +129,7 @@ blueprint = Blueprint(
 )
 
 importer_tasks = {
-    "model": ImporterTaskLog,
+    "model": ImporterImportLog,
     "modelview": ImporterTaskModelView,
     "name": "Imports",
     "category": _("Importer"),
