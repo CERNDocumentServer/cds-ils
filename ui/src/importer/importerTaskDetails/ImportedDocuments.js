@@ -24,7 +24,7 @@ import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
 export class ImportedDocuments extends React.Component {
   constructor(props) {
     super(props);
-    this.pageSize = 20;
+    this.pageSize = 100;
     this.state = {
       importCompleted: false,
       data: null,
@@ -170,7 +170,7 @@ export class ImportedDocuments extends React.Component {
           <Table.Body>
             {data.records
               .slice(
-                activePage * this.pageSize - this.pageSize + 1,
+                activePage * this.pageSize - this.pageSize,
                 activePage * this.pageSize
               )
               .map((elem, index) => {

@@ -8,8 +8,8 @@
 """CDS-ILS CDS Importer."""
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
-from invenio_pidstore.errors import PIDDoesNotExistError, \
-    PersistentIdentifierError
+from invenio_pidstore.errors import PersistentIdentifierError, \
+    PIDDoesNotExistError
 
 from cds_ils.importer.importer import Importer
 from cds_ils.literature.api import get_record_by_legacy_recid
@@ -32,6 +32,7 @@ class CDSImporter(Importer):
         return document
 
     def import_record(self):
+        """Import CDS record with legacy recid."""
         summary = super().import_record()
         if self.action == "create" and self.document:
             legacy_pid_type = current_app.config[
@@ -43,5 +44,3 @@ class CDSImporter(Importer):
                 self.document["legacy_recid"], legacy_pid_type, record_uuid
             )
         return summary
-
-
