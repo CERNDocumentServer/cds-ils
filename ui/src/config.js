@@ -135,6 +135,9 @@ export const config = {
       },
     },
   },
+  ILL_BORROWING_REQUESTS: {
+    defaultType: 'PHYSICAL_COPY',
+  },
   PATRONS: {
     customFields: {
       personID: {
