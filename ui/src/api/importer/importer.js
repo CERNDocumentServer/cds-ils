@@ -18,8 +18,13 @@ const list = async () => {
   return await http.get(`${importerURL}`);
 };
 
+const cancel = async taskId => {
+  return await http.post(`${importerURL}/${taskId}/cancel`);
+};
+
 export const importerApi = {
   check: check,
+  cancel: cancel,
   createTask: createTask,
   list: list,
   url: importerURL,

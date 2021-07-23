@@ -16,7 +16,8 @@ from invenio_db import db
 from cds_ils.importer.errors import LossyConversion, \
     ProviderNotAllowedDeletion, RecordNotDeletable, SeriesImportError, \
     UnexpectedValue
-from cds_ils.importer.models import ImporterMode, ImportRecordLog
+from cds_ils.importer.models import ImporterMode, ImporterTaskStatus, \
+    ImportRecordLog
 from cds_ils.importer.parse_xml import get_record_recid_from_xml, \
     get_records_list
 from cds_ils.importer.vocabularies_validator import \
@@ -71,6 +72,8 @@ def import_from_xml(log, source_path, source_type, provider, mode,
             # update the entries count now that we know it
             log.set_entries_count(records_list)
             for record in records_list:
+                if log.status == ImporterTaskStatus.CANCELLED:
+                    break
                 record_recid = get_record_recid_from_xml(record)
 
                 try:
@@ -106,7 +109,7 @@ def import_from_xml(log, source_path, source_type, provider, mode,
         log.set_failed(e)
         raise e
 
-    log.set_succeeded()
+    log.finalize()
 
 
 def allowed_files(filename):
