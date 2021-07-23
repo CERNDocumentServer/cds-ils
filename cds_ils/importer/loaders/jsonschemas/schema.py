@@ -14,3 +14,4 @@ class ImporterImportSchemaV1(Schema):
 
     provider = fields.String()
     mode = fields.String()
+    ignore_missing_rules = fields.Boolean()

@@ -24,6 +24,7 @@ export class Importer extends Component {
     this.filesRef = React.createRef();
     this.state = {
       provider: '',
+      ignoreMissingRules: false,
       mode: '',
       file: null,
       openModal: false,
@@ -34,13 +35,20 @@ export class Importer extends Component {
     };
   }
 
-  handleChange = (e, { name, value }) =>
+  handleChange = (e, { name, value }) => {
     this.setState({
       [name]: value,
-      providerMissing: false,
-      modeMissing: false,
-      fileMissing: false,
     });
+  };
+
+  handleCheckboxChange = (e, { name, value }) => {
+    this.setState({
+      [name]: !value,
+    });
+  };
+
+  handleModalOpen = () => this.setState({ openModal: true });
+  handleModalClose = () => this.setState({ openModal: false });
 
   postData = async formData => {
     try {
@@ -57,7 +65,7 @@ export class Importer extends Component {
   };
 
   handleSubmit = action => {
-    const { provider, mode, file } = this.state;
+    const { provider, mode, file, ignoreMissingRules } = this.state;
     let importMode = mode;
     if (action === 'PREVIEW' && mode === 'IMPORT') {
       importMode = 'PREVIEW_IMPORT';
@@ -70,6 +78,7 @@ export class Importer extends Component {
       formData.append('provider', provider);
       formData.append('mode', importMode);
       formData.append('file', file);
+      formData.append('ignore_missing_rules', ignoreMissingRules);
       this.postData(formData);
     } else {
       if (_isEmpty(provider)) {
@@ -88,9 +97,6 @@ export class Importer extends Component {
     const file = this.filesRef.current.files[0];
     this.setState({
       file: file,
-      providerMissing: false,
-      modeMissing: false,
-      fileMissing: false,
     });
   };
 
@@ -109,8 +115,8 @@ export class Importer extends Component {
 
     return (
       <Modal
-        onClose={() => this.setState({ openModal: false })}
-        onOpen={() => this.setState({ openModal: true })}
+        onClose={this.handleModalClose}
+        onOpen={this.handleModalOpen}
         open={openModal}
         size="small"
         trigger={
@@ -124,17 +130,14 @@ export class Importer extends Component {
           <p>Are you sure you want to delete records?</p>
         </Modal.Content>
         <Modal.Actions>
-          <Button
-            color="red"
-            onClick={() => this.setState({ openModal: false })}
-          >
+          <Button color="red" onClick={this.handleModalClose}>
             <Icon name="remove" /> No
           </Button>
           <Button
             primary
             action="DELETE"
             onClick={() => {
-              this.setState({ openModal: false });
+              this.handleModalClose();
               this.handleSubmit('DELETE');
             }}
           >
@@ -150,6 +153,7 @@ export class Importer extends Component {
       provider,
       mode,
       file,
+      ignoreMissingRules,
       providerMissing,
       modeMissing,
       fileMissing,
@@ -186,6 +190,13 @@ export class Importer extends Component {
               />
             </Form.Group>
             <Form.Group widths="equal">
+              <Form.Checkbox
+                className="default-margin-top"
+                label="Ignore missing import rules"
+                value={ignoreMissingRules}
+                name="ignoreMissingRules"
+                onChange={this.handleCheckboxChange}
+              />
               <Form.Field className="default-margin-top">
                 <Button
                   icon="file"

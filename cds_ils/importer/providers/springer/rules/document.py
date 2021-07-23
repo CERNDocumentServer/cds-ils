@@ -114,7 +114,7 @@ def eitem(self, key, value):
     for v in force_list(value):
         urls.append(
             {
-                "description": "E-book by Springer",
+                "description": "ebook",
                 "value": clean_val("u", v, str),
             }
         )

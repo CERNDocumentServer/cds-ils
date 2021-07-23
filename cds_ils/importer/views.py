@@ -9,11 +9,12 @@
 
 import os
 
+from celery.result import AsyncResult
 from flask import Blueprint, abort, current_app, request
 from invenio_app_ils.permissions import need_permissions
 from invenio_db import db
 from invenio_rest import ContentNegotiatedMethodView
-from sqlalchemy.orm.exc import ObjectDeletedError
+from sqlalchemy.orm.exc import ObjectDeletedError, NoResultFound
 
 from cds_ils.importer.api import allowed_files, rename_file
 from cds_ils.importer.loaders.jsonschemas.schema import ImporterImportSchemaV1
@@ -106,13 +107,16 @@ class ImporterListView(ContentNegotiatedMethodView):
             file = request.files["file"]
             form_data = ImporterImportSchemaV1().load(request.form)
 
-            provider = form_data["provider"]
-            mode = form_data["mode"]
+            provider = form_data.get("provider", None)
+            mode = form_data.get("mode", None)
+
+            ignore_missing_rules = form_data.get("ignore_missing_rules", False)
+
             if not provider:
-                abort(400, "Missing provider")
+                abort(400, "Missing provider.")
 
             if not mode:
-                abort(400, "Missing mode")
+                abort(400, "Missing mode.")
 
             if allowed_files(file.filename):
                 original_filename = file.filename
@@ -126,6 +130,7 @@ class ImporterListView(ContentNegotiatedMethodView):
                 log = create_import_task(source_path,
                                          original_filename,
                                          provider, mode,
+                                         ignore_missing_rules
                                          )
 
                 return self.make_response(log)
