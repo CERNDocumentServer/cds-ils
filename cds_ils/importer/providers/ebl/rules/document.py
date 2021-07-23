@@ -49,7 +49,7 @@ def authors(self, key, value):
     return _authors
 
 
-@model.over("title", "^24510")
+@model.over("title", "^245")
 @out_strip
 def title(self, key, value):
     """Translates title."""
@@ -81,7 +81,7 @@ def eitem(self, key, value):
     for v in force_list(value):
         urls.append(
             {
-                "description": "E-book by EbookCentral",
+                "description": "ebook",
                 "value": clean_val("u", v, str),
             }
         )

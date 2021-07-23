@@ -19,6 +19,7 @@ from cds_ils.importer.models import ImporterAgent, ImporterMode, \
 
 def create_import_task(
     source_path, original_filename, provider, mode,
+    ignore_missing_rules,
     source_type="marcxml"
 ):
     """Creates a task and returns its associated identifier."""
@@ -29,15 +30,17 @@ def create_import_task(
             source_type=source_type,
             mode=mode,
             original_filename=original_filename,
+            ignore_missing_rules=ignore_missing_rules
         )
     )
-    import_from_xml_task.apply_async(
+    async_result = import_from_xml_task.apply_async(
         (
             log.id,
             source_path,
             source_type,
             provider,
             mode,
+            ignore_missing_rules
         )
     )
 
@@ -45,10 +48,12 @@ def create_import_task(
 
 
 @shared_task
-def import_from_xml_task(log_id, source_path, source_type, provider, mode):
+def import_from_xml_task(log_id, source_path, source_type, provider, mode,
+                         ignore_missing_rules):
     """Load a single xml file task."""
     log = ImporterTaskLog.query.get(log_id)
-    import_from_xml(log, source_path, source_type, provider, mode)
+    import_from_xml(log, source_path, source_type, provider, mode,
+                    ignore_missing_rules)
 
 
 @shared_task

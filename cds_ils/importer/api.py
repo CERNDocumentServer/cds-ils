@@ -24,9 +24,10 @@ from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
 from cds_ils.importer.XMLRecordToJson import XMLRecordToJson
 
 
-def create_json(data, source_type):
+def create_json(data, source_type, ignore_missing_rules=False):
     """Process record dump."""
-    record_dump = XMLRecordToJson(data, source_type=source_type)
+    record_dump = XMLRecordToJson(data, source_type=source_type,
+                                  ignore_missing=ignore_missing_rules)
     return XMLRecordDumpLoader.create_json(record_dump)
 
 
@@ -55,6 +56,7 @@ def validate_import(provider, mode, source_type):
 
 
 def import_from_xml(log, source_path, source_type, provider, mode,
+                    ignore_missing_rules=False,
                     eager=False):
     """Load a single xml file."""
     try:
@@ -71,7 +73,11 @@ def import_from_xml(log, source_path, source_type, provider, mode,
                 record_recid = get_record_recid_from_xml(record)
 
                 try:
-                    json_data, is_deletable = create_json(record, source_type)
+                    json_data, is_deletable = \
+                        create_json(record,
+                                    source_type,
+                                    ignore_missing_rules=ignore_missing_rules
+                                    )
                 except LossyConversion as e:
                     ImportRecordLog.create_failure(log.id, record_recid,
                                                    str(e.message))

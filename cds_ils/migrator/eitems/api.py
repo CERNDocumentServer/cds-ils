@@ -8,15 +8,12 @@
 
 """CDS-ILS migrator API."""
 
-import io
 import logging
 import os
 import re
-import time
 import uuid
 
 import click
-import requests
 from flask import current_app
 from invenio_app_ils.documents.indexer import DocumentIndexer
 from invenio_app_ils.eitems.api import EItem, EItemIdProvider
@@ -24,8 +21,6 @@ from invenio_app_ils.eitems.indexer import EItemIndexer
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_files_rest.models import Bucket, ObjectVersion
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
 
 from cds_ils.importer.providers.cds.rules.values_mapping import mapping
 from cds_ils.migrator.documents.api import get_all_documents_with_files, \

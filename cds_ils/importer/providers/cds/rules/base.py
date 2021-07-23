@@ -123,6 +123,7 @@ def created(self, key, value):
                         "eitems_internal_notes": _eitems_internal_notes
                     }
                 )
+                self["_eitem"]["internal_notes"] = _eitems_internal_notes
         except UnexpectedValue as e:
             pass
         try:
@@ -503,7 +504,7 @@ def open_access(self, key, value):
     sub_r = clean_val("r", value, str)
     if sub_r and "open access" in sub_r.lower():
         self["_migration"]["eitems_open_access"] = True
-
+        self["_eitem"]["open_access"] = True
     raise IgnoreKey("_migration")
 
 
@@ -650,6 +651,7 @@ def dois(self, key, value):
             "open_access": open_access
         }
         eitems_external.append(eitem)
+        self["_eitem"] = eitem
 
     for v in force_list(value):
         subfield_q = clean_val("q", v, str)
