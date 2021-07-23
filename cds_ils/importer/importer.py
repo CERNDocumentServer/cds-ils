@@ -10,6 +10,7 @@ import time
 
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
+from invenio_db import db
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
@@ -158,6 +159,7 @@ class Importer(object):
 
     def delete_record(self):
         """Deletes the eitems of the record."""
+        document_indexer = current_app_ils.document_indexer
         self._validate_provider()
         self.action = "update"
         # finds the exact match, update records
@@ -166,6 +168,9 @@ class Importer(object):
         if self.document:
             self.output_pid = self.document["pid"]
             self.delete_records(self.document)
+            self.document.delete()
+            document_indexer.delete(self.document)
+            db.session.commit()
 
         return self.import_summary()
 

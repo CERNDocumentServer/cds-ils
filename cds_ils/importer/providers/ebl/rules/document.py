@@ -26,6 +26,7 @@ from cds_ils.importer.providers.ebl.ebl import model
 def recid(self, key, value):
     """Record Identifier."""
     self["provider_recid"] = value
+    # requested in cds-ils#557
     value = value.replace("EBC", "")
     return [{"scheme": "EBL", "value": value}]
 
