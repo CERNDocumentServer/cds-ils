@@ -11,6 +11,7 @@ import {
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
+import { CancelImportTask } from './cancelImportTask';
 import { EitemImportDetailsModal } from '../EitemImportDetailsModal';
 import { SeriesImportDetailsModal } from '../SeriesImportDetailsModal';
 import { JsonViewModal } from '../JsonViewModal';
@@ -89,7 +90,7 @@ export class ImportedDocuments extends React.Component {
     );
   };
 
-  renderResultsHeader = () => {
+  renderImportReportHeader = () => {
     const { data, isLoading } = this.state;
     return (
       <>
@@ -103,7 +104,8 @@ export class ImportedDocuments extends React.Component {
           as={Link}
           to={CdsBackOfficeRoutes.importerCreate}
         />
-        <Divider hidden />
+        {this.renderCancelButton()}
+        <Divider />
         {!data ? (
           <>
             <Icon loading name="circle notch" />
@@ -120,12 +122,18 @@ export class ImportedDocuments extends React.Component {
             <Icon name="check circle" color="green" aria-label="Completed" />
             Literature imported successfully.
           </>
+        ) : data.status === 'CANCELLED' ? (
+          <>
+            <Icon name="times circle" color="yellow" aria-label="Cancelled" />
+            Literature import was cancelled by the user.
+          </>
         ) : (
           <>
-            <Icon name="times circle" color="red" aria-label="Failed" />
+            <Icon name="exclamation circle" color="red" aria-label="Failed" />
             Literature import failed.
           </>
         )}
+        <Divider />
       </>
     );
   };
@@ -203,14 +211,27 @@ export class ImportedDocuments extends React.Component {
     );
   };
 
+  renderCancelButton = () => {
+    const { data } = this.state;
+    const { taskId } = this.props;
+
+    return (
+      <>
+        {!_isEmpty(data) && data.status === 'RUNNING' && (
+          <CancelImportTask logId={taskId} />
+        )}
+      </>
+    );
+  };
+
   render() {
     const { data } = this.state;
     return (
       <>
-        {this.renderResultsHeader()}
+        {this.renderImportReportHeader()}
         {!_isEmpty(data) && data.status !== 'FAILED' ? (
           <>
-            <Header as="h2">Import</Header>
+            <Header as="h3">Import report</Header>
             {modeFormatter(data.mode)}{' '}
             {!_isEmpty(data) ? (
               (data.loaded_entries || data.loaded_entries === 0) &&

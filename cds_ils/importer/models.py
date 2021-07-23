@@ -54,6 +54,9 @@ class ImporterTaskStatus(ImporterEnum):
     FAILED = "FAILED"
     """The task was aborted due to an error."""
 
+    CANCELLED = "CANCELLED"
+    """The task was aborted by the user."""
+
 
 class ImporterMode(ImporterEnum):
     """The mode of an importation task."""
@@ -79,6 +82,8 @@ class ImporterImportLog(db.Model):
     __tablename__ = "importer_import_log"
 
     id = db.Column(db.Integer, primary_key=True)
+
+    celery_task_id = db.Column(db.String)
 
     agent = db.Column(Enum(ImporterAgent), nullable=False)
     """The agent that initiated the task."""
@@ -129,6 +134,15 @@ class ImporterImportLog(db.Model):
         """Check if the task is currently running."""
         return self.status == ImporterTaskStatus.RUNNING
 
+    def is_cancelled(self):
+        """Check if the task is currently running."""
+        return self.status == ImporterTaskStatus.CANCELLED
+
+    def finalize(self):
+        """Finalize the import."""
+        if self.is_running():
+            self.set_succeeded()
+
     def set_succeeded(self):
         """Mark this task as complete and log output."""
         assert self.is_running()
@@ -142,6 +156,12 @@ class ImporterImportLog(db.Model):
         self.status = ImporterTaskStatus.FAILED
         self.end_time = datetime.now()
         self.message = _format_exception(exception)
+        db.session.commit()
+
+    def set_cancelled(self):
+        """Mark the task as cancelled."""
+        self.status = ImporterTaskStatus.FAILED
+        self.end_time = datetime.now()
         db.session.commit()
 
     def set_entries_count(self, entries):

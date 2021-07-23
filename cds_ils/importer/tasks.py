@@ -33,7 +33,7 @@ def create_import_task(
             ignore_missing_rules=ignore_missing_rules
         )
     )
-    import_from_xml_task.apply_async(
+    async_result = import_from_xml_task.apply_async(
         (
             log.id,
             source_path,
@@ -43,6 +43,9 @@ def create_import_task(
             ignore_missing_rules
         )
     )
+
+    log.celery_task_id = async_result.id
+    db.session.commit()
 
     return log
 
