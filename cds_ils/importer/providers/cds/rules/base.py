@@ -106,6 +106,7 @@ def created(self, key, value):
     elif key == "595__":
         try:
             _migration = self["_migration"]
+            _eitem = self.get("_eitem", {})
             _eitems_internal_notes = _migration.get(
                 "eitems_internal_notes",
                 ""
@@ -123,7 +124,8 @@ def created(self, key, value):
                         "eitems_internal_notes": _eitems_internal_notes
                     }
                 )
-                self["_eitem"]["internal_notes"] = _eitems_internal_notes
+                _eitem["internal_notes"] = _eitems_internal_notes
+                self["_eitem"] = _eitem
         except UnexpectedValue as e:
             pass
         try:
@@ -226,7 +228,7 @@ def document_type(self, key, value):
             continue
 
         if val_a and val_b and val_b != "STANDARD" \
-                and (val_a != val_b != _doc_type):
+            and (val_a != val_b != _doc_type):
             raise ManualImportRequired(
                 "inconsistent doc type", subfield="a or b"
             )
@@ -502,9 +504,11 @@ def open_access(self, key, value):
     If the field is present, then the eitems of this record have open access
     """
     sub_r = clean_val("r", value, str)
+    _eitem = self.get("_eitem", {})
     if sub_r and "open access" in sub_r.lower():
         self["_migration"]["eitems_open_access"] = True
-        self["_eitem"]["open_access"] = True
+        _eitem["open_access"] = True
+        self["_eitem"] = _eitem
     raise IgnoreKey("_migration")
 
 
@@ -639,19 +643,23 @@ def dois(self, key, value):
 
     def create_eitem(subfield_a, subfield_q):
         eitems_external = self["_migration"]["eitems_external"]
+        _eitem = self.get("_eitem", {})
         open_access = False
         if subfield_q:
             open_access = "open access" in subfield_q.lower()
             subfield_q = _clean_doi_access(subfield_q)
         eitem = {
-            "url": {
-                "description": subfield_q,
-                "value": dois_url_prefix.format(doi=subfield_a),
-            },
+            "urls": [
+                {
+                    "description": subfield_q,
+                    "value": dois_url_prefix.format(doi=subfield_a),
+                }
+            ],
             "open_access": open_access
         }
         eitems_external.append(eitem)
-        self["_eitem"] = eitem
+        _eitem.update(eitem)
+        self["_eitem"] = _eitem
 
     for v in force_list(value):
         subfield_q = clean_val("q", v, str)
@@ -755,7 +763,7 @@ def arxiv_eprints(self, key, value):
                 elem
                 for i, elem in enumerate(_alternative_identifiers)
                 if elem["value"] == eprint_id
-                and elem["scheme"].lower() == "arxiv"
+                   and elem["scheme"].lower() == "arxiv"
             ]
             if not duplicated:
                 eprint = {"value": eprint_id, "scheme": "ARXIV"}

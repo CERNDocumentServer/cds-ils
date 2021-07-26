@@ -35,7 +35,7 @@ def agency_code(self, key, value):
     return value
 
 
-@model.over("title", "^24510")
+@model.over("title", "^245")
 @out_strip
 def title(self, key, value):
     """Translates title."""
@@ -56,7 +56,6 @@ def title(self, key, value):
 def authors(self, key, value):
     """Translates authors."""
     _authors = self.get("authors", [])
-
     orcid = clean_val("0", value, str)
     identifiers = None
 
@@ -92,7 +91,7 @@ def imprint(self, key, value):
     _publication_year = self.get("publication_year")
     if _publication_year:
         raise UnexpectedValue(subfield="e", message="doubled publication year")
-    self["publication_year"] = clean_val("c", value, str)
+    self["publication_year"] = clean_val("c", value, str).rstrip('.')
 
     return {
         "place": clean_val("a", value, str),
@@ -179,7 +178,9 @@ def subjects_loc(self, key, value):
     """Translates subject classification."""
     _subjects = self.get("subjects", [])
 
-    _subjects.append({"scheme": "LOC", "value": clean_val("a", value, str)})
+    subject = {"scheme": "LOC", "value": clean_val("a", value, str)}
+    if subject not in _subjects:
+        _subjects.append(subject)
     return _subjects
 
 
@@ -187,8 +188,9 @@ def subjects_loc(self, key, value):
 def subjects_dewey(self, key, value):
     """Translates subject classification."""
     _subjects = self.get("subjects", [])
-
-    _subjects.append({"scheme": "DEWEY", "value": clean_val("a", value, str)})
+    subject = {"scheme": "DEWEY", "value": clean_val("a", value, str)}
+    if subject not in _subjects:
+        _subjects.append(subject)
     return _subjects
 
 
@@ -196,7 +198,9 @@ def subjects_dewey(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translate edition field."""
-    return clean_val("a", value, str).replace("ed.", "").replace("edition", "")
+    return clean_val("a", value, str)\
+        .replace("ed.", "")\
+        .replace("edition", "").rstrip('.')
 
 
 @model.over("number_of_pages", "^300__")
@@ -224,7 +228,7 @@ def serial(self, key, value):
         volume = re.findall(r"\d+", volume)
 
     return {
-        "title": clean_val("a", value, str, req=True),
+        "title": clean_val("a", value, str, req=True).rstrip(',').rstrip(';'),
         "identifiers": identifiers,
         "volume": volume[0] if volume else None,
     }

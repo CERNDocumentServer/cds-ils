@@ -156,9 +156,6 @@ class ImportRecordLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     __tablename__ = "import_record_log"
 
-    # Ensure the entries are uniquely defined
-    __table_args__ = (db.UniqueConstraint('import_id', 'entry_recid'),)
-
     import_id = db.Column(db.Integer, db.ForeignKey('importer_import_log.id',
                                                     ondelete="CASCADE"))
     """The parent task."""

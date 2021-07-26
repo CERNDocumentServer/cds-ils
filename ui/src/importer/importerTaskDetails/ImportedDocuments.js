@@ -136,22 +136,18 @@ export class ImportedDocuments extends React.Component {
     const { data, activePage } = this.state;
     return (
       <>
-        <Table styled="true" fluid="true" striped celled structured>
+        <Table styled="true" fluid="true" striped celled structured collapsing>
           <Table.Header className="sticky-table-header">
             <Table.Row>
               <Table.HeaderCell collapsing rowSpan="3" textAlign="center">
                 No
               </Table.HeaderCell>
-              <Table.HeaderCell width="6" rowSpan="3">
+              <Table.HeaderCell width="5" rowSpan="3">
                 Title [Provider recid]
               </Table.HeaderCell>
 
-              <Table.HeaderCell width="1" rowSpan="3">
-                Action
-              </Table.HeaderCell>
-              <Table.HeaderCell width="1" rowSpan="3">
-                Output document
-              </Table.HeaderCell>
+              <Table.HeaderCell rowSpan="3">Action</Table.HeaderCell>
+              <Table.HeaderCell rowSpan="3">Output document</Table.HeaderCell>
               <Table.HeaderCell colSpan="4">Dependent records</Table.HeaderCell>
               <Table.HeaderCell rowSpan="3">Partial matches</Table.HeaderCell>
               <Table.HeaderCell rowSpan="3">Error</Table.HeaderCell>
@@ -162,9 +158,9 @@ export class ImportedDocuments extends React.Component {
             </Table.Row>
             <Table.Row>
               <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
-              <Table.HeaderCell width="1">Action and details</Table.HeaderCell>
+              <Table.HeaderCell>Action and details</Table.HeaderCell>
               <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
-              <Table.HeaderCell width="1">Details</Table.HeaderCell>
+              <Table.HeaderCell>Details</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -179,7 +175,7 @@ export class ImportedDocuments extends React.Component {
                     <ImportedDocumentReport
                       key={index}
                       documentReport={elem}
-                      listIndex={index + (activePage - 1) * this.pageSize}
+                      listIndex={index + (activePage - 1) * this.pageSize + 1}
                     />
                   )
                 );
