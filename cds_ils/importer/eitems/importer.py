@@ -147,6 +147,7 @@ class EItemImporter(object):
                     "type": "import",
                     "value": self.metadata_provider,
                 },
+                source=self.metadata_provider,
                 urls=self.eitem_json.get("urls", []),
                 description=self.eitem_json.get("description", ""),
             )
