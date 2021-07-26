@@ -11,8 +11,8 @@ import click
 from flask.cli import with_appcontext
 
 from cds_ils.importer.api import import_from_xml
-from cds_ils.importer.models import ImporterAgent, ImporterMode, \
-    ImporterTaskLog
+from cds_ils.importer.models import ImporterAgent, ImporterImportLog, \
+    ImporterMode
 from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
 
@@ -47,7 +47,7 @@ def import_from_file(sources, provider, mode, source_type="marcxml"):
     vocabulary_validator.reset()
     source = sources[0]
 
-    log = ImporterTaskLog.create(
+    log = ImporterImportLog.create(
         dict(
             agent=ImporterAgent.CLI,
             provider=provider,

@@ -13,8 +13,8 @@ from invenio_db import db
 from sqlalchemy import or_
 
 from cds_ils.importer.api import import_from_xml
-from cds_ils.importer.models import ImporterAgent, ImporterMode, \
-    ImporterTaskLog
+from cds_ils.importer.models import ImporterAgent, ImporterImportLog, \
+    ImporterMode
 
 
 def create_import_task(
@@ -23,7 +23,7 @@ def create_import_task(
     source_type="marcxml"
 ):
     """Creates a task and returns its associated identifier."""
-    log = ImporterTaskLog.create(
+    log = ImporterImportLog.create(
         dict(
             agent=ImporterAgent.USER,
             provider=provider,
@@ -33,7 +33,7 @@ def create_import_task(
             ignore_missing_rules=ignore_missing_rules
         )
     )
-    async_result = import_from_xml_task.apply_async(
+    import_from_xml_task.apply_async(
         (
             log.id,
             source_path,
@@ -51,7 +51,7 @@ def create_import_task(
 def import_from_xml_task(log_id, source_path, source_type, provider, mode,
                          ignore_missing_rules):
     """Load a single xml file task."""
-    log = ImporterTaskLog.query.get(log_id)
+    log = ImporterImportLog.query.get(log_id)
     import_from_xml(log, source_path, source_type, provider, mode,
                     ignore_missing_rules)
 
@@ -63,9 +63,9 @@ def clean_preview_logs():
     seven_days_ago = datetime.datetime.now() - datetime.timedelta(days=7)
 
     # find and delete all the stale preview logs
-    ImporterTaskLog.query.filter(
-        or_(ImporterTaskLog.mode == ImporterMode.PREVIEW_DELETE,
-            ImporterTaskLog.mode == ImporterMode.PREVIEW_IMPORT),
-        ImporterTaskLog.start_time < seven_days_ago).delete()
+    ImporterImportLog.query.filter(
+        or_(ImporterImportLog.mode == ImporterMode.PREVIEW_DELETE,
+            ImporterImportLog.mode == ImporterMode.PREVIEW_IMPORT),
+        ImporterImportLog.start_time < seven_days_ago).delete()
 
     db.session.commit()
