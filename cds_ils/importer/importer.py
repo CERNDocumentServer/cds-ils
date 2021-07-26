@@ -15,6 +15,7 @@ from invenio_app_ils.records_relations.api import RecordRelationsParentChild
 from invenio_app_ils.relations.api import Relation
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier
+from invenio_search import current_search
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
@@ -181,7 +182,7 @@ class Importer(object):
         if self.document:
             self.output_pid = self.document["pid"]
             self.delete_records(self.document)
-            time.sleep(2)
+            current_search.flush_and_refresh(index="*")
             document_has_only_serial_relations = \
                 len(self.document.relations.keys()) \
                 and 'serial' in self.document.relations.keys()
@@ -212,7 +213,7 @@ class Importer(object):
 
             db.session.commit()
             document_indexer.delete(self.document)
-            self.action.delete()
+            self.action = "delete"
 
         return self.import_summary()
 

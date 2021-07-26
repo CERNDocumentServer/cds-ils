@@ -533,6 +533,7 @@ ILS_VOCABULARIES = [
     "document_institutions",
     "document_standard_reviews",
     "doc_subjects",
+    "eitem_sources",
     "identifier_scheme",
     "ill_item_type",
     "ill_payment_mode",
