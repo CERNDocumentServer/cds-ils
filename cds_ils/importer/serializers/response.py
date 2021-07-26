@@ -10,7 +10,7 @@ import json
 
 from flask import abort, current_app
 
-from cds_ils.importer.models import ImporterTaskLog
+from cds_ils.importer.models import ImporterImportLog
 
 
 def importer_task_responsify(schema_class, mimetype):
@@ -22,7 +22,7 @@ def importer_task_responsify(schema_class, mimetype):
 
     def view(data, code=200, headers=None, record_offset=0):
         """Generate the response object."""
-        if isinstance(data, ImporterTaskLog):
+        if isinstance(data, ImporterImportLog):
 
             response_data = schema_class(record_offset=record_offset)\
                 .dump(data)
@@ -53,7 +53,7 @@ def importer_task_log_responsify(schema_class, mimetype):
 
         if isinstance(data, list):
             response_data = schema_class(many=True).dump(data)
-        elif isinstance(data, ImporterTaskLog):
+        elif isinstance(data, ImporterImportLog):
             response_data = schema_class().dump(data)
         else:
             abort(400)

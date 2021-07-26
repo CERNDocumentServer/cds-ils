@@ -14,11 +14,11 @@ from flask import Blueprint, abort, current_app, request
 from invenio_app_ils.permissions import need_permissions
 from invenio_db import db
 from invenio_rest import ContentNegotiatedMethodView
-from sqlalchemy.orm.exc import ObjectDeletedError, NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, ObjectDeletedError
 
 from cds_ils.importer.api import allowed_files, rename_file
 from cds_ils.importer.loaders.jsonschemas.schema import ImporterImportSchemaV1
-from cds_ils.importer.models import ImporterTaskLog
+from cds_ils.importer.models import ImporterImportLog
 from cds_ils.importer.serializers import task_entry_response, task_log_response
 from cds_ils.importer.tasks import create_import_task
 
@@ -78,7 +78,7 @@ class ImporterDetailsView(ContentNegotiatedMethodView):
         """Returns the detail views of each subtask by given offset."""
         log = None
         try:
-            log = db.session.query(ImporterTaskLog).get(log_id)
+            log = db.session.query(ImporterImportLog).get(log_id)
         except ObjectDeletedError:
             abort(404)
         if log:
@@ -143,7 +143,7 @@ class ImporterListView(ContentNegotiatedMethodView):
     def get(self):
         """Get method."""
         list_count = 10
-        logs = ImporterTaskLog.query \
-            .order_by(ImporterTaskLog.id.desc()) \
+        logs = ImporterImportLog.query \
+            .order_by(ImporterImportLog.id.desc()) \
             .limit(list_count).all()
         return self.make_response(logs)
