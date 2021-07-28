@@ -50,7 +50,7 @@ class ImportedDocumentReportComponent extends Component {
         <Table.Cell>
           <Header as="h4">{title}</Header>
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell collapsing>
           {this.renderActionLabel(documentReport.action)}
           {documentReport.raw_json && (
             <Button
@@ -67,7 +67,7 @@ class ImportedDocumentReportComponent extends Component {
             />
           )}
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell collapsing>
           {documentReport.output_pid ? (
             <Link
               to={BackOfficeRoutes.documentDetailsFor(
@@ -101,7 +101,7 @@ class ImportedDocumentReportComponent extends Component {
             </>
           )}
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell collapsing>
           {!_isEmpty(documentReport.eitem) && (
             <>
               {!_isEmpty(documentReport.eitem.output_pid) && (
@@ -167,7 +167,7 @@ class ImportedDocumentReportComponent extends Component {
             </>
           )}
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell collapsing>
           {!_isEmpty(documentReport.series) && (
             <>
               {' '}
@@ -216,7 +216,7 @@ class ImportedDocumentReportComponent extends Component {
             </>
           )}
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell collapsing>
           {!_isEmpty(documentReport.partial_matches) && (
             <>
               {' '}
