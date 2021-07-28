@@ -44,3 +44,25 @@ class CDSImporter(Importer):
                 self.document["legacy_recid"], legacy_pid_type, record_uuid
             )
         return summary
+
+    def _extract_eitems_json(self):
+        """Extracts eitems json for given pre-processed JSON."""
+        eitem = {}
+
+        eitems_external = self.json_data["_migration"]["eitems_external"]
+        eitems_proxy = self.json_data["_migration"]["eitems_proxy"]
+
+        if eitems_external:
+            eitem = eitems_external[0]
+        elif eitems_proxy:
+            eitem = eitems_proxy[0]
+
+        eitem["urls"] = [eitem["url"]]
+        del eitem["url"]
+        if 'open_access' not in eitem:
+            eitem["open_access"] = \
+                self.json_data["_migration"]["eitems_open_access"]
+        if 'internal_notes' not in eitem:
+            eitem["internal_notes"] = \
+                self.json_data["_migration"]["eitems_internal_notes"]
+        return eitem
