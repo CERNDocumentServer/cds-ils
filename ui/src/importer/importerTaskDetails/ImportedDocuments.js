@@ -144,7 +144,7 @@ export class ImportedDocuments extends React.Component {
     const { data, activePage } = this.state;
     return (
       <>
-        <Table styled="true" fluid="true" striped celled structured collapsing>
+        <Table styled="true" fluid="true" striped celled structured width={16}>
           <Table.Header className="sticky-table-header">
             <Table.Row>
               <Table.HeaderCell collapsing rowSpan="3" textAlign="center">
@@ -154,21 +154,35 @@ export class ImportedDocuments extends React.Component {
                 Title [Provider recid]
               </Table.HeaderCell>
 
-              <Table.HeaderCell rowSpan="3">Action</Table.HeaderCell>
-              <Table.HeaderCell rowSpan="3">Output document</Table.HeaderCell>
-              <Table.HeaderCell colSpan="4">Dependent records</Table.HeaderCell>
-              <Table.HeaderCell rowSpan="3">Partial matches</Table.HeaderCell>
-              <Table.HeaderCell rowSpan="3">Error</Table.HeaderCell>
+              <Table.HeaderCell collapsing rowSpan="3">
+                Action
+              </Table.HeaderCell>
+              <Table.HeaderCell collapsing rowSpan="3">
+                Output document
+              </Table.HeaderCell>
+              <Table.HeaderCell collapsing colSpan="4">
+                Dependent records
+              </Table.HeaderCell>
+              <Table.HeaderCell collapsing rowSpan="3">
+                Partial matches
+              </Table.HeaderCell>
+              <Table.HeaderCell collapsing rowSpan="3">
+                Error
+              </Table.HeaderCell>
             </Table.Row>
             <Table.Row>
-              <Table.HeaderCell colSpan="2">E-item</Table.HeaderCell>
-              <Table.HeaderCell colSpan="2">Serials</Table.HeaderCell>
+              <Table.HeaderCell collapsing colSpan="2">
+                E-item
+              </Table.HeaderCell>
+              <Table.HeaderCell collapsing colSpan="2">
+                Serials
+              </Table.HeaderCell>
             </Table.Row>
             <Table.Row>
               <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
-              <Table.HeaderCell>Action and details</Table.HeaderCell>
+              <Table.HeaderCell collapsing>Action and details</Table.HeaderCell>
               <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
-              <Table.HeaderCell>Details</Table.HeaderCell>
+              <Table.HeaderCell collapsing>Details</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>

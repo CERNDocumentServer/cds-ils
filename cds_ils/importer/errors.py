@@ -17,7 +17,7 @@ class LossyConversion(DoJSONException):
     def __init__(self, *args, **kwargs):
         """Exception custom initialisation."""
         self.missing = kwargs.pop("missing", None)
-        self.message = "Lossy conversion: {0}".format(self.missing or "")
+        self.message = self.description = "Lossy conversion: {0}".format(self.missing or "")
         super().__init__(*args, **kwargs)
 
 
@@ -26,7 +26,7 @@ class RecordNotDeletable(DoJSONException):
 
     def __init__(self, *args, **kwargs):
         """Exception custom initialisation."""
-        self.message = "Record is not marked as deletable"
+        self.message = self.description = "Record is not marked as deletable"
         super().__init__(*args, **kwargs)
 
 
@@ -36,7 +36,8 @@ class ProviderNotAllowedDeletion(DoJSONException):
     def __init__(self, *args, **kwargs):
         """Exception custom initialisation."""
         self.provider = kwargs.pop("provider", None)
-        self.message = "This provider {0} is not allowed to delete records"\
+        self.message = self.description = \
+            "This provider {0} is not allowed to delete records"\
             .format(self.provider)
         super().__init__(*args, **kwargs)
 
@@ -52,6 +53,7 @@ class CDSImporterException(DoJSONException):
             self.message = f"{self.message}({self.subfield})"
         if message:
             self.message = f"{self.message}: {message}"
+        self.description = self.message
 
         super(CDSImporterException, self).__init__(*args)
 

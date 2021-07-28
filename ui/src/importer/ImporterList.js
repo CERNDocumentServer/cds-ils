@@ -79,8 +79,12 @@ export class ImporterList extends Component {
         return (
           <Icon name="check circle" color="green" aria-label="Completed" />
         );
+      case 'CANCELLED':
+        return <Icon name="times circle" color="yellow" aria-label="Failed" />;
       case 'FAILED':
-        return <Icon name="times circle" color="red" aria-label="Failed" />;
+        return (
+          <Icon name="exclamation circle" color="red" aria-label="Failed" />
+        );
       default:
         return null;
     }
@@ -149,7 +153,7 @@ export class ImporterList extends Component {
 
   columns = [
     { title: 'ID', field: 'id', formatter: this.idFormatter },
-    { title: 'Status', field: 'state', formatter: this.stateFormatter },
+    { title: 'Status', field: 'status', formatter: this.stateFormatter },
     { title: 'Date', field: 'start_time', formatter: this.datetimeFormatter },
     { title: 'Duration', field: 'end_time', formatter: this.durationFormatter },
     {

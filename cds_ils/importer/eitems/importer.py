@@ -25,6 +25,7 @@ class EItemImporter(object):
     def __init__(
         self,
         json_metadata,
+        eitem_json_data,
         metadata_provider,
         current_provider_priority,
         provider_priority_sensitive,
@@ -39,7 +40,7 @@ class EItemImporter(object):
         self.open_access = open_access
         self.login_required = login_required
 
-        self.eitem_json = self.json_data.get("_eitem", None)
+        self.eitem_json = eitem_json_data
         self.output_pid = None
         self.action = None
         self.eitem_record = None
@@ -75,7 +76,7 @@ class EItemImporter(object):
 
     def _update_existing_record(self, existing_eitem, matched_document):
         metadata_to_update = {}
-        self._build_eitem_dict(metadata_to_update, matched_document["pid"])
+        self._build_eitem_json(metadata_to_update, matched_document["pid"])
         try:
             existing_eitem.update(metadata_to_update)
             existing_eitem.commit()
@@ -127,7 +128,8 @@ class EItemImporter(object):
             if self._should_replace_eitem(eitem):
                 return True
 
-    def _build_eitem_dict(self, eitem_json, document_pid):
+    def _build_eitem_json(self, eitem_json, document_pid, urls=None,
+                          description=None):
         """Provide initial metadata dictionary."""
         self._apply_url_login(eitem_json)
         self._set_record_import_source(eitem_json)
@@ -145,8 +147,8 @@ class EItemImporter(object):
                     "type": "import",
                     "value": self.metadata_provider,
                 },
-                urls=self.json_data["_eitem"].get("urls", []),
-                description=self.json_data["_eitem"].get("description", ""),
+                urls=self.eitem_json.get("urls", []),
+                description=self.eitem_json.get("description", ""),
             )
         )
 
@@ -170,12 +172,10 @@ class EItemImporter(object):
         """Determine import action."""
         if search:
             hits_total = search.count()
-            if hits_total == 0:
-                self.action = "create"
-            elif hits_total == 1:
+            if hits_total == 1:
                 self.action = "update"
-        else:
-            self.action = "create"
+                return
+        self.action = "create"
 
     def get_first_match(self, search):
         """Return first matched record from search."""
@@ -249,7 +249,7 @@ class EItemImporter(object):
         eitem_cls = current_app_ils.eitem_record_cls
         if self.eitem_json:
             try:
-                self._build_eitem_dict(self.eitem_json, new_document["pid"])
+                self._build_eitem_json(self.eitem_json, new_document["pid"])
                 record_uuid = uuid.uuid4()
                 with db.session.begin_nested():
                     provider = EItemIdProvider.create(
@@ -289,7 +289,7 @@ class EItemImporter(object):
             pid = matched_document["pid"]
         else:
             pid = "preview-doc-pid"
-        self._build_eitem_dict(self.eitem_json, pid)
+        self._build_eitem_json(self.eitem_json, pid)
         search = self.eitems_search(matched_document)
         self.import_eitem_action(search)
 

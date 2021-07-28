@@ -9,8 +9,12 @@
 import time
 
 from flask import current_app
+from invenio_app_ils.errors import RecordHasReferencesError
 from invenio_app_ils.proxies import current_app_ils
+from invenio_app_ils.records_relations.api import RecordRelationsParentChild
+from invenio_app_ils.relations.api import Relation
 from invenio_db import db
+from invenio_pidstore.models import PersistentIdentifier
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
@@ -30,6 +34,7 @@ class Importer(object):
         "agency_code",
         "_serial",
         "provider_recid",
+        "_migration",
     )
 
     def __init__(self, json_data, metadata_provider):
@@ -39,6 +44,8 @@ class Importer(object):
         priority = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
             metadata_provider
         ]["priority"]
+
+        eitem_json_data = self._extract_eitems_json()
         self.document_importer = DocumentImporter(
             json_data,
             self.HELPER_METADATA_FIELDS,
@@ -47,6 +54,7 @@ class Importer(object):
         )
         self.eitem_importer = EItemImporter(
             json_data,
+            eitem_json_data,
             metadata_provider,
             priority,
             self.IS_PROVIDER_PRIORITY_SENSITIVE,
@@ -73,6 +81,10 @@ class Importer(object):
                 self.metadata_provider
             ]["agency_code"]
         )
+
+    def _extract_eitems_json(self):
+        """Extracts eitems json for given pre-processed JSON."""
+        return self.json_data["_eitem"]
 
     def _match_document(self):
         """Search the catalogue for existing document."""
@@ -160,6 +172,7 @@ class Importer(object):
     def delete_record(self):
         """Deletes the eitems of the record."""
         document_indexer = current_app_ils.document_indexer
+        series_class = current_app_ils.series_record_cls
         self._validate_provider()
         self.action = "update"
         # finds the exact match, update records
@@ -168,9 +181,38 @@ class Importer(object):
         if self.document:
             self.output_pid = self.document["pid"]
             self.delete_records(self.document)
+            time.sleep(2)
+            document_has_only_serial_relations = \
+                len(self.document.relations.keys()) \
+                and 'serial' in self.document.relations.keys()
+
+            if not self.document.has_references() \
+                    and document_has_only_serial_relations:
+
+                # remove serial relations
+                rr = RecordRelationsParentChild()
+                serial_relations = self.document.relations.get('serial', [])
+                relation_type = Relation.get_relation_by_name("serial")
+                for relation in serial_relations:
+                    serial = series_class.get_record_by_pid(
+                        relation["pid_value"])
+                    rr.remove(serial, self.document, relation_type)
+
+            pid = self.document.pid
+            # will fail if any relations / references present
             self.document.delete()
-            document_indexer.delete(self.document)
+            # mark all PIDs as DELETED
+            all_pids = PersistentIdentifier.query.filter(
+                PersistentIdentifier.object_type == pid.object_type,
+                PersistentIdentifier.object_uuid == pid.object_uuid,
+            ).all()
+            for rec_pid in all_pids:
+                if not rec_pid.is_deleted():
+                    rec_pid.delete()
+
             db.session.commit()
+            document_indexer.delete(self.document)
+            self.action.delete()
 
         return self.import_summary()
 
@@ -180,14 +222,14 @@ class Importer(object):
         if self.document:
             doc_json = self.document.dumps()
         return {
-                "output_pid": self.output_pid,
-                "action": self.action,
-                "partial_matches": self._serialize_partial_matches(),
-                "eitem": self.eitem_summary,
-                "series": self.series_list,
-                "raw_json": self.json_data,
-                "document_json": doc_json,
-                "document": self.document
+            "output_pid": self.output_pid,
+            "action": self.action,
+            "partial_matches": self._serialize_partial_matches(),
+            "eitem": self.eitem_summary,
+            "series": self.series_list,
+            "raw_json": self.json_data,
+            "document_json": doc_json,
+            "document": self.document
         }
 
     def preview_delete(self):
@@ -201,6 +243,12 @@ class Importer(object):
             self.output_pid = self.document["pid"]
             self.eitem_summary = \
                 self.eitem_importer.preview_delete(self.document)
+            document_has_only_serial_relations = \
+                len(self.document.relations.keys()) \
+                and 'serial' in self.document.relations.keys()
+            if not self.document.has_references() \
+                    and document_has_only_serial_relations:
+                self.action = "delete"
 
         return self.import_summary()
 
