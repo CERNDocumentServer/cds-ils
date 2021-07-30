@@ -34,6 +34,7 @@ export class Importer extends Component {
       fileMissing: false,
       error: {},
       confirmImportOpen: false,
+      submitIsLoading: false,
     };
   }
 
@@ -68,6 +69,7 @@ export class Importer extends Component {
 
   handleSubmit = action => {
     const { provider, mode, file, ignoreMissingRules } = this.state;
+    this.setState({ submitIsLoading: true });
     let importMode = mode;
     if (action === 'PREVIEW' && mode === 'IMPORT') {
       importMode = 'PREVIEW_IMPORT';
@@ -92,6 +94,8 @@ export class Importer extends Component {
       if (!file) {
         this.setState({ fileMissing: true });
       }
+      this.handleImportConfirmClose();
+      this.setState({ submitIsLoading: false });
     }
   };
 
@@ -156,6 +160,7 @@ export class Importer extends Component {
       mode,
       file,
       ignoreMissingRules,
+      submitIsLoading,
     } = this.state;
 
     return (
@@ -204,6 +209,7 @@ export class Importer extends Component {
           <Button
             primary
             disabled={!mode || !provider || !file}
+            loading={submitIsLoading}
             onClick={() => {
               this.handleSubmit('IMPORT');
             }}

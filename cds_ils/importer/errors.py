@@ -17,7 +17,8 @@ class LossyConversion(DoJSONException):
     def __init__(self, *args, **kwargs):
         """Exception custom initialisation."""
         self.missing = kwargs.pop("missing", None)
-        self.message = self.description = "Lossy conversion: {0}".format(self.missing or "")
+        self.message = self.description = \
+            "Lossy conversion: {0}".format(self.missing or "")
         super().__init__(*args, **kwargs)
 
 
@@ -47,15 +48,21 @@ class CDSImporterException(DoJSONException):
 
     def __init__(self, *args, **kwargs):
         """Constructor."""
-        self.subfield = kwargs.get("subfield", None)
+        self.subfield = kwargs.get("subfield", "")
+        self.field = kwargs.get("field", "")
         message = kwargs.get("message", None)
-        if self.subfield:
-            self.message = f"{self.message}({self.subfield})"
         if message:
-            self.message = f"{self.message}: {message}"
+            self.message = message
+        self.message = f"{self.message} {self.field}{self.subfield}"
         self.description = self.message
 
         super(CDSImporterException, self).__init__(*args)
+
+
+class RecordModelMissing(CDSImporterException):
+    """Missing record model exception."""
+
+    message = "[Record did not match any available model]"
 
 
 class UnexpectedValue(CDSImporterException):
@@ -73,7 +80,7 @@ class MissingRequiredField(CDSImporterException):
 class ManualImportRequired(CDSImporterException):
     """The corresponding field should be manually migrated."""
 
-    message = "[MANUAL MIGRATION REQUIRED]"
+    message = "[MANUAL IMPORT REQUIRED]"
 
 
 class DocumentImportError(CDSImporterException):
@@ -91,4 +98,4 @@ class SeriesImportError(CDSImporterException):
 class UnknownProvider(CDSImporterException):
     """Unknown provider exception."""
 
-    message = "Invalid provider."
+    message = "Invalid record provider."

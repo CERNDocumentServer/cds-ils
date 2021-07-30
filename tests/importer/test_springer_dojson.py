@@ -37,7 +37,7 @@ def test_springer_transformation(app):
                     "(SpringerNature-43715)",
                     "urls": [
                         {
-                            "description": "E-book by Springer",
+                            "description": "ebook",
                             "value": "https://doi.org/10.1007/b100336",
                         }
                     ],
@@ -45,7 +45,7 @@ def test_springer_transformation(app):
                 "provider_recid": "978-0-306-47915-1",
                 "_serial": [
                     {
-                        "title": "Advances in Nuclear Physics ;",
+                        "title": "Advances in Nuclear Physics",
                         "volume": "26",
                     }
                 ],
@@ -62,7 +62,7 @@ def test_springer_transformation(app):
                     {"full_name": "Vogt, Erich W", "roles": ["EDITOR"]},
                 ],
                 "document_type": "BOOK",
-                "edition": "1st  2001.",
+                "edition": "1st  2001",
                 "identifiers": [
                     {"scheme": "ISBN", "value": "9780306479151"},
                     {"scheme": "ISBN", "value": "9780306479151X"},
@@ -81,7 +81,7 @@ def test_springer_transformation(app):
                     },
                 ],
                 "number_of_pages": "386",
-                "publication_year": "2001.",
+                "publication_year": "2001",
                 "subjects": [
                     {"scheme": "LOC", "value": "QC770-798"},
                     {"scheme": "LOC", "value": "QC702.7.H42"},

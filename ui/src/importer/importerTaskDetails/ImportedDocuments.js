@@ -11,6 +11,8 @@ import {
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
+import _unionWith from 'lodash/unionWith';
+import isEqual from 'lodash/isEqual';
 import { CancelImportTask } from './cancelImportTask';
 import { EitemImportDetailsModal } from '../EitemImportDetailsModal';
 import { SeriesImportDetailsModal } from '../SeriesImportDetailsModal';
@@ -29,6 +31,7 @@ export class ImportedDocuments extends React.Component {
     this.state = {
       importCompleted: false,
       data: null,
+      importedRecords: [],
       isLoading: true,
       activePage: 1,
     };
@@ -48,18 +51,20 @@ export class ImportedDocuments extends React.Component {
   };
 
   checkForData = async () => {
-    const { importCompleted, data } = this.state;
+    const { importCompleted, data, importedRecords } = this.state;
     const { taskId } = this.props;
 
     if (!importCompleted) {
       const nextEntry = _get(data, 'loaded_entries', 0);
-      const knownEntries = _get(data, 'records', []);
       const response = await importerApi.check(taskId, nextEntry);
       const responseData = response.data;
       if (responseData) {
-        responseData.records = knownEntries.concat(
-          _get(responseData, 'records', [])
-        );
+        const updatedRecordsList = _unionWith([
+          importedRecords,
+          _get(responseData, 'records', []),
+          isEqual,
+        ]);
+        this.setState({ importedRecords: updatedRecordsList });
       }
       if (response.data.status !== 'RUNNING') {
         this.setState({
@@ -239,7 +244,7 @@ export class ImportedDocuments extends React.Component {
   };
 
   render() {
-    const { data } = this.state;
+    const { data, importedRecords } = this.state;
     return (
       <>
         {this.renderImportReportHeader()}
@@ -261,7 +266,7 @@ export class ImportedDocuments extends React.Component {
                 <span>Processing file...</span>
               )
             ) : null}
-            {!_isEmpty(data.records) ? this.renderResultsContent() : null}
+            {!_isEmpty(importedRecords) ? this.renderResultsContent() : null}
           </>
         ) : !_isEmpty(data) && data.status === 'FAILED' ? (
           this.renderErrorMessage(data)

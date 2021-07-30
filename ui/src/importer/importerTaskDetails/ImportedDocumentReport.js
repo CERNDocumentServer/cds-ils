@@ -32,7 +32,6 @@ class ImportedDocumentReportComponent extends Component {
       openEitemModal,
     } = this.props;
     let title;
-
     if (!_isEmpty(documentReport.document)) {
       let volume = _get(documentReport, 'raw_json._serial[0].volume', '');
       volume = volume ? `(v. ${volume})` : '';
@@ -142,7 +141,8 @@ class ImportedDocumentReportComponent extends Component {
               )}
               <br />
 
-              {this.renderActionLabel(documentReport.eitem.action)}
+              {!_isEmpty(documentReport.eitem.json) &&
+                this.renderActionLabel(documentReport.eitem.action)}
             </>
           )}
           <Button

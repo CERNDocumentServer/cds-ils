@@ -1222,7 +1222,7 @@ def test_extensions(app):
                 "extensions": {
 
                     "standard_review_applicability": ["NO_LONGER_APPLICABLE"],
-                    "standard_review_validity": "withdrawn",
+                    "standard_review_standard_validity": "withdrawn",
                     "standard_review_checkdate": "2019-08-01",
                     "standard_review_expert": "Expert ICS-25.160",
                 },
@@ -1241,7 +1241,7 @@ def test_extensions(app):
                 {
                     "extensions": {
                         "standard_review_applicability": "",
-                        "standard_review_validity": "withdrawn",
+                        "standard_review_standard_validity": "withdrawn",
                         "standard_review_checkdate": "2019-12-01",
                         "standard_review_expert": "Expert ICS-25.160",
                     },
@@ -1271,7 +1271,7 @@ def test_extensions(app):
                     "unit_experiment": ["ATLAS", "CMS"],
                     "unit_project": ["FCC"],
                     "standard_review_applicability": ["NO_LONGER_APPLICABLE"],
-                    "standard_review_validity": "withdrawn",
+                    "standard_review_standard_validity": "withdrawn",
                     "standard_review_checkdate": "2019-04-01",
                     "standard_review_expert": "Expert ICS-25.160",
                 }

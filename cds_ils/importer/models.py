@@ -160,7 +160,7 @@ class ImporterImportLog(db.Model):
 
     def set_cancelled(self):
         """Mark the task as cancelled."""
-        self.status = ImporterTaskStatus.FAILED
+        self.status = ImporterTaskStatus.CANCELLED
         self.end_time = datetime.now()
         db.session.commit()
 

@@ -15,7 +15,7 @@ from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
 
 from cds_ils.importer import marc21
-from cds_ils.importer.errors import LossyConversion
+from cds_ils.importer.errors import LossyConversion, RecordModelMissing
 
 
 class XMLRecordToJson(object):
@@ -53,9 +53,12 @@ class XMLRecordToJson(object):
             is_deletable = False
 
         # MARCXML -> JSON fields translation
-        val = self.dojson_model.do(
-            marc_record
-        )
+        try:
+            val = self.dojson_model.do(
+                marc_record
+            )
+        except AttributeError:
+            raise RecordModelMissing
 
         if not self.ignore_missing:
             # check for missing rules

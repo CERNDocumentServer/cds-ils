@@ -55,12 +55,12 @@ def number_of_pages(self, key, value):
 
     parts = extract_parts(val)
     if parts["has_extra"]:
-        raise UnexpectedValue(subfield="a")
+        raise UnexpectedValue(subfield="a", field=key)
     if parts["physical_description"]:
         self["physical_description"] = parts["physical_description"]
     if parts["number_of_pages"]:
         return parts["number_of_pages"]
-    raise UnexpectedValue(subfield="a")
+    raise UnexpectedValue(subfield="a", field=key)
 
 
 @model.over("title", "^245__")
@@ -68,7 +68,7 @@ def number_of_pages(self, key, value):
 def title(self, key, value):
     """Translates title."""
     if "title" in self:
-        raise UnexpectedValue()
+        raise UnexpectedValue(message="Ambiguous title", field=key)
 
     if "b" in value:
         _alternative_titles = self.get("alternative_titles", [])

@@ -173,7 +173,7 @@ class DocumentImporter(object):
         existing_identifiers = matched_document.get("identifiers", [])
         new_identifiers = [
             elem
-            for elem in self.json_data["identifiers"]
+            for elem in self.json_data.get("identifiers", [])
             if elem not in existing_identifiers
         ]
 

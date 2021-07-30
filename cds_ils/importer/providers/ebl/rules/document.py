@@ -56,7 +56,7 @@ def authors(self, key, value):
 def title(self, key, value):
     """Translates title."""
     if "title" in self:
-        raise UnexpectedValue()
+        raise UnexpectedValue(message="Ambiguous title", field=key)
 
     if "b" in value:
         _alternative_titles = self.get("alternative_titles", [])
@@ -67,7 +67,7 @@ def title(self, key, value):
             }
         )
         self["alternative_titles"] = _alternative_titles
-    return clean_val("a", value, str, req=True).rstrip('.')
+    return clean_val("a", value, str, req=True).rstrip('.').rstrip(':')
 
 
 # EITEM fields
@@ -127,10 +127,12 @@ def alternative_identifiers(self, key, value):
         val_a = clean_val("a", value, str, req=True)
         if "(Au-PeEL)" in val_a:
             val_a = val_a.replace("(Au-PeEL)", "").replace("EBL", "")
-            _alternative_identifiers.append({
+            identifier = {
                 "scheme": "EBL",
                 "value": val_a
-            })
+            }
+            if identifier not in _alternative_identifiers:
+                _alternative_identifiers.append(identifier)
     return _alternative_identifiers
 
 
@@ -143,7 +145,7 @@ def languages(self, key, value):
     try:
         return pycountry.languages.lookup(lang).alpha_3.upper()
     except (KeyError, AttributeError, LookupError):
-        raise UnexpectedValue(subfield="a")
+        raise UnexpectedValue(subfield="a", field=key)
 
 
 @model.over("subjects", "^050_4")
@@ -182,7 +184,9 @@ def imprint(self, key, value):
     """Translate imprint field."""
     _publication_year = self.get("publication_year")
     if _publication_year:
-        raise UnexpectedValue(subfield="e", message="doubled publication year")
+        raise UnexpectedValue(subfield="e",
+                              message="doubled publication year",
+                              field=key)
     pub_year = clean_val("c", value, str).rstrip('.')
     self["publication_year"] = pub_year
 
@@ -216,7 +220,8 @@ def serial(self, key, value):
         volume = re.findall(r"\d+", volume)
 
     return {
-        "title": clean_val("a", value, str, req=True).rstrip(',').rstrip(';'),
+        "title": clean_val("a", value, str, req=True)
+        .rstrip(',').rstrip(';').strip(),
         "identifiers": identifiers,
         "volume": volume[0] if volume else None,
     }

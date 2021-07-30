@@ -103,7 +103,7 @@ class ImporterRecordLogModelView(ModelView):
         "importer_task": render_html_link(
             lambda o: (o.import_id,
                        url_for(
-                           "importertasklog.index_view", flt0_0=o.import_id
+                           "importerimportlog.index_view", flt0_0=o.import_id
                        )),
         )
     }
