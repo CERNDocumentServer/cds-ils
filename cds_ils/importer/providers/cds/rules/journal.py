@@ -202,10 +202,12 @@ def related_records(self, key, value):
     if relation_type_tag:
         relation_type_tag = relation_type_tag.upper()
     else:
-        raise UnexpectedValue('Relation type missing.')
+        raise UnexpectedValue('Relation type missing.', field=key,
+                              subfield="x")
 
     if relation_type_tag not in ["LANGUAGE", "EDITION", "SEQUENCE", "OTHER"]:
-        raise UnexpectedValue(f'Unsupported relation type {relation_type_tag}')
+        raise UnexpectedValue(f'Unsupported relation type {relation_type_tag}',
+                              field=key, subfield="x")
     # language
     if key == "787__" and relation_type_tag == 'LANGUAGE':
         relation_type = LANGUAGE_RELATION.name
@@ -283,7 +285,7 @@ def document_type(self, key, value):
         ):
             raise IgnoreKey("document_type")
         else:
-            raise UnexpectedValue(subfield="a")
+            raise UnexpectedValue(subfield="a", field=key)
 
 
 @model.over("_created", "^961__", override=True)

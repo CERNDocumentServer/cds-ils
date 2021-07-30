@@ -192,7 +192,7 @@ class EItemImporter(object):
 
         # determine currently imported eitem provider priority
         should_eitem_be_imported = self.is_provider_priority_sensitive and \
-                self._should_import_eitem_by_priority(matched_document)
+            self._should_import_eitem_by_priority(matched_document)
 
         if self.action == "create" and should_eitem_be_imported:
             self.eitem_record = self.create_eitem(matched_document)
@@ -201,6 +201,7 @@ class EItemImporter(object):
             self.eitem_record = self._update_existing_record(
                 existing_eitem, matched_document
             )
+            self.output_pid = existing_eitem["pid"]
         else:
             results = search.scan()
             self._report_ambiguous_records(results)
@@ -208,6 +209,8 @@ class EItemImporter(object):
             # checks if there are higher priority eitems
             if should_eitem_be_imported:
                 self.eitem_record = self.create_eitem(matched_document)
+            else:
+                self.action = None
 
         if self.is_provider_priority_sensitive:
             self._replace_lower_priority_eitems(matched_document)

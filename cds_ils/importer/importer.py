@@ -19,6 +19,7 @@ from invenio_search import current_search
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
+from cds_ils.importer.errors import UnknownProvider
 from cds_ils.importer.series.importer import SeriesImporter
 
 
@@ -76,6 +77,9 @@ class Importer(object):
 
     def _validate_provider(self):
         """Check if the chosen provider is matching the import data."""
+        agency_code = self.json_data.get("agency_code")
+        if not agency_code:
+            raise UnknownProvider
         assert (
             self.json_data["agency_code"]
             == current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
@@ -161,10 +165,8 @@ class Importer(object):
         if self.document:
             self.output_pid = self.document["pid"]
             self.action = "create"
-
             self.eitem_importer.create_eitem(self.document)
             self.eitem_summary = self.eitem_importer.summary()
-
             self.series_list = self.series_importer.import_series(
                 self.document)
             self.index_all_records()

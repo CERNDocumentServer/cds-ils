@@ -35,7 +35,7 @@ def test_ebl_transformation(app):
                 "_eitem": {
                     "urls": [
                         {
-                            "description": "E-book by EbookCentral",
+                            "description": "ebook",
                             "value": "https://ebookcentral.proquest.com/lib/"
                             "cern/detail.action?docID=263817",
                         }
@@ -58,7 +58,6 @@ def test_ebl_transformation(app):
                 "nanosized materialsMagnetic refrigerationConclusions.",
                 "agency_code": "MiAaPQ",
                 "alternative_identifiers": [
-                    {"scheme": "EBL", "value": "EBC263817"},
                     {"scheme": "EBL", "value": "263817"},
                 ],
                 "authors": [
@@ -126,5 +125,6 @@ def test_ebl_transformation(app):
                     "Index",
                     "Back Cover.",
                 ],
+                'title': 'The Magnetocaloric Effect and Its Applications',
             },
         )

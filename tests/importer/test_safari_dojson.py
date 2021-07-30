@@ -37,7 +37,7 @@ def test_safari_transformation(app):
                 "_eitem": {
                     "urls": [
                         {
-                            "description": "E-book by Safari",
+                            "description": "ebook",
                             "value": "https://learning.oreilly.com"
                             "/library/view/-/9780814415467/?ar",
                         }

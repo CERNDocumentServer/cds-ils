@@ -119,7 +119,9 @@ setup(
         "invenio_i18n.translations": ["messages = cds_ils"],
         "invenio_access.actions": [
             "retrieve_patron_loans_access_action = "
-            "cds_ils.patrons.permissions:retrieve_patron_loans_access_action"
+            "cds_ils.patrons.permissions:retrieve_patron_loans_access_action",
+            "document_importer_access_action = "
+            "cds_ils.patrons.permissions:document_importer_access_action",
         ],
         "cds_ils.importers": [
             "cds = cds_ils.importer.providers.cds.importer:CDSImporter",

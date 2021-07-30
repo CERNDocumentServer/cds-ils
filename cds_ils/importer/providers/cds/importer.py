@@ -57,8 +57,11 @@ class CDSImporter(Importer):
         elif eitems_proxy:
             eitem = eitems_proxy[0]
 
-        eitem["urls"] = [eitem["url"]]
-        del eitem["url"]
+        if eitem.get("url"):
+            eitem["urls"] = [eitem.get("url")]
+            del eitem["url"]
+        if not eitem.get("urls", []):
+            return {}
         if 'open_access' not in eitem:
             eitem["open_access"] = \
                 self.json_data["_migration"]["eitems_open_access"]

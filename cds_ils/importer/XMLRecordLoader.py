@@ -42,7 +42,7 @@ class XMLRecordDumpLoader(object):
             is_deletable = True
 
         if mode == ImporterMode.DELETE.value and not is_deletable:
-            raise RecordNotDeletable()
+            raise RecordNotDeletable
         elif mode == ImporterMode.IMPORT.value:
             report = importer_class(json_data, provider).import_record()
         elif mode == ImporterMode.DELETE.value and is_deletable:

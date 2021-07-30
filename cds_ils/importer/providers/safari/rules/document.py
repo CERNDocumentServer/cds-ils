@@ -55,7 +55,7 @@ def authors(self, key, value):
 def title(self, key, value):
     """Translates title."""
     if "title" in self:
-        raise UnexpectedValue()
+        raise UnexpectedValue(message="Ambiguous title", field=key)
 
     if "b" in value:
         _alternative_titles = self.get("alternative_titles", [])
@@ -116,7 +116,7 @@ def languages(self, key, value):
     try:
         return pycountry.languages.lookup(lang).alpha_3.upper()
     except (KeyError, AttributeError, LookupError):
-        raise UnexpectedValue(subfield="a")
+        raise UnexpectedValue(subfield="a", field=key)
 
 
 @model.over("edition", "^250__")
@@ -132,7 +132,9 @@ def imprint(self, key, value):
     """Translate imprint field."""
     _publication_year = self.get("publication_year")
     if _publication_year:
-        raise UnexpectedValue(subfield="e", message="doubled publication year")
+        raise UnexpectedValue(subfield="e",
+                              message="doubled publication year",
+                              field=key)
     pub_year = clean_val("c", value, str).rstrip('.')
     self["publication_year"] = pub_year
 
