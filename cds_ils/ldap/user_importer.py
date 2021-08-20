@@ -66,7 +66,7 @@ class LdapUserImporter:
         employee_id = ldap_user["remote_account_person_id"]
         department = ldap_user["remote_account_department"]
         mailbox = ldap_user["remote_account_mailbox"]
-        return RemoteAccount(
+        return RemoteAccount.create(
             client_id=self.client_id,
             user_id=user_id,
             extra_data=dict(person_id=employee_id,
