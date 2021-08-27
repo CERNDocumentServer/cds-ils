@@ -53,6 +53,7 @@ install_requires = [
     'Jinja2>=2.11,<3',
     # unsupported ES version issue
     "elasticsearch>=6.0.0,<7.14",
+    "pluggy>=0.13.1,<1.0.0",
 ]
 
 packages = find_packages()

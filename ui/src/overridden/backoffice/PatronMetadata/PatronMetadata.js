@@ -1,6 +1,6 @@
 import {
-  ScrollingMenuItem,
   MetadataTable,
+  ScrollingMenuItem,
 } from '@inveniosoftware/react-invenio-app-ils';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -21,7 +21,7 @@ export const PatronMetadata = ({ patron, ...props }) => {
       value: patron.metadata.person_id ? (
         <a
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           href={config.PATRONS.phonebookURLPrefix + patron.metadata.person_id}
         >
           Phonebook

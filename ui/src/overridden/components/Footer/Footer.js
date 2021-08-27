@@ -67,18 +67,31 @@ export const Footer = ({ ...props }) => {
               </List>
             </Grid.Column>
             <Grid.Column>
-              <Header as="h4" content="CERN Document Server" />
-              <p>
-                A{' '}
-                <a
-                  href="https://cds.cern.ch"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  CDS
-                </a>{' '}
-                website
-              </p>
+              <Header as="h4" content="CDS - CERN Document Server" />
+              <List relaxed>
+                <List.Item>
+                  <p>
+                    This website is part of the{' '}
+                    <a
+                      href="https://cds-blog.web.cern.ch/about/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      CDS
+                    </a>{' '}
+                    service
+                  </p>
+                </List.Item>
+                <List.Item>
+                  <a
+                    href="https://cern.ch/cds-blog"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    What's up on CDS - Blog
+                  </a>
+                </List.Item>
+              </List>
               <Image src={cernLogo} size="tiny" href="https://home.cern" />
             </Grid.Column>
           </Grid>

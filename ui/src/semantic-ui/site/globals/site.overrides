@@ -2,12 +2,20 @@
    Site Overrides - CDS ILS
 *******************************/
 
+h2.logo,h3.logo {
+   margin-bottom: 0;
+}
+
 a.logo {
    color: white;
 }
 
-.logo.media-font-size{
-   font-size:inherit;
+a.logo.media-font-size{
+   font-size: inherit;
+}
+
+div.sublogo {
+   font-size: small;
 }
 
 #document-request{
@@ -37,17 +45,17 @@ a.logo {
 }
 
 @media only screen and (max-width: 400px) {
-  .logo.media-font-size {
-     font-size: small;
+  a.logo.media-font-size {
+    font-size: small;
   }
   .truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 @media only screen and (max-width: 340px) {
-  .logo.media-font-size {
+  a.logo.media-font-size {
      font-size: x-small;
   }
 }
