@@ -1,26 +1,24 @@
-import { Loader } from 'semantic-ui-react';
-import { FrontSiteRoutes as CdsFrontSiteRoutes } from '../frontsiteUrls';
 import {
-  NotFound,
-  withCancel,
   FrontSiteRoutes,
+  NotFound,
   recordToPidType,
+  withCancel,
 } from '@inveniosoftware/react-invenio-app-ils';
-import { Route, Redirect } from 'react-router-dom';
-import React from 'react';
-import PropTypes from 'prop-types';
 import _isEmpty from 'lodash/isEmpty';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Redirect, Route } from 'react-router-dom';
+import { Loader } from 'semantic-ui-react';
 import { legacyApi } from '../../../api/legacy/legacy';
+import { FrontSiteRoutes as CdsFrontSiteRoutes } from '../frontsiteUrls';
 
-export const LegacyRecordRoute = ({ ...props }) => {
+export const LegacyRecordRoute = () => {
   return (
-    <>
-      <Route
-        exact
-        path={CdsFrontSiteRoutes.legacyRecordDetails}
-        component={LegacyRecordCmp}
-      />
-    </>
+    <Route
+      exact
+      path={CdsFrontSiteRoutes.legacyRecordDetails}
+      component={LegacyRecordCmp}
+    />
   );
 };
 
