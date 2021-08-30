@@ -23,7 +23,7 @@ on:
         default: 'Manual trigger'
 
 jobs:
-  Tests:
+  Python_Tests:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -79,3 +79,38 @@ jobs:
       - name: Run tests
         run: |
           ./run-tests.sh
+
+  Node_Tests:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js $12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Install & Build
+        working-directory: ./ui
+        run: npm ci
+
+      - name: Lint
+        working-directory: ./ui
+        # CI=false: avoid fail on warnings
+        run: CI=false npm run lint
+
+      # - name: Test
+      #   working-directory: ./ui
+      #   run: npm test
+
+      # - name: Coverage
+      #   working-directory: ./ui
+      #   run: npm test -- --coverage
+
+      - name: Build
+        working-directory: ./ui
+        # CI=false: avoid fail on warnings
+        run: CI=false npm run build
+
