@@ -46,6 +46,7 @@
     "start": "HOST=127.0.0.1 HTTPS=true craco start",
     "build": "craco build",
     "test": "craco test",
+    "lint": "eslint src/",
     "eject": "craco eject",
     "https_start": "HTTPS=true craco start"
   },
