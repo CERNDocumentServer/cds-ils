@@ -98,8 +98,10 @@ jobs:
 
       - name: Lint
         working-directory: ./ui
-        # CI=false: avoid fail on warnings
-        run: CI=false npm run lint
+        run: npm run lint
+        env:
+          # avoid fail on warnings
+          CI: false
 
       # - name: Test
       #   working-directory: ./ui
@@ -111,6 +113,8 @@ jobs:
 
       - name: Build
         working-directory: ./ui
-        # CI=false: avoid fail on warnings
-        run: CI=false npm run build
+        run: npm run build
+        env:
+          # avoid fail on warnings
+          CI: false
 

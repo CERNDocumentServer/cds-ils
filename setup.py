@@ -50,7 +50,9 @@ install_requires = [
     "flask-sqlalchemy>=2.4,<2.5",
     'Flask>=1.0.4,<2.0',
     'Werkzeug>=1.0.1,<2.0',
-    'Jinja2>=2.11,<3'
+    'Jinja2>=2.11,<3',
+    # unsupported ES version issue
+    "elasticsearch>=6.0.0,<7.14",
 ]
 
 packages = find_packages()
