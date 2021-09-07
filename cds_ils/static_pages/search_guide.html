@@ -2,53 +2,53 @@
 
 <h3>Simple search (one or multiple terms)</h3>
 
-<p><strong>Example:</strong> <a href="#"><code>dark matter</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=dark%20matter"><code>dark matter</code></a></p>
 
 <p>Results will match records with the <em>terms</em> <code>dark</code> <em>or</em> <code>matter</code> in <em>any field</em>.
 
 <p>You can require <em>presence</em> of both terms using either the <code>+</code> or <code>AND</code> operator:</p>
 
-<p><strong>Examples:</strong> <a href="#"><code>+dark +matter</code></a> or <a href="#"><code>dark AND matter</code></a></p>
+<p><strong>Examples:</strong> <a href="/search?q=%2Bdark%20%2Bmatter"><code>+dark +matter</code></a> or <a href="/search?q=dark%20AND%20matter"><code>dark AND matter</code></a></p>
 
 <p>You can require <em>absence</em> of one or more terms using either the <code>-</code> or <code>NOT</code> operator:</p>
 
-<p><strong>Examples:</strong> <a href="#"><code>-dark +matter</code></a> or <a href="#"><code>NOT dark AND matter</code></a></p>
+<p><strong>Examples:</strong> <a href="/search?q=-dark%20%2Bmatter"><code>-dark +matter</code></a> or <a href="/search?q=NOT%20dark%20AND%20matter"><code>NOT dark AND matter</code></a></p>
 
 
 <h3 id="phrasesearch">Phrase search</h3>
 
-<p><strong>Example:</strong> <a href="#"><code>"dark matter"</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=%22dark%20matter%22"><code>"dark matter"</code></a></p>
 
 <p>Results will match records with the <em>phrase</em> <code>dark matter</code> in <em>any field</em>.</p>
 
 <h3 id="fieldsearch">Field search</h3>
 
-<p><strong>Example:</strong> <a href="#"><code>title:matter</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=title:matter"><code>title:matter</code></a></p>
 
 <p>Results will match records with the <em>term</em> <code>matter</code> in the <em>field</em> <code>title</code>. If you want to search for multiple terms in the title you must <strong>group the terms</strong> using parenthesis:</p>
 
-<p><strong>Example:</strong> <a href="#"><code>title:(dark matter)</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=title:(dark%20matter)"><code>title:(dark matter)</code></a></p>
 
 <p>See the field reference below for the full list of fields you can search.</p>
 
 <h3 id="combinedsimplephraseorfieldsearch">Combined simple, phrase or field search</h3>
 
-<p><strong>Example:</strong> <a href="#"><code>+title:"dark matter" -title:experiment</code></a> or <a href="#"><code>title:(-dark +matter)</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=%2Btitle:%22dark%20matter%22%20-title:experiment"><code>+title:"dark matter" -title:experiment</code></a> or <a href="/search?q=title:(-dark%20%2Bmatter)"><code>title:(-dark +matter)</code></a></p>
 
 <p>You can combine simple, phrase and field search to construct advanced search queries.</p>
 
 <h3 id="rangesearch">Range search</h3>
 
-<p><strong>Example:</strong> <a href="#"><code>publication_date:[2020 TO 2021]</code></a> (note, you must capitalize <code>TO</code>).</p>
+<p><strong>Example:</strong> <a href="/search?q=publication_info.year:[2020 TO 2021]"><code>publication_info.year:[2020 TO 2021]</code></a> (note, you must capitalize <code>TO</code>).</p>
 
 <p>Results will match any record with a publication date between 2020-01-01 and 2021-12-31 (both dates inclusive).</p>
 
 <p>Examples of other ranges:</p>
 
 <ul>
-<li><code>publication_date:{* TO 2020}</code> - All days until 2020.</li>
+<li><code>publication_info.year:{* TO 2020}</code> - All days until 2020.</li>
 
-<li><code>publication_date:[2020 TO *]</code> - All days from 2020.</li>
+<li><code>publication_info.year:[2020 TO *]</code> - All days from 2020.</li>
 
 </ul>
 
@@ -59,9 +59,9 @@
 <strong>Example:</strong>
 
 <ul>
-<li><a href="#"><code>"9814749133"</code></a> or <a href="#"><code>"9789814749138"</code></a> - ISBN 10 or 13</li>
-<li><a href="#"><code>"10.1016/j.physletb.208020"</code></a> - DOI</li>
-<li><a href="#"><code>"1745-2481"</code></a> - ISSN</li>
+<li><a href="/search?q=9814749133"><code>"9814749133"</code></a> or <a href="/search?q=9789814749138"><code>"9789814749138"</code></a> - ISBN 10 or 13</li>
+<li><a href="/search?q=10.1016\/j.physletb.208020"><code>"10.1016/j.physletb.208020"</code></a> - DOI</li>
+<li><a href="/search?q=1745-2481"><code>"1745-2481"</code></a> - ISSN</li>
 </ul>
 
 <p>Results will match exactly the provided identifier.</p>
@@ -71,8 +71,8 @@
 <strong>Example:</strong>
 
 <ul>
-<li><a href="#"><code>authors.full_name:(Albert Einstein)</code></a> - literature from a specific author</li>
-<li><a href="#"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
+<li><a href="/search?q=authors.full_name:(Albert%20Einstein)"><code>authors.full_name:(Albert Einstein)</code></a> - literature from a specific author</li>
+<li><a href="/search?q=1745-2481"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
 </ul>
 
 <h4>Literature source</h4>
@@ -80,9 +80,9 @@
 <strong>Example:</strong>
 
 <ul>
-<li><a href="#"><code>conference_info.acronym:CHEP AND conference_info.year:2019</code></a> - conference papers from a particular year</li>
-<li><a href="#"><code>publication_info.journal_title: "Journal of High Energy Physics"</code></a> - publications in a journal</li>
-<li><a href="#"><code>imprint.date:2020</code></a> - imprint date, to disambiguate versions</li>
+<li><a href="/search?q=conference_info.acronym:CHEP%20AND%20conference_info.year:2019"><code>conference_info.acronym:CHEP AND conference_info.year:2019</code></a> - conference papers from a particular year</li>
+<li><a href="/search?q=publication_info.journal_title:%22Sci.%20Avenir,%20Hors-sér.%22"><code>publication_info.journal_title: "Sci. Avenir, Hors-sér."</code></a> - publications in a journal</li>
+<li><a href="/search?q=imprint.date:2020"><code>imprint.date:2020</code></a> - imprint date, to disambiguate versions</li>
 </ul>
 
 <h3 id="rankingsorting">Ranking/Sorting</h3>
@@ -104,7 +104,7 @@
 
 <p>You can use the boost operator <code>^</code> when one term is more relevant than another. For instance, you can search for all records with the phrase <em>Dark matter</em> in either <em>title</em> or <em>description</em> field, but rank records with the phrase in the <em>title</em> field higher:</p>
 
-<p><strong>Example:</strong> <a href="#"><code>title:"dark matter"^5 description:"dark matter"</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=title:%22dark%20matter%22^5%20description:%22dark matter%22"><code>title:"dark matter"^5 description:"dark matter"</code></a></p>
 
 <p>Note: <code>^</code> is followed by a positive floating point number specifying the boost value compared to the default 1.
 
@@ -112,7 +112,7 @@
 
 <p>You can search for terms similar to but not exactly like your search term using the fuzzy operator <code>~</code>.</p>
 
-<p><strong>Example:</strong> <a href="#"><code>drak~</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=drak~"><code>drak~</code></a></p>
 
 <p>Results will match records with terms similar to <code>drak</code> which would e.g. also match <code>dark</code>.</p>
 
@@ -120,13 +120,13 @@
 
 <p>A phrase search like <code>"collision theory"</code> by default expect all terms in exactly the same order, and thus for instance would not match the record entitled <em>"Quantum collision theory"</em>, but not the record <em>"Theory of heavy ion collision physics in hadron therapy"</em>. A proximity search allows that the terms are not in the exact order and may include other terms inbetween. The degree of flexiblity is specified by an integer afterwards:</p>
 
-<p><strong>Example:</strong> <a href="#"><code>"collision theory"~10</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=%22collision%20theory%22~10"><code>"collision theory"~10</code></a></p>
 
 <h4 id="wildcards">Wildcards</h4>
 
 <p>You can use wildcards in search terms to replace a single character (using <code>?</code> operator) or zero or more characters (using <code>*</code> operator).</p>
 
-<p><strong>Example:</strong> <a href="#"><code>title:(crab cavit*)</code></a></p>
+<p><strong>Example:</strong> <a href="/search?q=title:(crab%20cavit*)"><code>title:(crab cavit*)</code></a></p>
 
 The result will match the literature with title referring to cavities also in languages other than english.
 
