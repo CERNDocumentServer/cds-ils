@@ -23,7 +23,7 @@ from cds_ils.migrator.relations.api import create_parent_child_relation
 from cds_ils.migrator.series.api import clean_document_json_for_multipart, \
     exclude_multipart_fields, get_multipart_by_multipart_id, \
     replace_fields_in_volume
-from cds_ils.migrator.utils import add_cds_url
+from cds_ils.importer.providers.cds.utils import add_cds_url
 
 
 def import_multivolume(json_record):

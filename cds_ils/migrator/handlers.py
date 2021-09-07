@@ -12,7 +12,8 @@ import logging
 from copy import deepcopy
 
 import click
-from invenio_app_ils.errors import IlsValidationError, RecordRelationsError
+from invenio_app_ils.errors import IlsValidationError, RecordRelationsError, \
+    VocabularyError
 from invenio_pidstore.errors import PIDAlreadyExists, PIDDoesNotExistError
 
 from cds_ils.importer.errors import ManualImportRequired
@@ -21,7 +22,7 @@ from cds_ils.migrator.errors import AcqOrderError, DocumentMigrationError, \
     DumpRevisionException, EItemMigrationError, FileMigrationError, \
     ItemMigrationError, JSONConversionException, LoanMigrationError, \
     LossyConversion, ProviderError, RelationMigrationError, \
-    SeriesMigrationError, VocabularyError
+    SeriesMigrationError
 from cds_ils.migrator.utils import get_legacy_pid_type_by_provider, \
     model_provider_by_rectype
 

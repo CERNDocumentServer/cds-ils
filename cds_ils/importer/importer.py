@@ -8,6 +8,7 @@
 """CDS-ILS Importer module."""
 import time
 
+import pkg_resources
 from flask import current_app
 from invenio_app_ils.errors import RecordHasReferencesError
 from invenio_app_ils.proxies import current_app_ils
@@ -48,7 +49,8 @@ class Importer(object):
         ]["priority"]
 
         eitem_json_data = self._extract_eitems_json()
-        self.document_importer = DocumentImporter(
+        document_importer_class = self.get_document_importer(metadata_provider)
+        self.document_importer = document_importer_class(
             json_data,
             self.HELPER_METADATA_FIELDS,
             metadata_provider,
@@ -74,6 +76,14 @@ class Importer(object):
         self.series_list = []
         self.eitem_summary = {}
         self.fuzzy_matches = []
+
+    def get_document_importer(self, provider, default=DocumentImporter):
+        try:
+            return pkg_resources.load_entry_point(
+                "cds-ils", "cds_ils.document_importers", provider
+            )
+        except Exception:
+            return default
 
     def _validate_provider(self):
         """Check if the chosen provider is matching the import data."""
