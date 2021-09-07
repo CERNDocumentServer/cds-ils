@@ -21,8 +21,8 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.importer.documents.importer import VOCABULARIES_FIELDS
-from cds_ils.importer.providers.cds.utils import \
-    add_title_from_conference_info, add_cds_url
+from cds_ils.importer.providers.cds.utils import add_cds_url, \
+    add_title_from_conference_info
 from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
 from cds_ils.literature.api import get_record_by_legacy_recid

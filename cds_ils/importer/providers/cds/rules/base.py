@@ -91,6 +91,8 @@ def created(self, key, value):
             date_values = clean_val(
                 "w", value, int, regex_format=r"^\d{6}$", multiple_values=True
             )
+            if not date_values:
+                return datetime.date.today().isoformat()
             if type(date_values) is list:
                 date = min(date_values)
             else:

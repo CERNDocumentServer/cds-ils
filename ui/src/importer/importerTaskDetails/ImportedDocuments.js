@@ -3,21 +3,21 @@ import PropTypes from 'prop-types';
 import {
   Button,
   Divider,
-  Header,
   Icon,
   Message,
   Pagination,
   Table,
+  Segment,
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
+import _isNull from 'lodash/isNull';
 import _get from 'lodash/get';
-import _uniqWith from 'lodash/uniqWith';
+import _unionWith from 'lodash/unionWith';
 import isEqual from 'lodash/isEqual';
 import { CancelImportTask } from './cancelImportTask';
 import { EitemImportDetailsModal } from '../EitemImportDetailsModal';
 import { SeriesImportDetailsModal } from '../SeriesImportDetailsModal';
 import { JsonViewModal } from '../JsonViewModal';
-import { modeFormatter } from '../ImporterList';
 import { ImportedDocumentReport } from './ImportedDocumentReport';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
 import { Link } from 'react-router-dom';
@@ -31,8 +31,10 @@ export class ImportedDocuments extends React.Component {
     this.state = {
       importCompleted: false,
       data: null,
+      importedRecords: [],
       isLoading: true,
       activePage: 1,
+      statistics: [],
     };
   }
 
@@ -50,14 +52,20 @@ export class ImportedDocuments extends React.Component {
   };
 
   checkForData = async () => {
-    const { importCompleted, data } = this.state;
+    const { importCompleted, data, importedRecords } = this.state;
     const { taskId } = this.props;
     if (!importCompleted) {
       const nextEntry = _get(data, 'loaded_entries', 0);
       const response = await importerApi.check(taskId, nextEntry);
       const responseData = response.data;
+
       if (responseData) {
-        responseData.records = _get(responseData, 'records', []);
+        const updatedRecordsList = _unionWith([
+          importedRecords,
+          _get(responseData, 'records', []),
+          isEqual,
+        ]);
+        this.setState({ importedRecords: updatedRecordsList });
       }
       if (response.data.status !== 'RUNNING') {
         this.setState({
@@ -71,9 +79,47 @@ export class ImportedDocuments extends React.Component {
           isLoading: true,
         });
       }
+      console.log(response.data);
+      this.calculateStatistics(response.data);
     } else {
       this.intervalId && clearInterval(this.intervalId);
     }
+  };
+
+  calculateStatistics = data => {
+    const importStatistics = [];
+    importStatistics.push({
+      text: 'Mode',
+      value: data.mode,
+      size: 'mini',
+    });
+    importStatistics.push({
+      text: 'Records',
+      value: data.loaded_entries + '/' + data.entries_count,
+    });
+    importStatistics.push({
+      text: 'Records created',
+      value: data.records.filter(record => record.action == 'create').length,
+    });
+    importStatistics.push({
+      text: 'Records updated',
+      value: data.records.filter(record => record.action == 'update').length,
+    });
+    importStatistics.push({
+      text: 'Records with errors',
+      value: data.records.filter(record => _isNull(record.action)).length,
+    });
+    importStatistics.push({
+      text: 'Records with eItem',
+      value: data.records.filter(record => !_isNull(record.eitem)).length,
+    });
+    importStatistics.push({
+      text: 'Records with Serials',
+      value: data.records.filter(record => !_isEmpty(record.series)).length,
+    });
+    this.setState({
+      statistics: importStatistics,
+    });
   };
 
   renderErrorMessage = () => {
@@ -137,6 +183,25 @@ export class ImportedDocuments extends React.Component {
   };
 
   handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
+
+  renderStatistics = () => {
+    const { statistics } = this.state;
+
+    return (
+      <>
+        <div className="ui seven statistics">
+          {statistics.map(function(statistic, index) {
+            return (
+              <div key={index} className="statistic">
+                <div className="value">{statistic.value}</div>
+                <div className="label">{statistic.text}</div>
+              </div>
+            );
+          })}
+        </div>
+      </>
+    );
+  };
 
   renderResultsContent = () => {
     const { data, activePage } = this.state;
@@ -237,29 +302,26 @@ export class ImportedDocuments extends React.Component {
   };
 
   render() {
-    const { data } = this.state;
+    const { data, importedRecords, statistics } = this.state;
     return (
       <>
         {this.renderImportReportHeader()}
         {!_isEmpty(data) && data.status !== 'FAILED' ? (
           <>
-            <Header as="h3">Import report</Header>
-            {modeFormatter(data.mode)}{' '}
-            {!_isEmpty(data) ? (
-              (data.loaded_entries || data.loaded_entries === 0) &&
-              data.entries_count ? (
-                <span>
-                  {'Processed ' +
-                    data.loaded_entries +
-                    ' records out of ' +
-                    data.entries_count +
-                    '.'}
-                </span>
-              ) : (
-                <span>Processing file...</span>
-              )
-            ) : null}
-            {!_isEmpty(data.records) ? this.renderResultsContent() : null}
+            <Segment>
+              {!_isEmpty(data) ? (
+                (data.loaded_entries || data.loaded_entries === 0) &&
+                data.entries_count ? (
+                  <div>
+                    {_isEmpty(statistics.length) && this.renderStatistics()}
+                  </div>
+                ) : (
+                  <span>Processing file...</span>
+                )
+              ) : null}
+            </Segment>
+
+            {!_isEmpty(importedRecords) ? this.renderResultsContent() : null}
           </>
         ) : !_isEmpty(data) && data.status === 'FAILED' ? (
           this.renderErrorMessage(data)

@@ -8,6 +8,7 @@
 
 """CDS Importer Records utils."""
 
+
 def add_title_from_conference_info(json_data):
     """Use the conference info to add a title if it doesn't exist."""
     if (
