@@ -25,8 +25,7 @@ from cds_ils.importer.vocabularies_validator import \
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.series.api import serial_already_exists
-from cds_ils.migrator.utils import add_cover_metadata, \
-    clean_created_by_field
+from cds_ils.migrator.utils import add_cover_metadata, clean_created_by_field
 from cds_ils.minters import legacy_recid_minter
 
 cli_logger = logging.getLogger("migrator")

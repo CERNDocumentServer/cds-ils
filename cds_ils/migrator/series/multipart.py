@@ -16,6 +16,7 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDDoesNotExistError
 
 from cds_ils.importer.errors import ManualImportRequired
+from cds_ils.importer.providers.cds.utils import add_cds_url
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import MultipartMigrationError
@@ -23,7 +24,6 @@ from cds_ils.migrator.relations.api import create_parent_child_relation
 from cds_ils.migrator.series.api import clean_document_json_for_multipart, \
     exclude_multipart_fields, get_multipart_by_multipart_id, \
     replace_fields_in_volume
-from cds_ils.importer.providers.cds.utils import add_cds_url
 
 
 def import_multivolume(json_record):

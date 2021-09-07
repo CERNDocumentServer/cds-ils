@@ -37,7 +37,7 @@ install_requires = [
     "uwsgi-tools>=1.1.1",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a47",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a48",
     "invenio-assets>=1.2.6",
     "invenio-base>=1.2.4",
     "sentry-sdk>=0.10.2",

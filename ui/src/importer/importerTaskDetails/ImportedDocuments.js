@@ -11,8 +11,6 @@ import {
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
-import _uniqWith from 'lodash/uniqWith';
-import isEqual from 'lodash/isEqual';
 import { CancelImportTask } from './cancelImportTask';
 import { EitemImportDetailsModal } from '../EitemImportDetailsModal';
 import { SeriesImportDetailsModal } from '../SeriesImportDetailsModal';
@@ -55,10 +53,6 @@ export class ImportedDocuments extends React.Component {
     if (!importCompleted) {
       const nextEntry = _get(data, 'loaded_entries', 0);
       const response = await importerApi.check(taskId, nextEntry);
-      const responseData = response.data;
-      if (responseData) {
-        responseData.records = _get(responseData, 'records', []);
-      }
       if (response.data.status !== 'RUNNING') {
         this.setState({
           importCompleted: true,
