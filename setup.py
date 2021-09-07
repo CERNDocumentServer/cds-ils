@@ -129,6 +129,9 @@ setup(
             "ebl = cds_ils.importer.providers.ebl.importer:EBLImporter",
             "safari = cds_ils.importer.providers.safari.importer:SafariImporter",
         ],
+        "cds_ils.document_importers": [
+            "cds = cds_ils.importer.providers.cds.document_importer:CDSDocumentImporter",
+        ],
         "cds_ils.importer.base": [
             "base = cds_ils.importer.providers.rules.base",
         ],

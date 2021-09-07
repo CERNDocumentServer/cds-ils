@@ -1,9 +1,9 @@
 from copy import deepcopy
 
 import pytest
+from invenio_app_ils.errors import VocabularyError
 
 from cds_ils.importer.vocabularies_validator import Validator
-from cds_ils.migrator.errors import VocabularyError
 
 VOCABULARIES_FIELDS = {
     "field1": {

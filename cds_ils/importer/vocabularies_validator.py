@@ -12,9 +12,8 @@ import json
 import os
 import pathlib
 
+from invenio_app_ils.errors import VocabularyError
 from invenio_app_ils.proxies import current_app_ils
-
-from cds_ils.migrator.errors import VocabularyError
 
 CURRENT_DIR = pathlib.Path(__file__).parent.absolute()
 

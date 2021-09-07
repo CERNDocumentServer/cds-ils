@@ -10,7 +10,8 @@
 import uuid
 
 from flask import current_app
-from invenio_app_ils.errors import IlsValidationError, RecordHasReferencesError
+from invenio_app_ils.errors import IlsValidationError, \
+    RecordHasReferencesError, VocabularyError
 from invenio_db import db
 
 from cds_ils.importer.errors import LossyConversion, \
@@ -96,7 +97,8 @@ def import_from_xml(log, source_path, source_type, provider, mode,
                 except (RecordNotDeletable,
                         ProviderNotAllowedDeletion,
                         SeriesImportError,
-                        RecordHasReferencesError, UnknownProvider) as e:
+                        RecordHasReferencesError, UnknownProvider,
+                        VocabularyError) as e:
                     ImportRecordLog.create_failure(
                         log.id, record_recid,
                         str(e.description), report={"raw_json": json_data})
