@@ -1,8 +1,14 @@
-from copy import deepcopy
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2021 CERN.
+#
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
 
+"""CDS-ILS Document Importer module."""
 from cds_ils.importer.documents.importer import DocumentImporter
-from cds_ils.importer.providers.cds.utils import \
-    add_title_from_conference_info, add_cds_url
+from cds_ils.importer.providers.cds.utils import add_cds_url, \
+    add_title_from_conference_info
 
 
 class CDSDocumentImporter(DocumentImporter):

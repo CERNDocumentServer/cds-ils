@@ -32,7 +32,7 @@ from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.importer.providers.cds.models.document import model
 from cds_ils.importer.providers.cds.rules.values_mapping import MATERIALS, \
     mapping
-from cds_ils.migrator.utils import add_title_from_conference_info
+from cds_ils.importer.providers.cds.utils import add_title_from_conference_info
 
 marcxml = (
     """<collection xmlns="http://www.loc.gov/MARC21/slim">"""

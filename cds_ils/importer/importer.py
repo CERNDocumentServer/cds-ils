@@ -78,6 +78,7 @@ class Importer(object):
         self.fuzzy_matches = []
 
     def get_document_importer(self, provider, default=DocumentImporter):
+        """Determine which document importer to use."""
         try:
             return pkg_resources.load_entry_point(
                 "cds-ils", "cds_ils.document_importers", provider

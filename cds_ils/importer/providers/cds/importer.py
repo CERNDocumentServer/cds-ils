@@ -12,8 +12,6 @@ from invenio_pidstore.errors import PersistentIdentifierError, \
     PIDDoesNotExistError
 
 from cds_ils.importer.importer import Importer
-from cds_ils.importer.providers.cds.utils import \
-    add_title_from_conference_info, add_cds_url
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.minters import legacy_recid_minter
 

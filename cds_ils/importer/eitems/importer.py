@@ -48,7 +48,6 @@ class EItemImporter(object):
         self.deleted_list = []
 
     def _get_record_import_provider(self, record):
-        """Get provider of the record."""
         """Get an import provider of a given document."""
         is_imported = record["created_by"]["type"] == "import"
         if is_imported:
