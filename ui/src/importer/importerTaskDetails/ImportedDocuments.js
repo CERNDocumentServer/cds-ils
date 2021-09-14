@@ -31,7 +31,6 @@ export class ImportedDocuments extends React.Component {
     this.state = {
       importCompleted: false,
       data: null,
-      importedRecords: [],
       isLoading: true,
       activePage: 1,
       statistics: [],
@@ -52,7 +51,7 @@ export class ImportedDocuments extends React.Component {
   };
 
   checkForData = async () => {
-    const { importCompleted, data, importedRecords } = this.state;
+    const { importCompleted, data } = this.state;
     const { taskId } = this.props;
     if (!importCompleted) {
       const nextEntry = _get(data, 'loaded_entries', 0);
@@ -60,12 +59,7 @@ export class ImportedDocuments extends React.Component {
       const responseData = response.data;
 
       if (responseData) {
-        const updatedRecordsList = _unionWith([
-          importedRecords,
-          _get(responseData, 'records', []),
-          isEqual,
-        ]);
-        this.setState({ importedRecords: updatedRecordsList });
+        responseData.records = _get(responseData, 'records', []);
       }
       if (response.data.status !== 'RUNNING') {
         this.setState({
@@ -79,7 +73,6 @@ export class ImportedDocuments extends React.Component {
           isLoading: true,
         });
       }
-      console.log(response.data);
       this.calculateStatistics(response.data);
     } else {
       this.intervalId && clearInterval(this.intervalId);
@@ -302,7 +295,7 @@ export class ImportedDocuments extends React.Component {
   };
 
   render() {
-    const { data, importedRecords, statistics } = this.state;
+    const { data, statistics } = this.state;
     return (
       <>
         {this.renderImportReportHeader()}
@@ -321,7 +314,7 @@ export class ImportedDocuments extends React.Component {
               ) : null}
             </Segment>
 
-            {!_isEmpty(importedRecords) ? this.renderResultsContent() : null}
+            {!_isEmpty(data.records) ? this.renderResultsContent() : null}
           </>
         ) : !_isEmpty(data) && data.status === 'FAILED' ? (
           this.renderErrorMessage(data)
