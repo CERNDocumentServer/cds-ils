@@ -13,7 +13,7 @@ Babel==2.9.0
 backcall==0.2.0
 base32-lib==1.0.2
 billiard==3.6.3.0
-bleach==3.2.1
+bleach==4.1.0
 blinker==1.4
 cachelib==0.1.1
 cds-dojson==0.9.0
@@ -26,7 +26,7 @@ click-default-group==1.2.2
 click-didyoumean==0.0.3
 click-repl==0.1.6
 counter-robots==2018.6
-cryptography==3.2.1
+cryptography==3.4.8
 decorator==4.4.2
 dnspython==2.0.0
 dojson==1.4.0
@@ -108,7 +108,7 @@ ipython==7.16.1
 ipython-genutils==0.2.0
 itsdangerous==1.1.0
 jedi==0.17.2
-Jinja2==2.11.2
+Jinja2==2.11.3
 jsmin==2.2.2
 jsonpatch==1.26
 jsonpointer==2.0
@@ -118,7 +118,7 @@ jsonschema==3.2.0
 kombu==5.0.2
 limits==1.5.1
 lorem==0.1.1
-lxml==4.6.1
+lxml==4.6.3
 Mako==1.1.3
 MarkupSafe==1.1.1
 marshmallow==3.9.1
@@ -141,7 +141,7 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycountry==20.7.3
 pycparser==2.20
-Pygments==2.7.2
+Pygments==2.10.0
 PyJWT==1.7.1
 pynpm==0.1.2
 pyparsing==2.4.7
@@ -154,7 +154,7 @@ python-geoip==1.2
 python-ldap==3.2.0
 pytz==2020.4
 pywebpack==1.1.0
-PyYAML==5.3.1
+PyYAML==5.4.1
 redis==3.5.3
 requests==2.25.0
 requests-oauthlib==1.1.0
@@ -169,7 +169,7 @@ SQLAlchemy-Utils==0.35.0
 traitlets==4.3.3
 ua-parser==0.10.0
 uritools==3.0.0
-urllib3==1.26.2
+urllib3==1.26.6
 uWSGI==2.0.19.1
 uwsgi-tools==1.1.1
 uwsgitop==0.11

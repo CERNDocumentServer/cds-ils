@@ -59,6 +59,7 @@ class EItemImporter(object):
             "type": "import",
             "value": self.metadata_provider,
         }
+        record_dict["source"] = self.metadata_provider
 
     def _should_replace_eitem(self, eitem):
         """Replace the eitems with higher priority providers."""
@@ -142,11 +143,6 @@ class EItemImporter(object):
                 document_pid=document_pid,
                 open_access=self.open_access,
                 identifiers=dois,
-                created_by={
-                    "type": "import",
-                    "value": self.metadata_provider,
-                },
-                source=self.metadata_provider,
                 urls=self.eitem_json.get("urls", []),
                 description=self.eitem_json.get("description", ""),
             )
