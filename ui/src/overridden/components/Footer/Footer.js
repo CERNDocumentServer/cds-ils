@@ -84,7 +84,7 @@ export const Footer = ({ ...props }) => {
                 </List.Item>
                 <List.Item>
                   <a
-                    href="https://cern.ch/cds-blog"
+                    href="https://cds-blog.web.cern.ch"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
