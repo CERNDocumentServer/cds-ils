@@ -39,16 +39,16 @@
 
 <h3 id="rangesearch">Range search</h3>
 
-<p><strong>Example:</strong> <a href="/search?q=publication_info.year:[2020 TO 2021]"><code>publication_info.year:[2020 TO 2021]</code></a> (note, you must capitalize <code>TO</code>).</p>
+<p><strong>Example:</strong> <a href="/search?q=publication_year:[2020 TO 2021]"><code>publication_year:[2020 TO 2021]</code></a> (note, you must capitalize <code>TO</code>).</p>
 
 <p>Results will match any record with a publication date between 2020-01-01 and 2021-12-31 (both dates inclusive).</p>
 
 <p>Examples of other ranges:</p>
 
 <ul>
-<li><code>publication_info.year:{* TO 2020}</code> - All days until 2020.</li>
+<li><code>publication_year:{* TO 2020}</code> - All days until 2020.</li>
 
-<li><code>publication_info.year:[2020 TO *]</code> - All days from 2020.</li>
+<li><code>publication_year:[2020 TO *]</code> - All days from 2020.</li>
 
 </ul>
 
@@ -74,7 +74,7 @@
 <ul>
 <li><a href="/search?q=authors.full_name:(Albert%20Einstein)"><code>authors.full_name:(Albert Einstein)</code></a> - literature from a specific author</li>
 <li><a href="/search?q=1745-2481"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
-  <li><a href="#"><code>full_name.keyword: /Otto, .+/</code></a> - Look for authors whose last name is Otto</li>
+  <li><a href="/search?q=full_name.keyword: /Otto, .+/"><code>full_name.keyword: /Otto, .+/</code></a> - Look for authors whose last name is Otto</li>
 </ul>
 
 <h4>Literature source</h4>
