@@ -39,16 +39,16 @@
 
 <h3 id="rangesearch">Range search</h3>
 
-<p><strong>Example:</strong> <a href="#"><code>publication_date:[2020 TO 2021]</code></a> (note, you must capitalize <code>TO</code>).</p>
+<p><strong>Example:</strong> <a href="#"><code>publication_year:[2020 TO 2021]</code></a> (note, you must capitalize <code>TO</code>).</p>
 
 <p>Results will match any record with a publication date between 2020-01-01 and 2021-12-31 (both dates inclusive).</p>
 
 <p>Examples of other ranges:</p>
 
 <ul>
-<li><code>publication_date:{* TO 2020}</code> - All days until 2020.</li>
+<li><code>publication_year:{* TO 2020}</code> - All days until 2020.</li>
 
-<li><code>publication_date:[2020 TO *]</code> - All days from 2020.</li>
+<li><code>publication_year:[2020 TO *]</code> - All days from 2020.</li>
 
 </ul>
 
@@ -62,6 +62,7 @@
 <li><a href="#"><code>"9814749133"</code></a> or <a href="#"><code>"9789814749138"</code></a> - ISBN 10 or 13</li>
 <li><a href="#"><code>"10.1016/j.physletb.208020"</code></a> - DOI</li>
 <li><a href="#"><code>"1745-2481"</code></a> - ISSN</li>
+  <li><a href="#"><code>"NF-EN-81-80”</code></a> - Standard number</li>
 </ul>
 
 <p>Results will match exactly the provided identifier.</p>
@@ -73,6 +74,7 @@
 <ul>
 <li><a href="#"><code>authors.full_name:(Albert Einstein)</code></a> - literature from a specific author</li>
 <li><a href="#"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
+  <li><a href="#"><code>full_name.keyword: /Otto, .+/</code></a> - Look for authors whose last name is Otto</li>
 </ul>
 
 <h4>Literature source</h4>
@@ -80,9 +82,9 @@
 <strong>Example:</strong>
 
 <ul>
-<li><a href="#"><code>conference_info.acronym:CHEP AND conference_info.year:2019</code></a> - conference papers from a particular year</li>
-<li><a href="#"><code>publication_info.journal_title: "Journal of High Energy Physics"</code></a> - publications in a journal</li>
-<li><a href="#"><code>imprint.date:2020</code></a> - imprint date, to disambiguate versions</li>
+<li><a href="#"><code>conference_info.acronym:(CHEP*) AND conference_info.year:2019</code></a> - conference papers from a particular year</li>
+<li><a href="#"><code>publication_info.journal_title: "Nucl. Instrum. Methods Phys. Res., A"</code></a> - publications in a journal</li>
+<li><a href="#"><code>publication_year:2020</code></a> - publication year to disambiguate versions</li>
 </ul>
 
 <h3 id="rankingsorting">Ranking/Sorting</h3>
