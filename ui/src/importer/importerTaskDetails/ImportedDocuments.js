@@ -5,19 +5,15 @@ import {
   Divider,
   Icon,
   Message,
-  Pagination,
-  Table,
   Segment,
   Statistic,
+  Label,
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _isNull from 'lodash/isNull';
 import _get from 'lodash/get';
 import { CancelImportTask } from './cancelImportTask';
-import { EitemImportDetailsModal } from '../EitemImportDetailsModal';
-import { SeriesImportDetailsModal } from '../SeriesImportDetailsModal';
-import { JsonViewModal } from '../JsonViewModal';
-import { ImportedDocumentReport } from './ImportedDocumentReport';
+import { ImportedTable } from './ImportedTable';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
 import { Link } from 'react-router-dom';
 import { importerApi } from '../../api/importer';
@@ -26,12 +22,11 @@ import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
 export class ImportedDocuments extends React.Component {
   constructor(props) {
     super(props);
-    this.pageSize = 100;
     this.state = {
       importCompleted: false,
       data: null,
+      filteredRecords: [],
       isLoading: true,
-      activePage: 1,
       statistics: [],
     };
   }
@@ -65,11 +60,13 @@ export class ImportedDocuments extends React.Component {
           importCompleted: true,
           isLoading: false,
           data: response.data,
+          filteredRecords: response.data.records,
         });
       } else {
         this.setState({
-          data: response.data,
           isLoading: true,
+          data: response.data,
+          filteredRecords: response.data.records,
         });
       }
       this.calculateStatistics(response.data);
@@ -82,36 +79,54 @@ export class ImportedDocuments extends React.Component {
     const importStatistics = [];
     importStatistics.push({
       text: 'Mode',
-      value: <div className="ui label">{data.mode}</div>,
+      value: <Label>{data.mode}</Label>,
     });
     importStatistics.push({
       text: 'Records',
       value: data.loaded_entries + '/' + data.entries_count,
+      filter: 'Reset Filter',
+      fnc: a => a,
     });
     importStatistics.push({
       text: 'Records created',
       value: data.records.filter(record => record.action === 'create').length,
+      filter: 'Filter',
+      fnc: a => a.action === 'create',
     });
     importStatistics.push({
       text: 'Records updated',
       value: data.records.filter(record => record.action === 'update').length,
+      filter: 'Filter',
+      fnc: a => a.action === 'update',
     });
     importStatistics.push({
       text: 'Records with errors',
       value: data.records.filter(record => _isNull(record.action)).length,
+      filter: 'Filter',
+      fnc: a => _isNull(a.action),
     });
     importStatistics.push({
       text: 'Records with eItem',
       value: data.records.filter(record => !_isNull(record.eitem)).length,
+      filter: 'Filter',
+      fnc: a => !_isNull(a.eitem),
     });
     importStatistics.push({
       text: 'Records with Serials',
       value: data.records.filter(record => !_isEmpty(record.series)).length,
+      filter: 'Filter',
+      fnc: a => !_isEmpty(a.series),
     });
     this.setState({
       statistics: importStatistics,
     });
   };
+
+  filterResults(fnc) {
+    const { data } = this.state;
+    const newFilteredRecords = data.records.filter(record => fnc(record));
+    this.setState({ filteredRecords: newFilteredRecords });
+  }
 
   renderErrorMessage = () => {
     return (
@@ -173,8 +188,6 @@ export class ImportedDocuments extends React.Component {
     );
   };
 
-  handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
-
   renderStatistics = () => {
     const { statistics } = this.state;
 
@@ -185,95 +198,15 @@ export class ImportedDocuments extends React.Component {
             <Statistic key={statistic.text}>
               <Statistic.Value>{statistic.value}</Statistic.Value>
               <Statistic.Label>{statistic.text}</Statistic.Label>
+              {statistic.filter && (
+                <Button onClick={() => this.filterResults(statistic.fnc)}>
+                  {statistic.filter}
+                </Button>
+              )}
             </Statistic>
           );
-        })}
+        }, this)}
       </Statistic.Group>
-    );
-  };
-
-  renderResultsContent = () => {
-    const { data, activePage } = this.state;
-    return (
-      <>
-        <Table styled="true" fluid="true" striped celled structured width={16}>
-          <Table.Header className="sticky-table-header">
-            <Table.Row>
-              <Table.HeaderCell collapsing rowSpan="3" textAlign="center">
-                No
-              </Table.HeaderCell>
-              <Table.HeaderCell width="5" rowSpan="3">
-                Title [Provider recid]
-              </Table.HeaderCell>
-
-              <Table.HeaderCell collapsing rowSpan="3">
-                Action
-              </Table.HeaderCell>
-              <Table.HeaderCell collapsing rowSpan="3">
-                Output document
-              </Table.HeaderCell>
-              <Table.HeaderCell collapsing colSpan="4">
-                Dependent records
-              </Table.HeaderCell>
-              <Table.HeaderCell collapsing rowSpan="3">
-                Partial matches
-              </Table.HeaderCell>
-              <Table.HeaderCell collapsing rowSpan="3">
-                Error
-              </Table.HeaderCell>
-            </Table.Row>
-            <Table.Row>
-              <Table.HeaderCell collapsing colSpan="2">
-                E-item
-              </Table.HeaderCell>
-              <Table.HeaderCell collapsing colSpan="2">
-                Serials
-              </Table.HeaderCell>
-            </Table.Row>
-            <Table.Row>
-              <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
-              <Table.HeaderCell collapsing>Action and details</Table.HeaderCell>
-              <Table.HeaderCell collapsing>Detected</Table.HeaderCell>
-              <Table.HeaderCell collapsing>Details</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {data.records
-              .slice(
-                activePage * this.pageSize - this.pageSize,
-                activePage * this.pageSize
-              )
-              .map((elem, index) => {
-                return (
-                  !_isEmpty(elem) && (
-                    <ImportedDocumentReport
-                      key={elem.output_pid}
-                      documentReport={elem}
-                      listIndex={index + (activePage - 1) * this.pageSize + 1}
-                    />
-                  )
-                );
-              })}
-          </Table.Body>
-
-          <Table.Footer>
-            <Table.Row>
-              <Table.HeaderCell colSpan="10">
-                <Pagination
-                  defaultActivePage={1}
-                  totalPages={Math.ceil(data.records.length / this.pageSize)}
-                  activePage={activePage}
-                  onPageChange={this.handlePaginationChange}
-                  floated="right"
-                />
-              </Table.HeaderCell>
-            </Table.Row>
-          </Table.Footer>
-        </Table>
-        <JsonViewModal />
-        <SeriesImportDetailsModal />
-        <EitemImportDetailsModal />
-      </>
     );
   };
 
@@ -286,7 +219,7 @@ export class ImportedDocuments extends React.Component {
   };
 
   render() {
-    const { data, statistics } = this.state;
+    const { data, filteredRecords, statistics } = this.state;
     return (
       <>
         {this.renderImportReportHeader()}
@@ -304,8 +237,9 @@ export class ImportedDocuments extends React.Component {
                 )
               ) : null}
             </Segment>
-
-            {!_isEmpty(data.records) ? this.renderResultsContent() : null}
+            {!_isEmpty(data.records) ? (
+              <ImportedTable records={filteredRecords} />
+            ) : null}
           </>
         ) : !_isEmpty(data) && data.status === 'FAILED' ? (
           this.renderErrorMessage(data)
