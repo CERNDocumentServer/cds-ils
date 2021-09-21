@@ -25,7 +25,8 @@ from cds_ils.ldap.client import LdapClient
 from cds_ils.ldap.serializers import InvenioUser, serialize_ldap_user, \
     user_exists
 from cds_ils.ldap.user_importer import LdapUserImporter
-from cds_ils.mail.tasks import send_warning_mail_patron_has_active_loans
+from cds_ils.notifications.tasks import \
+    send_warning_notification_patron_has_active_loans
 
 
 def import_users():
@@ -67,7 +68,8 @@ def _delete_invenio_user(user_id):
         anonymize_patron_data(user_id)
         return True
     except AnonymizationActiveLoansError:
-        send_warning_mail_patron_has_active_loans.apply_async((user_id,))
+        send_warning_notification_patron_has_active_loans.apply_async(
+            (user_id,))
         return False
 
 

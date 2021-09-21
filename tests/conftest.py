@@ -8,8 +8,13 @@
 """Common pytest fixtures and plugins."""
 from __future__ import absolute_import, print_function
 
+import os
+
+import jinja2
 import pytest
-from invenio_access import ActionRoles, superuser_access
+from flask import Blueprint
+from invenio_access.models import ActionRoles
+from invenio_access.permissions import superuser_access
 from invenio_accounts.models import Role, User
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
@@ -212,3 +217,25 @@ def testdata(app, db, es_clear, patrons):
         "locations": locations,
         "series": series,
     }
+
+
+@pytest.fixture(scope="module")
+def app_with_notifs(app):
+    """App with notifications test templates."""
+    app.register_blueprint(
+        Blueprint(
+            "invenio_app_ils_tests", __name__, template_folder="templates"
+        )
+    )
+    # add extra test templates to the search app blueprint, to fake the
+    # existence of `invenio-theme` base templates.
+    test_templates_path = os.path.join(os.path.dirname(__file__), "templates")
+    enhanced_jinja_loader = jinja2.ChoiceLoader(
+        [
+            app.jinja_loader,
+            jinja2.FileSystemLoader(test_templates_path),
+        ]
+    )
+    # override default app jinja_loader to add the new path
+    app.jinja_loader = enhanced_jinja_loader
+    yield app

@@ -28,7 +28,8 @@ class CdsIls(object):
         )
         app.register_blueprint(
             Blueprint(
-                "cds_ils_mail", __name__, template_folder="mail/templates"
+                "cds_ils_notifications", __name__,
+                template_folder="notifications/templates"
             )
         )
 
