@@ -46,6 +46,9 @@ from invenio_records_rest.utils import deny_all
 from marshmallow.fields import Bool, List
 
 from .circulation.utils import circulation_cds_extension_max_count
+from .document_requests.notifications.filters import \
+    document_requests_notifications_filter
+from .ill.notifications.filters import ill_notifications_filter
 from .literature.covers import build_cover_urls
 from .patrons.api import AnonymousPatron, Patron
 from .patrons.indexer import PatronIndexer
@@ -420,7 +423,7 @@ ILS_LITERATURE_COVER_URLS_BUILDER = build_cover_urls
 ILS_CIRCULATION_LOAN_WILL_EXPIRE_DAYS = 3
 
 #: Notification email for overdue loan sent automatically every X days
-ILS_CIRCULATION_MAIL_OVERDUE_REMINDER_INTERVAL = 7
+ILS_CIRCULATION_NOTIFICATION_OVERDUE_REMINDER_INTERVAL = 7
 
 #: The maximum duration of a loan request
 ILS_CIRCULATION_LOAN_REQUEST_DURATION_DAYS = 120
@@ -481,7 +484,7 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
     },
 }
 
-ILS_CIRCULATION_MAIL_TEMPLATES = {
+ILS_NOTIFICATIONS_TEMPLATES_CIRCULATION = {
     "cancel": "cds_cancel.html",
     "request": "cds_request.html",
     "request_no_items": "cds_request_no_items.html",
@@ -492,7 +495,7 @@ ILS_CIRCULATION_MAIL_TEMPLATES = {
     "expiring_reminder": "cds_will_expire_in_reminder.html",
 }
 
-ILS_DOCUMENT_REQUEST_MAIL_TEMPLATES = {
+ILS_NOTIFICATIONS_TEMPLATES_DOCUMENT_REQUEST = {
     "request_accepted": "cds_document_request_accept.html",
     "request_declined_user_cancel":
         "cds_document_request_decline_user_cancel.html",
@@ -502,13 +505,13 @@ ILS_DOCUMENT_REQUEST_MAIL_TEMPLATES = {
     "request_declined_other": "cds_document_request_decline_other.html",
 }
 
-ILS_ILL_MAIL_TEMPLATES = {
+ILS_ILL_NOTIFICATIONS_TEMPLATES = {
     "extension_accepted": "cds_patron_loan_extension_accept.html",
     "extension_declined": "cds_patron_loan_extension_decline.html",
     "extension_requested": "cds_patron_loan_extension_request.html",
 }
 
-ILS_GLOBAL_MAIL_TEMPLATES = {"footer": "cds_footer.html"}
+ILS_NOTIFICATIONS_TEMPLATES = {"footer": "cds_footer.html"}
 
 # List of available vocabularies
 ILS_VOCABULARIES = [
@@ -670,3 +673,7 @@ CDS_ILS_INDEX_LOCAL_ACCOUNTS = True
 
 CDS_ILS_MIGRATION_ALLOW_UPDATES = False
 CDS_ILS_MIGRATION_FILES_DIR = '/eos/media/cds/test/books/migration/'
+
+ILS_ILL_NOTIFICATIONS_FILTER = ill_notifications_filter
+ILS_NOTIFICATIONS_FILTER_DOCUMENT_REQUEST = \
+    document_requests_notifications_filter

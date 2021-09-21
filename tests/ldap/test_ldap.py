@@ -25,10 +25,11 @@ from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 from cds_ils.ldap.serializers import serialize_ldap_user
 
 
-def test_send_email_delete_user_with_loans(app, patrons, testdata):
+def test_send_notification_delete_user_with_loans(app, patrons, testdata,
+                                                  app_with_notifs):
+    """Test notification sent when the user is deleted with active loans."""
     patron1 = patrons[0]
-    """Test that email sent when the user is deleted with active loans."""
-    with app.extensions["mail"].record_messages() as outbox:
+    with app_with_notifs.extensions["mail"].record_messages() as outbox:
         assert len(outbox) == 0
         _delete_invenio_user(patron1.id)
         assert len(outbox) == 1

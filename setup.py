@@ -37,7 +37,7 @@ install_requires = [
     "uwsgi-tools>=1.1.1",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a49",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a50",
     "invenio-assets>=1.2.6",
     "invenio-base>=1.2.4",
     "sentry-sdk>=0.10.2",
@@ -54,6 +54,8 @@ install_requires = [
     # unsupported ES version issue
     "elasticsearch>=6.0.0,<7.14",
     "pluggy>=0.13.1,<1.0.0",
+    # breaking changes in version 4
+    "jsonschema>=3.0.0,<4.0.0",
 ]
 
 packages = find_packages()
