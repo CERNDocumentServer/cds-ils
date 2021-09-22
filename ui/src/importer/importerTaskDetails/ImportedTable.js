@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Pagination, Table } from 'semantic-ui-react';
-import _isEmpty from 'lodash/isEmpty';
 import { EitemImportDetailsModal } from '../EitemImportDetailsModal';
 import { SeriesImportDetailsModal } from '../SeriesImportDetailsModal';
 import { JsonViewModal } from '../JsonViewModal';
@@ -11,26 +10,15 @@ export class ImportedTable extends React.Component {
   constructor(props) {
     super(props);
     this.pageSize = 100;
-    this.state = {
-      activePage: 1,
-      records: this.props.records,
-    };
   }
 
-  static getDerivedStateFromProps(props, state) {
-    if (state.records.length != props.records.length) {
-      return {
-        activePage: 1,
-        records: props.records,
-      };
-    }
-  }
-
-  handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
+  handlePaginationChange = (e, { activePage }) => {
+    const { setActivePage } = this.props;
+    setActivePage(activePage);
+  };
 
   render() {
-    const { records } = this.props;
-    const { activePage } = this.state;
+    const { records, activePage } = this.props;
     return (
       <>
         <Table styled="true" fluid="true" striped celled structured width={16}>
@@ -82,14 +70,12 @@ export class ImportedTable extends React.Component {
               )
               .map((elem, index) => {
                 return (
-                  !_isEmpty(elem) && (
-                    <ImportedDocumentReport
-                      // Keep the index as key due to lack of other unique id.
-                      key={index}
-                      documentReport={elem}
-                      listIndex={index + (activePage - 1) * this.pageSize + 1}
-                    />
-                  )
+                  <ImportedDocumentReport
+                    // Keep the index as key due to lack of other unique id.
+                    key={index} // eslint-disable-line
+                    documentReport={elem}
+                    listIndex={index + (activePage - 1) * this.pageSize + 1}
+                  />
                 );
               })}
           </Table.Body>
@@ -117,5 +103,7 @@ export class ImportedTable extends React.Component {
 }
 
 ImportedTable.propTypes = {
-  records: PropTypes.object.isRequired,
+  records: PropTypes.array.isRequired,
+  activePage: PropTypes.number.isRequired,
+  setActivePage: PropTypes.func.isRequired,
 };

@@ -2,22 +2,26 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
-  Divider,
-  Icon,
   Message,
   Segment,
   Statistic,
   Label,
+  Grid,
+  Icon,
+  Divider,
 } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _isNull from 'lodash/isNull';
 import _get from 'lodash/get';
+import _cloneDeep from 'lodash/cloneDeep';
 import { CancelImportTask } from './cancelImportTask';
 import { ImportedTable } from './ImportedTable';
+import { ImportedSearch } from './ImportedSearch';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
 import { Link } from 'react-router-dom';
 import { importerApi } from '../../api/importer';
 import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
+import debounce from 'lodash/debounce';
 
 export class ImportedDocuments extends React.Component {
   constructor(props) {
@@ -25,10 +29,47 @@ export class ImportedDocuments extends React.Component {
     this.state = {
       importCompleted: false,
       data: null,
-      filteredRecords: [],
-      isLoading: true,
-      statistics: [],
+      isLoading: false,
+      selectedResult: 'records',
+      searchText: '',
+      statistics: {
+        records: {
+          text: 'Records',
+          value: '',
+          filterFunction: record => record,
+        },
+        records_created: {
+          text: 'Records created',
+          value: 0,
+          filterFunction: record => record.action === 'create',
+        },
+        records_updated: {
+          text: 'Records updated',
+          value: 0,
+          filterFunction: record => record.action === 'update',
+        },
+        records_with_errors: {
+          text: 'Records with errors',
+          value: 0,
+          filterFunction: record => _isNull(record.action),
+        },
+        records_with_item: {
+          text: 'Records with eItem',
+          value: 0,
+          filterFunction: record => !_isNull(record.eitem),
+        },
+        records_with_serials: {
+          text: 'Records with Serials',
+          value: 0,
+          filterFunction: record => !_isEmpty(record.series),
+        },
+      },
+      finalFilteredRecords: null,
     };
+    this.activePage = 1;
+    this.mode = '';
+    this.status = '';
+    this.lastIndex = 0;
   }
 
   componentDidMount() {
@@ -50,83 +91,114 @@ export class ImportedDocuments extends React.Component {
     if (!importCompleted) {
       const nextEntry = _get(data, 'loaded_entries', 0);
       const response = await importerApi.check(taskId, nextEntry);
-      const responseData = response.data;
-
-      if (responseData) {
-        responseData.records = _get(responseData, 'records', []);
-      }
       if (response.data.status !== 'RUNNING') {
         this.setState({
           importCompleted: true,
           isLoading: false,
           data: response.data,
-          filteredRecords: response.data.records,
         });
       } else {
         this.setState({
           isLoading: true,
           data: response.data,
-          filteredRecords: response.data.records,
         });
       }
+      this.filteredRecords();
+      this.calculateMode();
+      this.calculateStatus();
       this.calculateStatistics(response.data);
     } else {
       this.intervalId && clearInterval(this.intervalId);
     }
   };
 
-  calculateStatistics = data => {
-    const importStatistics = [];
-    importStatistics.push({
-      text: 'Mode',
-      value: <Label>{data.mode}</Label>,
-    });
-    importStatistics.push({
-      text: 'Records',
-      value: data.loaded_entries + '/' + data.entries_count,
-      filter: 'Reset Filter',
-      fnc: a => a,
-    });
-    importStatistics.push({
-      text: 'Records created',
-      value: data.records.filter(record => record.action === 'create').length,
-      filter: 'Filter',
-      fnc: a => a.action === 'create',
-    });
-    importStatistics.push({
-      text: 'Records updated',
-      value: data.records.filter(record => record.action === 'update').length,
-      filter: 'Filter',
-      fnc: a => a.action === 'update',
-    });
-    importStatistics.push({
-      text: 'Records with errors',
-      value: data.records.filter(record => _isNull(record.action)).length,
-      filter: 'Filter',
-      fnc: a => _isNull(a.action),
-    });
-    importStatistics.push({
-      text: 'Records with eItem',
-      value: data.records.filter(record => !_isNull(record.eitem)).length,
-      filter: 'Filter',
-      fnc: a => !_isNull(a.eitem),
-    });
-    importStatistics.push({
-      text: 'Records with Serials',
-      value: data.records.filter(record => !_isEmpty(record.series)).length,
-      filter: 'Filter',
-      fnc: a => !_isEmpty(a.series),
-    });
-    this.setState({
-      statistics: importStatistics,
-    });
+  calculateMode = () => {
+    const { data } = this.state;
+    switch (data.mode) {
+      case 'IMPORT':
+        this.mode = (
+          <Label color="blue" basic>
+            Import
+          </Label>
+        );
+        break;
+      case 'DELETE':
+        this.mode = (
+          <Label color="red" basic>
+            Delete
+          </Label>
+        );
+        break;
+      case 'PREVIEW_IMPORT':
+        this.mode = (
+          <Label color="teal" basic>
+            Preview (import)
+          </Label>
+        );
+        break;
+      case 'PREVIEW_DELETE':
+        this.mode = (
+          <Label color="teal" basic>
+            Preview (delete)
+          </Label>
+        );
+        break;
+      case 'ERROR':
+        this.mode = (
+          <Label color="red" basic>
+            Error
+          </Label>
+        );
+        break;
+      default:
+        throw Error('There was a problem processing the mode.');
+    }
   };
 
-  filterResults(fnc) {
-    const { data } = this.state;
-    const newFilteredRecords = data.records.filter(record => fnc(record));
-    this.setState({ filteredRecords: newFilteredRecords });
-  }
+  statusLabel = () => {
+    const { data, isLoading } = this.state;
+    if (!data) return <Label color="grey">Fetching status</Label>;
+    if (isLoading)
+      return (
+        <Label color="blue">
+          <Icon loading name="circle notch" /> Importing literature
+        </Label>
+      );
+    switch (data.status) {
+      case 'SUCCEEDED':
+        return <Label color="green">Import successfull</Label>;
+      case 'CANCELLED':
+        return <Label color="yellow">Import cancelled</Label>;
+      default:
+        return <Label color="red">Import failed</Label>;
+    }
+  };
+
+  calculateStatus = () => {
+    this.status = this.statusLabel();
+  };
+
+  calculateStatistics = data => {
+    const { statistics } = this.state;
+    let stats = _cloneDeep(statistics);
+    const records = data.records;
+    const newRecords = records.slice(this.lastIndex, records.length);
+
+    this.lastIndex += newRecords.length;
+    stats.records.value = data.loaded_entries + '/' + data.entries_count;
+
+    for (const statistic in stats) {
+      const filterFunc = stats[statistic].filterFunction;
+      if (statistic !== 'records') {
+        stats[statistic].value += newRecords.filter(record =>
+          filterFunc(record)
+        ).length;
+      }
+    }
+    this.setState({
+      statistics: stats,
+    });
+  };
 
   renderErrorMessage = () => {
     return (
@@ -141,85 +213,105 @@ export class ImportedDocuments extends React.Component {
   };
 
   renderImportReportHeader = () => {
-    const { data, isLoading } = this.state;
+    const { data } = this.state;
     return (
-      <>
-        <Button
-          className="default-margin-top"
-          labelPosition="left"
-          icon="left arrow"
-          content="Import other files"
-          loading={!data}
-          disabled={!data}
-          as={Link}
-          to={CdsBackOfficeRoutes.importerCreate}
-        />
-        {this.renderCancelButton()}
-        <Divider />
-        {!data ? (
-          <>
-            <Icon loading name="circle notch" />
-            Fetching status...
-          </>
-        ) : isLoading ? (
-          <>
-            <Icon name="circle notch" loading aria-label="Import in progress" />
-            Importing literature... This may take a while. You may leave the
-            page, the process will continue in background.
-          </>
-        ) : data.status === 'SUCCEEDED' ? (
-          <>
-            <Icon name="check circle" color="green" aria-label="Completed" />
-            Literature imported successfully.
-          </>
-        ) : data.status === 'CANCELLED' ? (
-          <>
-            <Icon name="times circle" color="yellow" aria-label="Cancelled" />
-            Literature import was cancelled by the user.
-          </>
-        ) : (
-          <>
-            <Icon name="exclamation circle" color="red" aria-label="Failed" />
-            Literature import failed.
-          </>
-        )}
-        <Divider />
-      </>
+      <Grid>
+        <Grid.Column floated="left" width={12}>
+          <Button
+            className="default-margin-top"
+            labelPosition="left"
+            icon="left arrow"
+            content="Import other files"
+            loading={!data?.status}
+            disabled={!data?.status}
+            as={Link}
+            to={CdsBackOfficeRoutes.importerCreate}
+          />
+          {this.renderCancelButton()}
+        </Grid.Column>
+        <Grid.Column textAlign="right" floated="right" width={4}>
+          <ImportedSearch setSearchText={this.setSearchText} />
+        </Grid.Column>
+      </Grid>
     );
   };
 
-  renderStatistics = () => {
-    const { statistics } = this.state;
-
-    return (
-      <Statistic.Group widths="seven">
-        {statistics.map(function(statistic) {
-          return (
-            <Statistic key={statistic.text}>
-              <Statistic.Value>{statistic.value}</Statistic.Value>
-              <Statistic.Label>{statistic.text}</Statistic.Label>
-              {statistic.filter && (
-                <Button onClick={() => this.filterResults(statistic.fnc)}>
-                  {statistic.filter}
-                </Button>
-              )}
-            </Statistic>
-          );
-        }, this)}
-      </Statistic.Group>
+  applyFilter = key => {
+    this.setState(
+      {
+        selectedResult: key,
+      },
+      () => this.filteredRecords()
     );
+  };
+
+  setSearchText = text => {
+    this.setState(
+      {
+        searchText: text,
+      },
+      () => this.filteredRecords()
+    );
+  };
+
+  setActivePage = page => {
+    this.activePage = page;
+  };
+
+  searchBarFilter = filteredRecords => {
+    const { searchText } = this.state;
+    let deb = debounce(searchText => {
+      const searchRecords = filteredRecords.filter(
+        record =>
+          record.entry_recid.includes(searchText) ||
+          record.output_pid?.includes(searchText) ||
+          record.document?.title.includes(searchText) ||
+          record.eitem?.output_pid?.includes(searchText) ||
+          record.series?.filter(serie => serie.output_pid?.includes(searchText))
+            .length > 0
+      );
+      this.setState({
+        finalFilteredRecords: searchRecords,
+      });
+    }, 60);
+    return deb(searchText);
+  };
+
+  filteredRecords = () => {
+    const { statistics, data, selectedResult } = this.state;
+    const selectedFilterFunc = statistics[selectedResult].filterFunction;
+    const records = data.records;
+
+    const filteredRecords = records.filter(record =>
+      selectedFilterFunc(record)
+    );
+    this.searchBarFilter(filteredRecords);
+    this.setActivePage(1);
   };
 
   renderCancelButton = () => {
-    const { data } = this.state;
+    const { isLoading } = this.state;
     const { taskId } = this.props;
-    const isRunning = !_isEmpty(data) && data.status === 'RUNNING';
 
-    return isRunning ? <CancelImportTask logId={taskId} /> : null;
+    return (
+      isLoading && (
+        <>
+          <CancelImportTask logId={taskId} />{' '}
+          <Icon loading name="circle notch" />
+          This may take a while. You may leave the page, the process will
+          continue in background. ImportedSearch
+        </>
+      )
+    );
   };
 
   render() {
-    const { data, filteredRecords, statistics } = this.state;
+    const {
+      data,
+      statistics,
+      selectedResult,
+      finalFilteredRecords,
+    } = this.state;
     return (
       <>
         {this.renderImportReportHeader()}
@@ -229,17 +321,62 @@ export class ImportedDocuments extends React.Component {
               {!_isEmpty(data) ? (
                 (data.loaded_entries || data.loaded_entries === 0) &&
                 data.entries_count ? (
-                  <div>
-                    {_isEmpty(statistics.length) && this.renderStatistics()}
-                  </div>
+                  <Grid className="middle aligned">
+                    <Grid.Column width={3}>
+                      <Segment>
+                        Mode: {this.mode}
+                        <Divider />
+                        Status: {this.status}
+                      </Segment>
+                    </Grid.Column>
+                    <Grid.Column width={13}>
+                      <Statistic.Group widths="seven">
+                        {Object.keys(statistics).map(function(
+                          statistic,
+                          index
+                        ) {
+                          return (
+                            <Statistic
+                              className={
+                                selectedResult === statistic
+                                  ? 'import-statistic statistic-selected'
+                                  : 'import-statistic'
+                              }
+                              key={statistic}
+                              onClick={() => this.applyFilter(statistic)}
+                            >
+                              <Statistic.Value>
+                                {statistics[statistic].value}
+                              </Statistic.Value>
+                              <Statistic.Label>
+                                {statistics[statistic].text}
+                              </Statistic.Label>
+                            </Statistic>
+                          );
+                        },
+                        this)}
+                      </Statistic.Group>
+                    </Grid.Column>
+                  </Grid>
                 ) : (
                   <span>Processing file...</span>
                 )
               ) : null}
             </Segment>
-            {!_isEmpty(data.records) ? (
-              <ImportedTable records={filteredRecords} />
-            ) : null}
+            {!_isEmpty(finalFilteredRecords) ? (
+              <ImportedTable
+                records={finalFilteredRecords}
+                activePage={this.activePage}
+                setActivePage={this.setActivePage}
+              />
+            ) : (
+              !_isNull(finalFilteredRecords) && (
+                <Message>
+                  <Message.Header>No records found.</Message.Header>
+                  <p>No records found with the selected filter.</p>
+                </Message>
+              )
+            )}
           </>
         ) : !_isEmpty(data) && data.status === 'FAILED' ? (
           this.renderErrorMessage(data)

@@ -80,15 +80,12 @@ export class CancelImportTask extends Component {
           open={modalOpen}
           onCancel={this.handleCloseModal}
           onConfirm={this.handleCancelImportAction}
-          content={
-            <>
-              You are about to cancel current import - the cancel will be
-              performed after the current record is processed.
-              <strong>Are you sure you want to proceed?</strong>
-            </>
-          }
+          header="Confirm cancel action"
+          content="You are about to cancel current import - the cancel will be
+          performed after the current record is processed.
+          Are you sure you want to proceed?"
           loading={cancelLoading}
-        />{' '}
+        />
       </>
     );
   }

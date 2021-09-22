@@ -15,28 +15,24 @@ export const modeFormatter = mode => {
     case 'IMPORT':
       return (
         <Label color="blue" basic>
-          <Icon name="plus" />
           Import
         </Label>
       );
     case 'DELETE':
       return (
         <Label color="red" basic>
-          <Icon name="minus" />
           Delete
         </Label>
       );
     case 'PREVIEW_IMPORT':
       return (
         <Label color="teal" basic>
-          <Icon name="plus" />
           Preview (import)
         </Label>
       );
     case 'PREVIEW_DELETE':
       return (
         <Label color="teal" basic>
-          <Icon name="plus" />
           Preview (delete)
         </Label>
       );

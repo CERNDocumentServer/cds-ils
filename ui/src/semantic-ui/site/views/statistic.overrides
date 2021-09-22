@@ -1,3 +1,18 @@
 /*******************************
     User Variable Overrides
 *******************************/
+
+.ui.statistic.import-statistic{
+    margin-right: 15px !important;
+    border-radius: 10px;
+    padding: 20px 10px;
+    cursor: pointer;
+}
+
+.ui.statistic.import-statistic:hover{
+    box-shadow: 0 2px 8px #bbb;
+}
+
+.ui.statistic.import-statistic.statistic-selected{
+    box-shadow: 0 0 0 1px #d4d4d5,0 2px 0 0 #21ba45,0 1px 3px 0 #d4d4d5 !important;
+}

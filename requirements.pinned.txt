@@ -17,7 +17,7 @@ bleach==4.1.0
 blinker==1.4
 cachelib==0.1.1
 cds-dojson==0.9.0
-celery==5.0.2
+celery==5.1.2
 certifi==2020.11.8
 cffi==1.14.3
 chardet==3.0.4
@@ -77,7 +77,7 @@ invenio-assets==1.2.6
 invenio-banners==1.0.0a1
 invenio-base==1.2.4
 invenio-cache==1.1.0
-invenio-celery==1.2.2
+invenio-celery==1.2.3
 invenio-circulation==1.0.0a33
 invenio-config==1.0.3
 invenio-db==1.0.8
