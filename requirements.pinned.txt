@@ -17,7 +17,7 @@ bleach==4.1.0
 blinker==1.4
 cachelib==0.1.1
 cds-dojson==0.9.0
-celery==5.0.2
+celery==5.1.2
 certifi==2020.11.8
 cffi==1.14.3
 chardet==3.0.4
