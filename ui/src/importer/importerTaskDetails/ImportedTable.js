@@ -13,18 +13,17 @@ export class ImportedTable extends React.Component {
     this.pageSize = 100;
     this.state = {
       activePage: 1,
-      records: this.props.records,
     };
   }
 
-  static getDerivedStateFromProps(props, state) {
-    if (state.records.length != props.records.length) {
-      return {
-        activePage: 1,
-        records: props.records,
-      };
+  componentDidUpdate(prevProps) {
+    const { records } = this.props;
+    if (prevProps.records !== records) {
+      this.resetPage();
     }
   }
+
+  resetPage = () => this.setState({ activePage: 1 });
 
   handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
 
