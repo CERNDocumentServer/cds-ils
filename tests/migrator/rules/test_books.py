@@ -963,6 +963,7 @@ def test_authors(app):
                  'roles': ['AUTHOR'],
                  'type': 'PERSON'},
                 {'full_name': 'Sauniere, J',
+                 'roles': ['AUTHOR'],
                  'type': 'PERSON'}],
                 'other_authors': True,
             }
@@ -1920,14 +1921,14 @@ def test_alternative_identifiers(app):
                         [
                             {
                                 "url": {
-                                    'description': None,
+                                    'description': "e-book",
                                     'value': 'http://dx.doi.org/10.1007/s00269-016-0862-1'
                                 },
                                 "open_access": False,
                             },
                             {
                                 "url": {
-                                    'description': None,
+                                    'description': "e-book",
                                     'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'
                                 },
                                 "open_access": False,

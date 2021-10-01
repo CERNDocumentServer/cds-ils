@@ -157,6 +157,7 @@ def dois(self, key, value):
                     IDENTIFIERS_MEDIUM_TYPES,
                     volume_info["description"].upper(),
                     raise_exception=True,
+                    field=key, subfield='q'
                 )
         doi = {
             "value": val_a,
@@ -197,7 +198,7 @@ def dois(self, key, value):
                 # WARNING! vocabulary document_identifiers_materials
                 doi["material"] = mapping(
                     IDENTIFIERS_MEDIUM_TYPES, val_q.upper(),
-                    raise_exception=True
+                    raise_exception=True, field=key, subfield='q',
                 )
             if doi not in _identifiers:
                 _identifiers.append(doi)

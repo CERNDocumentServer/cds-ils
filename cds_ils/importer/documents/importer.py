@@ -200,6 +200,7 @@ class DocumentImporter(object):
 
     def search_for_matching_documents(self):
         """Find matching documents."""
+        document_class = current_app_ils.document_record_cls
         isbn_list = [
             identifier["value"]
             for identifier in self.json_data.get("identifiers", [])
@@ -251,6 +252,10 @@ class DocumentImporter(object):
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
 
+            for match in matches:
+                document = document_class.get_record_by_pid(match)
+                if document.get("edition") != self.json_data.get("edition"):
+                    matches.remove(match)
         return matches
 
     def fuzzy_match_documents(self):

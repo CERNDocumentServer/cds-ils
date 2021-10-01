@@ -41,7 +41,7 @@ def test_ebl_transformation(app):
                         }
                     ]
                 },
-                "_serial": [{"title": "Condensed Matter Physics Ser."}],
+                "_serial": [{"title": "Condensed Matter Physics"}],
                 "provider_recid": "EBC263817",
                 "document_type": "BOOK",
                 "abstract": "IntroductionTheoryMagnetocaloric effect in the "
@@ -61,10 +61,10 @@ def test_ebl_transformation(app):
                     {"scheme": "EBL", "value": "263817"},
                 ],
                 "authors": [
-                    {"full_name": "Tishin, A. M"},
-                    {"full_name": "Spichkin, Y. I"},
-                    {"full_name": "Tishin, A.M"},
-                    {"full_name": "Spichkin, Y.I"},
+                    {"full_name": "Tishin, A. M", "type": "PERSON"},
+                    {"full_name": "Spichkin, Y. I", "type": "PERSON"},
+                    {"full_name": "Tishin, A.M", "type": "PERSON"},
+                    {"full_name": "Spichkin, Y.I", "type": "PERSON"},
                 ],
                 "edition": "1st",
                 "identifiers": [
@@ -75,7 +75,6 @@ def test_ebl_transformation(app):
                      },
                 ],
                 "imprint": {
-                    "date": "2003",
                     "place": "Baton Rouge ",
                     "publisher": "CRC Press LLC",
                 },

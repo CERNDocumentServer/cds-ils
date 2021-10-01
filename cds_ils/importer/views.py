@@ -159,7 +159,7 @@ class ImporterListView(ContentNegotiatedMethodView):
     @need_permissions("document-importer")
     def get(self):
         """Get method."""
-        list_count = 10
+        list_count = 50
         logs = ImporterImportLog.query \
             .order_by(ImporterImportLog.id.desc()) \
             .limit(list_count).all()

@@ -62,10 +62,15 @@ class CDSImporter(Importer):
             del eitem["url"]
         if not eitem.get("urls", []):
             return {}
-        if 'open_access' not in eitem:
-            eitem["open_access"] = \
-                self.json_data["_migration"]["eitems_open_access"]
-        if 'internal_notes' not in eitem:
+
+        open_access = eitem.get("open_access", False)
+        internal_notes = eitem.get("internal_notes", "")
+        if not open_access:
+            eitem["open_access"] = self.json_data["_migration"].get(
+                "eitems_open_access", False)
+
+        if not internal_notes:
             eitem["internal_notes"] = \
                 self.json_data["_migration"]["eitems_internal_notes"]
+
         return eitem

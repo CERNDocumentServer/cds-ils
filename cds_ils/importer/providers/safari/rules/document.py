@@ -34,7 +34,7 @@ def agency_code(self, key, value):
     return value
 
 
-@model.over("authors", "(^1001_)|(^7001_)")
+@model.over("authors", "(^1001_)|(^7001_)|(^100#_)|(^700#_)")
 @filter_list_values
 def authors(self, key, value):
     """Translates authors."""
@@ -45,12 +45,13 @@ def authors(self, key, value):
         "roles": [
             _get_correct_ils_contributor_role("e", clean_val("e", value, str))
         ],
+        "type": "PERSON",
     }
     _authors.append(author)
     return _authors
 
 
-@model.over("title", "^24510")
+@model.over("title", "(^24510)|(^24512)|(^24513)")
 @out_strip
 def title(self, key, value):
     """Translates title."""
@@ -66,7 +67,7 @@ def title(self, key, value):
             }
         )
         self["alternative_titles"] = _alternative_titles
-    return clean_val("a", value, str, req=True).rstrip('.')
+    return clean_val("a", value, str, req=True).rstrip('.').rstrip(':')
 
 
 # EITEM fields
@@ -140,7 +141,6 @@ def imprint(self, key, value):
 
     return {
         "publisher": clean_val("b", value, str).rstrip('.').rstrip(','),
-        "date": pub_year,
         "place": "S.L.",
     }
 
@@ -158,14 +158,3 @@ def number_of_pages(self, key, value):
 def abstract(self, key, value):
     """Translate abstract."""
     return clean_val("a", value, str)
-
-
-@model.over("copyrights", "^542__")
-@filter_list_values
-@for_each_value
-def copyrights(self, key, value):
-    """Translate copyrights."""
-    return {
-        "year": clean_val("g", value, int),
-        "statement": clean_val("f", value, str),
-    }
