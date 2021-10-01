@@ -14,4 +14,4 @@ class EBLImporter(Importer):
     """EBL importer class."""
 
     EITEM_OPEN_ACCESS = False
-    EITEM_URLS_LOGIN_REQUIRED = False
+    EITEM_URLS_LOGIN_REQUIRED = True

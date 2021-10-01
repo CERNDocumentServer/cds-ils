@@ -14,3 +14,4 @@ class SafariImporter(Importer):
     """OReilly importer class."""
 
     EITEM_OPEN_ACCESS = False
+    EITEM_URLS_LOGIN_REQUIRED = False

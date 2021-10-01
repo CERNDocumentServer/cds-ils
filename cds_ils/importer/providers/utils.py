@@ -39,7 +39,7 @@ def _get_correct_ils_contributor_role(subfield, role):
                               field="100|700"
                               )
     if clean_role not in translations:
-        return
+        return "AUTHOR"
     return translations[clean_role]
 
 
@@ -100,3 +100,9 @@ def build_ils_contributor(value):
         (k, v) for k, v in iteritems(contributor) if v is not None
     )
     return contributor
+
+
+def rreplace(s, old, new, occurrence):
+    """Reverse replace."""
+    li = s.rsplit(old, occurrence)
+    return new.join(li)

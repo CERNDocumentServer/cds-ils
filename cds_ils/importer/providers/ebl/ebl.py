@@ -20,7 +20,7 @@ class EBLModel(Base):
 
     __ignore_keys__ = EBL_IGNORE_FIELDS
 
-    _default_fields = {"document_type": "BOOK"}
+    _default_fields = {"document_type": "BOOK", "languages": ["ENG"]}
 
     def do(
         self,

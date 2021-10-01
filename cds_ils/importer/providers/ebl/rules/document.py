@@ -10,6 +10,7 @@
 import re
 
 import pycountry
+from dojson.errors import IgnoreKey
 from dojson.utils import for_each_value, force_list
 
 from cds_ils.importer.errors import UnexpectedValue
@@ -17,8 +18,8 @@ from cds_ils.importer.providers.cds.helpers.decorators import \
     filter_empty_dict_values, filter_list_values, out_strip
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.ebl.ebl import model
-
 # REQUIRED_FIELDS
+from cds_ils.importer.providers.utils import rreplace
 
 
 @model.over("alternative_identifiers", "^001")
@@ -45,7 +46,8 @@ def authors(self, key, value):
 
     author = {
         "full_name":
-            clean_val("a", value, str, req=True).rstrip(".")
+            clean_val("a", value, str, req=True).rstrip("."),
+        "type": "PERSON"
     }
     _authors.append(author)
     return _authors
@@ -142,8 +144,13 @@ def alternative_identifiers(self, key, value):
 def languages(self, key, value):
     """Translates languages fields."""
     lang = clean_val("b", value, str).lower()
+    _languages = self.get("languages", [])
     try:
-        return pycountry.languages.lookup(lang).alpha_3.upper()
+        new_lang = pycountry.languages.lookup(lang).alpha_3.upper()
+        if new_lang not in _languages:
+            return new_lang
+        else:
+            raise IgnoreKey("languages")
     except (KeyError, AttributeError, LookupError):
         raise UnexpectedValue(subfield="a", field=key)
 
@@ -193,7 +200,6 @@ def imprint(self, key, value):
     return {
         "place": clean_val("a", value, str).rstrip(':'),
         "publisher": clean_val("b", value, str).rstrip(','),
-        "date": pub_year,
     }
 
 
@@ -213,15 +219,21 @@ def serial(self, key, value):
     issn_value = clean_val("x", value, str)
     identifiers = None
     if issn_value:
-        identifiers = [{"scheme": "ISSN", "value": issn_value}]
+        identifiers = [{"scheme": "ISSN", "value": issn_value.rstrip(';')}]
 
     volume = clean_val("v", value, str)
     if volume:
         volume = re.findall(r"\d+", volume)
 
+    serial_title = \
+        clean_val("a", value, str, req=True).rstrip(',').rstrip(';')\
+        .strip()
+    serial_title = rreplace(serial_title, " series", "", 1)
+    serial_title = rreplace(serial_title, " Series", "", 1)
+    serial_title = rreplace(serial_title, " ser.", "", 1)
+    serial_title = rreplace(serial_title, " Ser.", "", 1)
     return {
-        "title": clean_val("a", value, str, req=True)
-        .rstrip(',').rstrip(';').strip(),
+        "title": serial_title.strip(),
         "identifiers": identifiers,
         "volume": volume[0] if volume else None,
     }

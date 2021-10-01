@@ -58,9 +58,11 @@ def test_safari_transformation(app):
                     }
                 ],
                 "authors": [
-                    {"full_name": "Falcone, Paul", "roles": ["AUTHOR"]}
+                    {"full_name": "Falcone, Paul",
+                     "roles": ["AUTHOR"],
+                     "type": "PERSON",
+                     }
                 ],
-                "copyrights": [{"year": 2010}],
                 "edition": "2nd",
                 "identifiers": [
                     {"scheme": "ISBN", "value": "9780814415467"},
@@ -68,11 +70,11 @@ def test_safari_transformation(app):
                 ],
                 "languages": ["ENG"],
                 "provider_recid": "9780814415467",
-                "imprint": {"date": "2010", "publisher": "AMACOM",
+                "imprint": {"publisher": "AMACOM",
                             "place": "S.L."},
                 "number_of_pages": "1",
                 "publication_year": "2010",
                 "title": "101 Sample Write-Ups for "
-                "Documenting Employee Performance Problems:",
+                "Documenting Employee Performance Problems",
             },
         )

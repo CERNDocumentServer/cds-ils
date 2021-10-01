@@ -9,6 +9,8 @@
 import re
 from datetime import date, timedelta
 
+from dojson.utils import force_list
+
 from cds_ils.importer.errors import ManualImportRequired, \
     MissingRequiredField, UnexpectedValue
 
@@ -191,6 +193,10 @@ def clean_val(
                 raise UnexpectedValue(subfield=subfield)
             except TypeError:
                 raise UnexpectedValue(subfield=subfield)
+            except (UnexpectedValue, MissingRequiredField) as e:
+                e.subfield = subfield
+                e.message += str(force_list(value))
+                raise e
 
     to_clean = value.get(subfield)
 

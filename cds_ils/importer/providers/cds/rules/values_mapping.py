@@ -27,9 +27,7 @@ COLLECTION = {
     "LEGSERLIBLEGRES": ["LEGSERLIBLEGRES"],
 }
 
-
 TAGS_TO_IGNORE = ["PAULISCIENTIFICBOOK", "CERN"]
-
 
 SERIAL = {
     "DESIGN REPORT": ["DESIGN REPORT", "DESIGNREPORT"],
@@ -1556,7 +1554,8 @@ EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE = [
 ]
 
 
-def mapping(field_map, val, raise_exception=False, default_val=None):
+def mapping(field_map, val, raise_exception=False,
+            default_val=None, field=None, subfield=None):
     """
     Maps the old value to a new one according to the map.
 
@@ -1582,4 +1581,4 @@ def mapping(field_map, val, raise_exception=False, default_val=None):
         if default_val:
             return default_val
         if raise_exception:
-            raise UnexpectedValue
+            raise UnexpectedValue(field=field, subfield=subfield)

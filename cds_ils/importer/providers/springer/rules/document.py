@@ -9,7 +9,7 @@
 import re
 
 from dojson.errors import IgnoreKey
-from dojson.utils import filter_values, for_each_value, force_list
+from dojson.utils import for_each_value, force_list
 from invenio_app_ils.documents.api import Document
 
 from cds_ils.importer.errors import ManualImportRequired, UnexpectedValue
@@ -17,7 +17,8 @@ from cds_ils.importer.providers.cds.helpers.decorators import \
     filter_list_values, out_strip
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.springer.springer import model
-from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role
+from cds_ils.importer.providers.utils import \
+    _get_correct_ils_contributor_role, rreplace
 
 
 # REQUIRED_FIELDS
@@ -44,11 +45,12 @@ def title(self, key, value):
 
     if "b" in value:
         _alternative_titles = self.get("alternative_titles", [])
+        subtitle = clean_val("b", value, str).rstrip('/')
         _alternative_titles.append(
-            {"value": clean_val("b", value, str), "type": "SUBTITLE"}
+            {"value": subtitle, "type": "SUBTITLE"}
         )
         self["alternative_titles"] = _alternative_titles
-    return clean_val("a", value, str, req=True)
+    return clean_val("a", value, str, req=True).rstrip("/")
 
 
 @model.over("authors", "(^1001_)|(^7001_)")
@@ -67,6 +69,7 @@ def authors(self, key, value):
         "roles": [
             _get_correct_ils_contributor_role("e", clean_val("e", value, str))
         ],
+        "type": "PERSON"
     }
     _authors.append(author)
     return _authors
@@ -97,9 +100,8 @@ def imprint(self, key, value):
     self["publication_year"] = clean_val("c", value, str).rstrip('.')
 
     return {
-        "place": clean_val("a", value, str),
+        "place": clean_val("a", value, str).rstrip(':'),
         "publisher": "Springer",
-        "date": clean_val("c", value, str).rstrip('.'),
     }
 
 
@@ -158,7 +160,7 @@ def identifiers(self, key, value):
 
 @model.over(
     "identifiers",
-    "^024__",
+    "(^024__)|(^024_7)",
 )
 @filter_list_values
 def identifiers(self, key, value):
@@ -230,9 +232,15 @@ def serial(self, key, value):
     if volume:
         volume = re.findall(r"\d+", volume)
 
+    serial_title = \
+        clean_val("a", value, str, req=True).rstrip(',').rstrip(';')\
+        .strip()
+    serial_title = rreplace(serial_title, " series", "", 1)
+    serial_title = rreplace(serial_title, " Series", "", 1)
+    serial_title = rreplace(serial_title, " ser.", "", 1)
+    serial_title = rreplace(serial_title, " Ser.", "", 1)
     return {
-        "title": clean_val("a", value, str, req=True)
-        .rstrip(',').rstrip(';').strip(),
+        "title": serial_title.strip(),
         "identifiers": identifiers,
         "volume": volume[0] if volume else None,
     }

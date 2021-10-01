@@ -142,7 +142,8 @@ def access_urls(self, key, value):
     access_type_list = list(map(int, val_x if val_x else []))
 
     for i in access_type_list:
-        access_type = mapping(ACCESS_TYPE, str(i), raise_exception=True)
+        access_type = mapping(ACCESS_TYPE, str(i), raise_exception=True,
+                              field=key)
         access_type_mapped.append(access_type)
 
     sub_3 = clean_val("3", value, str)

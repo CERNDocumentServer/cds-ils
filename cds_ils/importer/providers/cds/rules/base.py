@@ -84,6 +84,7 @@ def created(self, key, value):
                         ACQUISITION_METHOD,
                         clean_val("s", value, str, default="migration"),
                         raise_exception=True,
+                        field=key, subfield="s",
                     )
                 }
             )
@@ -217,7 +218,7 @@ def document_type(self, key, value):
 
     def doc_type_mapping(val):
         if val:
-            return mapping(DOCUMENT_TYPE, val)
+            return mapping(DOCUMENT_TYPE, val, field=key, subfield="a or b")
 
     for v in force_list(value):
         sub_a = clean_val("a", v, str)
@@ -554,6 +555,7 @@ def isbns(self, key, value):
             material = mapping(
                 IDENTIFIERS_MEDIUM_TYPES,
                 subfield_u,
+                field=key, subfield="u"
             )
             if material:
                 isbn.update({"material": material})
@@ -648,7 +650,7 @@ def dois(self, key, value):
         eitem = {
             "url":
                 {
-                    "description": subfield_q,
+                    "description": subfield_q or "e-book",
                     "value": dois_url_prefix.format(doi=subfield_a),
                 },
             "open_access": open_access
@@ -667,6 +669,7 @@ def dois(self, key, value):
             IDENTIFIERS_MEDIUM_TYPES,
             subfield_q,
             raise_exception=True,
+            field=key
         )
         doi = {
             "value": subfield_a,
@@ -1038,6 +1041,7 @@ def licenses(self, key, value):
         MATERIALS,
         clean_val("3", value, str, transform="lower"),
         raise_exception=True,
+        field=key, subfield="3"
     )
 
     if material:
@@ -1073,6 +1077,8 @@ def copyright(self, key, value):
         MATERIALS,
         clean_val("3", value, str, transform="lower"),
         raise_exception=True,
+        field=key,
+        subfield="3",
     )
 
     return {
@@ -1207,6 +1213,7 @@ def medium(self, key, value):
             ITEMS_MEDIUMS,
             val_a.upper().replace("-", ""),
             raise_exception=True,
+            field=key, subfield="a"
         )
 
     for barcode in barcodes:
