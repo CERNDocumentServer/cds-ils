@@ -18,7 +18,7 @@ def document_requests_notifications_filter(record, action, **kwargs):
         action = "{}_{}".format(action, decline_reason.lower())
 
     action_filter_map = {
-        "accept": True,
+        "request_accepted": True,
         "request_declined_in_catalog": False,
         "request_declined_not_found": False,
         "request_declined_other": False,
