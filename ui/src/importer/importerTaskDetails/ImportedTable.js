@@ -84,7 +84,7 @@ export class ImportedTable extends React.Component {
                   !_isEmpty(elem) && (
                     <ImportedDocumentReport
                       // Keep the index as key due to lack of other unique id.
-                      key={index}
+                      key={index} // eslint-disable-line
                       documentReport={elem}
                       listIndex={index + (activePage - 1) * this.pageSize + 1}
                     />
@@ -116,5 +116,5 @@ export class ImportedTable extends React.Component {
 }
 
 ImportedTable.propTypes = {
-  records: PropTypes.object.isRequired,
+  records: PropTypes.array.isRequired,
 };

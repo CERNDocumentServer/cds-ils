@@ -15,6 +15,7 @@ import _isNull from 'lodash/isNull';
 import _get from 'lodash/get';
 import { CancelImportTask } from './cancelImportTask';
 import { ImportedTable } from './ImportedTable';
+import { ImportedSearch } from './ImportedSearch';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
 import { Link } from 'react-router-dom';
 import { importerApi } from '../../api/importer';
@@ -32,43 +33,44 @@ export class ImportedDocuments extends React.Component {
         records: {
           text: 'Records',
           value: '',
-          filterFunction: a => a,
+          filterFunction: record => record,
           filteredRecords: [],
         },
         records_created: {
           text: 'Records created',
           value: '',
-          filterFunction: a => a.action === 'create',
+          filterFunction: record => record.action === 'create',
           filteredRecords: [],
         },
         records_updated: {
           text: 'Records updated',
           value: '',
-          filterFunction: a => a.action === 'update',
+          filterFunction: record => record.action === 'update',
           filteredRecords: [],
         },
         records_with_errors: {
           text: 'Records with errors',
           value: '',
-          filterFunction: a => _isNull(a.action),
+          filterFunction: record => _isNull(record.action),
           filteredRecords: [],
         },
         records_with_item: {
           text: 'Records with eItem',
           value: '',
-          filterFunction: a => !_isNull(a.eitem),
+          filterFunction: record => !_isNull(record.eitem),
           filteredRecords: [],
         },
         records_with_serials: {
           text: 'Records with Serials',
           value: '',
-          filterFunction: a => !_isEmpty(a.series),
+          filterFunction: record => !_isEmpty(record.series),
           filteredRecords: [],
         },
       },
       mode: '',
       status: '',
       currentFilteredRecords: [],
+      finalRecords: [],
     };
     this.lastIndex = 0;
   }
@@ -92,33 +94,29 @@ export class ImportedDocuments extends React.Component {
     if (!importCompleted) {
       const nextEntry = _get(data, 'loaded_entries', 0);
       const response = await importerApi.check(taskId, nextEntry);
-      const responseData = response.data;
-
-      if (responseData) {
-        responseData.records = _get(responseData, 'records', []);
-      }
       if (response.data.status !== 'RUNNING') {
         this.setState({
           importCompleted: true,
           isLoading: false,
-          data: responseData,
+          data: response.data,
         });
       } else {
         this.setState({
           isLoading: true,
-          data: responseData,
+          data: response.data,
         });
       }
-      this.modeLabel();
-      this.statusLabel();
+      this.calculateMode();
+      this.calculateStatus();
       this.calculateStatistics();
     } else {
       this.intervalId && clearInterval(this.intervalId);
     }
   };
 
-  modeLabel = () => {
-    let { data, mode } = this.state;
+  calculateMode = () => {
+    const { data } = this.state;
+    let { mode } = this.state;
     switch (data.mode) {
       case 'IMPORT':
         mode = (
@@ -149,11 +147,7 @@ export class ImportedDocuments extends React.Component {
         );
         break;
       default:
-        mode = (
-          <Label color="black" basic>
-            Invalid mode
-          </Label>
-        );
+        mode = null;
         break;
     }
     this.setState({
@@ -162,27 +156,32 @@ export class ImportedDocuments extends React.Component {
   };
 
   statusLabel = () => {
-    let { data, status, isLoading } = this.state;
-    !data
-      ? (status = <Label color="grey">Fetching status</Label>)
-      : isLoading
-      ? (status = (
-          <Label color="blue">
-            <Icon loading name="circle notch" /> Importing literature
-          </Label>
-        ))
-      : data.status === 'SUCCEEDED'
-      ? (status = <Label color="green">Import successfull</Label>)
-      : data.status === 'CANCELLED'
-      ? (status = <Label color="yellow">Import cancelled</Label>)
-      : (status = <Label color="red">Import failed</Label>);
+    const { data, isLoading } = this.state;
+    if (!data) return <Label color="grey">Fetching status</Label>;
+    if (isLoading)
+      return (
+        <Label color="blue">
+          <Icon loading name="circle notch" /> Importing literature
+        </Label>
+      );
+    switch (data.status) {
+      case 'SUCCEEDED':
+        return <Label color="green">Import successfull</Label>;
+      case 'CANCELLED':
+        return <Label color="yellow">Import cancelled</Label>;
+      default:
+        return <Label color="red">Import failed</Label>;
+    }
+  };
+
+  calculateStatus = () => {
     this.setState({
-      status: status,
+      status: this.statusLabel(),
     });
   };
 
   calculateStatistics = () => {
-    let { statistics, data, selectedResult } = this.state;
+    const { statistics, data, selectedResult } = this.state;
 
     const dataClone = Array.from(data.records);
     const newRecords = dataClone.slice(this.lastIndex, dataClone.length);
@@ -215,6 +214,7 @@ export class ImportedDocuments extends React.Component {
     this.setState({
       selectedResult: key,
       currentFilteredRecords: statistics[key].filteredRecords,
+      finalRecords: statistics[key].filteredRecords,
     });
   }
 
@@ -231,46 +231,36 @@ export class ImportedDocuments extends React.Component {
   };
 
   renderImportReportHeader = () => {
-    const { data } = this.state;
+    const { data, currentFilteredRecords } = this.state;
     return (
-      <>
-        <Button
-          className="default-margin-top"
-          labelPosition="left"
-          icon="left arrow"
-          content="Import other files"
-          loading={!data}
-          disabled={!data}
-          as={Link}
-          to={CdsBackOfficeRoutes.importerCreate}
-        />
-        {this.renderCancelButton()}
-      </>
+      <Grid>
+        <Grid.Column floated="left" width={12}>
+          <Button
+            className="default-margin-top"
+            labelPosition="left"
+            icon="left arrow"
+            content="Import other files"
+            loading={!data}
+            disabled={!data}
+            as={Link}
+            to={CdsBackOfficeRoutes.importerCreate}
+          />
+          {this.renderCancelButton()}
+        </Grid.Column>
+        <Grid.Column textAlign="right" floated="right" width={4}>
+          <ImportedSearch
+            records={currentFilteredRecords}
+            searchData={this.searchData}
+          />
+        </Grid.Column>
+      </Grid>
     );
   };
 
-  renderStatistics = () => {
-    const { statistics, selectedResult } = this.state;
-    return (
-      <Statistic.Group widths="seven">
-        {Object.keys(statistics).map(function(statistic, index) {
-          return (
-            <Statistic
-              className={
-                selectedResult === statistic
-                  ? 'import-statistic statistic-selected'
-                  : 'import-statistic'
-              }
-              key={statistic}
-              onClick={() => this.currentFilterResults(statistic)}
-            >
-              <Statistic.Value>{statistics[statistic].value}</Statistic.Value>
-              <Statistic.Label>{statistics[statistic].text}</Statistic.Label>
-            </Statistic>
-          );
-        }, this)}
-      </Statistic.Group>
-    );
+  searchData = searchRecords => {
+    this.setState({
+      finalRecords: searchRecords,
+    });
   };
 
   renderCancelButton = () => {
@@ -278,13 +268,16 @@ export class ImportedDocuments extends React.Component {
     const { taskId } = this.props;
     const isRunning = !_isEmpty(data) && data.status === 'RUNNING';
 
-    return isRunning ? (
-      <>
-        <CancelImportTask logId={taskId} /> <Icon loading name="circle notch" />
-        This may take a while. You may leave the page, the process will continue
-        in background.
-      </>
-    ) : null;
+    return (
+      isRunning && (
+        <>
+          <CancelImportTask logId={taskId} />{' '}
+          <Icon loading name="circle notch" />
+          This may take a while. You may leave the page, the process will
+          continue in background. ImportedSearch
+        </>
+      )
+    );
   };
 
   render() {
@@ -293,7 +286,9 @@ export class ImportedDocuments extends React.Component {
       mode,
       importCompleted,
       status,
-      currentFilteredRecords,
+      statistics,
+      selectedResult,
+      finalRecords,
     } = this.state;
     return (
       <>
@@ -313,7 +308,34 @@ export class ImportedDocuments extends React.Component {
                       </Segment>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                      {this.renderStatistics()}
+                      <Statistic.Group widths="seven">
+                        {Object.keys(statistics).map(function(
+                          statistic,
+                          index
+                        ) {
+                          return (
+                            <Statistic
+                              className={
+                                selectedResult === statistic
+                                  ? 'import-statistic statistic-selected'
+                                  : 'import-statistic'
+                              }
+                              key={statistic}
+                              onClick={() =>
+                                this.currentFilterResults(statistic)
+                              }
+                            >
+                              <Statistic.Value>
+                                {statistics[statistic].value}
+                              </Statistic.Value>
+                              <Statistic.Label>
+                                {statistics[statistic].text}
+                              </Statistic.Label>
+                            </Statistic>
+                          );
+                        },
+                        this)}
+                      </Statistic.Group>
                     </Grid.Column>
                   </Grid>
                 ) : (
@@ -321,8 +343,8 @@ export class ImportedDocuments extends React.Component {
                 )
               ) : null}
             </Segment>
-            {!_isEmpty(currentFilteredRecords) ? (
-              <ImportedTable records={currentFilteredRecords} />
+            {!_isEmpty(finalRecords) ? (
+              <ImportedTable records={finalRecords} />
             ) : (
               importCompleted && (
                 <Message>
