@@ -18,5 +18,10 @@
     "type": "tag",
     "key": "BOOK_SUGGESTION",
     "text": "Book suggestion"
+  },
+  {
+    "type": "tag",
+    "key": "THESIS",
+    "text": "Thesis"
   }
 ]
