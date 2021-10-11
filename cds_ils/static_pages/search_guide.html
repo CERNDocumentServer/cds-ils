@@ -73,8 +73,8 @@
 
 <ul>
 <li><a href="/search?q=authors.full_name:(Albert%20Einstein)"><code>authors.full_name:(Albert Einstein)</code></a> - literature from a specific author</li>
-<li><a href="/search?q=1745-2481"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
-  <li><a href="/search?q=full_name.keyword: /Otto, .+/"><code>full_name.keyword: /Otto, .+/</code></a> - Look for authors whose last name is Otto</li>
+<li><a href="/search?q=authors.affiliations.name:CERN"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
+  <li><a href="/search?q=authors.full_name.keyword: /Otto, .%2B/"><code>full_name.keyword: /Otto, .+/</code></a> - Look for authors whose last name is Otto</li>
 </ul>
 
 <h4>Literature source</h4>
@@ -83,7 +83,7 @@
 
 <ul>
 <li><a href="/search?q=conference_info.acronym:(CHEP*)%20AND%20conference_info.year:2019"><code>conference_info.acronym:(CHEP*) AND conference_info.year:2019</code></a> - conference papers from a particular year</li>
-<li><a href="publication_info.journal_title: 'Nucl. Instrum. Methods Phys. Res., A'"><code>publication_info.journal_title: "Nucl. Instrum. Methods Phys. Res., A"</code></a> - publications in a journal</li>
+<li><a href="/search?q=publication_info.journal_title: 'Nucl. Instrum. Methods Phys. Res., A'"><code>publication_info.journal_title: "Nucl. Instrum. Methods Phys. Res., A"</code></a> - publications in a journal</li>
 <li><a href="/search?q=publication_year:2020"><code>publication_year:2020</code></a> - publication year to disambiguate versions</li>
 </ul>
 
