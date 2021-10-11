@@ -203,9 +203,11 @@ def subjects_dewey(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translate edition field."""
-    return clean_val("a", value, str)\
+    _edition = clean_val("a", value, str)\
         .replace("ed.", "")\
         .replace("edition", "").rstrip('.')
+    _edition = re.sub("\d{4}", "", _edition)
+    return _edition.strip()
 
 
 @model.over("number_of_pages", "^300__")
@@ -286,7 +288,7 @@ def keywords(self, key, value):
     return _keywords
 
 
-@model.over("identifiers", "^77608")
+@model.over("identifiers", "^776")
 @filter_list_values
 def id_isbns(self, key, value):
     """Translate identifiers isbn."""

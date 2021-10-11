@@ -68,7 +68,7 @@ def test_springer_transformation(app):
                      },
                 ],
                 "document_type": "BOOK",
-                "edition": "1st  2001",
+                "edition": "1st",
                 "identifiers": [
                     {"scheme": "ISBN", "value": "9780306479151"},
                     {"scheme": "ISBN", "value": "9780306479151X"},
