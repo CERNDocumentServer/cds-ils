@@ -206,7 +206,7 @@ def edition(self, key, value):
     _edition = clean_val("a", value, str)\
         .replace("ed.", "")\
         .replace("edition", "").rstrip('.')
-    _edition = re.sub("\d{4}", "", _edition)
+    _edition = re.sub(r"\d{4}", "", _edition)
     return _edition.strip()
 
 
