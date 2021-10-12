@@ -9,9 +9,74 @@
     "type": "eitem_sources",
     "text": "O'Reilly"
   },
-    {
+  {
     "key": "SPRINGER",
     "type": "eitem_sources",
     "text": "Springer"
+  },
+  {
+    "key": "OSO",
+    "type": "eitem_sources",
+    "text": "Oxford University Press"
+  },
+  {
+    "key": "CBO",
+    "type": "eitem_sources",
+    "text": "Cambridge University Press"
+  },
+  {
+    "key": "IEEE",
+    "type": "eitem_sources",
+    "text": "IEEE"
+  },
+  {
+    "key": "AMS",
+    "type": "eitem_sources",
+    "text": "American Mathematical Society"
+  },
+  {
+    "key": "WSC",
+    "type": "eitem_sources",
+    "text": "World Scientific"
+  },
+  {
+    "key": "WIL",
+    "type": "eitem_sources",
+    "text": "Wiley"
+  },
+  {
+    "key": "IOP",
+    "type": "eitem_sources",
+    "text": "Institute of Physics"
+  },
+  {
+    "key": "TAF",
+    "type": "eitem_sources",
+    "text": "Taylor and Francis"
+  },
+  {
+    "key": "ELS",
+    "type": "eitem_sources",
+    "text": "Elsevier"
+  },
+  {
+    "key": "WOO",
+    "type": "eitem_sources",
+    "text": "Woodhead Publishing"
+  },
+  {
+    "key": "IOS",
+    "type": "eitem_sources",
+    "text": "IOS Press"
+  },
+  {
+    "key": "GRU",
+    "type": "eitem_sources",
+    "text": "De Gruyter"
+  },
+  {
+    "key": "IGI",
+    "type": "eitem_sources",
+    "text": "IGI Global"
   }
 ]
