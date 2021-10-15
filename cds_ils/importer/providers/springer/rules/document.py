@@ -149,10 +149,11 @@ def identifiers(self, key, value):
     """Translate identifiers."""
     _isbns = self.get("identifiers", [])
     for v in force_list(value):
-        subfield_u = clean_val("u", v, str)
+        material = clean_val("u", v, str)
         sub_a = clean_val("a", v, str)
         if sub_a:
-            isbn = {"value": sub_a, "scheme": "ISBN", "material": subfield_u}
+            isbn = {"value": sub_a, "scheme": "ISBN",
+                    "material": "DIGITAL"}
             if isbn not in _isbns:
                 _isbns.append(isbn)
     return _isbns
@@ -295,12 +296,13 @@ def id_isbns(self, key, value):
     _identifiers = self.get("identifiers", [])
 
     isbn_value = clean_val("a", value, str)
+    material = clean_val("u", value, str)
 
     if isbn_value:
         isbn = {
             "scheme": "ISBN",
             "value": clean_val("a", value, str),
-            "material": clean_val("u", value, str),
+            "material": "PRINT_VERSION",
         }
 
         if isbn not in _identifiers:

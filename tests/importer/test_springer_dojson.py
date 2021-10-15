@@ -70,8 +70,12 @@ def test_springer_transformation(app):
                 "document_type": "BOOK",
                 "edition": "1st",
                 "identifiers": [
-                    {"scheme": "ISBN", "value": "9780306479151"},
-                    {"scheme": "ISBN", "value": "9780306479151X"},
+                    {"scheme": "ISBN", "value": "9780306479151",
+                     "material": "DIGITAL"},
+                    {"scheme": "ISBN",
+                     "value": "9780306479151X",
+                     "material": "DIGITAL"
+                     },
                 ],
                 "imprint": {
                     "place": "New York, NY ",
