@@ -20,20 +20,18 @@ export class ImportedSearch extends React.Component {
     this.handleSearchChange(this.searchBar.current.state.value);
   };
 
-  serialsInclude = (series, text) =>
-    series?.filter(serie => serie.output_pid?.includes(text)).length > 0;
-
   handleSearchChange = text => {
     const { records, searchData } = this.props;
 
-    const deb = debounce(async text => {
+    const deb = debounce(text => {
       const searchRecords = records.filter(
         record =>
           record.entry_recid.includes(text) ||
           record.output_pid?.includes(text) ||
           record.document?.title.includes(text) ||
           record.eitem?.output_pid?.includes(text) ||
-          this.serialsInclude(record.series, text)
+          record.series?.filter(serie => serie.output_pid?.includes(text))
+            .length > 0
       );
       searchData(searchRecords);
     });
@@ -41,7 +39,9 @@ export class ImportedSearch extends React.Component {
   };
 
   clearText = () => {
-    this.searchBar.current.setValue('');
+    this.searchBar.current.state.value = '';
+    console.log(this.searchBar.current);
+    console.log(this.searchBar.current.state);
     this.handleSearchChange('');
   };
 

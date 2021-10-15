@@ -13,6 +13,7 @@ import {
 import _isEmpty from 'lodash/isEmpty';
 import _isNull from 'lodash/isNull';
 import _get from 'lodash/get';
+import _cloneDeep from 'lodash/cloneDeep';
 import { CancelImportTask } from './cancelImportTask';
 import { ImportedTable } from './ImportedTable';
 import { ImportedSearch } from './ImportedSearch';
@@ -27,7 +28,7 @@ export class ImportedDocuments extends React.Component {
     this.state = {
       importCompleted: false,
       data: null,
-      isLoading: true,
+      isLoading: false,
       selectedResult: 'records',
       statistics: {
         records: {
@@ -108,7 +109,7 @@ export class ImportedDocuments extends React.Component {
       }
       this.calculateMode();
       this.calculateStatus();
-      this.calculateStatistics();
+      this.calculateStatistics(response.data);
     } else {
       this.intervalId && clearInterval(this.intervalId);
     }
@@ -146,9 +147,15 @@ export class ImportedDocuments extends React.Component {
           </Label>
         );
         break;
-      default:
-        mode = null;
+      case 'ERROR':
+        mode = (
+          <Label color="red" basic>
+            Error
+          </Label>
+        );
         break;
+      default:
+        throw Error('There was a problem processing the mode.');
     }
     this.setState({
       mode: mode,
@@ -156,9 +163,10 @@ export class ImportedDocuments extends React.Component {
   };
 
   statusLabel = () => {
-    const { data, isLoading } = this.state;
+    const { data } = this.state;
+    const isRunning = data.status === 'RUNNING';
     if (!data) return <Label color="grey">Fetching status</Label>;
-    if (isLoading)
+    if (isRunning)
       return (
         <Label color="blue">
           <Icon loading name="circle notch" /> Importing literature
@@ -180,24 +188,20 @@ export class ImportedDocuments extends React.Component {
     });
   };
 
-  calculateStatistics = () => {
-    const { statistics, data, selectedResult } = this.state;
+  calculateStatistics = data => {
+    const { statistics, selectedResult } = this.state;
 
-    const dataClone = Array.from(data.records);
+    const dataClone = _cloneDeep(data.records);
     const newRecords = dataClone.slice(this.lastIndex, dataClone.length);
 
     this.lastIndex += newRecords.length;
     statistics.records.value = data.loaded_entries + '/' + data.entries_count;
 
-    let tempRecords = [];
-
     for (const statistic in statistics) {
-      tempRecords = newRecords.filter(record =>
-        statistics[statistic].filterFunction(record)
-      );
+      const filterFunc = statistics[statistic].filterFunction;
       statistics[statistic].filteredRecords = statistics[
         statistic
-      ].filteredRecords.concat(tempRecords);
+      ].filteredRecords.concat(newRecords.filter(record => filterFunc(record)));
       if (statistic !== 'records') {
         statistics[statistic].value =
           statistics[statistic].filteredRecords.length;
@@ -205,8 +209,9 @@ export class ImportedDocuments extends React.Component {
     }
     this.setState({
       statistics: statistics,
+      currentFilteredRecords: statistics[selectedResult].filteredRecords,
+      finalRecords: statistics[selectedResult].filteredRecords,
     });
-    this.currentFilterResults(selectedResult);
   };
 
   currentFilterResults(key) {
@@ -264,12 +269,11 @@ export class ImportedDocuments extends React.Component {
   };
 
   renderCancelButton = () => {
-    const { data } = this.state;
+    const { isLoading } = this.state;
     const { taskId } = this.props;
-    const isRunning = !_isEmpty(data) && data.status === 'RUNNING';
 
     return (
-      isRunning && (
+      isLoading && (
         <>
           <CancelImportTask logId={taskId} />{' '}
           <Icon loading name="circle notch" />

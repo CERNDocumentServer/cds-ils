@@ -81,14 +81,12 @@ export class ImportedTable extends React.Component {
               )
               .map((elem, index) => {
                 return (
-                  !_isEmpty(elem) && (
-                    <ImportedDocumentReport
-                      // Keep the index as key due to lack of other unique id.
-                      key={index} // eslint-disable-line
-                      documentReport={elem}
-                      listIndex={index + (activePage - 1) * this.pageSize + 1}
-                    />
-                  )
+                  <ImportedDocumentReport
+                    // Keep the index as key due to lack of other unique id.
+                    key={index} // eslint-disable-line
+                    documentReport={elem}
+                    listIndex={index + (activePage - 1) * this.pageSize + 1}
+                  />
                 );
               })}
           </Table.Body>
