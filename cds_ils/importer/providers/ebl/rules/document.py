@@ -211,7 +211,7 @@ def number_of_pages(self, key, value):
     return numbers[0]
 
 
-@model.over("_serial", "^4901_")
+@model.over("_serial", "^490")
 @filter_list_values
 @for_each_value
 def serial(self, key, value):
@@ -233,7 +233,7 @@ def serial(self, key, value):
     serial_title = rreplace(serial_title, " ser.", "", 1)
     serial_title = rreplace(serial_title, " Ser.", "", 1)
     return {
-        "title": serial_title.strip(),
+        "title": serial_title.strip().capitalize(),
         "identifiers": identifiers,
         "volume": volume[0] if volume else None,
     }

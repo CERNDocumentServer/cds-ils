@@ -221,12 +221,12 @@ def number_of_pages(self, key, value):
         return numbers[0] if numbers else None
 
 
-@model.over("_serial", "^4901_")
+@model.over("_serial", "^490")
 @filter_list_values
 @for_each_value
 def serial(self, key, value):
     """Translate serial."""
-    issn_value = clean_val("x", value, str)
+    issn_value = clean_val("x", value, str).rreplace(";", "", 1)
     identifiers = None
     if issn_value:
         identifiers = [{"scheme": "ISSN", "value": issn_value}]

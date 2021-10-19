@@ -33,6 +33,8 @@ SAFARI_IGNORE_FIELDS = {
     "533__n",
     "533__d",
     "538__a",
+    "542__f",
+    "542__g",
     "550__a",
     "5880#a",  # yes, the hash is not a mistake
     "5880_a",
