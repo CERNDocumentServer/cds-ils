@@ -77,7 +77,7 @@ invenio-assets==1.2.6
 invenio-banners==1.0.0a1
 invenio-base==1.2.4
 invenio-cache==1.1.0
-invenio-celery==1.2.2
+invenio-celery==1.2.3
 invenio-circulation==1.0.0a33
 invenio-config==1.0.3
 invenio-db==1.0.8

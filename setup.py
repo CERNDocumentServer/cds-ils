@@ -44,7 +44,6 @@ install_requires = [
     # migrator deps
     "cds-dojson==0.9.0",
     "lxml>=3.5.0",
-    "celery>=4.3,<5.0.0",
     # temporarily breaking the builds, remove when fixed
     "sqlalchemy>=1.3,<1.4",
     "flask-sqlalchemy>=2.4,<2.5",
