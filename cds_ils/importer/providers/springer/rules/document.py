@@ -225,10 +225,13 @@ def number_of_pages(self, key, value):
 @for_each_value
 def serial(self, key, value):
     """Translate serial."""
-    issn_value = clean_val("x", value, str).rreplace(";", "", 1)
+    subfield_x = clean_val("x", value, str)
     identifiers = None
-    if issn_value:
-        identifiers = [{"scheme": "ISSN", "value": issn_value}]
+
+    if subfield_x:
+        issn_value = rreplace(subfield_x, ";", "", 1)
+        if issn_value:
+            identifiers = [{"scheme": "ISSN", "value": issn_value}]
 
     volume = clean_val("v", value, str)
     if volume:

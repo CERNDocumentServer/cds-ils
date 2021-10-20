@@ -41,7 +41,7 @@ def test_ebl_transformation(app):
                         }
                     ]
                 },
-                "_serial": [{"title": "Condensed Matter Physics"}],
+                "_serial": [{"title": "Condensed matter physics"}],
                 "provider_recid": "EBC263817",
                 "document_type": "BOOK",
                 "abstract": "IntroductionTheoryMagnetocaloric effect in the "
