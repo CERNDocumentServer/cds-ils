@@ -485,6 +485,7 @@ ILS_RECORDS_METADATA_EXTENSIONS = {
 }
 
 ILS_NOTIFICATIONS_TEMPLATES_CIRCULATION = {
+    "bulk_extend": "cds_bulk_extend.html",
     "cancel": "cds_cancel.html",
     "request": "cds_request.html",
     "request_no_items": "cds_request_no_items.html",
