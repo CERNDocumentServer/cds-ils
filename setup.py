@@ -55,6 +55,9 @@ install_requires = [
     "pluggy>=0.13.1,<1.0.0",
     # breaking changes in version 4
     "jsonschema>=3.0.0,<4.0.0",
+    # breaking changes in celery 5.1 (kombu +msgpack)
+    "invenio-celery==1.2.2",
+    "celery>=4.3,<5.1.0",
 ]
 
 packages = find_packages()
