@@ -4,7 +4,6 @@ import {
   Button,
   Message,
   Segment,
-  Statistic,
   Label,
   Grid,
   Icon,
@@ -15,13 +14,13 @@ import _isNull from 'lodash/isNull';
 import _get from 'lodash/get';
 import _cloneDeep from 'lodash/cloneDeep';
 import { CancelImportTask } from './cancelImportTask';
+import { RenderStatistics } from './ImportStats';
 import { ImportedTable } from './ImportedTable';
 import { ImportedSearch } from './ImportedSearch';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
 import { Link } from 'react-router-dom';
 import { importerApi } from '../../api/importer';
 import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
-import debounce from 'lodash/debounce';
 
 export class ImportedDocuments extends React.Component {
   constructor(props) {
@@ -32,6 +31,7 @@ export class ImportedDocuments extends React.Component {
       isLoading: false,
       selectedResult: 'records',
       searchText: '',
+      activePage: 1,
       statistics: {
         records: {
           text: 'Records',
@@ -42,6 +42,11 @@ export class ImportedDocuments extends React.Component {
           text: 'Records created',
           value: 0,
           filterFunction: record => record.action === 'create',
+        },
+        records_deleted: {
+          text: 'Records deleted',
+          value: 0,
+          filterFunction: record => record.action === 'delete',
         },
         records_updated: {
           text: 'Records updated',
@@ -64,9 +69,8 @@ export class ImportedDocuments extends React.Component {
           filterFunction: record => !_isEmpty(record.series),
         },
       },
-      finalFilteredRecords: null,
+      filteredRecords: null,
     };
-    this.activePage = 1;
     this.mode = '';
     this.status = '';
     this.lastIndex = 0;
@@ -185,7 +189,11 @@ export class ImportedDocuments extends React.Component {
     const newRecords = records.slice(this.lastIndex, records.length);
 
     this.lastIndex += newRecords.length;
-    stats.records.value = data.loaded_entries + '/' + data.entries_count;
+    stats.records.value = `${data.loaded_entries}/${data.entries_count}`;
+
+    data.mode.includes('DELETE')
+      ? delete stats.records_created
+      : delete stats.records_deleted;
 
     for (const statistic in stats) {
       const filterFunc = stats[statistic].filterFunction;
@@ -230,7 +238,7 @@ export class ImportedDocuments extends React.Component {
           {this.renderCancelButton()}
         </Grid.Column>
         <Grid.Column textAlign="right" floated="right" width={4}>
-          <ImportedSearch setSearchText={this.setSearchText} />
+          <ImportedSearch onSearchChange={this.onSearchChange} />
         </Grid.Column>
       </Grid>
     );
@@ -245,7 +253,7 @@ export class ImportedDocuments extends React.Component {
     );
   };
 
-  setSearchText = text => {
+  onSearchChange = text => {
     this.setState(
       {
         searchText: text,
@@ -255,26 +263,28 @@ export class ImportedDocuments extends React.Component {
   };
 
   setActivePage = page => {
-    this.activePage = page;
+    this.setState({
+      activePage: page,
+    });
   };
 
-  searchBarFilter = filteredRecords => {
+  filterBySearchText = record => {
     const { searchText } = this.state;
-    let deb = debounce(searchText => {
-      const searchRecords = filteredRecords.filter(
-        record =>
-          record.entry_recid.includes(searchText) ||
-          record.output_pid?.includes(searchText) ||
-          record.document?.title.includes(searchText) ||
-          record.eitem?.output_pid?.includes(searchText) ||
-          record.series?.filter(serie => serie.output_pid?.includes(searchText))
-            .length > 0
-      );
-      this.setState({
-        finalFilteredRecords: searchRecords,
-      });
-    }, 60);
-    return deb(searchText);
+
+    if (searchText === '') {
+      return true;
+    }
+
+    const lowerSearchText = searchText.toLowerCase();
+    return (
+      record.entry_recid?.toLowerCase().includes(lowerSearchText) ||
+      record.output_pid?.toLowerCase().includes(lowerSearchText) ||
+      record.document?.title.toLowerCase().includes(lowerSearchText) ||
+      record.eitem?.output_pid?.toLowerCase().includes(lowerSearchText) ||
+      record.series?.filter(serie =>
+        serie.output_pid?.toLowerCase().includes(lowerSearchText)
+      ).length > 0
+    );
   };
 
   filteredRecords = () => {
@@ -282,11 +292,13 @@ export class ImportedDocuments extends React.Component {
     const selectedFilterFunc = statistics[selectedResult].filterFunction;
     const records = data.records;
 
-    const filteredRecords = records.filter(record =>
-      selectedFilterFunc(record)
-    );
-    this.searchBarFilter(filteredRecords);
-    this.setActivePage(1);
+    const filteredRecords = records
+      .filter(record => selectedFilterFunc(record))
+      .filter(record => this.filterBySearchText(record));
+    this.setState({
+      filteredRecords: filteredRecords,
+      activePage: 1,
+    });
   };
 
   renderCancelButton = () => {
@@ -310,7 +322,8 @@ export class ImportedDocuments extends React.Component {
       data,
       statistics,
       selectedResult,
-      finalFilteredRecords,
+      filteredRecords,
+      activePage,
     } = this.state;
     return (
       <>
@@ -330,32 +343,11 @@ export class ImportedDocuments extends React.Component {
                       </Segment>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                      <Statistic.Group widths="seven">
-                        {Object.keys(statistics).map(function(
-                          statistic,
-                          index
-                        ) {
-                          return (
-                            <Statistic
-                              className={
-                                selectedResult === statistic
-                                  ? 'import-statistic statistic-selected'
-                                  : 'import-statistic'
-                              }
-                              key={statistic}
-                              onClick={() => this.applyFilter(statistic)}
-                            >
-                              <Statistic.Value>
-                                {statistics[statistic].value}
-                              </Statistic.Value>
-                              <Statistic.Label>
-                                {statistics[statistic].text}
-                              </Statistic.Label>
-                            </Statistic>
-                          );
-                        },
-                        this)}
-                      </Statistic.Group>
+                      <RenderStatistics
+                        statistics={statistics}
+                        selectedResult={selectedResult}
+                        applyFilter={this.applyFilter}
+                      />
                     </Grid.Column>
                   </Grid>
                 ) : (
@@ -363,14 +355,14 @@ export class ImportedDocuments extends React.Component {
                 )
               ) : null}
             </Segment>
-            {!_isEmpty(finalFilteredRecords) ? (
+            {!_isEmpty(filteredRecords) ? (
               <ImportedTable
-                records={finalFilteredRecords}
-                activePage={this.activePage}
-                setActivePage={this.setActivePage}
+                records={filteredRecords}
+                activePage={activePage}
+                onPageChange={this.setActivePage}
               />
             ) : (
-              !_isNull(finalFilteredRecords) && (
+              !_isNull(filteredRecords) && (
                 <Message>
                   <Message.Header>No records found.</Message.Header>
                   <p>No records found with the selected filter.</p>

@@ -1,21 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Search, Button, Icon } from 'semantic-ui-react';
+import _debounce from 'lodash/debounce';
 
 export class ImportedSearch extends React.Component {
   constructor(props) {
     super(props);
     this.searchBar = React.createRef();
+    this.debounceDelay = 250;
   }
 
-  handleSearchChange = text => {
-    const { setSearchText } = this.props;
-    setSearchText(text);
+  handleSearchChange = (e, { value }) => {
+    const { onSearchChange } = this.props;
+    onSearchChange(value);
   };
 
   clearText = () => {
+    const { onSearchChange } = this.props;
     this.searchBar.current.state.value = '';
-    this.handleSearchChange('');
+    onSearchChange('');
   };
 
   render() {
@@ -23,7 +26,10 @@ export class ImportedSearch extends React.Component {
       <>
         <Search
           className="clean-search"
-          onSearchChange={(event, text) => this.handleSearchChange(text.value)}
+          onSearchChange={_debounce(
+            this.handleSearchChange,
+            this.debounceDelay
+          )}
           open={false}
           ref={this.searchBar}
           size="large"
@@ -31,7 +37,7 @@ export class ImportedSearch extends React.Component {
         <Button
           className="center-search-bar-button"
           icon
-          onClick={(event, data) => this.clearText()}
+          onClick={this.clearText}
         >
           <Icon name="times" />
         </Button>
@@ -41,5 +47,5 @@ export class ImportedSearch extends React.Component {
 }
 
 ImportedSearch.propTypes = {
-  setSearchText: PropTypes.func.isRequired,
+  onSearchChange: PropTypes.func.isRequired,
 };

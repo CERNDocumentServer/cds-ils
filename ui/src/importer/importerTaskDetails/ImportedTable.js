@@ -13,8 +13,8 @@ export class ImportedTable extends React.Component {
   }
 
   handlePaginationChange = (e, { activePage }) => {
-    const { setActivePage } = this.props;
-    setActivePage(activePage);
+    const { onPageChange } = this.props;
+    onPageChange(activePage);
   };
 
   render() {
@@ -105,5 +105,5 @@ export class ImportedTable extends React.Component {
 ImportedTable.propTypes = {
   records: PropTypes.array.isRequired,
   activePage: PropTypes.number.isRequired,
-  setActivePage: PropTypes.func.isRequired,
+  onPageChange: PropTypes.func.isRequired,
 };
