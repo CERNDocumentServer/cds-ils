@@ -105,13 +105,22 @@ class Importer(object):
     def _match_document(self):
         """Search the catalogue for existing document."""
         document_class = current_app_ils.document_record_cls
+        document_importer = self.document_importer
 
-        matching_pids = self.document_importer.search_for_matching_documents()
+        not_validated_matches = \
+            document_importer.search_for_matching_documents()
+
+        matching_pids, partial_matching_pids = \
+            document_importer.validate_found_matches(not_validated_matches)
+
         if len(matching_pids) == 1:
             return document_class.get_record_by_pid(matching_pids[0])
 
-        self.ambiguous_matches = matching_pids
+        # ambiguous = matching fails
+        # (inconsistent identifiers/title pairs, duplicates etc)
+        self.ambiguous_matches = matching_pids + partial_matching_pids
 
+        # fuzzy = trying to match similar titles and authors to spot typos
         fuzzy_results = self.document_importer.fuzzy_match_documents()
         self.fuzzy_matches = [x.pid for x in fuzzy_results]
 
