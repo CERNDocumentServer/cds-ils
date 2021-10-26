@@ -208,9 +208,28 @@ class DocumentImporter(object):
             click.secho(e.original_exception.message, fg="red")
             db.session.rollback()
 
+    def validate_found_matches(self, not_validated_matches):
+        """Validate matched & parsed documents have same title/isbn pair."""
+        matches = []
+        partial_matches = []
+        document_class = current_app_ils.document_record_cls
+        title = self.json_data.get("title")
+
+        for pid in not_validated_matches:
+            document = document_class.get_record_by_pid(pid)
+            document_title = document['title']
+
+            if document_title.lower() == title.lower():
+                matches.append(document['pid'])
+            else:
+                partial_matches.append(document['pid'])
+
+        return matches, partial_matches
+
     def search_for_matching_documents(self):
         """Find matching documents."""
         document_class = current_app_ils.document_record_cls
+
         isbn_list = [
             identifier["value"]
             for identifier in self.json_data.get("identifiers", [])
@@ -230,7 +249,6 @@ class DocumentImporter(object):
             search = search_documents_by_isbn(isbn)
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
-
         # check by doi
 
         for doi in doi_list:
@@ -266,6 +284,7 @@ class DocumentImporter(object):
                 document = document_class.get_record_by_pid(match)
                 if document.get("edition") != self.json_data.get("edition"):
                     matches.remove(match)
+
         return matches
 
     def fuzzy_match_documents(self):

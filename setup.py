@@ -55,6 +55,10 @@ install_requires = [
     "pluggy>=0.13.1,<1.0.0",
     # breaking changes in version 4
     "jsonschema>=3.0.0,<4.0.0",
+    # version conflict by invenio-oauth2server
+    "WTForms<3.0.0,>=2.3.3",
+    # invenio-celery conflict fix
+    "celery<5.2,>=5.1.0",
 ]
 
 packages = find_packages()
