@@ -20,7 +20,10 @@ import { ImportedSearch } from './ImportedSearch';
 import { CdsBackOfficeRoutes } from '../../overridden/routes/BackofficeUrls';
 import { Link } from 'react-router-dom';
 import { importerApi } from '../../api/importer';
-import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
+import {
+  invenioConfig,
+  NotFound,
+} from '@inveniosoftware/react-invenio-app-ils';
 
 export class ImportedDocuments extends React.Component {
   constructor(props) {
@@ -29,6 +32,7 @@ export class ImportedDocuments extends React.Component {
       importCompleted: false,
       data: null,
       isLoading: false,
+      error: null,
       selectedResult: 'records',
       searchText: '',
       activePage: 1,
@@ -90,9 +94,16 @@ export class ImportedDocuments extends React.Component {
   };
 
   checkForData = async () => {
-    const { importCompleted, data } = this.state;
+    const { importCompleted, data, intervalId } = this.state;
     const { taskId } = this.props;
-    if (!importCompleted) {
+
+    if (importCompleted) {
+      this.intervalId && clearInterval(intervalId);
+
+      return;
+    }
+
+    try {
       const nextEntry = _get(data, 'loaded_entries', 0);
       const response = await importerApi.check(taskId, nextEntry);
       if (response.data.status !== 'RUNNING') {
@@ -111,8 +122,8 @@ export class ImportedDocuments extends React.Component {
       this.calculateMode();
       this.calculateStatus();
       this.calculateStatistics(response.data);
-    } else {
-      this.intervalId && clearInterval(this.intervalId);
+    } catch (error) {
+      this.setState({ error, isLoading: false });
     }
   };
 
@@ -221,8 +232,10 @@ export class ImportedDocuments extends React.Component {
   };
 
   renderImportReportHeader = () => {
-    const { data } = this.state;
-    return (
+    const { data, error } = this.state;
+    const noErrors = !error;
+
+    return noErrors ? (
       <Grid>
         <Grid.Column floated="left" width={12}>
           <Button
@@ -241,7 +254,7 @@ export class ImportedDocuments extends React.Component {
           <ImportedSearch onSearchChange={this.onSearchChange} />
         </Grid.Column>
       </Grid>
-    );
+    ) : null;
   };
 
   applyFilter = key => {
@@ -311,68 +324,92 @@ export class ImportedDocuments extends React.Component {
           <CancelImportTask logId={taskId} />{' '}
           <Icon loading name="circle notch" />
           This may take a while. You may leave the page, the process will
-          continue in background. ImportedSearch
+          continue in background.
         </>
       )
     );
   };
 
-  render() {
+  renderContent = () => {
     const {
       data,
       statistics,
       selectedResult,
       filteredRecords,
       activePage,
+      error,
     } = this.state;
+
+    const dataAvailable = !_isEmpty(data);
+    const filteredRecordsAvailable = !_isEmpty(filteredRecords);
+    const filteredRecordsNotNull = !_isNull(filteredRecords);
+    const errorWhileFetching = !_isEmpty(data) && data?.status === 'FAILED';
+    const entriesReady =
+      (data?.loaded_entries || data?.loaded_entries === 0) &&
+      data?.entries_count;
+
+    if (error) {
+      return <NotFound title="Task not found" />;
+    }
+
+    if (errorWhileFetching) {
+      return this.renderErrorMessage(data);
+    }
+
+    const HeaderComponent = () =>
+      entriesReady && dataAvailable ? (
+        <Grid className="middle aligned">
+          <Grid.Column width={3}>
+            <Segment>
+              Mode: {this.mode}
+              <Divider />
+              Status: {this.status}
+            </Segment>
+          </Grid.Column>
+          <Grid.Column width={13}>
+            <RenderStatistics
+              statistics={statistics}
+              selectedResult={selectedResult}
+              applyFilter={this.applyFilter}
+            />
+          </Grid.Column>
+        </Grid>
+      ) : (
+        <span>Processing file...</span>
+      );
+
+    const BodyComponent = () => {
+      if (filteredRecordsAvailable) {
+        return (
+          <ImportedTable
+            records={filteredRecords}
+            activePage={activePage}
+            onPageChange={this.setActivePage}
+          />
+        );
+      } else if (filteredRecordsNotNull) {
+        return (
+          <Message>
+            <Message.Header>No records found.</Message.Header>
+            <p>No records found with the selected filter.</p>
+          </Message>
+        );
+      }
+    };
+
+    return (
+      <>
+        {HeaderComponent()}
+        {BodyComponent()}
+      </>
+    );
+  };
+
+  render() {
     return (
       <>
         {this.renderImportReportHeader()}
-        {!_isEmpty(data) && data.status !== 'FAILED' ? (
-          <>
-            <Segment>
-              {!_isEmpty(data) ? (
-                (data.loaded_entries || data.loaded_entries === 0) &&
-                data.entries_count ? (
-                  <Grid className="middle aligned">
-                    <Grid.Column width={3}>
-                      <Segment>
-                        Mode: {this.mode}
-                        <Divider />
-                        Status: {this.status}
-                      </Segment>
-                    </Grid.Column>
-                    <Grid.Column width={13}>
-                      <RenderStatistics
-                        statistics={statistics}
-                        selectedResult={selectedResult}
-                        applyFilter={this.applyFilter}
-                      />
-                    </Grid.Column>
-                  </Grid>
-                ) : (
-                  <span>Processing file...</span>
-                )
-              ) : null}
-            </Segment>
-            {!_isEmpty(filteredRecords) ? (
-              <ImportedTable
-                records={filteredRecords}
-                activePage={activePage}
-                onPageChange={this.setActivePage}
-              />
-            ) : (
-              !_isNull(filteredRecords) && (
-                <Message>
-                  <Message.Header>No records found.</Message.Header>
-                  <p>No records found with the selected filter.</p>
-                </Message>
-              )
-            )}
-          </>
-        ) : !_isEmpty(data) && data.status === 'FAILED' ? (
-          this.renderErrorMessage(data)
-        ) : null}
+        {this.renderContent()}
       </>
     );
   }
