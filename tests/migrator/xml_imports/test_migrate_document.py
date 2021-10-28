@@ -95,7 +95,7 @@ def test_migrate_record(datadir, base_app):
                     "publisher": "World Scientific",
                     "place": "Singapore"
                 },
-
+            "tags": ["THESIS"],
             '_migration': {
                            'has_related': False,
                            'has_serial': False,

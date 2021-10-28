@@ -23,6 +23,7 @@ def _get_correct_ils_contributor_role(subfield, role):
         "author.": "AUTHOR",
         "dir.": "SUPERVISOR",
         "dir": "SUPERVISOR",
+        "supervisor": "SUPERVISOR",
         "ed.": "EDITOR",
         "editor": "EDITOR",
         "editor.": "EDITOR",

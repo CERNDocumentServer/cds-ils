@@ -19,6 +19,8 @@ from cds_ils.minters import legacy_recid_minter
 class CDSImporter(Importer):
     """CDS importer class."""
 
+    UPDATE_DOCUMENT_FIELDS = ("identifiers", "tags")
+
     def _match_document(self):
         """CDS importer match document."""
         legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
