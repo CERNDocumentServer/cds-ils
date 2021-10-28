@@ -158,6 +158,31 @@ export const config = {
         'medium',
       ],
     },
+    mediums: [
+      {
+        value: 'NOT_SPECIFIED',
+        text: 'Not specified',
+        label: 'Not specified',
+        order: 1,
+      },
+      { value: 'PAPER', text: 'Paper', label: 'Paper', order: 2 },
+      { value: 'CDROM', text: 'CD-ROM', label: 'CD-ROM', order: 3 },
+      { value: 'DVD', text: 'DVD', label: 'DVD', order: 4 },
+      { value: 'VHS', text: 'VHS', label: 'VHS', order: 5 },
+      {
+        value: 'PAPERBACK',
+        text: 'Paperback',
+        label: 'Paperback',
+        order: 6,
+      },
+      {
+        value: 'HARDCOVER',
+        text: 'Hardcover',
+        label: 'Hardcover',
+        order: 7,
+      },
+      { value: 'AUDIO_CD', text: 'Audio CD', label: 'Audio CD', order: 8 },
+    ],
   },
   IMPORTER: {
     providers: [
