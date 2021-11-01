@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Confirm, Message } from 'semantic-ui-react';
-import { importerApi } from '../../api/importer';
+import { importerApi } from '../../../api/importer';
 import { withCancel } from '@inveniosoftware/react-invenio-app-ils';
 
 export class CancelImportTask extends Component {
