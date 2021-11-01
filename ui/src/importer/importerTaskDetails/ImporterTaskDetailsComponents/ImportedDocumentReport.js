@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 import { Button, Header, Icon, Label, Table } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
-import { openJsonModal as openJsonModalAction } from '../JsonViewModal/actions';
-import { openSeriesDetailsModal as openSeriesDetailsModalAction } from '../SeriesImportDetailsModal/actions';
-import { openEitemDetailsModal as openEitemDetailsModalAction } from '../EitemImportDetailsModal/actions';
+import { openJsonModal as openJsonModalAction } from '../../JsonViewModal/actions';
+import { openSeriesDetailsModal as openSeriesDetailsModalAction } from '../../SeriesImportDetailsModal/actions';
+import { openEitemDetailsModal as openEitemDetailsModalAction } from '../../EitemImportDetailsModal/actions';
 
 class ImportedDocumentReportComponent extends Component {
   renderActionLabel = action => {
