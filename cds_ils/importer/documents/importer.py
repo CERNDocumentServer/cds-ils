@@ -6,10 +6,12 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer documents module."""
+import datetime
 import uuid
 from copy import deepcopy
 
 import click
+from dateutil import parser
 from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
@@ -160,6 +162,9 @@ class DocumentImporter(object):
                 )
                 cleaned_json["pid"] = provider.pid.pid_value
                 document = document_class.create(cleaned_json, record_uuid)
+                created_date = cleaned_json.get("_created")
+                if created_date:
+                    document.model.created = parser.parse(created_date)
             db.session.commit()
             return document
         except IlsValidationError as e:
@@ -193,6 +198,9 @@ class DocumentImporter(object):
                 matched_document[field] = self.json_data[field]
 
         try:
+            created_date = self.json_data.get("_created")
+            if created_date:
+                matched_document.model.created = parser.parse(created_date)
             matched_document.commit()
             db.session.commit()
         except IlsValidationError as e:
