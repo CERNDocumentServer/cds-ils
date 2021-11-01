@@ -182,6 +182,8 @@ class DocumentImporter(object):
     def update_document(self, matched_document):
         """Update document record."""
         for field in self.update_document_fields:
+            if not self.json_data.get(field):
+                continue
             update_field_method = getattr(
                 self, "_update_field_{}".format(field), None
             )
@@ -285,6 +287,8 @@ class DocumentImporter(object):
     def preview_document_update(self, matched_document):
         """Preview document update JSON."""
         for field in self.update_document_fields:
+            if not self.json_data.get(field):
+                continue
             update_field_method = getattr(
                 self, "_update_field_{}".format(field), None
             )
