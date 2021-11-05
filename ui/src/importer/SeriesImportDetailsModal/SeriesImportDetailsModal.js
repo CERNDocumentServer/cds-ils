@@ -33,7 +33,7 @@ export default class SeriesImportDetails extends Component {
                       <>
                         <Link
                           key={pid}
-                          to={BackOfficeRoutes.eitemDetailsFor(pid)}
+                          to={BackOfficeRoutes.seriesDetailsFor(pid)}
                         >
                           {pid}
                         </Link>

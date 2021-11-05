@@ -235,8 +235,15 @@ class SeriesImporter(object):
                 series.append(
                     self._record_summary(json_series,
                                          series_record=series_record,
-                                         output_pid=None, action="create"))
+                                         output_pid=series_record['pid'],
+                                         action="create"))
             else:
+                series.append(
+                    self._record_summary(
+                        json_series, series_record=None,
+                        output_pid=None, action="error",
+                        matching_series_pid_list=matching_series_pids)
+                )
                 raise SeriesImportError(message="Multiple series found.")
         return series
 
@@ -275,4 +282,5 @@ class SeriesImporter(object):
                         output_pid=None, action="create",
                         matching_series_pid_list=matching_series_pids)
                 )
+                raise SeriesImportError(message="Multiple series found.")
         return series_preview

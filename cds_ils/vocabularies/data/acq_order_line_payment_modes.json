@@ -2,7 +2,7 @@
   {
     "type": "acq_order_line_payment_mode",
     "key": "CASH_CARD",
-    "text": "Cash/card"
+    "text": "Cash or card"
   },
   {
     "type": "acq_order_line_payment_mode",

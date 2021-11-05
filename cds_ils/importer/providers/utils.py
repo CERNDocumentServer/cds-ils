@@ -32,6 +32,8 @@ def _get_correct_ils_contributor_role(subfield, role):
         "ill": "ILLUSTRATOR",
         "ed. et al.": "EDITOR",
     }
+    if role is None:
+        return "AUTHOR"
     if isinstance(role, str):
         clean_role = role.lower()
     else:

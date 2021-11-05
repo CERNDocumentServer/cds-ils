@@ -21,7 +21,7 @@ class SpringerDocument(Base):
 
     __ignore_keys__ = SPRINGER_IGNORE_FIELDS
 
-    _default_fields = {"document_type": "BOOK"}
+    _default_fields = {"document_type": "BOOK", "languages": ['ENG']}
 
     def do(
         self,

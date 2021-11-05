@@ -31,13 +31,9 @@ export default class EitemImportDetails extends Component {
               <>
                 <Header>EItems deleted or replaced</Header>
                 <List>
-                  {eitemReport.deleted_eitems.map(pid => (
-                    <List.Item key={pid}>
-                      <Link to={BackOfficeRoutes.eitemDetailsFor(pid)}>
-                        {pid}
-                      </Link>
-                    </List.Item>
-                  ))}
+                  {eitemReport.deleted_eitems.map(
+                    eitem => `(replaced: ${eitem.pid})`
+                  )}
                 </List>
               </>
             )}

@@ -109,7 +109,7 @@ def clean_medium(record):
     document_cls = current_app_ils.document_record_cls
     document = document_cls.get_record_by_pid(record["document_pid"])
 
-    if document["_migration"]["has_medium"]:
+    if document.get("_migration", {}).get("has_medium", {}):
         for item in document["_migration"]["item_medium"]:
             if record["barcode"] == item["barcode"]:
                 record["medium"] = item["medium"]

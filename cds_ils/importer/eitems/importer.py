@@ -15,6 +15,7 @@ from invenio_app_ils.eitems.api import EItemIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
+from invenio_pidstore.models import PersistentIdentifier
 
 from cds_ils.importer.eitems.api import get_eitems_for_document_by_provider
 
@@ -27,15 +28,18 @@ class EItemImporter(object):
         json_metadata,
         eitem_json_data,
         metadata_provider,
-        current_provider_priority,
         provider_priority_sensitive,
         open_access,
         login_required,
     ):
         """Constructor."""
+        priority = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
+            metadata_provider
+        ]["priority"]
+
         self.json_data = json_metadata
         self.metadata_provider = metadata_provider
-        self.current_provider_priority = current_provider_priority
+        self.current_provider_priority = priority
         self.is_provider_priority_sensitive = provider_priority_sensitive
         self.open_access = open_access
         self.login_required = login_required
@@ -89,7 +93,18 @@ class EItemImporter(object):
 
     def _delete_existing_record(self, existing_eitem):
         eitem_indexer = current_app_ils.eitem_indexer
-        existing_eitem.delete(force=True)
+        pid = existing_eitem.pid
+        pid_object_type, pid_object_uuid = pid.object_type, pid.object_uuid
+        existing_eitem.delete()
+
+        # mark all PIDs as DELETED
+        all_pids = PersistentIdentifier.query.filter(
+            PersistentIdentifier.object_type == pid_object_type,
+            PersistentIdentifier.object_uuid == pid_object_uuid,
+        ).all()
+        for rec_pid in all_pids:
+            if not rec_pid.is_deleted():
+                rec_pid.delete()
         db.session.commit()
         eitem_indexer.delete(existing_eitem)
         return existing_eitem
@@ -117,7 +132,19 @@ class EItemImporter(object):
         for eitem in self._get_other_eitems_of_document(matched_document):
             if self._should_replace_eitem(eitem):
                 self.deleted_list.append(eitem)
+                pid = eitem.pid
+                pid_object_type, pid_object_uuid = pid.object_type, \
+                    pid.object_uuid
                 eitem.delete()
+                # mark all PIDs as DELETED
+                all_pids = PersistentIdentifier.query.filter(
+                    PersistentIdentifier.object_type == pid_object_type,
+                    PersistentIdentifier.object_uuid == pid_object_uuid,
+                ).all()
+                for rec_pid in all_pids:
+                    if not rec_pid.is_deleted():
+                        rec_pid.delete()
+                db.session.commit()
                 eitem_indexer.delete(eitem)
         if self.deleted_list:
             self.action = "replace"
@@ -166,12 +193,11 @@ class EItemImporter(object):
 
     def import_eitem_action(self, search):
         """Determine import action."""
-        if search:
-            hits_total = search.count()
-            if hits_total == 1:
-                self.action = "update"
-                return
-        self.action = "create"
+        hits_count = search.count()
+        if hits_count == 1:
+            self.action = "update"
+        elif hits_count == 0:
+            self.action = "create"
 
     def get_first_match(self, search):
         """Return first matched record from search."""
@@ -186,7 +212,7 @@ class EItemImporter(object):
         self.import_eitem_action(search)
 
         # determine currently imported eitem provider priority
-        should_eitem_be_imported = self.is_provider_priority_sensitive and \
+        should_eitem_be_imported = \
             self._should_import_eitem_by_priority(matched_document)
 
         if self.action == "create" and should_eitem_be_imported:

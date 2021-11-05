@@ -14,5 +14,5 @@ def get_record_by_legacy_recid(cls, legacy_pid_type, pid_value):
         object_type="rec",
         getter=cls.get_record,
     )
-    _, record = resolver.resolve(str(pid_value))
+    pid, record = resolver.resolve(str(pid_value))
     return record

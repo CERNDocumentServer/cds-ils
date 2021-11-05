@@ -53,7 +53,7 @@ def title(self, key, value):
     return clean_val("a", value, str, req=True).rstrip("/")
 
 
-@model.over("authors", "(^1001_)|(^7001_)")
+@model.over("authors", "(^100)|(^700)")
 @filter_list_values
 def authors(self, key, value):
     """Translates authors."""
@@ -304,7 +304,7 @@ def id_isbns(self, key, value):
     if isbn_value:
         isbn = {
             "scheme": "ISBN",
-            "value": clean_val("a", value, str),
+            "value": clean_val("z", value, str),
             "material": "PRINT_VERSION",
         }
 

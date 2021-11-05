@@ -44,9 +44,6 @@ class Importer(object):
         """Constructor."""
         self.json_data = json_data
         self.metadata_provider = metadata_provider
-        priority = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
-            metadata_provider
-        ]["priority"]
 
         eitem_json_data = self._extract_eitems_json()
         document_importer_class = self.get_document_importer(metadata_provider)
@@ -60,7 +57,6 @@ class Importer(object):
             json_data,
             eitem_json_data,
             metadata_provider,
-            priority,
             self.IS_PROVIDER_PRIORITY_SENSITIVE,
             self.EITEM_OPEN_ACCESS,
             self.EITEM_URLS_LOGIN_REQUIRED,

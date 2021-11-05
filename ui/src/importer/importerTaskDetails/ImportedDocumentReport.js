@@ -41,8 +41,9 @@ class ImportedDocumentReportComponent extends Component {
       title = documentReport.entry_recid;
     }
 
+    const hasErrors = !documentReport.success;
     return (
-      <Table.Row negative={!documentReport.success}>
+      <Table.Row negative={hasErrors}>
         <Table.Cell collapsing textAlign="center">
           {listIndex}
         </Table.Cell>
@@ -117,15 +118,10 @@ class ImportedDocumentReportComponent extends Component {
 
               {!_isEmpty(_get(documentReport, 'eitem.deleted_eitems', [])) && (
                 <>
-                  {_get(documentReport, 'eitem.deleted_eitems').map(eitem => (
-                    <Link
-                      key={eitem.pid}
-                      to={BackOfficeRoutes.eitemDetailsFor(eitem.pid)}
-                      target="_blank"
-                    >
-                      {eitem.pid}
-                    </Link>
-                  ))}
+                  <br />
+                  {_get(documentReport, 'eitem.deleted_eitems').map(
+                    eitem => `(replaced: ${eitem.pid})`
+                  )}
                 </>
               )}
 
@@ -204,6 +200,7 @@ class ImportedDocumentReportComponent extends Component {
                     <Button
                       icon="exclamation"
                       floated="right"
+                      color="red"
                       size="mini"
                       basic
                       onClick={() =>

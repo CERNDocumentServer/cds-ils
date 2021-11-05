@@ -19,7 +19,8 @@ from cds_ils.importer.providers.cds.helpers.decorators import \
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.ebl.ebl import model
 # REQUIRED_FIELDS
-from cds_ils.importer.providers.utils import rreplace
+from cds_ils.importer.providers.utils import \
+    _get_correct_ils_contributor_role, rreplace
 
 
 @model.over("alternative_identifiers", "^001")
@@ -38,7 +39,7 @@ def agency_code(self, key, value):
     return value
 
 
-@model.over("authors", "(^1001_)|(^7001_)")
+@model.over("authors", "(^100)|(^700)")
 @filter_list_values
 def authors(self, key, value):
     """Translates authors."""
@@ -47,6 +48,9 @@ def authors(self, key, value):
     author = {
         "full_name":
             clean_val("a", value, str, req=True).rstrip("."),
+        "roles": [
+            _get_correct_ils_contributor_role("e", clean_val("e", value, str))
+            ],
         "type": "PERSON"
     }
     _authors.append(author)
@@ -233,7 +237,7 @@ def serial(self, key, value):
     serial_title = rreplace(serial_title, " ser.", "", 1)
     serial_title = rreplace(serial_title, " Ser.", "", 1)
     return {
-        "title": serial_title.strip().capitalize(),
+        "title": serial_title.strip(),
         "identifiers": identifiers,
         "volume": volume[0] if volume else None,
     }

@@ -104,5 +104,6 @@ def test_springer_transformation(app):
                     "The Deuteron: Structure and Form Factors.",
                 ],
                 "title": "Advances in Nuclear Physics",
+                "languages": ["ENG"],
             },
         )
