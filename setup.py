@@ -37,7 +37,7 @@ install_requires = [
     "uwsgi-tools>=1.1.1",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.2.0,<3.3.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a54",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a55",
     "invenio-assets>=1.2.6",
     "invenio-base>=1.2.4",
     "sentry-sdk>=0.10.2",
@@ -55,6 +55,10 @@ install_requires = [
     "pluggy>=0.13.1,<1.0.0",
     # breaking changes in version 4
     "jsonschema>=3.0.0,<4.0.0",
+    # version conflict by invenio-oauth2server
+    "WTForms<3.0.0,>=2.3.3",
+    # invenio-celery conflict fix
+    "celery<5.2,>=5.1.0",
 ]
 
 packages = find_packages()

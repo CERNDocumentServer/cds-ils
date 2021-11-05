@@ -34,7 +34,7 @@ def agency_code(self, key, value):
     return value
 
 
-@model.over("authors", "(^1001_)|(^7001_)|(^100#_)|(^700#_)")
+@model.over("authors", "(^100)|(^700)")
 @filter_list_values
 def authors(self, key, value):
     """Translates authors."""
@@ -51,7 +51,7 @@ def authors(self, key, value):
     return _authors
 
 
-@model.over("title", "(^24510)|(^24512)|(^24513)")
+@model.over("title", "^245")
 @out_strip
 def title(self, key, value):
     """Translates title."""

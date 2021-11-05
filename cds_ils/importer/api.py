@@ -13,6 +13,7 @@ from flask import current_app
 from invenio_app_ils.errors import IlsValidationError, \
     RecordHasReferencesError, VocabularyError
 from invenio_db import db
+from invenio_pidstore.errors import PIDDeletedError
 
 from cds_ils.importer.errors import LossyConversion, MissingRequiredField, \
     ProviderNotAllowedDeletion, RecordModelMissing, RecordNotDeletable, \
@@ -98,7 +99,7 @@ def import_from_xml(log, source_path, source_type, provider, mode,
                         ProviderNotAllowedDeletion,
                         SeriesImportError,
                         RecordHasReferencesError, UnknownProvider,
-                        VocabularyError) as e:
+                        VocabularyError, PIDDeletedError) as e:
                     ImportRecordLog.create_failure(
                         log.id, record_recid,
                         str(e.description), report={"raw_json": json_data})

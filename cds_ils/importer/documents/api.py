@@ -83,17 +83,17 @@ def search_documents_by_doi(doi):
 def search_document_by_title_authors(title, authors, subtitle=None):
     """Find document by title and authors."""
     document_search = current_app_ils.document_search_cls()
+
+    title = title.lower()
     if subtitle:
         search = (
-            document_search.query("bool", filter=[Q("term",
-                                                    title__keyword=title)])
+            document_search.filter("term", title__normalized_keyword=title)
             .filter("match", alternative_titles__value=subtitle)
             .filter("match", authors__full_name=" ".join(authors))
         )
     else:
         search = (
-            document_search.query("bool", filter=[Q("term",
-                                                    title__keyword=title)])
+            document_search.filter("term", title__normalized_keyword=title)
             .filter("match", authors__full_name=" ".join(authors))
         )
     return search
