@@ -20,7 +20,12 @@ export class ImporterReportStatusLabel extends React.Component {
   }
 
   relevantLabel = status => {
-    return <> Status: {this.labels[status]} </>;
+    return (
+      <>
+        {' '}
+        <Icon name="upload" /> {this.labels[status]}{' '}
+      </>
+    );
   };
 
   render() {

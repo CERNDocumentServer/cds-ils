@@ -44,9 +44,9 @@ export class Importer extends Component {
     });
   };
 
-  handleCheckboxChange = (e, { name, value }) => {
+  handleCheckboxChange = (e, { name, checked }) => {
     this.setState({
-      [name]: !value,
+      [name]: checked,
     });
   };
 
@@ -233,90 +233,88 @@ export class Importer extends Component {
     } = this.state;
 
     return (
-      <>
-        <Form>
-          <Segment>
-            <Form.Group widths="equal">
-              <Form.Select
-                placeholder="Select a provider ..."
-                label="Provider"
-                search
-                selection
-                name="provider"
-                value={provider}
-                options={invenioConfig.IMPORTER.providers}
-                onChange={this.handleChange}
-                required
-                error={providerMissing ? 'Please enter a provider' : null}
-              />
-              <Form.Select
-                placeholder="Select a mode ..."
-                label="Mode"
-                search
-                selection
-                name="mode"
-                value={mode}
-                options={invenioConfig.IMPORTER.modes}
-                onChange={this.handleChange}
-                required
-                error={modeMissing ? 'Please enter a mode' : null}
-              />
-            </Form.Group>
-            <Form.Group widths="equal">
-              <Form.Checkbox
-                className="default-margin-top"
-                label="Ignore missing import rules"
-                checked={ignoreMissingRules}
-                name="ignoreMissingRules"
-                onChange={this.handleCheckboxChange}
-              />
-              <Form.Field className="default-margin-top">
-                <Button
-                  icon="file"
-                  content="Choose File"
-                  labelPosition="left"
-                  onClick={e => {
-                    e.preventDefault();
-                    this.filesRef.current.click();
-                  }}
-                />
-                <input
-                  hidden
-                  ref={this.filesRef}
-                  id="upload"
-                  type="file"
-                  accept=".xml"
-                  onChange={this.onFileChange}
-                />
-                <Label basic prompt={fileMissing} pointing="left">
-                  {file ? file.name : 'No file selected.'}
-                </Label>
-              </Form.Field>
-            </Form.Group>
-          </Segment>
-          <>
-            <Button
-              primary
-              onClick={() => this.handleSubmit('PREVIEW')}
-              content="Preview"
+      <Form>
+        <Segment>
+          <Form.Group widths="equal">
+            <Form.Select
+              placeholder="Select a provider ..."
+              label="Provider"
+              search
+              selection
+              name="provider"
+              value={provider}
+              options={invenioConfig.IMPORTER.providers}
+              onChange={this.handleChange}
+              required
+              error={providerMissing ? 'Please enter a provider' : null}
             />
-            {mode === 'DELETE' ? (
-              this.renderModal()
-            ) : (
-              <>
-                <Button
-                  secondary
-                  content="Import"
-                  onClick={(e, props) => {
-                    this.handleImportConfirmOpen();
-                  }}
-                />
-                {this.renderImportConfirm()}
-              </>
-            )}
-          </>
-        </Form>
-      </>
+            <Form.Select
+              placeholder="Select a mode ..."
+              label="Mode"
+              search
+              selection
+              name="mode"
+              value={mode}
+              options={invenioConfig.IMPORTER.modes}
+              onChange={this.handleChange}
+              required
+              error={modeMissing ? 'Please enter a mode' : null}
+            />
+          </Form.Group>
+          <Form.Group widths="equal">
+            <Form.Checkbox
+              className="default-margin-top"
+              label="Ignore missing import rules"
+              checked={ignoreMissingRules}
+              name="ignoreMissingRules"
+              onChange={this.handleCheckboxChange}
+            />
+            <Form.Field className="default-margin-top">
+              <Button
+                icon="file"
+                content="Choose File"
+                labelPosition="left"
+                onClick={e => {
+                  e.preventDefault();
+                  this.filesRef.current.click();
+                }}
+              />
+              <input
+                hidden
+                ref={this.filesRef}
+                id="upload"
+                type="file"
+                accept=".xml"
+                onChange={this.onFileChange}
+              />
+              <Label basic prompt={fileMissing} pointing="left">
+                {file ? file.name : 'No file selected.'}
+              </Label>
+            </Form.Field>
+          </Form.Group>
+        </Segment>
+        <>
+          <Button
+            primary
+            onClick={() => this.handleSubmit('PREVIEW')}
+            content="Preview"
+          />
+          {mode === 'DELETE' ? (
+            this.renderModal()
+          ) : (
+            <>
+              <Button
+                secondary
+                content="Import"
+                onClick={(e, props) => {
+                  this.handleImportConfirmOpen();
+                }}
+              />
+              {this.renderImportConfirm()}
+            </>
+          )}
+        </>
+      </Form>
     );
   };
 

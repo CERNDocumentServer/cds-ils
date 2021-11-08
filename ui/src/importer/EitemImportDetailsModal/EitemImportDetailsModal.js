@@ -52,3 +52,7 @@ EitemImportDetails.propTypes = {
   open: PropTypes.bool,
   modalClose: PropTypes.func.isRequired,
 };
+
+EitemImportDetails.defaultProps = {
+  open: false,
+};

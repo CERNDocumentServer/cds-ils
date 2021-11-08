@@ -191,8 +191,8 @@ export const config = {
   IMPORTER: {
     providers: [
       { key: 'springer', text: 'Springer', value: 'springer' },
-      { key: 'ebl', text: 'EBL', value: 'ebl' },
-      { key: 'safari', text: 'Safari', value: 'safari' },
+      { key: 'ebl', text: 'EbookCentral (EBL)', value: 'ebl' },
+      { key: 'safari', text: "O'reilly (Safari)", value: 'safari' },
     ],
     modes: [
       { key: 'create', text: 'Import', value: 'IMPORT' },

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Label } from 'semantic-ui-react';
+import { Label, Icon } from 'semantic-ui-react';
 
 export class ImporterReportMode extends React.Component {
   constructor(props) {
@@ -38,7 +38,12 @@ export class ImporterReportMode extends React.Component {
   render() {
     const { data } = this.props;
 
-    return <> Mode: {this.labels[data.mode]} </>;
+    return (
+      <>
+        {' '}
+        <Icon name="cog" /> {this.labels[data.mode]}{' '}
+      </>
+    );
   }
 }
 

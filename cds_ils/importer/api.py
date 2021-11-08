@@ -15,9 +15,9 @@ from invenio_app_ils.errors import IlsValidationError, \
 from invenio_db import db
 from invenio_pidstore.errors import PIDDeletedError
 
-from cds_ils.importer.errors import LossyConversion, MissingRequiredField, \
-    ProviderNotAllowedDeletion, RecordModelMissing, RecordNotDeletable, \
-    SeriesImportError, UnexpectedValue, UnknownProvider
+from cds_ils.importer.errors import InvalidProvider, LossyConversion, \
+    MissingRequiredField, ProviderNotAllowedDeletion, RecordModelMissing, \
+    RecordNotDeletable, SeriesImportError, UnexpectedValue, UnknownProvider
 from cds_ils.importer.models import ImporterMode, ImporterTaskStatus, \
     ImportRecordLog
 from cds_ils.importer.parse_xml import get_record_recid_from_xml, \
@@ -99,7 +99,8 @@ def import_from_xml(log, source_path, source_type, provider, mode,
                         ProviderNotAllowedDeletion,
                         SeriesImportError,
                         RecordHasReferencesError, UnknownProvider,
-                        VocabularyError, PIDDeletedError) as e:
+                        VocabularyError, PIDDeletedError,
+                        InvalidProvider) as e:
                     ImportRecordLog.create_failure(
                         log.id, record_recid,
                         str(e.description), report={"raw_json": json_data})

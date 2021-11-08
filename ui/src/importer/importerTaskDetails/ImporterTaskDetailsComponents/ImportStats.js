@@ -8,7 +8,7 @@ export const RenderStatistics = ({
   applyFilter,
 }) => {
   return (
-    <Statistic.Group widths="seven">
+    <Statistic.Group widths="seven" size="small">
       {Object.keys(statistics).map(function(statistic, index) {
         return (
           <Statistic
