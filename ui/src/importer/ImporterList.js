@@ -1,12 +1,15 @@
 import {
   ResultsTable,
   withCancel,
+  Pagination,
+  toShortDateTime,
 } from '@inveniosoftware/react-invenio-app-ils';
 import _isEmpty from 'lodash/isEmpty';
+import _isNull from 'lodash/isNull';
 import { DateTime } from 'luxon';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Grid, Icon, Label, Loader } from 'semantic-ui-react';
+import { Button, Icon, Label, Loader, Popup } from 'semantic-ui-react';
 import { importerApi } from '../api/importer';
 import { BackOfficeRouteGenerators } from '../overridden/routes/BackofficeUrls';
 
@@ -42,11 +45,57 @@ export const modeFormatter = mode => {
 };
 
 export class ImporterList extends Component {
-  state = {
-    isLoading: true,
-    error: null,
-    data: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      error: null,
+      data: null,
+      activePage: 1,
+    };
+    this.pageSize = 15;
+    this.columns = [
+      { title: 'ID', field: 'id', formatter: this.idFormatter },
+      { title: 'Status', field: 'status', formatter: this.stateFormatter },
+      { title: 'Date', field: 'start_time', formatter: this.datetimeFormatter },
+      {
+        title: 'Duration',
+        field: 'end_time',
+        formatter: this.durationFormatter,
+      },
+      {
+        title: 'Records in file',
+        field: 'entries_count',
+        formatter: this.optionalFormatter,
+      },
+      { title: 'Provider', field: 'provider', formatter: this.labelFormatter },
+      {
+        title: 'Mode',
+        field: 'mode',
+        formatter: ({ col, row }) => modeFormatter(row[col.field]),
+      },
+      {
+        title: 'Original Filename',
+        field: 'original_filename',
+        formatter: this.trimFormatter,
+      },
+      {
+        title: 'Source type',
+        field: 'source_type',
+        formatter: this.labelFormatter,
+      },
+      {
+        title: 'Strict JSON rules',
+        field: 'ignore_missing_rules',
+        formatter: this.ignoreMissingFormatter,
+      },
+      {
+        title: '',
+        field: 'id',
+        formatter: this.viewFormatter,
+      },
+    ];
+  }
 
   componentDidMount() {
     this.fetchData();
@@ -87,10 +136,7 @@ export class ImporterList extends Component {
   };
 
   datetimeFormatter = ({ col, row }) => {
-    const datetime = DateTime.fromISO(row[col.field]);
-    return datetime.toLocaleString(
-      Object.assign(DateTime.DATETIME_SHORT, { locale: 'en-GB' })
-    );
+    return toShortDateTime(DateTime.fromISO(row[col.field]));
   };
 
   durationFormatter = ({ col, row }) => {
@@ -136,6 +182,21 @@ export class ImporterList extends Component {
     return value != null ? value : '';
   };
 
+  trimFormatter = ({ col, row }) => {
+    const value = row[col.field];
+    return value != null ? (
+      <Popup
+        content={value}
+        mouseEnterDelay={100}
+        trigger={
+          <p>{value.length > 18 ? value.substring(0, 15) + '...' : value}</p>
+        }
+      />
+    ) : (
+      ''
+    );
+  };
+
   viewFormatter = ({ col, row }) => {
     const id = row[col.field];
     return (
@@ -146,39 +207,6 @@ export class ImporterList extends Component {
       />
     );
   };
-
-  columns = [
-    { title: 'ID', field: 'id', formatter: this.idFormatter },
-    { title: 'Status', field: 'status', formatter: this.stateFormatter },
-    { title: 'Date', field: 'start_time', formatter: this.datetimeFormatter },
-    { title: 'Duration', field: 'end_time', formatter: this.durationFormatter },
-    {
-      title: 'Records in file',
-      field: 'entries_count',
-      formatter: this.optionalFormatter,
-    },
-    { title: 'Provider', field: 'provider', formatter: this.labelFormatter },
-    {
-      title: 'Mode',
-      field: 'mode',
-      formatter: ({ col, row }) => modeFormatter(row[col.field]),
-    },
-    {
-      title: 'Source type',
-      field: 'source_type',
-      formatter: this.labelFormatter,
-    },
-    {
-      title: 'Strict JSON rules',
-      field: 'ignore_missing_rules',
-      formatter: this.ignoreMissingFormatter,
-    },
-    {
-      title: '',
-      field: 'id',
-      formatter: this.viewFormatter,
-    },
-  ];
 
   fetchData = async () => {
     this.setState({ isLoading: true, error: null });
@@ -194,26 +222,32 @@ export class ImporterList extends Component {
     }
   };
 
-  render() {
-    const { isLoading, error, data } = this.state;
+  onPageChange = page => {
+    this.setState({ activePage: page });
+  };
 
-    return isLoading && _isEmpty(error) ? (
+  render() {
+    const { isLoading, error, data, activePage } = this.state;
+    return isLoading && _isEmpty(error) && _isEmpty(data) ? (
       <Loader active inline="centered" />
     ) : (
-      <>
-        <ResultsTable
-          data={data}
-          columns={this.columns}
-          renderEmptyResultsElement={() => this.emptyMessage}
-        />
-        {!_isEmpty(data) && (
-          <Grid>
-            <Grid.Column width={16} textAlign="center">
-              Showing the last {data.length} rows.
-            </Grid.Column>
-          </Grid>
-        )}
-      </>
+      <ResultsTable
+        data={data}
+        columns={this.columns}
+        totalHitsCount={data.length}
+        showMaxRows={this.pageSize}
+        currentPage={activePage}
+        renderEmptyResultsElement={() => this.emptyMessage}
+        showFooterSummary={false}
+        paginationComponent={
+          <Pagination
+            currentPage={activePage}
+            currentSize={this.pageSize}
+            totalResults={data.length}
+            onPageChange={this.onPageChange}
+          />
+        }
+      />
     );
   }
 }

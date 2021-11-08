@@ -16,12 +16,11 @@ from invenio_app_ils.records_relations.api import RecordRelationsParentChild
 from invenio_app_ils.relations.api import Relation
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier
-from invenio_records.errors import MissingModelError
 from invenio_search import current_search
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
-from cds_ils.importer.errors import UnknownProvider
+from cds_ils.importer.errors import InvalidProvider, UnknownProvider
 from cds_ils.importer.series.importer import SeriesImporter
 
 from .errors import DocumentHasReferencesError
@@ -88,14 +87,12 @@ class Importer(object):
     def _validate_provider(self):
         """Check if the chosen provider is matching the import data."""
         agency_code = self.json_data.get("agency_code")
+        config_agency_code = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
+                self.metadata_provider]["agency_code"]
         if not agency_code:
             raise UnknownProvider
-        assert (
-            self.json_data["agency_code"]
-            == current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
-                self.metadata_provider
-            ]["agency_code"]
-        )
+        if agency_code != config_agency_code:
+            raise InvalidProvider
 
     def _extract_eitems_json(self):
         """Extracts eitems json for given pre-processed JSON."""

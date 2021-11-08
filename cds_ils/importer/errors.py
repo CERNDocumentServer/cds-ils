@@ -113,4 +113,10 @@ class SeriesImportError(CDSImporterException):
 class UnknownProvider(CDSImporterException):
     """Unknown provider exception."""
 
+    message = "Unknown record provider."
+
+
+class InvalidProvider(CDSImporterException):
+    """Invalid provider exception."""
+
     message = "Invalid record provider."

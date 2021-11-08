@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Message, Segment, Grid, Divider } from 'semantic-ui-react';
+import { Message, Segment, Grid } from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _isNull from 'lodash/isNull';
 import { RenderStatistics } from './ImporterTaskDetailsComponents/ImportStats';
@@ -9,6 +9,9 @@ import { ImporterReportHeader } from './ImporterTaskDetailsComponents/ImporterRe
 import { NotFound } from '@inveniosoftware/react-invenio-app-ils';
 import { ImporterReportStatusLabel } from './ImporterTaskDetailsComponents/ImporterReportStatusLabel';
 import { ImporterReportMode } from './ImporterTaskDetailsComponents/ImporterReportMode';
+import { ImporterProviderLabel } from './ImporterTaskDetailsComponents/ImporterProviderLabel';
+import { ImporterFilenameLabel } from './ImporterTaskDetailsComponents/ImporterFilenameLabel';
+import { ImporterDateLabel } from './ImporterTaskDetailsComponents/ImporterDateLabel';
 
 export class ImportedDocuments extends React.Component {
   constructor(props) {
@@ -27,34 +30,39 @@ export class ImportedDocuments extends React.Component {
         filterFunction: record => record,
       },
       records_created: {
-        text: 'Records created',
+        text: 'Created',
         value: 0,
         filterFunction: record => record.action === 'create',
       },
       records_deleted: {
-        text: 'Records deleted',
+        text: 'Deleted',
         value: 0,
         filterFunction: record => record.action === 'delete',
       },
       records_updated: {
-        text: 'Records updated',
+        text: 'Updated',
         value: 0,
         filterFunction: record => record.action === 'update',
       },
       records_with_errors: {
-        text: 'Records with errors',
+        text: 'with Errors',
         value: 0,
         filterFunction: record => _isNull(record.action),
       },
       records_with_item: {
-        text: 'Records with eItem',
+        text: 'with E-Item',
         value: 0,
         filterFunction: record => !_isEmpty(record.eitem),
       },
       records_with_serials: {
-        text: 'Records with Serials',
+        text: 'with Serials',
         value: 0,
         filterFunction: record => !_isEmpty(record.series),
+      },
+      records_with_partial_matches: {
+        text: 'Partial matches',
+        value: 0,
+        filterFunction: record => !_isEmpty(record.partial_matches),
       },
     };
   }
@@ -73,7 +81,6 @@ export class ImportedDocuments extends React.Component {
       const filterFunc = stats[statistic].filterFunction;
 
       const isFullRecords = statistic === 'records';
-      // the full records have no filter function
       if (isFullRecords) continue;
 
       stats[statistic].value += newRecords.filter(record =>
@@ -97,6 +104,12 @@ export class ImportedDocuments extends React.Component {
     this.setState({
       searchText: text,
       activePage: 1,
+    });
+  };
+
+  setActivePage = page => {
+    this.setState({
+      activePage: page,
     });
   };
 
@@ -175,22 +188,37 @@ export class ImportedDocuments extends React.Component {
         />
 
         {entriesReady && dataAvailable ? (
-          <Grid className="middle aligned">
-            <Grid.Column width={3}>
-              <Segment>
-                <ImporterReportMode data={data} />
-                <Divider />
-                <ImporterReportStatusLabel data={data} isLoading={isLoading} />
-              </Segment>
-            </Grid.Column>
-            <Grid.Column width={13}>
+          <>
+            <Segment>
+              <Grid columns={5} divided>
+                <Grid.Column width={2}>
+                  <ImporterReportMode data={data} />
+                </Grid.Column>
+                <Grid.Column width={3}>
+                  <ImporterReportStatusLabel
+                    data={data}
+                    isLoading={isLoading}
+                  />
+                </Grid.Column>
+                <Grid.Column width={2}>
+                  <ImporterProviderLabel data={data} />
+                </Grid.Column>
+                <Grid.Column width={2}>
+                  <ImporterDateLabel data={data} />
+                </Grid.Column>
+                <Grid.Column width={7}>
+                  <ImporterFilenameLabel data={data} />
+                </Grid.Column>
+              </Grid>
+            </Segment>
+            <Segment>
               <RenderStatistics
                 statistics={this.calculateStatistics(data, this.statistics)}
                 selectedResult={selectedResult}
                 applyFilter={this.applyFilter}
               />
-            </Grid.Column>
-          </Grid>
+            </Segment>
+          </>
         ) : (
           <span>Processing file...</span>
         )}
