@@ -9,6 +9,7 @@
 """Exceptions."""
 
 from dojson.errors import DoJSONException
+from invenio_app_ils.errors import RecordHasReferencesError
 
 
 class LossyConversion(DoJSONException):
@@ -57,6 +58,20 @@ class CDSImporterException(DoJSONException):
         self.description = self.message
 
         super(CDSImporterException, self).__init__(*args)
+
+
+class DocumentHasReferencesError(RecordHasReferencesError):
+    """DocumentHasReferencesError class."""
+
+    def __init__(self, document, ref_type, refs):
+        """Constructor."""
+        ref_ids = sorted([res["pid"] for res in refs.scan()])
+        super().__init__(
+            record_type="Document",
+            record_id=document["pid"],
+            ref_type=ref_type,
+            ref_ids=ref_ids,
+        )
 
 
 class RecordModelMissing(CDSImporterException):

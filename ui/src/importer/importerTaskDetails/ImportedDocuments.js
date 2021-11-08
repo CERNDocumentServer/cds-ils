@@ -61,7 +61,7 @@ export class ImportedDocuments extends React.Component {
         records_with_item: {
           text: 'Records with eItem',
           value: 0,
-          filterFunction: record => !_isNull(record.eitem),
+          filterFunction: record => !_isEmpty(record.eitem),
         },
         records_with_serials: {
           text: 'Records with Serials',
