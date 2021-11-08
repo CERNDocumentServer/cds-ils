@@ -17,6 +17,8 @@ class ImportedDocumentReportComponent extends Component {
       color = 'green';
     } else if (action === 'update' || action === 'replace') {
       color = 'yellow';
+    } else if (action === 'none') {
+      color = 'grey';
     } else {
       color = 'red';
     }
@@ -143,20 +145,20 @@ class ImportedDocumentReportComponent extends Component {
 
               {!_isEmpty(documentReport.eitem.json) &&
                 this.renderActionLabel(documentReport.eitem.action)}
+              <Button
+                icon="code"
+                floated="right"
+                size="mini"
+                basic
+                onClick={() =>
+                  openJsonModal(
+                    'E-item JSON',
+                    _get(documentReport, 'eitem.json', {})
+                  )
+                }
+              />
             </>
           )}
-          <Button
-            icon="code"
-            floated="right"
-            size="mini"
-            basic
-            onClick={() =>
-              openJsonModal(
-                'E-item JSON',
-                _get(documentReport, 'eitem.json', {})
-              )
-            }
-          />
         </Table.Cell>
         <Table.Cell collapsing textAlign="center">
           {!_isEmpty(documentReport.series) && (

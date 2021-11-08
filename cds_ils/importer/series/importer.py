@@ -235,7 +235,8 @@ class SeriesImporter(object):
                 series.append(
                     self._record_summary(json_series,
                                          series_record=series_record,
-                                         output_pid=None, action="create"))
+                                         output_pid=series_record['pid'],
+                                         action="create"))
             else:
                 raise SeriesImportError(message="Multiple series found.")
         return series

@@ -16,12 +16,15 @@ from invenio_app_ils.records_relations.api import RecordRelationsParentChild
 from invenio_app_ils.relations.api import Relation
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier
+from invenio_records.errors import MissingModelError
 from invenio_search import current_search
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
 from cds_ils.importer.errors import UnknownProvider
 from cds_ils.importer.series.importer import SeriesImporter
+
+from .errors import DocumentHasReferencesError
 
 
 class Importer(object):
@@ -188,20 +191,21 @@ class Importer(object):
         document_indexer = current_app_ils.document_indexer
         series_class = current_app_ils.series_record_cls
         self._validate_provider()
-        self.action = "update"
+        self.action = "none"
         # finds the exact match, update records
         self.document = self._match_document()
 
         if self.document:
             self.output_pid = self.document["pid"]
             self.delete_records(self.document)
+            db.session.commit()
             current_search.flush_and_refresh(index="*")
             document_has_only_serial_relations = \
                 len(self.document.relations.keys()) \
                 and 'serial' in self.document.relations.keys()
 
             if not self.document.has_references() \
-                    and document_has_only_serial_relations:
+                    or document_has_only_serial_relations:
 
                 # remove serial relations
                 rr = RecordRelationsParentChild()
@@ -243,13 +247,13 @@ class Importer(object):
             "series": self.series_list,
             "raw_json": self.json_data,
             "document_json": doc_json,
-            "document": self.document
+            "document": self.document,
         }
 
     def preview_delete(self):
         """Preview deleting a record."""
         self._validate_provider()
-        self.action = "update"
+        self.action = "none"
         # finds the exact match, update records
         self.document = self._match_document()
 
@@ -257,12 +261,8 @@ class Importer(object):
             self.output_pid = self.document["pid"]
             self.eitem_summary = \
                 self.eitem_importer.preview_delete(self.document)
-            document_has_only_serial_relations = \
-                len(self.document.relations.keys()) \
-                and 'serial' in self.document.relations.keys()
-            if not self.document.has_references() \
-                    and document_has_only_serial_relations:
-                self.action = "delete"
+            self.preview_delete_document(self.document)
+            self.action = "delete"
 
         return self.import_summary()
 
@@ -288,3 +288,59 @@ class Importer(object):
             self.action = None
 
         return self.import_summary()
+
+    def preview_delete_document(self, document):
+        """Delete Document record."""
+        loan_search_res = document.search_loan_references()
+        item_search_res = document.search_item_references()
+        req_search_res = document.search_doc_req_references()
+        orders_refs_search = document.search_order_references()
+        brw_req_refs_search = document.search_brw_req_references()
+
+        if loan_search_res.count():
+            raise DocumentHasReferencesError(
+                document=document,
+                ref_type="Loan",
+                refs=loan_search_res,
+            )
+
+        if item_search_res.count():
+            raise DocumentHasReferencesError(
+                document=document,
+                ref_type="Item",
+                refs=item_search_res,
+            )
+
+        if req_search_res.count():
+            raise DocumentHasReferencesError(
+                document=document,
+                ref_type="DocumentRequest",
+                refs=req_search_res,
+            )
+
+        if orders_refs_search.count():
+            raise DocumentHasReferencesError(
+                document=document,
+                ref_type="AcquisitionOrder",
+                refs=orders_refs_search,
+            )
+
+        if brw_req_refs_search.count():
+            raise DocumentHasReferencesError(
+                document=document,
+                ref_type="BorrowingRequest",
+                refs=brw_req_refs_search,
+            )
+
+        related_refs = set()
+        for _, related_objects in document.relations.items():
+            for obj in related_objects:
+                if not obj["record_metadata"]["mode_of_issuance"] == "SERIAL":
+                    related_refs.add("{pid_value}:{pid_type}".format(**obj))
+        if related_refs:
+            raise RecordHasReferencesError(
+                record_type=document.__class__.__name__,
+                record_id=document["pid"],
+                ref_type="related",
+                ref_ids=sorted(ref for ref in related_refs),
+            )
