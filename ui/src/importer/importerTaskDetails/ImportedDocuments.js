@@ -6,7 +6,7 @@ import _isNull from 'lodash/isNull';
 import { RenderStatistics } from './ImporterTaskDetailsComponents/ImportStats';
 import { ImportedTable } from './ImporterTaskDetailsComponents/ImportedTable';
 import { ImporterReportHeader } from './ImporterTaskDetailsComponents/ImporterReportHeader';
-import { NotFound } from '@inveniosoftware/react-invenio-app-ils';
+import { HttpError } from '@inveniosoftware/react-invenio-app-ils';
 import { ImporterReportStatusLabel } from './ImporterTaskDetailsComponents/ImporterReportStatusLabel';
 import { ImporterReportMode } from './ImporterTaskDetailsComponents/ImporterReportMode';
 
@@ -145,7 +145,12 @@ export class ImportedDocuments extends React.Component {
       data?.entries_count;
 
     if (error) {
-      return <NotFound title="Task not found" />;
+      const {
+        response: {
+          data: { message, status },
+        },
+      } = error;
+      return <HttpError title={status} message={message} isBackOffice />;
     }
 
     if (errorWhileFetching) {
