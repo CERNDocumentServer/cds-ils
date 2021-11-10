@@ -312,11 +312,12 @@ class EItemImporter(object):
         """Preview eitem JSON."""
         if matched_document:
             pid = matched_document["pid"]
+            search = self.eitems_search(matched_document)
+            self.import_eitem_action(search)
         else:
             pid = "preview-doc-pid"
+            self.action = "create"
         self._build_eitem_json(self.eitem_json, pid)
-        search = self.eitems_search(matched_document)
-        self.import_eitem_action(search)
 
         if self.action == "update":
             self.output_pid = self.get_first_match(search)["pid"]

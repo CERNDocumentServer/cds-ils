@@ -340,7 +340,8 @@ class Importer(object):
         related_refs = set()
         for _, related_objects in document.relations.items():
             for obj in related_objects:
-                if not obj["record_metadata"]["mode_of_issuance"] == "SERIAL":
+                if not obj["record_metadata"].get("mode_of_issuance")\
+                       == "SERIAL":
                     related_refs.add("{pid_value}:{pid_type}".format(**obj))
         if related_refs:
             raise RecordHasReferencesError(
