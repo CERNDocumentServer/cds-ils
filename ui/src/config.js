@@ -95,8 +95,12 @@ export const config = {
           type: 'array',
         },
         unit_project: {
-          label: 'Project',
-          type: 'string',
+          items: {
+            label: 'project',
+            type: 'string',
+          },
+          label: 'Projects',
+          type: 'array',
         },
         unit_study: {
           items: {
