@@ -96,12 +96,29 @@ def eitem(self, key, value):
 
 @model.over("identifiers", "^020__")
 @filter_list_values
-def identifiers(self, key, value):
+def print_identifiers(self, key, value):
     """Translate identifiers."""
     _identifiers = self.get("identifiers", [])
     isbn = {
         "scheme": "ISBN",
         "value": clean_val("z", value, str, req=True),
+        "material": "PRINT_VERSION"
+    }
+    if isbn not in _identifiers:
+        _identifiers.append(isbn)
+    return _identifiers
+
+
+@model.over("identifiers", "^0248_")
+@filter_list_values
+def digital_identifiers(self, key, value):
+    """Translate identifiers."""
+    _identifiers = self.get("identifiers", [])
+
+    isbn = {
+        "scheme": "ISBN",
+        "value": clean_val("a", value, str, req=True),
+        "material": "DIGITAL"
     }
     if isbn not in _identifiers:
         _identifiers.append(isbn)

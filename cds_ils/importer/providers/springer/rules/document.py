@@ -161,17 +161,17 @@ def identifiers(self, key, value):
 
 @model.over(
     "identifiers",
-    "(^024__)|(^024_7)",
+    "(^024__)|(^024_7)|(^0247_)",
 )
 @filter_list_values
 def identifiers(self, key, value):
     """Translate identifiers."""
     _identifiers = self.get("identifiers", [])
     for v in force_list(value):
-        subfield_u = clean_val("u", v, str)
+        subfield_u = clean_val("u", v, str) or "DIGITAL"
         sub_a = clean_val("a", v, str)
         sub_2 = clean_val("2", v, str)
-        if sub_2.lowercase() != "doi":
+        if sub_2.lower() != "doi":
             raise ManualImportRequired("wrong DOI marc")
         doi = {"value": sub_a, "scheme": "DOI", "material": subfield_u}
         if doi not in _identifiers:
@@ -298,7 +298,7 @@ def id_isbns(self, key, value):
     """Translate identifiers isbn."""
     _identifiers = self.get("identifiers", [])
 
-    isbn_value = clean_val("a", value, str)
+    isbn_value = clean_val("a", value, str) or (clean_val('z', value, str))
     material = clean_val("u", value, str)
 
     if isbn_value:

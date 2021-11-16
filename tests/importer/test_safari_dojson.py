@@ -39,13 +39,13 @@ def test_safari_transformation(app):
                         {
                             "description": "ebook",
                             "value": "https://learning.oreilly.com"
-                            "/library/view/-/9780814415467/?ar",
+                                     "/library/view/-/9780814415467/?ar",
                         }
                     ]
                 },
                 "abstract": "A complete tool kit for handling "
-                "disciplinary problems in a "
-                "fair, responsible, and legally defensible way.",
+                            "disciplinary problems in a "
+                            "fair, responsible, and legally defensible way.",
                 "agency_code": "CaSebORM",
                 "alternative_identifiers": [
                     {"scheme": "SAFARI", "value": "9780814415467"}
@@ -54,7 +54,7 @@ def test_safari_transformation(app):
                     {
                         "type": "SUBTITLE",
                         "value": "A Guide to Progressive Discipline and "
-                        "Termination",
+                                 "Termination",
                     }
                 ],
                 "authors": [
@@ -64,10 +64,15 @@ def test_safari_transformation(app):
                      }
                 ],
                 "edition": "2nd",
-                "identifiers": [
-                    {"scheme": "ISBN", "value": "9780814415467"},
-                    {"scheme": "ISBN", "value": "9780814415474"},
-                ],
+                "identifiers": [{'material': 'PRINT_VERSION',
+                                 'scheme': 'ISBN',
+                                 'value': '9780814415467'},
+                                {'material': 'PRINT_VERSION',
+                                 'scheme': 'ISBN',
+                                 'value': '9780814415474'},
+                                {'material': 'DIGITAL',
+                                 'scheme': 'ISBN',
+                                 'value': '9780814415467'}],
                 "languages": ["ENG"],
                 "provider_recid": "9780814415467",
                 "imprint": {"publisher": "AMACOM",
@@ -75,6 +80,6 @@ def test_safari_transformation(app):
                 "number_of_pages": "1",
                 "publication_year": "2010",
                 "title": "101 Sample Write-Ups for "
-                "Documenting Employee Performance Problems",
+                         "Documenting Employee Performance Problems",
             },
         )

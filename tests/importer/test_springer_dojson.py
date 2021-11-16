@@ -12,6 +12,7 @@ marcxml = (
 
 def check_transformation(marcxml_body, json_body):
     """Check transformation."""
+
     blob = create_record(marcxml.format(marcxml_body))
     record = {}
     record.update(**model.do(blob, ignore_missing=True))
@@ -34,7 +35,7 @@ def test_springer_transformation(app):
             {
                 "_eitem": {
                     "internal_notes": "Physics and Astronomy (R0) "
-                    "(SpringerNature-43715)",
+                                      "(SpringerNature-43715)",
                     "urls": [
                         {
                             "description": "ebook",
@@ -76,6 +77,24 @@ def test_springer_transformation(app):
                      "value": "9780306479151X",
                      "material": "DIGITAL"
                      },
+                    {
+                        "scheme": "DOI",
+                        "material": "DIGITAL",
+                        "value": "10.1007/b100336"
+                    },
+                    {"scheme": "ISBN",
+                     "material": "PRINT_VERSION",
+                     "value": "9780306466854"
+                     },
+                    {"scheme": "ISBN",
+                     "material": "PRINT_VERSION",
+                     "value": "9781475705683"
+                     },
+                    {"scheme": "ISBN",
+                     "material": "PRINT_VERSION",
+                     "value": "9781475705690"
+                     }
+
                 ],
                 "imprint": {
                     "place": "New York, NY ",
