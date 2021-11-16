@@ -282,7 +282,14 @@ class DocumentImporter(object):
 
             for match in matches:
                 document = document_class.get_record_by_pid(match)
-                if document.get("edition") != self.json_data.get("edition"):
+
+                document_edition = document.get('edition')
+                import_doc_edition = self.json_data.get('edition')
+                both_records_have_editions = \
+                    (document_edition and import_doc_edition)
+                editions_not_equal = document_edition != import_doc_edition
+
+                if both_records_have_editions and editions_not_equal:
                     matches.remove(match)
 
         return matches
