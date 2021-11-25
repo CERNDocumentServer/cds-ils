@@ -5,7 +5,6 @@ import {
   toShortDateTime,
 } from '@inveniosoftware/react-invenio-app-ils';
 import _isEmpty from 'lodash/isEmpty';
-import _isNull from 'lodash/isNull';
 import { DateTime } from 'luxon';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
