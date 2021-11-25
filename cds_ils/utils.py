@@ -16,3 +16,32 @@ def format_login_required_urls(urls):
             url["login_required_url"] = current_app.config[
                 "CDS_ILS_EZPROXY_URL"
             ].format(url=url["value"])
+
+
+def dynamic_delete_field(original_element, fields):
+    """Dynamically delete an array of fields from a dictionary."""
+    # Wrong parameter in the configuration
+    wrong_field = False
+
+    for field in fields:
+        if not isinstance(field, list):
+            original_element.pop(field)
+            continue
+        if not field:
+            continue
+
+        element = original_element
+        for subfield in field[:-1]:
+            if subfield in element.keys():
+                element = element[subfield]
+            else:
+                wrong_field = True
+                break
+
+        if wrong_field:
+            wrong_field = False
+            continue
+
+        element.pop(field[-1], None)
+
+    return original_element

@@ -19,6 +19,8 @@ from datetime import timedelta
 
 from celery.schedules import crontab
 from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
+from invenio_app_ils.circulation.config import \
+    ILS_CIRCULATION_RECORDS_REST_ENDPOINTS
 from invenio_app_ils.circulation.transitions.transitions import \
     ILSItemOnLoanToItemOnLoan, ILSToItemOnLoan
 from invenio_app_ils.circulation.utils import circulation_can_be_requested, \
@@ -38,6 +40,7 @@ from invenio_app_ils.permissions import authenticated_user_permission, \
     backoffice_permission, loan_extend_circulation_permission, \
     patron_owner_permission
 from invenio_app_ils.series.api import SERIES_PID_TYPE
+from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_circulation.transitions.transitions import CreatedToPending, \
     ItemOnLoanToItemReturned, ToCancelled
 from invenio_oauthclient.contrib import cern_openid
@@ -411,6 +414,17 @@ RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.series.serializers:json_v1_search",
     "text/csv": "cds_ils.series.serializers:csv_v1_search",
 }
+ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE][
+    "record_serializers"
+] = {
+    "application/json": "cds_ils.circulation.serializers:json_v1_response",
+}
+ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE][
+    "search_serializers"
+] = {
+    "application/json": "cds_ils.circulation.serializers:json_v1_search",
+    "text/csv": "cds_ils.circulation.serializers:csv_v1_search",
+}
 
 ###############################################################################
 # ILS overridden
@@ -637,6 +651,9 @@ CDS_ILS_SYNDETIC_CLIENT = "CHANGE_ME"
 CDS_ILS_EZPROXY_URL = "https://ezproxy.cern.ch/login?url={url}"
 # Eitem DOI URL prefix
 CDS_ILS_DOI_URL_PREFIX = 'http://dx.doi.org/{doi}'
+# Fields to remove from loan serializer.
+# Format [field1, [field2, subfield1], [field3, subfield2, subsubfield1]]
+CDS_LOAN_SERIALIZE_FIELDS_REMOVE = ["links"]
 
 ###############################################################################
 # CDS-ILS importer configuration
