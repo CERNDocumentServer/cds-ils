@@ -121,10 +121,20 @@ class ImporterTaskDetailLogV1(ImporterTaskLogV1):
         """Return correct record statuses."""
         children_entries_query = ImportRecordLog.query \
             .filter_by(import_id=data.get('id'))
+
+        first_entry = children_entries_query.first()
+
+        initial_id = 0
+
+        if first_entry:
+            initial_id = first_entry.id
+
         entries = children_entries_query \
-            .filter(ImportRecordLog.id >= self.records_offset) \
+            .filter(ImportRecordLog.id >= initial_id + self.records_offset) \
             .order_by(ImportRecordLog.id.asc()) \
             .all()
+
         data["loaded_entries"] = children_entries_query.count()
         data["records"] = ImporterRecordReportSchemaV1(many=True).dump(entries)
+
         return data

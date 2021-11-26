@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ImportedDocuments } from './ImportedDocuments';
-import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
-import _get from 'lodash/get';
+import {
+  invenioConfig,
+  withCancel,
+} from '@inveniosoftware/react-invenio-app-ils';
 import { importerApi } from '../../api/importer';
 
 export class ImporterTaskDetails extends React.Component {
@@ -13,13 +15,18 @@ export class ImporterTaskDetails extends React.Component {
       data: null,
       isLoading: false,
       error: null,
-      importCompleted: false,
     };
+
+    this.importCompleted = false;
+    this.requestBeingSent = false;
+    this.lastEntry = 0;
   }
 
   componentDidMount() {
     this.intervalId = setInterval(
-      () => this.checkForData(this.taskId),
+      // edge case is the request taking longer than the interval time
+      // this makes sure it finishes the pending request first
+      () => !this.requestBeingSent && this.checkForData(this.taskId),
       invenioConfig.IMPORTER.fetchTaskStatusIntervalSecs
     );
     this.checkForData(this.taskId);
@@ -27,6 +34,8 @@ export class ImporterTaskDetails extends React.Component {
 
   componentWillUnmount = () => {
     this.intervalId && clearInterval(this.intervalId);
+    this.cancellableTaskDetailsFetch &&
+      this.cancellableTaskDetailsFetch.cancel();
   };
 
   get taskId() {
@@ -39,29 +48,35 @@ export class ImporterTaskDetails extends React.Component {
     return taskId;
   }
 
-  checkForData = async () => {
-    const { importCompleted, data } = this.state;
-
-    if (importCompleted) {
+  checkForData = async taskId => {
+    if (this.importCompleted) {
       this.intervalId && clearInterval(this.intervalId);
       return;
     }
+
     try {
-      const nextEntry = _get(data, 'loaded_entries', 0);
-      const response = await importerApi.check(this.taskId, nextEntry);
-      if (response.data.status !== 'RUNNING') {
-        this.setState({
-          importCompleted: true,
-          isLoading: false,
-          data: response.data,
-        });
-      } else {
-        this.setState({
-          isLoading: true,
-          data: response.data,
-        });
-      }
+      this.requestBeingSent = true;
+
+      this.cancellableTaskDetailsFetch = withCancel(
+        importerApi.check(taskId, this.lastEntry)
+      );
+
+      const { data } = await this.cancellableTaskDetailsFetch.promise;
+
+      this.importCompleted = data.status !== 'RUNNING';
+      this.lastEntry = data.loaded_entries;
+
+      this.setState(state => ({
+        isLoading: data.status === 'RUNNING',
+        data: {
+          ...state.data,
+          ...data,
+          records: (state?.data?.records || []).concat(data.records),
+        },
+      }));
+      this.requestBeingSent = false;
     } catch (error) {
+      this.requestBeingSent = false;
       this.setState({ error, isLoading: false });
     }
   };
