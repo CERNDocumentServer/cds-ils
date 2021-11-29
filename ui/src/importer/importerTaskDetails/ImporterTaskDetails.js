@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ImportedDocuments } from './ImportedDocuments';
 import { invenioConfig } from '@inveniosoftware/react-invenio-app-ils';
-import _get from 'lodash/get';
 import { importerApi } from '../../api/importer';
 
 export class ImporterTaskDetails extends React.Component {
@@ -13,13 +12,17 @@ export class ImporterTaskDetails extends React.Component {
       data: null,
       isLoading: false,
       error: null,
-      importCompleted: false,
     };
+
+    this.importCompleted = false;
+    this.requestBeingSent = false;
   }
 
   componentDidMount() {
     this.intervalId = setInterval(
-      () => this.checkForData(this.taskId),
+      // edge case is the request taking longer than the interval time
+      // this makes sure it finishes the pending request first
+      () => !this.requestBeingSent && this.checkForData(this.taskId),
       invenioConfig.IMPORTER.fetchTaskStatusIntervalSecs
     );
     this.checkForData(this.taskId);
@@ -40,28 +43,30 @@ export class ImporterTaskDetails extends React.Component {
   }
 
   checkForData = async () => {
-    const { importCompleted, data } = this.state;
-
-    if (importCompleted) {
+    if (this.importCompleted) {
       this.intervalId && clearInterval(this.intervalId);
       return;
     }
+
     try {
-      const nextEntry = _get(data, 'loaded_entries', 0);
-      const response = await importerApi.check(this.taskId, nextEntry);
-      if (response.data.status !== 'RUNNING') {
-        this.setState({
-          importCompleted: true,
-          isLoading: false,
-          data: response.data,
-        });
-      } else {
-        this.setState({
-          isLoading: true,
-          data: response.data,
-        });
-      }
+      this.requestBeingSent = true;
+
+      const { data } = await importerApi.check(this.taskId, 0, {
+        page: 1,
+      });
+
+      console.log(data);
+
+      this.importCompleted = data.status !== 'RUNNING';
+
+      this.setState({
+        isLoading: data.status === 'RUNNING',
+        data,
+      });
+
+      this.requestBeingSent = false;
     } catch (error) {
+      this.requestBeingSent = false;
       this.setState({ error, isLoading: false });
     }
   };
