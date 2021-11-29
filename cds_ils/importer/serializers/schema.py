@@ -119,12 +119,59 @@ class ImporterTaskDetailLogV1(ImporterTaskLogV1):
     @post_dump
     def records_statuses(self, data, **kwargs):
         """Return correct record statuses."""
+        import pprint
+        printer = pprint.pprint
         children_entries_query = ImportRecordLog.query \
             .filter_by(import_id=data.get('id'))
+
+        first_entry = children_entries_query.first()
+
+        initial_entry_id = first_entry.id if bool(first_entry) else 0
+
         entries = children_entries_query \
-            .filter(ImportRecordLog.id >= self.records_offset) \
+            .filter(ImportRecordLog.id >= initial_entry_id + self.records_offset) \
             .order_by(ImportRecordLog.id.asc()) \
             .all()
+
+        serialized_records = ImporterRecordReportSchemaV1(many=True).dump(entries)
         data["loaded_entries"] = children_entries_query.count()
-        data["records"] = ImporterRecordReportSchemaV1(many=True).dump(entries)
+        data["records"] = serialized_records
+
+        create_filter_func = filter_by_attribute('create')
+        update_filter_func = filter_by_attribute('update')
+        delete_filter_func = filter_by_attribute('delete')
+        error_filter_func = filter_by_attribute(None)
+
+        statistics = dict(
+            create=filter_statistic(create_filter_func, serialized_records),
+            update=filter_statistic(update_filter_func, serialized_records),
+            delete=filter_statistic(delete_filter_func, serialized_records),
+            error=filter_statistic(error_filter_func, serialized_records),
+            eitem=filter_statistic(filter_by_eitem, serialized_records),
+            serials=filter_statistic(filter_by_serials, serialized_records),
+            partial=filter_statistic(filter_by_partial_matches, serialized_records)
+        )
+
+        data['statistics'] = statistics
+
         return data
+
+
+def filter_by_attribute(attribute):
+    return lambda record: record['action'] == attribute
+
+
+def filter_by_eitem(record):
+    return record['eitem'] is not None
+
+
+def filter_by_serials(record):
+    return record['series'] and len(record['series']) > 0
+
+
+def filter_by_partial_matches(record):
+    return record['partial_matches'] and len(record['partial_matches']) > 0
+
+
+def filter_statistic(func, data):
+    return len(list(filter(func, data)))
