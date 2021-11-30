@@ -6,11 +6,15 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Importer serializers."""
+import datetime
+
+import math
 
 from invenio_app_ils.documents.loaders import DocumentSchemaV1
 from invenio_app_ils.eitems.loaders import EItemSchemaV1
 from invenio_app_ils.series.loaders import SeriesSchemaV1
 from marshmallow import EXCLUDE, Schema, fields, post_dump, types
+from flask import request
 
 from cds_ils.importer.models import ImportRecordLog
 
@@ -108,53 +112,116 @@ class ImporterTaskLogV1(Schema):
         unknown = EXCLUDE
 
 
+records_cache = dict(
+    id=None,
+    records=[]
+)
+
+
 class ImporterTaskDetailLogV1(ImporterTaskLogV1):
     """Importer task detail log schema."""
 
-    def __init__(self, record_offset, **kwargs):
+    def __init__(self, **kwargs):
         """Constructor."""
-        self.records_offset = record_offset
         super().__init__(**kwargs)
 
     @post_dump
     def records_statuses(self, data, **kwargs):
         """Return correct record statuses."""
-        import pprint
-        printer = pprint.pprint
+        task_id = data.get('id')
+        task_status = data.get('status')
+
+        cached_records = records_cache['records']
+        cached_records_id = records_cache['id']
+
         children_entries_query = ImportRecordLog.query \
-            .filter_by(import_id=data.get('id'))
+            .filter_by(import_id=task_id)
 
-        first_entry = children_entries_query.first()
+        cache_empty = len(cached_records) == 0
+        id_match = cached_records_id != task_id
+        task_running = task_status == 'RUNNING'
 
-        initial_entry_id = first_entry.id if bool(first_entry) else 0
+        if cache_empty:
+            entries = children_entries_query \
+                .order_by(ImportRecordLog.id.asc()) \
+                .all()
+            records_cache['records'] = ImporterRecordReportSchemaV1(many=True).dump(entries)
+            records_cache['id'] = task_id
 
-        entries = children_entries_query \
-            .filter(ImportRecordLog.id >= initial_entry_id + self.records_offset) \
-            .order_by(ImportRecordLog.id.asc()) \
-            .all()
+        elif id_match or task_running:
+            entries = children_entries_query \
+                .order_by(ImportRecordLog.id.asc()) \
+                .all()
+            records_cache['records'] = ImporterRecordReportSchemaV1(many=True).dump(entries)
+            records_cache['id'] = task_id
 
-        serialized_records = ImporterRecordReportSchemaV1(many=True).dump(entries)
+        serialized_records = records_cache['records']
+        statistics = filter_statistics(serialized_records)
+
+        records, page, page_size, total_pages, filter_type = paginate(statistics)
+
         data["loaded_entries"] = children_entries_query.count()
-        data["records"] = serialized_records
-
-        create_filter_func = filter_by_attribute('create')
-        update_filter_func = filter_by_attribute('update')
-        delete_filter_func = filter_by_attribute('delete')
-        error_filter_func = filter_by_attribute(None)
-
-        statistics = dict(
-            create=filter_statistic(create_filter_func, serialized_records),
-            update=filter_statistic(update_filter_func, serialized_records),
-            delete=filter_statistic(delete_filter_func, serialized_records),
-            error=filter_statistic(error_filter_func, serialized_records),
-            eitem=filter_statistic(filter_by_eitem, serialized_records),
-            serials=filter_statistic(filter_by_serials, serialized_records),
-            partial=filter_statistic(filter_by_partial_matches, serialized_records)
-        )
-
-        data['statistics'] = statistics
+        data["records"] = records
+        data["page"] = page
+        data["page_size"] = page_size
+        data['total_pages'] = total_pages
+        data["filter_type"] = filter_type
+        data['statistics'] = to_statistics_count(statistics)
 
         return data
+
+
+def paginate(data):
+    page = request.args.get('page') or 1
+    page_size = request.args.get('page_size') or 50
+    total_pages = math.ceil(len(data['all']) / int(page_size))
+    filter_type = request.args.get('filter_type') or 'all'
+
+    lower_bound_page = (int(page) * int(page_size)) - int(page_size)
+    upper_bound_page = int(page_size) * int(page)
+
+    records = data[filter_type][lower_bound_page:upper_bound_page]
+
+    return records, page, page_size, total_pages, filter_type
+
+
+def filter_statistics(data):
+    create_filter_func = filter_by_attribute('create')
+    update_filter_func = filter_by_attribute('update')
+    delete_filter_func = filter_by_attribute('delete')
+    error_filter_func = filter_by_attribute(None)
+
+    return dict(
+        all=data,
+        create=filter_statistic(create_filter_func, data),
+        update=filter_statistic(update_filter_func, data),
+        delete=filter_statistic(delete_filter_func, data),
+        error=filter_statistic(error_filter_func, data),
+        eitem=filter_statistic(filter_by_eitem, data),
+        serial=filter_statistic(filter_by_serials, data),
+        partial=filter_statistic(filter_by_partial_matches, data)
+    )
+
+
+def to_statistics_count(_dict):
+    dict_with_count = {}
+    filter_texts = dict(
+        all='RECORDS',
+        create='CREATED',
+        update='UPDATED',
+        delete='DELETED',
+        error='WITH ERRORS',
+        eitem='WITH E-ITEM',
+        serial='WITH SERIALS',
+        partial='PARTIAL MATCHES'
+    )
+    for key in _dict:
+        dict_with_count[key] = dict(
+            value=len(_dict[key]),
+            text=filter_texts[key]
+        )
+
+    return dict_with_count
 
 
 def filter_by_attribute(attribute):
@@ -174,4 +241,4 @@ def filter_by_partial_matches(record):
 
 
 def filter_statistic(func, data):
-    return len(list(filter(func, data)))
+    return list(filter(func, data))

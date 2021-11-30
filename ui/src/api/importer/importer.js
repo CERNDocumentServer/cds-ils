@@ -10,8 +10,10 @@ const createTask = async formData => {
   return await http.post(`${importerURL}`, formData, headers);
 };
 
-const check = async (taskId, nextEntry = 0) => {
-  return await http.get(`${importerURL}/${taskId}/offset/${nextEntry}`);
+const check = async (taskId, queryParams) => {
+  return await http.get(`${importerURL}/${taskId}`, {
+    params: queryParams,
+  });
 };
 
 const list = async () => {

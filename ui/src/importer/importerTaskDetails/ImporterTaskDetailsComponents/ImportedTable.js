@@ -9,7 +9,6 @@ import { ImportedDocumentReport } from './ImportedDocumentReport';
 export class ImportedTable extends React.Component {
   constructor(props) {
     super(props);
-    this.pageSize = 100;
   }
 
   handlePaginationChange = (e, { activePage }) => {
@@ -18,7 +17,8 @@ export class ImportedTable extends React.Component {
   };
 
   render() {
-    const { records, activePage } = this.props;
+    const { records, activePage, pageSize, totalPages } = this.props;
+
     return (
       <>
         <Table styled="true" fluid="true" striped celled structured width={16}>
@@ -63,21 +63,14 @@ export class ImportedTable extends React.Component {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {records
-              .slice(
-                activePage * this.pageSize - this.pageSize,
-                activePage * this.pageSize
-              )
-              .map((elem, index) => {
-                return (
-                  <ImportedDocumentReport
-                    // Keep the index as key due to lack of other unique id.
-                    key={index} // eslint-disable-line
-                    documentReport={elem}
-                    listIndex={index + (activePage - 1) * this.pageSize + 1}
-                  />
-                );
-              })}
+            {records.map((elem, index) => (
+              <ImportedDocumentReport
+                // Keep the index as key due to lack of other unique id.
+                key={index}
+                documentReport={elem}
+                listIndex={index + (activePage - 1) * pageSize + 1}
+              />
+            ))}
           </Table.Body>
 
           <Table.Footer>
@@ -85,7 +78,7 @@ export class ImportedTable extends React.Component {
               <Table.HeaderCell colSpan="10">
                 <Pagination
                   defaultActivePage={1}
-                  totalPages={Math.ceil(records.length / this.pageSize)}
+                  totalPages={totalPages}
                   activePage={activePage}
                   onPageChange={this.handlePaginationChange}
                   floated="right"
@@ -106,4 +99,6 @@ ImportedTable.propTypes = {
   records: PropTypes.array.isRequired,
   activePage: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
 };

@@ -48,7 +48,7 @@ def create_importer_blueprint(app):
         }
     )
     blueprint.add_url_rule(
-        "/importer/<int:log_id>/offset/<int:offset>",
+        "/importer/<int:log_id>",
         view_func=details_view,
         methods=["GET"],
     )
@@ -80,11 +80,11 @@ class ImporterDetailsView(ContentNegotiatedMethodView):
         )
 
     @need_permissions("document-importer")
-    def get(self, log_id, offset):
+    def get(self, log_id):
         """Returns the detail views of each subtask by given offset."""
         try:
             log = db.session.query(ImporterImportLog).get(log_id)
-            return self.make_response(log, record_offset=offset)
+            return self.make_response(log)
         except ObjectDeletedError:
             abort(404, "The task log was deleted.")
         except NoResultFound:

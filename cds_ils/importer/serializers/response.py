@@ -20,11 +20,11 @@ def importer_task_responsify(schema_class, mimetype):
     :param mimetype: MIME type of response.
     """
 
-    def view(data, code=200, headers=None, record_offset=0):
+    def view(data, code=200, headers=None):
         """Generate the response object."""
         if isinstance(data, ImporterImportLog):
 
-            response_data = schema_class(record_offset=record_offset)\
+            response_data = schema_class()\
                 .dump(data)
 
             response = current_app.response_class(

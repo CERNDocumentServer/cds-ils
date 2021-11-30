@@ -11,7 +11,14 @@ export class ImporterTaskDetails extends React.Component {
     this.state = {
       data: null,
       isLoading: false,
+      isImporting: false,
       error: null,
+    };
+
+    this.queryParams = {
+      page: 1,
+      pageSize: 100,
+      filterType: 'all',
     };
 
     this.importCompleted = false;
@@ -19,12 +26,14 @@ export class ImporterTaskDetails extends React.Component {
   }
 
   componentDidMount() {
+    const { isLoading } = this.state;
     this.intervalId = setInterval(
       // edge case is the request taking longer than the interval time
       // this makes sure it finishes the pending request first
-      () => !this.requestBeingSent && this.checkForData(this.taskId),
+      () => !isLoading && this.checkForData(this.taskId, false),
       invenioConfig.IMPORTER.fetchTaskStatusIntervalSecs
     );
+
     this.checkForData(this.taskId);
   }
 
@@ -42,44 +51,68 @@ export class ImporterTaskDetails extends React.Component {
     return taskId;
   }
 
-  checkForData = async () => {
-    if (this.importCompleted) {
+  checkForData = async (taskId, force = true) => {
+    if (this.importCompleted && !force) {
       this.intervalId && clearInterval(this.intervalId);
       return;
     }
 
     try {
-      this.requestBeingSent = true;
+      const { page, pageSize, filterType } = this.queryParams;
 
-      const { data } = await importerApi.check(this.taskId, 0, {
-        page: 1,
+      if (force) {
+        this.setState({
+          isLoading: true,
+        });
+      }
+
+      const { data } = await importerApi.check(taskId, {
+        page,
+        page_size: pageSize,
+        filter_type: filterType,
       });
 
-      console.log(data);
-
-      this.importCompleted = data.status !== 'RUNNING';
-
       this.setState({
-        isLoading: data.status === 'RUNNING',
+        isImporting: data.status === 'RUNNING',
+        isLoading: false,
         data,
       });
 
-      this.requestBeingSent = false;
+      this.importCompleted = data.status !== 'RUNNING';
     } catch (error) {
       this.requestBeingSent = false;
       this.setState({ error, isLoading: false });
     }
   };
 
+  setFilter = key => {
+    this.queryParams = { ...this.queryParams, page: 1, filterType: key };
+
+    this.checkForData(this.taskId);
+  };
+
+  setActivePage = page => {
+    this.queryParams.page = page;
+
+    this.checkForData(this.taskId);
+  };
+
   render() {
-    const { data, isLoading, error } = this.state;
+    const { data, isLoading, error, isImporting } = this.state;
+    const { page, pageSize, filterType } = this.queryParams;
 
     return (
       <ImportedDocuments
         data={data}
+        isImporting={isImporting}
         isLoading={isLoading}
         error={error}
         taskId={this.taskId}
+        page={page}
+        pageSize={pageSize}
+        filterType={filterType}
+        setPage={this.setActivePage}
+        setFilterType={this.setFilter}
       />
     );
   }
