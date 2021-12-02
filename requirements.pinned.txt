@@ -157,7 +157,7 @@ pyparsing==3.0.6
 pyPEG2==2.15.2
 pyrsistent==0.18.0
 python-geoip==1.2
-python-ldap==3.2.0
+python-ldap==3.4.0
 pytz==2021.3
 pywebpack==1.2.0
 redis==4.0.2

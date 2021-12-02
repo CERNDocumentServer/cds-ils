@@ -36,7 +36,7 @@ install_requires = [
     "uwsgitop>=0.11",
     "uwsgi-tools>=1.1.1",
     "fuzzywuzzy>=0.18.0",
-    "python-ldap>=3.2.0,<3.3.0",
+    "python-ldap>=3.2.0,<3.5.0",
     "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a57",
     "sentry-sdk>=0.10.2",
     # migrator deps
