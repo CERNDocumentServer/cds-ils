@@ -405,9 +405,7 @@ RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_serializers"] = {
 }
 ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE][
     "search_serializers"
-] = {
-    "text/csv": "cds_ils.circulation.serializers:csv_v1_search",
-}
+]["text/csv"] = "cds_ils.circulation.serializers:csv_v1_search"
 
 ###############################################################################
 # ILS overridden
