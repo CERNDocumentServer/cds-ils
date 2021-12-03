@@ -233,28 +233,17 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 ###############################################################################
 # Sentry
 ###############################################################################
+SENTRY_SDK = True
+"""Use of sentry-python SDK, if false raven will be used."""
 LOGGING_SENTRY_LEVEL = "WARNING"
 """Sentry logging level."""
-
 LOGGING_SENTRY_PYWARNINGS = False
 """Enable logging of Python warnings to Sentry."""
-
 LOGGING_SENTRY_CELERY = False
 """Configure Celery to send logging to Sentry."""
-
 SENTRY_DSN = None
 """Set SENTRY_DSN environment variable."""
-
-SENTRY_CONFIG = {"environment": os.environ.get("SENTRY_ENVIRONMENT", "dev")}
-
-try:
-    from raven import fetch_git_sha
-
-    SENTRY_CONFIG["release"] = fetch_git_sha(
-        os.environ.get("DEPLOYMENT_INSTANCE_PATH")
-    )
-except ModuleNotFoundError:
-    pass
+# Sentry uses env var SENTRY_ENVIRONMENT and SENTRY_RELEASE
 
 ###############################################################################
 # OAuth
