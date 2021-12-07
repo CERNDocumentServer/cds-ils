@@ -2,7 +2,8 @@
   {
     "type": "alternative_identifier_scheme",
     "key": "ARXIV",
-    "text": "arXiv"
+    "text": "arXiv",
+    "data": { "url_path":  "https://arxiv.org/abs/{identifier}"}
   },
   {
     "type": "alternative_identifier_scheme",
@@ -17,7 +18,10 @@
   {
     "type": "alternative_identifier_scheme",
     "key": "INSPIRE",
-    "text": "INSPIRE"
+    "text": "INSPIRE",
+    "data": {
+      "url_path": " https://inspirehep.net/literature/{identifier}"
+    }
   },
   {
     "type": "alternative_identifier_scheme",

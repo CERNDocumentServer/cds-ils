@@ -2,7 +2,8 @@
   {
     "type": "identifier_scheme",
     "key": "DOI",
-    "text": "Digital Object Identifier (DOI)"
+    "text": "Digital Object Identifier (DOI)",
+    "data": {"url_path":  "https://doi.org/{identifier}"}
   },
   {
     "type": "identifier_scheme",

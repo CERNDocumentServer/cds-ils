@@ -10,6 +10,9 @@ const seriesDetailsModalViewReducer = require('./importer/SeriesImportDetailsMod
 const eitemDetailsModalViewReducer = require('./importer/EitemImportDetailsModal/reducer')
   .eitemDetailsModalViewReducer;
 
+const vocabularyIdentifiersReducer = require('./overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/Identifiers/reducer')
+  .vocabularyIdentifiersReducer;
+
 export function initialiseReducers() {
   injectAsyncReducer(ILSStore, 'jsonModal', jsonModalViewReducer);
   injectAsyncReducer(
@@ -21,5 +24,10 @@ export function initialiseReducers() {
     ILSStore,
     'seriesDetailsModal',
     seriesDetailsModalViewReducer
+  );
+  injectAsyncReducer(
+    ILSStore,
+    'vocabularyIdentifiers',
+    vocabularyIdentifiersReducer
   );
 }
