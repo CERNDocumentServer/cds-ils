@@ -23,6 +23,9 @@ import { SideBarMenuItem } from './overridden/backoffice/Sidebar/SideBarMenuItem
 import { ImporterRoute } from './overridden/routes/ImporterRoute';
 import { overriddenSearchAppCmps } from './overridden/frontsite/LiteratureSearch/LiteratureSearch';
 import { StandardCardView } from './overridden/frontsite/DocumentSearch/StandardCardView';
+import { LiteratureKeyword } from './overridden/frontsite/Document/DocumentDetails/DocumentCirculation/LiteratureKeyword';
+import { Identifiers } from './overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/Identifiers';
+import { DocumentConference } from './overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/DocumentConference';
 
 export const overriddenCmps = {
   'Backoffice.PatronDetails.Metadata': PatronMetadata,
@@ -45,4 +48,7 @@ export const overriddenCmps = {
   LiteratureSearch: overriddenSearchAppCmps,
   'BackOfficeRoutesSwitch.CustomRoute': ImporterRoute,
   'Backoffice.Sidebar.CustomMenuItem': SideBarMenuItem,
+  'LiteratureKeywords.layout': LiteratureKeyword,
+  'DocumentMetadataTabs.Identifiers': Identifiers,
+  'DocumentConference.layout': DocumentConference,
 };
