@@ -9,6 +9,7 @@
 import time
 
 import pkg_resources
+from elasticsearch.exceptions import ElasticsearchException
 from flask import current_app
 from invenio_app_ils.errors import RecordHasReferencesError
 from invenio_app_ils.proxies import current_app_ils
@@ -118,15 +119,23 @@ class Importer(object):
 
         # fuzzy = trying to match similar titles and authors to spot typos
         fuzzy_results = self.document_importer.fuzzy_match_documents()
-        self.fuzzy_matches = [x.pid for x in fuzzy_results]
+        try:
+            self.fuzzy_matches = [x.pid for x in fuzzy_results]
+        except ElasticsearchException:
+            self.fuzzy_matches = None
 
     def _serialize_partial_matches(self):
         """Serialize partial matches."""
         amibiguous_matches = [
             {"pid": match, "type": "ambiguous"} for match in
             self.ambiguous_matches]
-        fuzzy_matches = [{"pid": match, "type": "fuzzy"} for match in
-                         self.fuzzy_matches]
+
+        if self.fuzzy_matches is None:
+            fuzzy_matches = [{"type": "error"}]
+        else:
+            fuzzy_matches = [
+                {"pid": match, "type": "fuzzy"} for match in self.fuzzy_matches
+            ]
         return fuzzy_matches + amibiguous_matches
 
     def update_records(self, matched_document):

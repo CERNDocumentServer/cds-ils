@@ -223,15 +223,23 @@ class ImportedDocumentReportComponent extends Component {
               {documentReport.partial_matches.map(entry => {
                 return (
                   <>
-                    {
-                      <Link
-                        to={BackOfficeRoutes.documentDetailsFor(entry.pid)}
-                        target="_blank"
-                      >
-                        {entry.pid}
-                      </Link>
-                    }{' '}
-                    <Label>{entry.type}</Label>
+                    {entry.type === 'error' ? (
+                      <>
+                        There has been a problem fetching the partial matches of
+                        the title.
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          to={BackOfficeRoutes.documentDetailsFor(entry.pid)}
+                          target="_blank"
+                        >
+                          {entry.pid}
+                        </Link>
+
+                        <Label>{entry.type}</Label>
+                      </>
+                    )}
                   </>
                 );
               })}
