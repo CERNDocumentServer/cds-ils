@@ -7,6 +7,11 @@
 Changes
 =======
 
+Version 1.2.12 (released 2021-12-10)
+
+- Importer: fix duplication of series during the import
+- Importer: fix eitems import priority
+
 Version 1.2.11 (released 2021-12-08)
 
 - Upgrade invenio packages
