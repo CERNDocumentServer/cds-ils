@@ -83,6 +83,7 @@ class SeriesImporter(object):
         # save the import source
         self._set_record_import_source(series)
         series["mode_of_issuance"] = "SERIAL"
+        series["series_type"] = "SERIAL"
 
         vocabulary_validator.validate(VOCABULARIES_FIELDS, series)
 
@@ -111,7 +112,7 @@ class SeriesImporter(object):
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
             click.secho(e.original_exception.message, fg="red")
             db.session.rollback()
-            # raise e TODO handle the incorrect records in the logging
+            raise e
 
     def create_series(self, json_series):
         """Create series record."""
@@ -133,7 +134,7 @@ class SeriesImporter(object):
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
             click.secho(e.original_exception.message, fg="red")
             db.session.rollback()
-            # raise e TODO handle the incorrect records in the logging
+            raise e
 
     def search_for_matching_series(self, json_series):
         """Find matching series."""
@@ -169,7 +170,7 @@ class SeriesImporter(object):
             matches += [
                 x.pid
                 for x in search.scan()
-                if x.pid not in matches and x.title == title
+                if x.pid not in matches
             ]
 
         return matches
@@ -205,10 +206,10 @@ class SeriesImporter(object):
     def import_series(self, document):
         """Import series."""
         series_class = current_app_ils.series_record_cls
-        if self.json_data is None:
-            return []
-
         series = []
+        if self.json_data is None:
+            return series
+
         for json_series in self.json_data:
             matching_series_pids = self.search_for_matching_series(json_series)
 
@@ -252,7 +253,7 @@ class SeriesImporter(object):
         series_class = current_app_ils.series_record_cls
         series_preview = []
         if self.json_data is None:
-            return []
+            return series_preview
 
         for json_series in self.json_data:
             matching_series_pids = self.search_for_matching_series(json_series)
