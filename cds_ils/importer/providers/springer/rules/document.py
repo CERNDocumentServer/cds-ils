@@ -230,7 +230,7 @@ def serial(self, key, value):
     identifiers = None
 
     if subfield_x:
-        issn_value = rreplace(subfield_x, ";", "", 1)
+        issn_value = rreplace(subfield_x, ";", "", 1).strip()
         if issn_value:
             identifiers = [{"scheme": "ISSN", "value": issn_value}]
 

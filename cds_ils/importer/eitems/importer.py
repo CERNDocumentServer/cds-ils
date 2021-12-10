@@ -65,7 +65,7 @@ class EItemImporter(object):
         }
         record_dict["source"] = self.metadata_provider
 
-    def _should_replace_eitem(self, eitem):
+    def _eitem_has_higher_priority(self, eitem):
         """Replace the eitems with higher priority providers."""
         existing_provider = self._get_record_import_provider(eitem)
         if not existing_provider:
@@ -77,6 +77,18 @@ class EItemImporter(object):
 
         # existing_priority = 0, self.priority = 1, returns False
         return existing_priority > self.current_provider_priority
+
+    def _eitems_have_equal_priority(self, eitem):
+        """Replace the eitems with higher priority providers."""
+        existing_provider = self._get_record_import_provider(eitem)
+        if not existing_provider:
+            return False
+
+        existing_priority = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
+            existing_provider
+        ]["priority"]
+
+        return existing_priority == self.current_provider_priority
 
     def _update_existing_record(self, existing_eitem, matched_document):
         metadata_to_update = {}
@@ -130,7 +142,7 @@ class EItemImporter(object):
         eitem_indexer = current_app_ils.eitem_indexer
 
         for eitem in self._get_other_eitems_of_document(matched_document):
-            if self._should_replace_eitem(eitem):
+            if self._eitem_has_higher_priority(eitem):
                 self.deleted_list.append(eitem)
                 pid = eitem.pid
                 pid_object_type, pid_object_uuid = pid.object_type, \
@@ -150,9 +162,10 @@ class EItemImporter(object):
             self.action = "replace"
 
     def _should_import_eitem_by_priority(self, matched_document):
-        """Check if current eitem has higher priority than any existing."""
+        """Check if current eitem has priority >= than any existing."""
         for eitem in self._get_other_eitems_of_document(matched_document):
-            if self._should_replace_eitem(eitem):
+            if self._eitem_has_higher_priority(eitem) or \
+                    self._eitems_have_equal_priority(eitem):
                 return True
 
     def _build_eitem_json(self, eitem_json, document_pid, urls=None,
@@ -331,7 +344,7 @@ class EItemImporter(object):
             )
             for hit in document_eitems:
                 eitem = eitem_cls.get_record_by_pid(hit.pid)
-                if self._should_replace_eitem(eitem):
+                if self._eitem_has_higher_priority(eitem):
                     self.deleted_list.append(eitem)
             if self.deleted_list:
                 self.action = "replace"

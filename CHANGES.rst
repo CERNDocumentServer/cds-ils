@@ -7,16 +7,15 @@
 Changes
 =======
 
-
-
 Version 1.2.11 (released 2021-12-08)
+
 - Upgrade invenio packages
 - Upgrade flask + werkzeug > v2.0.0
 - Upgrade various python packages
 - Add custom loan search serializer
     - drop redundant loan fields
     - add item_suggestion location
-- Importer: improve performance of detail page loading 
+- Importer: improve performance of detail page loading
 - Importer: improve records matching script
 - Purchase orders: automatically propagate payment information
 - Alert librarian on extending loans on overbooked documents

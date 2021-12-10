@@ -41,7 +41,5 @@ def search_series_by_title(title):
     """Find series by title."""
     series_search = current_app_ils.series_search_cls()
     title = title.lower()
-    search = series_search.query("bool",
-                                 filter=[Q("term",
-                                           title__normalized_keyword=title)])
+    search = series_search.filter("term", title__normalized_keyword=title)
     return search

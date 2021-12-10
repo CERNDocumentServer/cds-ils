@@ -649,7 +649,7 @@ CDS_ILS_IMPORTER_PROVIDERS = {
         "agency_code": "DE-He213",
     },
     "ebl": {"priority": 3, "agency_code": "MiAaPQ"},
-    "safari": {"priority": 4, "agency_code": "CaSebORM"},
+    "safari": {"priority": 3, "agency_code": "CaSebORM"},
 }
 
 CDS_ILS_IMPORTER_UPLOADS_PATH = "/tmp"
