@@ -38,7 +38,7 @@ def test_springer_transformation(app):
                                       "(SpringerNature-43715)",
                     "urls": [
                         {
-                            "description": "ebook",
+                            "description": "e-book",
                             "value": "https://doi.org/10.1007/b100336",
                         }
                     ],

@@ -29,7 +29,7 @@ from .errors import DocumentHasReferencesError
 class Importer(object):
     """Importer class."""
 
-    UPDATE_DOCUMENT_FIELDS = ("identifiers",)
+    UPDATE_DOCUMENT_FIELDS = ("identifiers", "alternative_identifiers")
     IS_PROVIDER_PRIORITY_SENSITIVE = False
     EITEM_OPEN_ACCESS = True
     EITEM_URLS_LOGIN_REQUIRED = True

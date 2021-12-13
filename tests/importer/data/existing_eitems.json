@@ -66,5 +66,85 @@
         "login_required": false
       }
     ]
+  },
+  {
+    "pid": "eitemid-6",
+    "created_by": {"type": "import", "value":  "ebl"},
+    "document_pid": "docid-6",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-6A",
+    "created_by": {"type": "import", "value":  "safari"},
+    "document_pid": "docid-6A",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-7",
+    "created_by": {"type": "import", "value":  "springer"},
+    "document_pid": "docid-7",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-8",
+    "created_by": {"type": "user", "value":  "1"},
+    "document_pid": "docid-8",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
   }
 ]

@@ -84,5 +84,53 @@
     "document_type": "THESIS",
     "publication_year": "1950",
     "note": "FUZZY MATCH"
+  },
+    {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "import", "value": "ebl" },
+    "pid": "docid-6",
+    "title": "EBL DOCUMENT, low or equal priority eitems",
+    "authors": [
+      { "full_name": "Doe, John" }
+    ],
+    "abstract": "This is a document volume v.1 part of a MULTIPART MONOGRAPH",
+    "document_type": "BOOK",
+    "publication_year": "1950"
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "import", "value": "safari" },
+    "pid": "docid-6A",
+    "title": "TEST Safari low or equal priority eitems",
+    "authors": [
+      { "full_name": "Doe, John" }
+    ],
+    "abstract": "This is a document volume v.1 part of a MULTIPART MONOGRAPH",
+    "document_type": "BOOK",
+    "publication_year": "1950"
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "import", "value": "springer" },
+    "pid": "docid-7",
+    "title": "TEST Document, high priority eitems",
+    "authors": [
+      { "full_name": "Random, Jane" }
+    ],
+    "abstract": "This is a document volume v.1 part of a MULTIPART MONOGRAPH",
+    "document_type": "BOOK",
+    "publication_year": "1950"
+  },
+    {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "user", "value": "1" },
+    "pid": "docid-8",
+    "title": "TEST Document, test priority added by user",
+    "authors": [
+      { "full_name": "Random, Joe" }
+    ],
+    "abstract": "This is a document volume v.1 part of a MULTIPART MONOGRAPH",
+    "document_type": "BOOK",
+    "publication_year": "1950"
   }
 ]
