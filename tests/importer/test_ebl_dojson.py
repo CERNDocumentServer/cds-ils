@@ -35,7 +35,7 @@ def test_ebl_transformation(app):
                 "_eitem": {
                     "urls": [
                         {
-                            "description": "ebook",
+                            "description": "e-book",
                             "value": "https://ebookcentral.proquest.com/lib/"
                             "cern/detail.action?docID=263817",
                         }

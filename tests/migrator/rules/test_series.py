@@ -684,7 +684,7 @@ def test_monograph_volume_url(app):
             """
             <datafield tag="856" ind1="4" ind2=" ">
             <subfield code="u">https://cds.cern.ch/auth.py?r=EBLIB_P_1890382</subfield>
-            <subfield code="y">ebook (v.1)</subfield>
+            <subfield code="y">e-book (v.1)</subfield>
             </datafield>
             """,
             {
@@ -695,7 +695,7 @@ def test_monograph_volume_url(app):
                             "_migration": {
                                 "eitems_ebl": [
                                     {
-                                        "url": {"description": "ebook (v.1)",
+                                        "url": {"description": "e-book (v.1)",
                                                 "value":
                                                     "https://cds.cern.ch/auth.py?r=EBLIB_P_1890382"}
                                     }

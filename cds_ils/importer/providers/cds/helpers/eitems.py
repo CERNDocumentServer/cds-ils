@@ -62,7 +62,7 @@ def clean_url_provider(url_value,
     ):
         eitems_files.append(eitem_dict)
         record_dict["_migration"]["eitems_has_files"] = True
-    elif url_description in ["ebook", "e-proceedings"]:
+    elif url_description in ["ebook", "e-book", "e-proceedings"]:
         translate_open_access(eitem_dict, url_description)
         eitems_external.append(eitem_dict)
         record_dict["_migration"]["eitems_has_external"] = True
