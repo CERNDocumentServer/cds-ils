@@ -38,7 +38,7 @@ install_requires = [
     "sentry-sdk>=0.10.2",
     # migrator deps
     "cds-dojson==0.9.0",
-    "lxml>=3.5.0",
+    "lxml>=4.6.5",
     # temporarily breaking the builds, remove when fixed
     "sqlalchemy>=1.3,<1.4",
     "flask-sqlalchemy>=2.4,<2.5",
