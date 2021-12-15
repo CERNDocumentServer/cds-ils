@@ -12,6 +12,7 @@ from copy import deepcopy
 
 import click
 from dateutil import parser
+from elasticsearch import TransportError
 from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
@@ -22,6 +23,7 @@ from invenio_jsonschemas import current_jsonschemas
 from cds_ils.importer.documents.api import fuzzy_search_document, \
     search_document_by_title_authors, search_documents_by_doi, \
     search_documents_by_isbn
+from cds_ils.importer.errors import SimilarityMatchUnavailable
 from cds_ils.importer.vocabularies_validator import \
     validator as vocabulary_validator
 
@@ -212,17 +214,28 @@ class DocumentImporter(object):
         """Validate matched & parsed documents have same title/isbn pair."""
         matches = []
         partial_matches = []
+
         document_class = current_app_ils.document_record_cls
-        title = self.json_data.get("title")
+        import_doc_title = self.json_data.get("title")
+        import_doc_edition = self.json_data.get('edition')
+        import_doc_publication_year = \
+            self.json_data.get('publication_year')
 
-        for pid in not_validated_matches:
-            document = document_class.get_record_by_pid(pid)
+        for pid_value in not_validated_matches:
+            document = document_class.get_record_by_pid(pid_value)
             document_title = document['title']
+            document_edition = document.get('edition')
+            doc_pub_year = document.get('publication_year')
 
-            if document_title.lower() == title.lower():
-                matches.append(document['pid'])
+            editions_not_equal = document_edition != import_doc_edition
+            pub_year_not_equal = doc_pub_year != import_doc_publication_year
+            titles_not_equal = document_title.lower() != \
+                import_doc_title.lower()
+
+            if titles_not_equal or editions_not_equal or pub_year_not_equal:
+                partial_matches.append({pid_value})
             else:
-                partial_matches.append(document['pid'])
+                matches.append(pid_value)
 
         return matches, partial_matches
 
@@ -280,18 +293,6 @@ class DocumentImporter(object):
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
 
-            for match in matches:
-                document = document_class.get_record_by_pid(match)
-
-                document_edition = document.get('edition')
-                import_doc_edition = self.json_data.get('edition')
-                both_records_have_editions = \
-                    (document_edition and import_doc_edition)
-                editions_not_equal = document_edition != import_doc_edition
-
-                if both_records_have_editions and editions_not_equal:
-                    matches.remove(match)
-
         return matches
 
     def fuzzy_match_documents(self):
@@ -304,9 +305,10 @@ class DocumentImporter(object):
         authors = [
             author["full_name"] for author in self.json_data.get("authors", [])
         ]
-
-        fuzzy_results = fuzzy_search_document(title, authors).scan()
-
+        try:
+            fuzzy_results = fuzzy_search_document(title, authors).scan()
+        except TransportError:
+            raise SimilarityMatchUnavailable
         return fuzzy_results
 
     def preview_document_import(self):

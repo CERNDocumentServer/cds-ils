@@ -120,3 +120,10 @@ class InvalidProvider(CDSImporterException):
     """Invalid provider exception."""
 
     message = "Invalid record provider."
+
+
+class SimilarityMatchUnavailable(CDSImporterException):
+    """Similarity match unavailable exception."""
+
+    message = "Title similarity matching cannot be performed for " \
+              "this record. Please import it manually."
