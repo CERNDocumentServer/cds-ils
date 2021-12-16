@@ -15,6 +15,7 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import RecordRelationsParentChild
 from invenio_app_ils.relations.api import Relation
 from invenio_db import db
+from invenio_indexer.api import RecordIndexer
 from invenio_pidstore.models import PersistentIdentifier
 from invenio_search import current_search
 
@@ -144,19 +145,26 @@ class Importer(object):
 
     def index_all_records(self):
         """Index imported records."""
-        document_indexer = current_app_ils.document_indexer
-        series_indexer = current_app_ils.series_indexer
-        eitem_indexer = current_app_ils.eitem_indexer
+        # we are using general indexer instead of type dedicated classes
+        # in order to avoid version mismatch on references
+        record_indexer = RecordIndexer()
 
-        eitem = self.eitem_importer.eitem_record
-        if eitem:
-            eitem_indexer.index(eitem)
+        document_class = current_app_ils.document_record_cls
+        series_class = current_app_ils.series_record_cls
+        eitem_class = current_app_ils.eitem_record_cls
 
-        document_indexer.index(self.document)
+        eitem_imported = self.eitem_importer.eitem_record
+        if eitem_imported:
+            eitem = eitem_class.get_record_by_pid(eitem_imported["pid"])
+            record_indexer.index(eitem)
+
+        document = document_class.get_record_by_pid(self.document["pid"])
+        record_indexer.index(document)
+
         for series in self.series_list:
-            series_indexer.index(series["series_record"])
-        # give ES chance to catch up
-        time.sleep(2)
+            series_record =\
+                series_class.get_record_by_pid(series["series_record"]["pid"])
+            record_indexer.index(series_record)
 
     def import_record(self):
         """Import record."""
