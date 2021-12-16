@@ -6,52 +6,9 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer module."""
-import click
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.query import Match
 from invenio_app_ils.proxies import current_app_ils
-
-from cds_ils.importer.errors import DocumentImportError
-
-
-def check_search_results(
-    result,
-    search_term,
-    search_term_name,
-    raise_on_empty=False,
-    raise_on_many=True,
-):
-    """Check number of search results."""
-    hits_total = result.hits.total.value
-
-    if hits_total == 0:
-
-        click.secho(
-            "no document found with {}:{}".format(
-                search_term_name, search_term
-            ),
-            fg="red",
-        )
-        if raise_on_empty:
-            raise DocumentImportError(
-                "no document found with {} {}".format(
-                    search_term_name, search_term
-                )
-            )
-    elif hits_total > 1:
-        click.secho(
-            "found more than one document with {} {}".format(
-                search_term_name, search_term
-            ),
-            fg="red",
-        )
-        if raise_on_many:
-            raise DocumentImportError(
-                "found more than one document with {} {}".format(
-                    search_term_name, search_term
-                )
-            )
-    return hits_total
 
 
 def search_documents_by_isbn(isbn):
@@ -89,12 +46,12 @@ def search_document_by_title_authors(title, authors, subtitle=None):
         search = (
             document_search.filter("term", title__normalized_keyword=title)
             .filter("match", alternative_titles__value=subtitle)
-            .filter("match", authors__full_name=" ".join(authors))
+            .filter("match", authors__full_name__full_words=" ".join(authors))
         )
     else:
         search = (
             document_search.filter("term", title__normalized_keyword=title)
-            .filter("match", authors__full_name=" ".join(authors))
+            .filter("match", authors__full_name__full_words=" ".join(authors))
         )
     return search
 
