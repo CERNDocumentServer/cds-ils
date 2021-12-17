@@ -7,6 +7,18 @@
 Changes
 =======
 
+Version 1.2.13 (released 2022-01-06)
+
+- Importer:
+    - improve handling errors
+    - fix parsing series and documents titles
+    - fix priority providers imports
+    - fix indexing issues
+    - fix matching by authors surnames
+- Maintenance: add legacy pid minting
+- Dependencies: upgrade lxml
+
+
 Version 1.2.12 (released 2021-12-10)
 
 - Importer: fix duplication of series during the import
