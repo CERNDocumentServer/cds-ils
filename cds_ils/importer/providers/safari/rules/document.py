@@ -67,7 +67,11 @@ def title(self, key, value):
             }
         )
         self["alternative_titles"] = _alternative_titles
-    return clean_val("a", value, str, req=True).rstrip('.').rstrip(':')
+
+    title = clean_val("a", value, str, req=True).rstrip('.').rstrip(':')
+    # remove excess white spaces
+    title = " ".join(title.split())
+    return title
 
 
 # EITEM fields

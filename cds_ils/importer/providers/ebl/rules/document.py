@@ -73,7 +73,11 @@ def title(self, key, value):
             }
         )
         self["alternative_titles"] = _alternative_titles
-    return clean_val("a", value, str, req=True).rstrip('.').rstrip(':')
+
+    title = clean_val("a", value, str, req=True).rstrip('.').rstrip(':')
+    # remove excess white spaces
+    title = " ".join(title.split())
+    return title
 
 
 # EITEM fields
@@ -238,6 +242,9 @@ def serial(self, key, value):
         # check if the word on the end of the title
         if re.search(f"{word}$", serial_title):
             serial_title = rreplace(serial_title, word, "", 1)
+
+    # remove excess white spaces
+    serial_title = " ".join(serial_title.split())
 
     return {
         "title": serial_title.strip(),
