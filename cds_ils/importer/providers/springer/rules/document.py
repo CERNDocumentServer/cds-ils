@@ -241,10 +241,13 @@ def serial(self, key, value):
     serial_title = \
         clean_val("a", value, str, req=True).rstrip(',').rstrip(';')\
         .strip()
-    serial_title = rreplace(serial_title, " series", "", 1)
-    serial_title = rreplace(serial_title, " Series", "", 1)
-    serial_title = rreplace(serial_title, " ser.", "", 1)
-    serial_title = rreplace(serial_title, " Ser.", "", 1)
+
+    words_to_strip = ["series", "Series", "ser.", "Ser."]
+    for word in words_to_strip:
+        # check if the word on the end of the title
+        if re.search(f"{word}$", serial_title):
+            serial_title = rreplace(serial_title, word, "", 1)
+
     return {
         "title": serial_title.strip(),
         "identifiers": identifiers,
