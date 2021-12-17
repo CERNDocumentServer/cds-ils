@@ -632,3 +632,48 @@ def revert_delete_record(pid):
     indexer_class = current_app_ils.indexer_by_pid_type(pid_obj.pid_type)
     indexer_class.index(record)
     click.secho(f"Record {pid} is reverted from deletion.", fg="green")
+
+
+@maintenance.command()
+@click.option("-p", "--pid")
+@click.option("-l", "--legacy-pid")
+@click.option("-t", "--legacy-pid-type")
+@with_appcontext
+def assign_legacy_pid(pid, legacy_pid, legacy_pid_type):
+    """Assign legacy pid to given record."""
+    doc_legacy_pid_cfg = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+    series_legacy_pid_cfg =\
+        current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
+
+    if legacy_pid_type not in [doc_legacy_pid_cfg, series_legacy_pid_cfg]:
+        click.secho(
+            "Invalid legacy pid type", fg="red")
+        return
+
+    pid_obj = PersistentIdentifier.query.filter(
+        PersistentIdentifier.pid_value == pid).one()
+
+    is_document = pid_obj.pid_type == DOCUMENT_PID_TYPE
+    is_series = pid_obj.pid_type == SERIES_PID_TYPE
+    is_legacy_document = legacy_pid_type != doc_legacy_pid_cfg
+    is_legacy_series = legacy_pid_type != series_legacy_pid_cfg
+
+    if not (is_document and is_legacy_document):
+        click.secho(
+            "Pid types mismatch. "
+            "You are trying to assign ldocid to series record", fg="red")
+        return
+    elif not (is_series and is_legacy_series):
+        click.secho(
+            "Pid types mismatch. "
+            "You are trying to assign lserid to document record", fg="red")
+        return
+
+    PersistentIdentifier.create(
+        pid_type=legacy_pid_type,
+        pid_value=str(legacy_pid),
+        object_type="rec",
+        object_uuid=pid_obj.object_uuid,
+        status=PIDStatus.REGISTERED,
+    )
+    db.session.commit()
