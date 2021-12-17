@@ -142,8 +142,7 @@ def access_urls(self, key, value):
     access_type_list = list(map(int, val_x if val_x else []))
 
     for i in access_type_list:
-        access_type = mapping(ACCESS_TYPE, str(i), raise_exception=True,
-                              field=key)
+        access_type = mapping(ACCESS_TYPE, str(i), raise_exception=True)
         access_type_mapped.append(access_type)
 
     sub_3 = clean_val("3", value, str)
@@ -203,12 +202,12 @@ def related_records(self, key, value):
     if relation_type_tag:
         relation_type_tag = relation_type_tag.upper()
     else:
-        raise UnexpectedValue('Relation type missing.', field=key,
+        raise UnexpectedValue('Relation type missing.',
                               subfield="x")
 
     if relation_type_tag not in ["LANGUAGE", "EDITION", "SEQUENCE", "OTHER"]:
         raise UnexpectedValue(f'Unsupported relation type {relation_type_tag}',
-                              field=key, subfield="x")
+                              subfield="x")
     # language
     if key == "787__" and relation_type_tag == 'LANGUAGE':
         relation_type = LANGUAGE_RELATION.name
@@ -286,7 +285,7 @@ def document_type(self, key, value):
         ):
             raise IgnoreKey("document_type")
         else:
-            raise UnexpectedValue(subfield="a", field=key)
+            raise UnexpectedValue(subfield="a")
 
 
 @model.over("_created", "^961__", override=True)

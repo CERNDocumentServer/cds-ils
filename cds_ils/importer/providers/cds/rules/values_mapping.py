@@ -1556,7 +1556,7 @@ EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE = [
 
 
 def mapping(field_map, val, raise_exception=False,
-            default_val=None, field=None, subfield=None):
+            default_val=None, subfield=None):
     """
     Maps the old value to a new one according to the map.
 
@@ -1582,4 +1582,4 @@ def mapping(field_map, val, raise_exception=False,
         if default_val:
             return default_val
         if raise_exception:
-            raise UnexpectedValue(field=field, subfield=subfield)
+            raise UnexpectedValue(subfield=subfield)
