@@ -61,7 +61,7 @@ def sync_tag(self, key, value):
     if sync_tag in ["ILSSYNC", "ILSLINK"]:
         return True
     else:
-        raise UnexpectedValue(subfield='a', field=key)
+        raise UnexpectedValue(subfield='a')
 
 
 @model.over("created_by", "^859__")
@@ -84,7 +84,7 @@ def created(self, key, value):
                         ACQUISITION_METHOD,
                         clean_val("s", value, str, default="migration"),
                         raise_exception=True,
-                        field=key, subfield="s",
+                        subfield="s",
                     )
                 }
             )
@@ -99,8 +99,7 @@ def created(self, key, value):
             else:
                 date = date_values
             if not (100000 < date < 999999):
-                raise UnexpectedValue("Wrong date format", subfield='w',
-                                      field=key)
+                raise UnexpectedValue("Wrong date format", subfield='w')
             if date:
                 year, week = str(date)[:4], str(date)[4:]
                 date = get_week_start(int(year), int(week))
@@ -218,7 +217,7 @@ def document_type(self, key, value):
 
     def doc_type_mapping(val):
         if val:
-            return mapping(DOCUMENT_TYPE, val, field=key, subfield="a or b")
+            return mapping(DOCUMENT_TYPE, val, subfield="a or b")
 
     for v in force_list(value):
         sub_a = clean_val("a", v, str)
@@ -395,7 +394,7 @@ def standard_review(self, key, value):
                     check_date_month = month
             check_date_year = re.findall(r"\d+", check_date)
             if len(check_date_year) > 1:
-                raise UnexpectedValue(subfield="z", field=key)
+                raise UnexpectedValue(subfield="z")
             datetime_object = datetime.datetime.strptime(
                 "{} 1 {}".format(check_date_month, check_date_year[0]),
                 "%B %d %Y",
@@ -408,7 +407,7 @@ def standard_review(self, key, value):
                 }
             )
         except (ValueError, IndexError):
-            raise UnexpectedValue(subfield="z", field=key)
+            raise UnexpectedValue(subfield="z")
     _extensions.update(
         {
             "standard_review_applicability": applicability_list,
@@ -555,7 +554,7 @@ def isbns(self, key, value):
             material = mapping(
                 IDENTIFIERS_MEDIUM_TYPES,
                 subfield_u,
-                field=key, subfield="u"
+                subfield="u"
             )
             if material:
                 isbn.update({"material": material})
@@ -599,7 +598,7 @@ def alternative_identifiers(self, key, value):
         elif field_type and field_type.lower() == "asin":
             raise IgnoreKey("alternative_identifiers")
         else:
-            raise UnexpectedValue(subfield="2", field=key)
+            raise UnexpectedValue(subfield="2", )
     if key == "035__":
         if "CERCER" in sub_a:
             raise IgnoreKey("alternative_identifiers")
@@ -612,7 +611,7 @@ def alternative_identifiers(self, key, value):
         elif sub_9 in EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE:
             raise IgnoreKey("external_system_identifiers")
         else:
-            raise UnexpectedValue(subfield="9", field=key)
+            raise UnexpectedValue(subfield="9")
     if key == "036__":
         if "a" in value and "9" in value:
             sub_9 = clean_val("9", value, str, req=True).upper()
@@ -669,7 +668,6 @@ def dois(self, key, value):
             IDENTIFIERS_MEDIUM_TYPES,
             subfield_q,
             raise_exception=True,
-            field=key
         )
         doi = {
             "value": subfield_a,
@@ -780,7 +778,7 @@ def languages(self, key, value):
     try:
         return pycountry.languages.lookup(lang).alpha_3.upper()
     except (KeyError, AttributeError, LookupError):
-        raise UnexpectedValue(subfield="a", field=key)
+        raise UnexpectedValue(subfield="a")
 
 
 @model.over("subjects", "(^050)|(^080__)|(^08204)|(^082__)|(^08200)")
@@ -838,7 +836,7 @@ def conference_info(self, key, value):
                     closing_date.date().isoformat(),
                 )
         except ValueError:
-            raise UnexpectedValue(subfield="9 or z", field=key)
+            raise UnexpectedValue(subfield="9 or z")
 
         conference_identifiers = []
 
@@ -868,8 +866,7 @@ def conference_info(self, key, value):
                 else:
                     if country_code == "Online":
                         if place != "Online":
-                            raise UnexpectedValue(subfield="c and w",
-                                                  field=key)
+                            raise UnexpectedValue(subfield="c and w")
                         else:
                             place = "Online"
 
@@ -881,7 +878,7 @@ def conference_info(self, key, value):
                         )
                         country = country_code
             except (KeyError, AttributeError):
-                raise UnexpectedValue(subfield="w", field=key)
+                raise UnexpectedValue(subfield="w")
 
         series_number = clean_val("n", v, int, multiple_values=True)
         if type(series_number) is list:
@@ -924,7 +921,7 @@ def conference_info(self, key, value):
                 acronym = clean_val("x", v, str)
                 acronym_value = clean_val("a", v, str)
                 if acronym and acronym.lower() != 'acronym':
-                    raise UnexpectedValue(subfield="x", field=key)
+                    raise UnexpectedValue(subfield="x")
                 raise IgnoreKey("conference_info")
             # if the field is marked as acronym, migrate
             # as conference_info
@@ -967,9 +964,9 @@ def imprint(self, key, value):
                            f"{end_date.date().isoformat()} "
             pub_year = f"{start_date.date().year} - {end_date.date().year}"
         else:
-            raise UnexpectedValue(subfield="c", field=key)
+            raise UnexpectedValue(subfield="c")
     except Exception:
-        raise UnexpectedValue(subfield="c", field=key)
+        raise UnexpectedValue(subfield="c")
     self["publication_year"] = pub_year
     return {
         "date": cleaned_date if cleaned_date else None,
@@ -1041,7 +1038,7 @@ def licenses(self, key, value):
         MATERIALS,
         clean_val("3", value, str, transform="lower"),
         raise_exception=True,
-        field=key, subfield="3"
+        subfield="3"
     )
 
     if material:
@@ -1063,7 +1060,7 @@ def licenses(self, key, value):
             id=license_id
         )
     else:
-        raise UnexpectedValue(field=key)
+        raise UnexpectedValue()
 
     return _license
 
@@ -1077,7 +1074,6 @@ def copyright(self, key, value):
         MATERIALS,
         clean_val("3", value, str, transform="lower"),
         raise_exception=True,
-        field=key,
         subfield="3",
     )
 
@@ -1103,7 +1099,7 @@ def table_of_content(self, key, value):
         chapters = [elem.strip(' ') for elem in chapters]
         return list(filter(None, chapters))
     else:
-        raise UnexpectedValue(subfield="a or t", field=key)
+        raise UnexpectedValue(subfield="a or t")
 
 
 @model.over("alternative_titles", "^242__")
@@ -1170,12 +1166,12 @@ def number_of_pages(self, key, value):
 
         parts = extract_parts(val_a)
         if parts["has_extra"]:
-            raise UnexpectedValue(subfield="a", field=key)
+            raise UnexpectedValue(subfield="a")
         if parts["physical_description"]:
             self["physical_description"] = parts["physical_description"]
         if parts["number_of_pages"]:
             return str(parts["number_of_pages"])
-        raise UnexpectedValue(subfield="a", field=key)
+        raise UnexpectedValue(subfield="a")
 
 
 @model.over("title", "^245__")
@@ -1213,7 +1209,7 @@ def medium(self, key, value):
             ITEMS_MEDIUMS,
             val_a.upper().replace("-", ""),
             raise_exception=True,
-            field=key, subfield="a"
+            subfield="a"
         )
 
     for barcode in barcodes:

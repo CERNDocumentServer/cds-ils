@@ -109,8 +109,7 @@ def isbns(self, key, value):
         # it belongs to the multipart
         return isbn if isbn not in _identifiers else None
     else:
-        raise UnexpectedValue(subfield="a", message=" isbn not provided",
-                              field=key)
+        raise UnexpectedValue(subfield="a", message=" isbn not provided")
 
 
 @model.over("dois", "^0247_", override=True)
@@ -145,7 +144,7 @@ def dois(self, key, value):
         val_2 = clean_val("2", v, str)
         if val_2 and val_2 != "DOI":
             raise UnexpectedValue(
-                subfield="2", message=" field is not equal to DOI", field=key
+                subfield="2", message=" field is not equal to DOI"
             )
         val_q = clean_val("q", v, str, transform="lower")
         val_a = clean_val("a", v, str, req=True)
@@ -157,7 +156,7 @@ def dois(self, key, value):
                     IDENTIFIERS_MEDIUM_TYPES,
                     volume_info["description"].upper(),
                     raise_exception=True,
-                    field=key, subfield='q'
+                    subfield='q'
                 )
         doi = {
             "value": val_a,
@@ -193,12 +192,11 @@ def dois(self, key, value):
                         subfield="q",
                         message=" found a volume "
                                 "number but could not extract it",
-                        field=key
                     )
                 # WARNING! vocabulary document_identifiers_materials
                 doi["material"] = mapping(
                     IDENTIFIERS_MEDIUM_TYPES, val_q.upper(),
-                    raise_exception=True, field=key, subfield='q',
+                    raise_exception=True, subfield='q',
                 )
             if doi not in _identifiers:
                 _identifiers.append(doi)
@@ -223,7 +221,7 @@ def barcode(self, key, value):
         val_9 = clean_val("9", v, str)
         if val_a or val_9:
             if val_n or val_x or val_a and val_9:
-                raise UnexpectedValue(field=key)
+                raise UnexpectedValue()
             identifier = {"scheme": "REPORT_NUMBER", "value": val_a or val_9}
             identifiers = self.get("identifiers", [])
             identifiers.append(identifier)
@@ -286,13 +284,11 @@ def volumes_titles(self, key, value):
         if not val_n and not val_p:
             raise UnexpectedValue(
                 subfield="n", message=" this record is probably not a series",
-                field=key
             )
         if val_p and not val_n:
             raise UnexpectedValue(
                 subfield="n",
                 message=" volume title exists but no volume number",
-                field=key
             )
 
         volume_number = extract_volume_number(val_n)
@@ -303,7 +299,6 @@ def volumes_titles(self, key, value):
             else:
                 raise UnexpectedValue(
                     subfield="y", message=" unrecognized publication year",
-                    field=key
                 )
         if val_z:
             obj["physical_description"] = val_z
@@ -369,7 +364,6 @@ def multivolume_record(self, key, value):
     else:
         raise UnexpectedValue(
             subfield="a", message=" unrecognized migration multipart tag",
-            field=key
         )
     _migration["multivolume_record"] = parsed
     raise IgnoreKey("multivolume_record")
@@ -400,7 +394,6 @@ def urls(self, key, value):
         if description not in ["ebook", "e-book", "e-proceedings"]:
             raise UnexpectedValue(subfield="y",
                                   message=" unsupported value",
-                                  field=key
                                   )
 
         # create partial child object for each volume with its own _migration

@@ -41,7 +41,7 @@ def agency_code(self, key, value):
 def title(self, key, value):
     """Translates title."""
     if "title" in self:
-        raise UnexpectedValue(message="Ambiguous title", field=key)
+        raise UnexpectedValue(message="Ambiguous title")
 
     if "b" in value:
         _alternative_titles = self.get("alternative_titles", [])
@@ -99,9 +99,7 @@ def imprint(self, key, value):
     _publication_year = self.get("publication_year")
     if _publication_year:
         raise UnexpectedValue(subfield="e",
-                              message="doubled publication year",
-                              field=key,
-                              )
+                              message="doubled publication year")
     self["publication_year"] = clean_val("c", value, str).rstrip('.')
 
     return {

@@ -38,9 +38,7 @@ def _get_correct_ils_contributor_role(subfield, role):
         clean_role = role.lower()
     else:
         raise UnexpectedValue(subfield=subfield,
-                              message="unknown author role",
-                              field="100|700"
-                              )
+                              message="unknown author role")
     if clean_role not in translations:
         return "AUTHOR"
     return translations[clean_role]

@@ -50,11 +50,11 @@ class CDSImporterException(DoJSONException):
     def __init__(self, *args, **kwargs):
         """Constructor."""
         self.subfield = kwargs.get("subfield", "")
-        self.field = kwargs.get("field", "")
         message = kwargs.get("message", None)
         if message:
             self.message = message
-        self.message = f"{self.message} {self.field}{self.subfield}"
+
+        # because of ILSRestException class attributes
         self.description = self.message
 
         super(CDSImporterException, self).__init__(*args)
