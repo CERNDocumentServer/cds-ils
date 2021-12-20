@@ -226,8 +226,10 @@ class ImportRecordLog(db.Model):
         )
 
     @classmethod
-    def create_failure(cls, import_id, entry_recid, exception, report={}):
+    def create_failure(cls, import_id, entry_recid, exception, report=None):
         """Mark this record as failed."""
+        if report is None:
+            report = {}
         return cls.__create(
             {
                 **dict(import_id=import_id,

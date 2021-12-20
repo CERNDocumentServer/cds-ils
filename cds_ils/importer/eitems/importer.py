@@ -366,19 +366,20 @@ class EItemImporter(object):
             eitem_search = current_app_ils.eitem_search_cls()
             eitem_cls = current_app_ils.eitem_record_cls
 
-            document_eitems = eitem_search.search_by_document_pid(
-                matched_document["pid"]
-            )
-            for hit in document_eitems:
-                eitem = eitem_cls.get_record_by_pid(hit.pid)
-                is_imported = self._is_imported(eitem)
-                if not is_imported:
-                    continue
-                existing_has_higher_priority = \
-                    self._eitem_has_higher_priority(eitem)
-                if not existing_has_higher_priority:
-                    self.deleted_list.append(eitem)
-            if self.deleted_list:
-                self.action = "replace"
+            if matched_document:
+                document_eitems = eitem_search.search_by_document_pid(
+                    matched_document["pid"]
+                )
+                for hit in document_eitems:
+                    eitem = eitem_cls.get_record_by_pid(hit.pid)
+                    is_imported = self._is_imported(eitem)
+                    if not is_imported:
+                        continue
+                    existing_has_higher_priority = \
+                        self._eitem_has_higher_priority(eitem)
+                    if not existing_has_higher_priority:
+                        self.deleted_list.append(eitem)
+                if self.deleted_list:
+                    self.action = "replace"
 
         return self.summary()
