@@ -16,7 +16,7 @@ from invenio_records.api import Record
 
 from cds_ils.importer import marc21
 from cds_ils.importer.errors import LossyConversion, RecordModelMissing
-from cds_ils.importer.handlers import XMLImportHandlers
+from cds_ils.importer.handlers import xml_import_handlers
 
 
 class XMLRecordToJson(object):
@@ -57,7 +57,7 @@ class XMLRecordToJson(object):
         try:
             val = self.dojson_model.do(
                 marc_record,
-                exception_handlers=XMLImportHandlers
+                exception_handlers=xml_import_handlers
             )
         except AttributeError:
             raise RecordModelMissing

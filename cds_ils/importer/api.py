@@ -10,15 +10,10 @@
 import uuid
 
 from flask import current_app
-from invenio_app_ils.errors import IlsValidationError, \
-    RecordHasReferencesError, VocabularyError
 from invenio_db import db
-from invenio_pidstore.errors import PIDDeletedError
 
-from cds_ils.importer.errors import InvalidProvider, LossyConversion, \
-    MissingRequiredField, ProviderNotAllowedDeletion, RecordModelMissing, \
-    RecordNotDeletable, SeriesImportError, SimilarityMatchUnavailable, \
-    UnexpectedValue, UnknownProvider
+from cds_ils.importer.errors import ProviderNotAllowedDeletion
+from cds_ils.importer.handlers import get_importer_handler
 from cds_ils.importer.models import ImporterMode, ImporterTaskStatus, \
     ImportRecordLog
 from cds_ils.importer.parse_xml import get_record_recid_from_xml, \
@@ -77,45 +72,35 @@ def import_from_xml(log, source_path, source_type, provider, mode,
             for record in records_list:
                 if log.status == ImporterTaskStatus.CANCELLED:
                     break
+
                 record_recid = get_record_recid_from_xml(record)
 
+                # step 1: translate XML
                 try:
                     json_data, is_deletable = \
                         create_json(record,
                                     source_type,
-                                    ignore_missing_rules=ignore_missing_rules
-                                    )
-                except (LossyConversion, UnexpectedValue,
-                        RecordModelMissing, MissingRequiredField) as e:
-                    ImportRecordLog.create_failure(log.id, record_recid,
-                                                   str(e.description))
+                                    ignore_missing_rules=ignore_missing_rules)
+                except Exception as exc:
+                    handler = get_importer_handler(exc, log)
+                    handler(exc, log.id, record_recid)
                     continue
 
+                # step 2: import json
                 try:
                     report = import_from_json(json_data, is_deletable,
                                               provider, mode)
-                    ImportRecordLog.create_success(
-                        log.id, record_recid, report)
-                except (RecordNotDeletable,
-                        ProviderNotAllowedDeletion,
-                        SeriesImportError,
-                        RecordHasReferencesError, UnknownProvider,
-                        VocabularyError, PIDDeletedError,
-                        InvalidProvider, SimilarityMatchUnavailable) as e:
-                    ImportRecordLog.create_failure(
-                        log.id, record_recid,
-                        str(e.description), report={"raw_json": json_data})
+                    ImportRecordLog.create_success(log.id, record_recid,
+                                                   report)
+                except Exception as exc:
+                    handler = get_importer_handler(exc, log)
+                    handler(exc, log.id, record_recid, json_data=json_data)
                     continue
-                except IlsValidationError as e:
-                    ImportRecordLog.create_failure(
-                        log.id, record_recid,
-                        str(e.original_exception.message),
-                        report={"raw_json": json_data}
-                    )
-                    continue
-    except Exception as e:
-        log.set_failed(e)
-        raise e
+
+    except Exception as exc:
+        handler = get_importer_handler(exc, log)
+        handler(exc, log.id, None)
+        log.set_failed(exc)
 
     log.finalize()
 

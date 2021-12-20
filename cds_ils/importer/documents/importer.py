@@ -186,6 +186,18 @@ class DocumentImporter(object):
 
         return existing_identifiers + new_identifiers
 
+    def _update_field_alternative_identifiers(self, matched_document):
+        """Update alternative identifiers of a given document."""
+        existing_identifiers = matched_document.get(
+            "alternative_identifiers", [])
+        new_identifiers = [
+            elem
+            for elem in self.json_data.get("alternative_identifiers", [])
+            if elem not in existing_identifiers
+        ]
+
+        return existing_identifiers + new_identifiers
+
     def update_document(self, matched_document):
         """Update document record."""
         for field in self.update_document_fields:
@@ -227,13 +239,16 @@ class DocumentImporter(object):
             document_edition = document.get('edition')
             doc_pub_year = document.get('publication_year')
 
-            editions_not_equal = document_edition != import_doc_edition
+            both_editions = all([document_edition, import_doc_edition])
+            editions_not_equal = both_editions and \
+                document_edition != import_doc_edition
+
             pub_year_not_equal = doc_pub_year != import_doc_publication_year
             titles_not_equal = document_title.lower() != \
                 import_doc_title.lower()
 
             if titles_not_equal or editions_not_equal or pub_year_not_equal:
-                partial_matches.append({pid_value})
+                partial_matches.append(pid_value)
             else:
                 matches.append(pid_value)
 

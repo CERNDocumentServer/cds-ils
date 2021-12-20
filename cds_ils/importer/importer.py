@@ -127,7 +127,8 @@ class Importer(object):
             {"pid": match, "type": "ambiguous"} for match in
             self.ambiguous_matches]
         fuzzy_matches = [{"pid": match, "type": "fuzzy"} for match in
-                         self.fuzzy_matches]
+                         self.fuzzy_matches if match
+                         not in self.ambiguous_matches]
         return fuzzy_matches + amibiguous_matches
 
     def update_records(self, matched_document):
