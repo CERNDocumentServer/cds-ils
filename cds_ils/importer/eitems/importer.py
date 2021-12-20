@@ -239,6 +239,8 @@ class EItemImporter(object):
 
         if self.action == "create" and should_eitem_be_imported:
             self.eitem_record = self.create_eitem(matched_document)
+            if self.is_provider_priority_sensitive:
+                self._replace_lower_priority_eitems(matched_document)
         elif self.action == "update":
             existing_eitem = self.get_first_match(search)
             self.eitem_record = self._update_existing_record(
@@ -254,9 +256,6 @@ class EItemImporter(object):
                 self.eitem_record = self.create_eitem(matched_document)
             else:
                 self.action = "none"
-
-        if self.is_provider_priority_sensitive:
-            self._replace_lower_priority_eitems(matched_document)
 
     def delete_eitems(self, matched_document):
         """Deletes eitems for a given document."""
