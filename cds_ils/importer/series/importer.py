@@ -172,6 +172,16 @@ class SeriesImporter(object):
                 for x in search.scan()
                 if x.pid not in matches
             ]
+            if search.count() == 0:
+                # check for known inconsistencies in title
+                simplified_title = title.replace(" series", "")\
+                    .replace(" Series", "").strip()
+                search = search_series_by_title(simplified_title)
+                matches += [
+                    x.pid
+                    for x in search.scan()
+                    if x.pid not in matches
+                ]
 
         return matches
 

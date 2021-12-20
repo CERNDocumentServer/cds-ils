@@ -46,7 +46,7 @@ def test_springer_transformation(app):
                 "provider_recid": "978-0-306-47915-1",
                 "_serial": [
                     {
-                        "title": "Advances in Nuclear Physics",
+                        "title": "Advances in Nuclear Physics series",
                         "volume": "26",
                     }
                 ],
