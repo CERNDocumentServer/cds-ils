@@ -233,11 +233,11 @@ def serial(self, key, value):
         clean_val("a", value, str, req=True).rstrip(',').rstrip(';')\
         .strip()
 
-    words_to_strip = ["series", "Series", "ser.", "Ser."]
-    for word in words_to_strip:
+    words_to_replace = ["ser.", "Ser."]
+    for word in words_to_replace:
         # check if the word on the end of the title
         if re.search(f"{word}$", serial_title):
-            serial_title = rreplace(serial_title, word, "", 1)
+            serial_title = rreplace(serial_title, word, "series", 1)
 
     return {
         "title": serial_title.strip(),
