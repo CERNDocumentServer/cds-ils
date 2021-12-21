@@ -34,7 +34,7 @@ class ImportedDocumentReportComponent extends Component {
       openEitemModal,
     } = this.props;
     let title;
-    if (!_isEmpty(documentReport.document)) {
+    if (!_isEmpty(documentReport.raw_json)) {
       let volume = _get(documentReport, 'raw_json._serial[0].volume', '');
       volume = volume ? `(v. ${volume})` : '';
       title = `${documentReport.raw_json.title} ${volume}

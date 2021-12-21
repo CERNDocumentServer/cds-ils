@@ -25,7 +25,7 @@ def test_document_search_matching(importer_test_data):
     validated_matches, partial = document_importer.\
         validate_found_matches(matches)
 
-    assert validated_matches == ["docid-1"]
+    assert validated_matches == "docid-1"
 
     # test matching by DOI
     document_importer = DocumentImporter(
@@ -39,7 +39,7 @@ def test_document_search_matching(importer_test_data):
     validated_matches, partial = document_importer. \
         validate_found_matches(matches)
 
-    assert validated_matches == ["docid-3"]
+    assert validated_matches == "docid-3"
 
     # test matching by title and author
     document_importer = DocumentImporter(

@@ -67,15 +67,6 @@ class Importer(object):
         series_json = json_data.get("_serial", None)
         self.series_importer = SeriesImporter(series_json, metadata_provider)
 
-        self.output_pid = None
-        self.action = None
-        self.partial_matches = []
-        self.document = None
-        self.ambiguous_matches = []
-        self.series_list = []
-        self.eitem_summary = {}
-        self.fuzzy_matches = []
-
     def get_document_importer(self, provider, default=DocumentImporter):
         """Determine which document importer to use."""
         try:
@@ -89,7 +80,7 @@ class Importer(object):
         """Check if the chosen provider is matching the import data."""
         agency_code = self.json_data.get("agency_code")
         config_agency_code = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
-                self.metadata_provider]["agency_code"]
+            self.metadata_provider]["agency_code"]
         if not agency_code:
             raise UnknownProvider
         if agency_code != config_agency_code:
@@ -101,50 +92,22 @@ class Importer(object):
 
     def _match_document(self):
         """Search the catalogue for existing document."""
-        document_class = current_app_ils.document_record_cls
         document_importer = self.document_importer
 
         not_validated_matches = \
             document_importer.search_for_matching_documents()
 
-        matching_pids, partial_matching_pids = \
+        exact_match, partial_matching_pids = \
             document_importer.validate_found_matches(not_validated_matches)
 
-        if len(matching_pids) == 1:
-            return document_class.get_record_by_pid(matching_pids[0])
+        return exact_match, partial_matching_pids
 
-        # ambiguous = matching fails
-        # (inconsistent identifiers/title pairs, duplicates etc)
-        self.ambiguous_matches = matching_pids + partial_matching_pids
-
-        # fuzzy = trying to match similar titles and authors to spot typos
-        fuzzy_results = self.document_importer.fuzzy_match_documents()
-        self.fuzzy_matches = [x.pid for x in fuzzy_results]
-
-    def _serialize_partial_matches(self):
-        """Serialize partial matches."""
-        amibiguous_matches = [
-            {"pid": match, "type": "ambiguous"} for match in
-            self.ambiguous_matches]
-        fuzzy_matches = [{"pid": match, "type": "fuzzy"} for match in
-                         self.fuzzy_matches if match
-                         not in self.ambiguous_matches]
-        return fuzzy_matches + amibiguous_matches
-
-    def update_records(self, matched_document):
-        """Update document eitem and series records."""
-        self.document_importer.update_document(matched_document)
-        self.eitem_importer.update_eitems(matched_document)
-        self.eitem_summary = self.eitem_importer.summary()
-        self.series_list = self.series_importer.import_series(matched_document)
-        self.document = matched_document
-
-    def delete_records(self, matched_document):
+    def delete_eitem(self, matched_document):
         """Deletes eitems records."""
         self.eitem_importer.delete_eitems(matched_document)
-        self.eitem_summary = self.eitem_importer.summary()
+        return self.eitem_importer.summary()
 
-    def index_all_records(self):
+    def index_records(self, document, eitem, series_list):
         """Index imported records."""
         # we are using general indexer instead of type dedicated classes
         # in order to avoid version mismatch on references
@@ -154,82 +117,118 @@ class Importer(object):
         series_class = current_app_ils.series_record_cls
         eitem_class = current_app_ils.eitem_record_cls
 
-        eitem_imported = self.eitem_importer.eitem_record
-        if eitem_imported:
-            eitem = eitem_class.get_record_by_pid(eitem_imported["pid"])
+        if eitem:
+            eitem = eitem_class.get_record_by_pid(eitem["output_pid"])
             record_indexer.index(eitem)
 
-        document = document_class.get_record_by_pid(self.document["pid"])
+        document = document_class.get_record_by_pid(document["pid"])
         record_indexer.index(document)
 
-        for series in self.series_list:
-            series_record =\
+        for series in series_list:
+            series_record = \
                 series_class.get_record_by_pid(series["series_record"]["pid"])
             record_indexer.index(series_record)
 
+    def find_partial_matches(self, pids_list=None):
+        """Get all partial matches."""
+        if pids_list is None:
+            pids_list = []
+        # ambiguous = matching fails
+        # (inconsistent identifiers/title pairs, duplicates etc)
+        amibiguous_matches = [
+            {"pid": match, "type": "ambiguous"} for match in
+            pids_list]
+
+        # fuzzy = trying to match similar titles and authors to spot typos
+        fuzzy_results = self.document_importer.fuzzy_match_documents()
+        fuzzy_matches = [{"pid": match.pid, "type": "similar"} for match in
+                         fuzzy_results]
+
+        return fuzzy_matches + amibiguous_matches
+
+    def update_exact_match(self, exact_match):
+        """Update exact importing record match."""
+        document_class = current_app_ils.document_record_cls
+        matched_document = document_class.get_record_by_pid(
+            exact_match)
+
+        self.document_importer.update_document(matched_document)
+        self.eitem_importer.update_eitems(matched_document)
+
+        eitem = self.eitem_importer.summary()
+        series = self.series_importer.import_series(
+            matched_document)
+        return matched_document, eitem, series
+
     def import_record(self):
         """Import record."""
+        document, eitem, series = None, None, None
+        action = None
         self._validate_provider()
 
-        # finds the exact match, update records
-        matched_document = self._match_document()
-
-        if matched_document:
-            self.output_pid = matched_document["pid"]
-            self.action = "update"
-            self.update_records(matched_document)
-            self.index_all_records()
-            return self.import_summary()
-
+        exact_match, partial_matches = self._match_document()
         # finds the multiple matches or fuzzy matches, does not create new doc
         # requires manual intervention, to avoid duplicates
-        if self.ambiguous_matches:
-            return self.import_summary()
+        partial_matches = self.find_partial_matches(partial_matches)
 
-        self.document = self.document_importer.create_document()
-        if self.document:
-            self.output_pid = self.document["pid"]
-            self.action = "create"
-            self.eitem_importer.create_eitem(self.document)
-            self.eitem_summary = self.eitem_importer.summary()
-            self.series_list = self.series_importer.import_series(
-                self.document)
-            self.index_all_records()
-        return self.import_summary()
+        # finds the exact match, update records
+        if exact_match:
+            document, eitem, series = self.update_exact_match(exact_match)
+            self.index_records(document, eitem, series)
+            return self.report(document=document,
+                               action="update",
+                               partial_matches=partial_matches,
+                               eitem=eitem, series=series)
+
+        document = self.document_importer.create_document()
+        if document:
+            action = "create"
+            self.eitem_importer.create_eitem(document)
+            eitem = self.eitem_importer.summary()
+            series = self.series_importer.import_series(document)
+            self.index_records(document, eitem, series)
+
+        return self.report(document=document,
+                           action=action,
+                           partial_matches=partial_matches,
+                           eitem=eitem, series=series)
 
     def delete_record(self):
         """Deletes the eitems of the record."""
         document_indexer = current_app_ils.document_indexer
         series_class = current_app_ils.series_record_cls
-        self._validate_provider()
-        self.action = "none"
-        # finds the exact match, update records
-        self.document = self._match_document()
+        document_class = current_app_ils.document_record_cls
 
-        if self.document:
-            self.output_pid = self.document["pid"]
-            self.delete_records(self.document)
+        self._validate_provider()
+
+        exact_match, partial_matches = self._match_document()
+        partial_matches = self.find_partial_matches(partial_matches)
+
+        if exact_match:
+            matched_document = document_class.get_record_by_pid(exact_match)
+
+            eitem = self.delete_eitem(matched_document)
             db.session.commit()
             current_search.flush_and_refresh(index="*")
             document_has_only_serial_relations = \
-                len(self.document.relations.keys()) \
-                and 'serial' in self.document.relations.keys()
+                len(matched_document.relations.keys()) \
+                and 'serial' in matched_document.relations.keys()
 
-            if not self.document.has_references() \
+            if not matched_document.has_references() \
                     or document_has_only_serial_relations:
 
                 # remove serial relations
                 rr = RecordRelationsParentChild()
-                serial_relations = self.document.relations.get('serial', [])
+                serial_relations = matched_document.relations.get('serial', [])
                 relation_type = Relation.get_relation_by_name("serial")
                 for relation in serial_relations:
                     serial = series_class.get_record_by_pid(
                         relation["pid_value"])
-                    rr.remove(serial, self.document, relation_type)
+                    rr.remove(serial, matched_document, relation_type)
 
-            pid = self.document.pid
+            pid = matched_document.pid
             # will fail if any relations / references present
-            self.document.delete()
+            matched_document.delete()
             # mark all PIDs as DELETED
             all_pids = PersistentIdentifier.query.filter(
                 PersistentIdentifier.object_type == pid.object_type,
@@ -240,65 +239,83 @@ class Importer(object):
                     rec_pid.delete()
 
             db.session.commit()
-            document_indexer.delete(self.document)
-            self.action = "delete"
+            document_indexer.delete(matched_document)
+            return self.report(document=matched_document,
+                               action="delete",
+                               partial_matches=partial_matches,
+                               eitem=eitem)
 
-        return self.import_summary()
+        return self.report(partial_matches=partial_matches)
 
-    def import_summary(self):
-        """Provide import summary."""
+    def report(self,
+               document=None,
+               action="none",
+               partial_matches=None,
+               eitem=None,
+               series=None):
+        """Generate import report."""
         doc_json = {}
-        if self.document:
-            doc_json = self.document.dumps()
+        doc_pid = None
+        if document:
+            doc_json = document.dumps()
+            doc_pid = document["pid"]
         return {
-            "output_pid": self.output_pid,
-            "action": self.action,
-            "partial_matches": self._serialize_partial_matches(),
-            "eitem": self.eitem_summary,
-            "series": self.series_list,
+            "output_pid": doc_pid,
+            "action": action,
+            "partial_matches": partial_matches,
+            "eitem": eitem,
+            "series": series,
             "raw_json": self.json_data,
             "document_json": doc_json,
-            "document": self.document,
         }
 
     def preview_delete(self):
         """Preview deleting a record."""
+        document_class = current_app_ils.document_record_cls
+        document, eitem = None, None
         self._validate_provider()
-        self.action = "none"
+        action = "none"
         # finds the exact match, update records
-        self.document = self._match_document()
+        exact_match, partial_matches = self._match_document()
+        partial_matches = self.find_partial_matches(partial_matches)
 
-        if self.document:
-            self.output_pid = self.document["pid"]
-            self.eitem_summary = \
-                self.eitem_importer.preview_delete(self.document)
-            self.preview_delete_document(self.document)
-            self.action = "delete"
+        if exact_match:
+            document = document_class.get_record_by_pid(exact_match)
+            eitem = self.eitem_importer.preview_delete(document)
+            self.preview_delete_document(document)
+            action = "delete"
 
-        return self.import_summary()
+        return self.report(document=document, action=action,
+                           partial_matches=partial_matches, eitem=eitem)
 
     def preview_import(self):
         """Previews the record import."""
+        document_class = current_app_ils.document_record_cls
+
         self._validate_provider()
-        self.document = self._match_document()
-        self.eitem_summary = self.eitem_importer.preview_import(self.document)
-        self.series_list = self.series_importer.preview_import_series()
 
-        if self.document:
-            self.document = self.document_importer.preview_document_update(
-                self.document)
-            self.action = "update"
-            self.output_pid = self.document["pid"]
-        else:
-            self.document = self.document_importer.preview_document_import()
-            self.action = "create"
-
+        exact_match, partial_matches = self._match_document()
         # finds the multiple matches or fuzzy matches, does not create new doc
         # requires manual intervention, to avoid duplicates
-        if self.ambiguous_matches:
-            self.action = None
+        partial_matches = self.find_partial_matches(partial_matches)
 
-        return self.import_summary()
+        if exact_match:
+            document = document_class.get_record_by_pid(exact_match)
+            document = self.document_importer.preview_document_update(document)
+            action = "update"
+        else:
+            document = self.document_importer.preview_document_import()
+            action = "create"
+
+        eitem = self.eitem_importer.preview_import(document)
+        series = self.series_importer.preview_import_series()
+
+        if partial_matches:
+            action = "error"
+
+        return self.report(document=document, action=action,
+                           eitem=eitem, series=series,
+                           partial_matches=partial_matches)
 
     def preview_delete_document(self, document):
         """Delete Document record."""
@@ -346,7 +363,7 @@ class Importer(object):
         related_refs = set()
         for _, related_objects in document.relations.items():
             for obj in related_objects:
-                if not obj["record_metadata"].get("mode_of_issuance")\
+                if not obj["record_metadata"].get("mode_of_issuance") \
                        == "SERIAL":
                     related_refs.add("{pid_value}:{pid_type}".format(**obj))
         if related_refs:

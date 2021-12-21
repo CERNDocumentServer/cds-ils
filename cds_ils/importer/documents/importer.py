@@ -226,6 +226,7 @@ class DocumentImporter(object):
         """Validate matched & parsed documents have same title/isbn pair."""
         matches = []
         partial_matches = []
+        match = None
 
         document_class = current_app_ils.document_record_cls
         import_doc_title = self.json_data.get("title")
@@ -252,12 +253,16 @@ class DocumentImporter(object):
             else:
                 matches.append(pid_value)
 
-        return matches, partial_matches
+        if matches:
+            match = matches[0]
+        if len(matches) > 1:
+            match = matches[0]
+            partial_matches += matches[1:]
+
+        return match, partial_matches
 
     def search_for_matching_documents(self):
         """Find matching documents."""
-        document_class = current_app_ils.document_record_cls
-
         isbn_list = [
             identifier["value"]
             for identifier in self.json_data.get("identifiers", [])
