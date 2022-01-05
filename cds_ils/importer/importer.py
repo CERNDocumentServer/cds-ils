@@ -129,7 +129,7 @@ class Importer(object):
                 series_class.get_record_by_pid(series["series_record"]["pid"])
             record_indexer.index(series_record)
 
-    def find_partial_matches(self, pids_list=None):
+    def find_partial_matches(self, pids_list=None, exact_match=None):
         """Get all partial matches."""
         if pids_list is None:
             pids_list = []
@@ -142,7 +142,7 @@ class Importer(object):
         # fuzzy = trying to match similar titles and authors to spot typos
         fuzzy_results = self.document_importer.fuzzy_match_documents()
         fuzzy_matches = [{"pid": match.pid, "type": "similar"} for match in
-                         fuzzy_results]
+                         fuzzy_results if match != exact_match]
 
         return fuzzy_matches + amibiguous_matches
 
@@ -169,7 +169,8 @@ class Importer(object):
         exact_match, partial_matches = self._match_document()
         # finds the multiple matches or fuzzy matches, does not create new doc
         # requires manual intervention, to avoid duplicates
-        partial_matches = self.find_partial_matches(partial_matches)
+        partial_matches = self.find_partial_matches(partial_matches,
+                                                    exact_match)
 
         # finds the exact match, update records
         if exact_match:
@@ -202,7 +203,8 @@ class Importer(object):
         self._validate_provider()
 
         exact_match, partial_matches = self._match_document()
-        partial_matches = self.find_partial_matches(partial_matches)
+        partial_matches = self.find_partial_matches(partial_matches,
+                                                    exact_match)
 
         if exact_match:
             matched_document = document_class.get_record_by_pid(exact_match)
@@ -277,7 +279,8 @@ class Importer(object):
         action = "none"
         # finds the exact match, update records
         exact_match, partial_matches = self._match_document()
-        partial_matches = self.find_partial_matches(partial_matches)
+        partial_matches = self.find_partial_matches(partial_matches,
+                                                    exact_match)
 
         if exact_match:
             document = document_class.get_record_by_pid(exact_match)
@@ -297,7 +300,8 @@ class Importer(object):
         exact_match, partial_matches = self._match_document()
         # finds the multiple matches or fuzzy matches, does not create new doc
         # requires manual intervention, to avoid duplicates
-        partial_matches = self.find_partial_matches(partial_matches)
+        partial_matches = self.find_partial_matches(partial_matches,
+                                                    exact_match)
 
         if exact_match:
             document = document_class.get_record_by_pid(exact_match)
