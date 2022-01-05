@@ -142,7 +142,7 @@ class Importer(object):
         # fuzzy = trying to match similar titles and authors to spot typos
         fuzzy_results = self.document_importer.fuzzy_match_documents()
         fuzzy_matches = [{"pid": match.pid, "type": "similar"} for match in
-                         fuzzy_results if match != exact_match]
+                         fuzzy_results if match.pid != exact_match]
 
         return fuzzy_matches + amibiguous_matches
 
