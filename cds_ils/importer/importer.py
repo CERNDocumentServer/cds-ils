@@ -9,6 +9,7 @@
 import time
 
 import pkg_resources
+from elasticsearch import TransportError
 from flask import current_app
 from invenio_app_ils.errors import RecordHasReferencesError
 from invenio_app_ils.proxies import current_app_ils
@@ -21,7 +22,8 @@ from invenio_search import current_search
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
-from cds_ils.importer.errors import InvalidProvider, UnknownProvider
+from cds_ils.importer.errors import InvalidProvider, \
+    SimilarityMatchUnavailable, UnknownProvider
 from cds_ils.importer.series.importer import SeriesImporter
 
 from .errors import DocumentHasReferencesError
@@ -140,10 +142,12 @@ class Importer(object):
             pids_list]
 
         # fuzzy = trying to match similar titles and authors to spot typos
-        fuzzy_results = self.document_importer.fuzzy_match_documents()
-        fuzzy_matches = [{"pid": match.pid, "type": "similar"} for match in
-                         fuzzy_results if match.pid != exact_match]
-
+        try:
+            fuzzy_results = self.document_importer.fuzzy_match_documents()
+            fuzzy_matches = [{"pid": match.pid, "type": "similar"} for match in
+                             fuzzy_results if match.pid != exact_match]
+        except TransportError:
+            raise SimilarityMatchUnavailable
         return fuzzy_matches + amibiguous_matches
 
     def update_exact_match(self, exact_match):
