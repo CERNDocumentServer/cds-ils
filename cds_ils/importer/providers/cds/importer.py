@@ -30,20 +30,22 @@ class CDSImporter(Importer):
                 document_class, legacy_pid_type, self.json_data["legacy_recid"]
             )
         except (PIDDoesNotExistError, PersistentIdentifierError):
-            return
-        return document
+            return None, []
+        return document, []
 
     def import_record(self):
         """Import CDS record with legacy recid."""
+        document_class = current_app_ils.document_record_cls
         summary = super().import_record()
-        if self.action == "create" and self.document:
+        if summary["action"] == "create" and summary["output_pid"]:
             legacy_pid_type = current_app.config[
                 "CDS_ILS_RECORD_LEGACY_PID_TYPE"
             ]
-            record_uuid = self.document.pid.object_uuid
+            document = document_class.get_record_by_pid(summary["output_pid"])
+            record_uuid = document.pid.object_uuid
 
             legacy_recid_minter(
-                self.document["legacy_recid"], legacy_pid_type, record_uuid
+                document["legacy_recid"], legacy_pid_type, record_uuid
             )
         return summary
 
