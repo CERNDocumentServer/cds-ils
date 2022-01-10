@@ -20,11 +20,11 @@ from invenio_app_ils.patrons.indexer import PatronBaseIndexer
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount
+from sqlalchemy.orm.exc import NoResultFound
 
 from cds_ils.ldap.client import LdapClient
-from cds_ils.ldap.serializers import InvenioUser, serialize_ldap_user, \
-    user_exists
 from cds_ils.ldap.user_importer import LdapUserImporter
+from cds_ils.ldap.utils import InvenioUser, serialize_ldap_user, user_exists
 from cds_ils.notifications.tasks import \
     send_warning_notification_patron_has_active_loans
 
@@ -85,7 +85,6 @@ def _log_info(log_uuid, action, extra=dict(), is_error=False):
 
 def remap_invenio_users(log_func):
     """Create and return a list of all Invenio users."""
-    print("FETCH REMOTE ACCOUNTS")
     invenio_remote_accounts_list = []
     remote_accounts = RemoteAccount.query.all()
 
@@ -131,7 +130,7 @@ def update_users():
     """Sync LDAP users with local users in the DB."""
 
     def update_invenio_users_from_ldap(
-        invenio_users, ldap_users_map, log_func
+        remote_accounts, ldap_users_map, log_func
     ):
         """Iterate on all Invenio users to update outdated info from LDAP."""
         updated_count = 0
@@ -139,7 +138,7 @@ def update_users():
         # Note: cannot iterate on the db query here, because when a user is
         # deleted, db session will expire, causing a DetachedInstanceError when
         # fetching the user on the next iteration
-        for remote_account in invenio_users:
+        for remote_account in remote_accounts:
             invenio_user = InvenioUser(remote_account)
             # use `dict.pop` to remove from `ldap_users_map` the users found
             # in Invenio, so the remaining will be the ones to be added
@@ -149,8 +148,7 @@ def update_users():
             )
             if not ldap_user:
                 continue
-            print("Processing user with person id {}".format(
-                ldap_user["remote_account_person_id"]))
+
             invenio_user.data.pop("remote_account_id")
             ldap_user.pop("cern_account_type")
 
@@ -229,11 +227,11 @@ def update_users():
     if not ldap_users_emails:
         return 0, 0, 0
 
-    invenio_users = remap_invenio_users(log_func)
+    remote_acounts = remap_invenio_users(log_func)
 
     # STEP 1 - update Invenio users with info from LDAP
     ldap_users_map, invenio_users_updated = update_invenio_users_from_ldap(
-        invenio_users, ldap_users_map, log_func
+        remote_acounts, ldap_users_map, log_func
     )
 
     # STEP 2 - import any new LDAP user not in Invenio yet
@@ -254,42 +252,61 @@ def update_users():
     )
 
 
-def delete_users(dry_run=True):
+def delete_users(dry_run=True, mark_for_deletion=True):
     """Delete users that are still in the DB but not in LDAP."""
     # disabled at the moment because LDAP fetch is not reliable.
     # It happened that it returned much less users and many were automatically
     # deleted.
-    raise NotImplementedError("not yet tested properly")
 
     invenio_users_deleted_count = 0
+    config_checks_before_deletion = \
+        current_app.config["CDS_ILS_PATRON_DELETION_CHECKS"]
+
+    log_uuid = str(uuid.uuid4())
+    log_func = partial(_log_info, log_uuid)
 
     ldap_users_count, ldap_users_map, ldap_users_emails = get_ldap_users(
         log_func
     )
 
     # get all Invenio remote accounts and prepare a list with needed info
-    invenio_users = remap_invenio_users(log_func)
+    remote_accounts = remap_invenio_users(log_func)
 
-    for invenio_user in invenio_users:
+    for remote_account in remote_accounts:
+        try:
+            invenio_user = InvenioUser(remote_account)
+        except NoResultFound:
+            continue
+
         ldap_user = ldap_users_map.get(
-            invenio_user["remote_account_person_id"]
-        )
+                invenio_user.data["remote_account_person_id"]
+            )
+
         if not ldap_user:
             # the user in Invenio does not exist in LDAP, delete it
 
             # fetch user and needed values before deletion
-            user_id = invenio_user.user_id
-            user = User.query.filter_by(id=user_id).one()
+            user_id = remote_account.user_id
+            success = False
+            ready_to_delete = True
 
-            if not dry_run:
+            if mark_for_deletion:
+                ready_to_delete = False
+                checks = invenio_user.mark_for_deletion()
+                if checks > config_checks_before_deletion:
+                    ready_to_delete = True
+
+            if not dry_run and ready_to_delete:
                 success = _delete_invenio_user(user_id)
-            else:
+            elif dry_run:
                 success = True
 
             if success:
                 invenio_users_deleted_count += 1
+        else:
+            invenio_user.unmark_for_deletion()
 
     if not dry_run:
         current_app_ils.patron_indexer.reindex_patrons()
 
-    return len(ldap_users), invenio_users_deleted_count
+    return ldap_users_count, invenio_users_deleted_count

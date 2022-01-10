@@ -120,6 +120,15 @@ class LdapSynchronizationLog(db.Model):
         self.ils_insertion_count = ils_insertion_count
         db.session.commit()
 
+    def set_deletion_success(self, ldap_fetch_count, ils_deletion_count):
+        """Set deletion success log."""
+        assert self.is_running()
+        self.status = TaskStatus.SUCCEEDED
+        self.end_time = datetime.now()
+        self.ldap_fetch_count = ldap_fetch_count
+        self.ils_deletion_count = ils_deletion_count
+        db.session.commit()
+
     def set_failed(self, exception):
         """Mark this task as failed."""
         assert self.is_running()

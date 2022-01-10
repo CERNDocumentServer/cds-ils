@@ -9,6 +9,7 @@
 from functools import partial
 
 from invenio_accounts.models import User
+from invenio_db import db
 from invenio_oauthclient.models import UserIdentity
 from invenio_userprofiles import UserProfile
 
@@ -124,3 +125,20 @@ class InvenioUser:
         ra.extra_data["mailbox"] = ldap_user["remote_account_mailbox"]
         self.user.email = ldap_user["user_email"]
         self.user_profile.full_name = ldap_user["user_profile_full_name"]
+
+    def mark_for_deletion(self):
+        """Mark user for deletion."""
+        ra = self.remote_account
+        deletion_checks = ra.extra_data.get("deletion_countdown", 0)
+        deletion_checks += 1
+        ra.extra_data["deletion_countdown"] = deletion_checks
+        db.session.commit()
+        return deletion_checks
+
+    def unmark_for_deletion(self):
+        """Unmark user for deletion."""
+        ra = self.remote_account
+        deletion_checks = ra.extra_data.get("deletion_countdown")
+        if deletion_checks:
+            ra.extra_data["deletion_countdown"] = 0
+            db.session.commit()
