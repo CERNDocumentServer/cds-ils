@@ -10,6 +10,7 @@
 from copy import deepcopy
 
 import pytest
+from flask import current_app
 from invenio_accounts.models import User
 from invenio_app_ils.patrons.search import PatronsSearch
 from invenio_app_ils.proxies import current_app_ils
@@ -17,12 +18,13 @@ from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
 
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
 from cds_ils.ldap.api import LdapUserImporter, _delete_invenio_user, \
-    import_users, update_users
+    delete_users, import_users, update_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
-from cds_ils.ldap.serializers import serialize_ldap_user
+from cds_ils.ldap.utils import serialize_ldap_user
 
 
 def test_send_notification_delete_user_with_loans(app, patrons, testdata,
@@ -229,6 +231,7 @@ def test_update_users(app, db, testdata, mocker):
         ldap_user = serialize_ldap_user(duplicated)
         importer.import_user(ldap_user)
         db.session.commit()
+
     _prepare()
 
     # mock LDAP response
@@ -324,3 +327,225 @@ def test_log_table(app):
     assert found.ldap_fetch_count == 5
     with pytest.raises(AssertionError):
         found.set_succeeded(1, 2, 3)
+
+
+def test_delete_user(app, db, testdata, mocker):
+    """Test delete users when no longer in ldap."""
+
+    ldap_users = [
+        {
+            "displayName": [b"New user"],
+            "department": [b"A department"],
+            "uidNumber": [b"111"],
+            "mail": [b"ldap.user111@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00111"],
+            "postOfficeBox": [b"M12345"]
+        },
+        {
+            "displayName": [b"A new name"],
+            "department": [b"A new department"],
+            "uidNumber": [b"222"],
+            "mail": [b"ldap.user222@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00222"],
+            "postOfficeBox": [b"M12345"]
+        },
+        {
+            "displayName": [b"old user left CERN"],
+            "department": [b"Department"],
+            "uidNumber": [b"444"],
+            "mail": [b"ldap.user444@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00444"],
+            "postOfficeBox": [b"M12345"]
+        }
+    ]
+
+    new_ldap_response = [
+        {
+            "displayName": [b"New user"],
+            "department": [b"A department"],
+            "uidNumber": [b"111"],
+            "mail": [b"ldap.user111@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00111"],
+            "postOfficeBox": [b"M12345"]
+        }
+    ]
+
+    def _prepare():
+        """Prepare data."""
+        importer = LdapUserImporter()
+        # Prepare users in DB. Use `LdapUserImporter` to make it easy
+        # create old users
+        existing_user = deepcopy(ldap_users[0])
+        ldap_user = serialize_ldap_user(existing_user)
+        importer.import_user(ldap_user)
+
+        user_to_delete1 = deepcopy(ldap_users[1])
+        ldap_user = serialize_ldap_user(user_to_delete1)
+        user_to_delete_id1 = importer.import_user(ldap_user)
+
+        user_to_delete2 = deepcopy(ldap_users[2])
+        ldap_user = serialize_ldap_user(user_to_delete2)
+        user_to_delete_id2 = importer.import_user(ldap_user)
+
+        db.session.commit()
+        current_app_ils.patron_indexer.reindex_patrons()
+
+    _prepare()
+    # mock LDAP response
+    mocker.patch(
+        "cds_ils.ldap.api.LdapClient.get_primary_accounts",
+        return_value=new_ldap_response,
+    )
+
+    ldap_users_count, deleted_accounts = delete_users()
+
+    assert ldap_users_count == 1
+    # 2 from this test + 1 from testdata
+    assert deleted_accounts == 3
+
+
+def test_delete_user_with_checks(app, db, testdata, mocker):
+    """Test delete users when no longer in ldap."""
+
+    ldap_users = [
+        {
+            "displayName": [b"New user"],
+            "department": [b"A department"],
+            "uidNumber": [b"111"],
+            "mail": [b"ldap.user111@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00111"],
+            "postOfficeBox": [b"M12345"]
+        },
+        {
+            "displayName": [b"A new name"],
+            "department": [b"A new department"],
+            "uidNumber": [b"222"],
+            "mail": [b"ldap.user222@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00222"],
+            "postOfficeBox": [b"M12345"]
+        },
+        {
+            "displayName": [b"old user left CERN"],
+            "department": [b"Department"],
+            "uidNumber": [b"444"],
+            "mail": [b"ldap.user444@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00444"],
+            "postOfficeBox": [b"M12345"]
+        }
+    ]
+
+    new_ldap_response = [
+        {
+            "displayName": [b"New user"],
+            "department": [b"A department"],
+            "uidNumber": [b"111"],
+            "mail": [b"ldap.user111@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00111"],
+            "postOfficeBox": [b"M12345"]
+        }
+    ]
+
+    def _prepare():
+        """Prepare data."""
+        importer = LdapUserImporter()
+        # Prepare users in DB. Use `LdapUserImporter` to make it easy
+        # create old users
+        existing_user = deepcopy(ldap_users[0])
+        ldap_user = serialize_ldap_user(existing_user)
+        importer.import_user(ldap_user)
+
+        user_to_delete1 = deepcopy(ldap_users[1])
+        ldap_user = serialize_ldap_user(user_to_delete1)
+        user_to_delete_id1 = importer.import_user(ldap_user)
+
+        user_to_delete2 = deepcopy(ldap_users[2])
+        ldap_user = serialize_ldap_user(user_to_delete2)
+        user_to_delete_id2 = importer.import_user(ldap_user)
+
+        db.session.commit()
+        current_app_ils.patron_indexer.reindex_patrons()
+        return user_to_delete_id1, user_to_delete_id2
+
+    user_to_delete_id1, user_to_delete_id2 = _prepare()
+    # mock LDAP response
+    mocker.patch(
+        "cds_ils.ldap.api.LdapClient.get_primary_accounts",
+        return_value=new_ldap_response,
+    )
+
+    ldap_users_count, deleted_accounts = delete_users(dry_run=False)
+
+    assert ldap_users_count == 1
+    assert deleted_accounts == 0
+
+    ra1 = RemoteAccount.query.filter(
+        RemoteAccount.user_id == user_to_delete_id1).one()
+    ra2 = RemoteAccount.query.filter(
+        RemoteAccount.user_id == user_to_delete_id2).one()
+
+    assert ra1.extra_data["deletion_countdown"] == 1
+    assert ra2.extra_data["deletion_countdown"] == 1
+
+    # set to be deleted now
+    config_checks_before_deletion = \
+        current_app.config["CDS_ILS_PATRON_DELETION_CHECKS"]
+
+    # mark for total deletion
+    ra2.extra_data["deletion_countdown"] = config_checks_before_deletion
+
+    # unmark one entry
+    fixed_ldap_response = [
+        {
+            "displayName": [b"New user"],
+            "department": [b"A department"],
+            "uidNumber": [b"111"],
+            "mail": [b"ldap.user111@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00111"],
+            "postOfficeBox": [b"M12345"]
+        },
+        {
+            "displayName": [b"A new name"],
+            "department": [b"A new department"],
+            "uidNumber": [b"222"],
+            "mail": [b"ldap.user222@cern.ch"],
+            "cernAccountType": [b"Primary"],
+            "employeeID": [b"00222"],
+            "postOfficeBox": [b"M12345"]
+        },
+    ]
+
+    mocker.patch(
+        "cds_ils.ldap.api.LdapClient.get_primary_accounts",
+        return_value=fixed_ldap_response,
+    )
+
+    db.session.commit()
+
+    ldap_users_count, deleted_accounts = delete_users(dry_run=False)
+
+    assert ldap_users_count == 2
+    # the users should be deleted (not the account from testdata
+    # and not the unmarked)
+    assert deleted_accounts == 1
+
+    current_search.flush_and_refresh(index="*")
+
+    ra1 = RemoteAccount.query.filter(
+        RemoteAccount.user_id == user_to_delete_id1).one()
+
+    # make sure first account was unmarked for deletion
+    assert ra1.extra_data["deletion_countdown"] == 0
+
+    # make sure account 2 was deleted
+    with pytest.raises(NoResultFound):
+        ra2 = RemoteAccount.query.filter(
+            RemoteAccount.user_id == user_to_delete_id2).one()

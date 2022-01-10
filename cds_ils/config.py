@@ -167,6 +167,10 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
 #: Scheduled tasks configuration (aka cronjobs).
 CELERY_BEAT_SCHEDULE = {
     **ILS_CELERY_BEAT_SCHEDULE,  # Parent config
+    "anonymize_users": {
+        "task": "cds_ils.ldap.tasks.anonymize_users_task",
+        "schedule": crontab(minute=0, hour=22),  # every day, 10pm
+    },
     "synchronize_users": {
         "task": "cds_ils.ldap.tasks.synchronize_users_task",
         "schedule": crontab(minute=0, hour=4),  # every day, 4am
@@ -175,7 +179,7 @@ CELERY_BEAT_SCHEDULE = {
         "task": "cds_ils.importer.tasks.clean_preview_logs",
         "schedule": crontab(day_of_week='mon', minute=0, hour=6),
         # every Monday, 6am
-    }
+    },
 }
 
 ###############################################################################
@@ -626,6 +630,8 @@ ILS_PATRON_ANONYMOUS_CLASS = AnonymousPatron
 ###############################################################################
 #: LDAP configuration
 CDS_ILS_LDAP_URL = "ldap://xldap.cern.ch"
+#: number of checks (synchronisations) before user deletion
+CDS_ILS_PATRON_DELETION_CHECKS = 30
 #: Literature covers Syndetic client ID
 CDS_ILS_SYNDETIC_CLIENT = "CHANGE_ME"
 #: EzProxy URL

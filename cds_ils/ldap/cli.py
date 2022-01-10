@@ -50,6 +50,6 @@ def update_users():
 def delete_users():
     """Load users from LDAP and delete the ones that are still in the DB."""
     try:
-        ldap_delete_users()
+        ldap_delete_users(mark_for_deletion=False)
     except Exception as e:
         current_app.logger.exception(e)
