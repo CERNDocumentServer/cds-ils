@@ -31,7 +31,7 @@ class CDSImporter(Importer):
             )
         except (PIDDoesNotExistError, PersistentIdentifierError):
             return None, []
-        return document, []
+        return document["pid"], []
 
     def import_record(self):
         """Import CDS record with legacy recid."""
