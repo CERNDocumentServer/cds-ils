@@ -37,7 +37,11 @@ class ImportedDocumentReportComponent extends Component {
     if (!_isEmpty(documentReport.raw_json)) {
       let volume = _get(documentReport, 'raw_json._serial[0].volume', '');
       volume = volume ? `(v. ${volume})` : '';
-      title = `${documentReport.raw_json.title} ${volume}
+      title = `${
+        documentReport.raw_json.title
+          ? documentReport.raw_json.title
+          : documentReport.document_json?.title
+      } ${volume}
       [${documentReport.entry_recid}]`;
     } else {
       title = documentReport.entry_recid;
