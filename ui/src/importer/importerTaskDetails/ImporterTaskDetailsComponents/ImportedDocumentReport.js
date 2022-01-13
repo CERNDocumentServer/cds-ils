@@ -3,7 +3,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Header, Icon, Label, Table } from 'semantic-ui-react';
+import {
+  Button,
+  Grid,
+  Header,
+  Icon,
+  Label,
+  List,
+  Table,
+} from 'semantic-ui-react';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
 import { openJsonModal as openJsonModalAction } from '../../JsonViewModal/actions';
@@ -221,25 +229,31 @@ class ImportedDocumentReportComponent extends Component {
         </Table.Cell>
         <Table.Cell collapsing>
           {!_isEmpty(documentReport.partial_matches) && (
-            <>
-              {' '}
-              <Icon color="red" name="exclamation" size="large" />
-              {documentReport.partial_matches.map(entry => {
-                return (
-                  <>
-                    {
-                      <Link
-                        to={BackOfficeRoutes.documentDetailsFor(entry.pid)}
-                        target="_blank"
-                      >
-                        {entry.pid}
-                      </Link>
-                    }{' '}
-                    <Label>{entry.type}</Label>
-                  </>
-                );
-              })}
-            </>
+            <Grid>
+              <Grid.Row>
+                <Grid.Column width={2}>
+                  <Icon color="red" name="exclamation" size="large" />
+                </Grid.Column>
+                <Grid.Column width={14}>
+                  <List>
+                    {documentReport.partial_matches.map(entry => {
+                      return (
+                        <List.Item
+                          key={entry}
+                          as={Link}
+                          to={BackOfficeRoutes.documentDetailsFor(entry.pid)}
+                          target="_blank"
+                        >
+                          <List.Content>
+                            {entry.pid} <Label>{entry.type}</Label>
+                          </List.Content>
+                        </List.Item>
+                      );
+                    })}
+                  </List>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
           )}
         </Table.Cell>
         <Table.Cell>
