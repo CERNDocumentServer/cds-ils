@@ -9,19 +9,19 @@ export const RenderStatistics = ({
 }) => {
   return (
     <Statistic.Group widths="seven" size="small">
-      {Object.keys(statistics).map(function(statistic, index) {
+      {Object.keys(statistics).map(function(statisticKey, index) {
         return (
           <Statistic
             className={
-              selectedResult === statistic
+              selectedResult === statisticKey
                 ? 'import-statistic statistic-selected'
                 : 'import-statistic'
             }
-            key={statistic}
-            onClick={() => applyFilter(statistic)}
+            key={statisticKey}
+            onClick={() => applyFilter(statisticKey)}
           >
-            <Statistic.Value>{statistics[statistic].value}</Statistic.Value>
-            <Statistic.Label>{statistics[statistic].text}</Statistic.Label>
+            <Statistic.Value>{statistics[statisticKey].value}</Statistic.Value>
+            <Statistic.Label>{statistics[statisticKey].text}</Statistic.Label>
           </Statistic>
         );
       }, this)}

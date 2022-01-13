@@ -77,13 +77,13 @@ export class ImportedDocuments extends React.Component {
       ? delete stats.records_created
       : delete stats.records_deleted;
 
-    for (const statistic in stats) {
-      const filterFunc = stats[statistic].filterFunction;
+    for (const statisticKey in stats) {
+      const filterFunc = stats[statisticKey].filterFunction;
 
-      const isFullRecords = statistic === 'records';
+      const isFullRecords = statisticKey === 'records';
       if (isFullRecords) continue;
 
-      stats[statistic].value += newRecords.filter(record =>
+      stats[statisticKey].value += newRecords.filter(record =>
         filterFunc(record)
       ).length;
     }
