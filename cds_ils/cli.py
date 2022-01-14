@@ -106,6 +106,13 @@ def pages():
             content=page_data("search_guide.html"),
             template_name="invenio_pages/dynamic.html",
         ),
+        Page(
+            url="/privacy-policy",
+            title="Privacy Policy",
+            description="Privacy Policy",
+            content=page_data("privacy_policy.html"),
+            template_name="invenio_pages/dynamic.html",
+        ),
     ]
     with db.session.begin_nested():
         Page.query.delete()
