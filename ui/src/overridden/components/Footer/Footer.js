@@ -24,6 +24,11 @@ export const Footer = ({ ...props }) => {
                     Terms and Conditions
                   </Link>
                 </List.Item>
+                <List.Item>
+                  <Link to={getStaticPageByName('privacy-policy').route}>
+                    Privacy Policy
+                  </Link>
+                </List.Item>
               </List>
             </Grid.Column>
             <Grid.Column>

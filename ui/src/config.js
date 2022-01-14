@@ -7,6 +7,7 @@ export const config = {
       { name: 'faq', route: '/faq', apiURL: '3' },
       { name: 'contact', route: '/contact', apiURL: '4' },
       { name: 'search-guide', route: '/guide/search', apiURL: '5' },
+      { name: 'privacy-policy', route: '/privacy-policy', apiURL: '6' },
     ],
     ENABLE_LOCAL_ACCOUNT_LOGIN: false,
     OAUTH_PROVIDERS: {
