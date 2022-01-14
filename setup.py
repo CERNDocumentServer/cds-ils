@@ -51,6 +51,8 @@ install_requires = [
     "WTForms<3.0.0,>=2.3.3",
     # invenio-celery conflict fix
     "celery<5.2,>=5.1.0",
+    # conflict caused by "black", waiting for a new version release
+    "tomli>=1.2.2,<2.0.0",
 ]
 
 packages = find_packages()
