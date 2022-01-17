@@ -222,6 +222,41 @@ class DocumentImporter(object):
             click.secho(e.original_exception.message, fg="red")
             db.session.rollback()
 
+    def _validate_match_identifiers(self, existing_document):
+        """Validate identifiers between matches."""
+        import_doc_isbns = self.json_data.get('identifiers', [])
+        import_doc_provider_ids = self.json_data.get('alternative_identifiers',
+                                                     [])
+
+        doc_alternative_ids = existing_document.get('alternative_identifiers',
+                                                    [])
+        doc_ids = existing_document.get('identifiers', [])
+
+        matching_alternative_ids = [entry for entry in import_doc_provider_ids
+                                    if entry in doc_alternative_ids]
+        if matching_alternative_ids:
+            # found provider ID match
+            return True
+
+        existing_isbn = [entry for entry in doc_ids if
+                         entry["scheme"] == 'ISBN']
+        importing_isbn = [entry for entry in import_doc_isbns if
+                          entry["scheme"] == 'ISBN']
+
+        both_isbns = existing_isbn and importing_isbn
+        matching_isbns = [entry for entry in importing_isbn
+                          if entry in existing_isbn]
+
+        if matching_isbns:
+            # found isbns match
+            return True
+        if not both_isbns:
+            # if one of the records missing isbns, we return ids as valid
+            # to avoid duplicates
+            return True
+        # not valid - will create a new document
+        return False
+
     def validate_found_matches(self, not_validated_matches):
         """Validate matched & parsed documents have same title/isbn pair."""
         matches = []
@@ -248,7 +283,10 @@ class DocumentImporter(object):
             titles_not_equal = document_title.lower() != \
                 import_doc_title.lower()
 
-            if titles_not_equal or editions_not_equal or pub_year_not_equal:
+            valid_identifiers = self._validate_match_identifiers(document)
+
+            if titles_not_equal or editions_not_equal or pub_year_not_equal \
+                    or not valid_identifiers:
                 partial_matches.append(pid_value)
             else:
                 matches.append(pid_value)
