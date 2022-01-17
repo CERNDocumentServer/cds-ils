@@ -257,6 +257,30 @@ class DocumentImporter(object):
         # not valid - will create a new document
         return False
 
+    def _validate_volumes(self, existing_document):
+        """Validate serial volumes match."""
+        import_doc_serial = self.json_data.get("_serial", None)
+        existing_doc_serials = existing_document.relations.get('serial', [])
+
+        if not (import_doc_serial and existing_doc_serials):
+            return True
+
+        import_volume = import_doc_serial.get("volume")
+        import_serial_title = import_doc_serial["title"].lower()
+
+        same_serial, same_volume, both_have_volumes = False, False, False
+
+        for serial in existing_doc_serials:
+            existing_volume = serial.get("volume")
+            existing_title = serial["record_metadata"]["title"].lower()
+            if existing_title == import_serial_title:
+                same_serial = True
+                both_have_volumes = import_volume and existing_volume
+                same_volume = existing_volume == import_volume
+        if same_serial and both_have_volumes and same_volume:
+            return True
+        return False
+
     def validate_found_matches(self, not_validated_matches):
         """Validate matched & parsed documents have same title/isbn pair."""
         matches = []
@@ -283,10 +307,12 @@ class DocumentImporter(object):
             titles_not_equal = document_title.lower() != \
                 import_doc_title.lower()
 
-            valid_identifiers = self._validate_match_identifiers(document)
+            invalid_identifiers = not \
+                self._validate_match_identifiers(document)
+            invalid_serial_volumes = not self._validate_volumes(document)
 
             if titles_not_equal or editions_not_equal or pub_year_not_equal \
-                    or not valid_identifiers:
+                    or invalid_identifiers or invalid_serial_volumes:
                 partial_matches.append(pid_value)
             else:
                 matches.append(pid_value)
@@ -327,10 +353,9 @@ class DocumentImporter(object):
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
 
-        is_part_of_serial = self.json_data.get("_serial", None)
         title = self.json_data.get("title", None)
 
-        if not is_part_of_serial and title:
+        if title:
             # check by title and authors, exact matching
             authors = [
                 author["full_name"]
