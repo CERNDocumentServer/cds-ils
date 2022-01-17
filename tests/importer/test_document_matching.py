@@ -7,7 +7,7 @@ from ..helpers import load_json_from_datadir
 def test_document_search_matching(importer_test_data):
     helper_metadata_fields = ("_items", "agency_code")
     metadata_provider = "springer"
-    update_document_fields = ("identifiers",)
+    update_document_fields = ("identifiers", "alternative_identifiers")
 
     data_to_update = load_json_from_datadir(
         "match_testing_documents.json", relpath="importer"
@@ -50,8 +50,25 @@ def test_document_search_matching(importer_test_data):
     )
 
     matches = document_importer.search_for_matching_documents()
+    validated_matches, partial = document_importer. \
+        validate_found_matches(matches)
 
-    assert matches == ["docid-4"]
+    assert validated_matches == "docid-4"
+
+    # test matching by title and authors but different ids
+    document_importer = DocumentImporter(
+        data_to_update[4],
+        helper_metadata_fields,
+        metadata_provider,
+        update_document_fields,
+    )
+
+    matches = document_importer.search_for_matching_documents()
+    validated_matches, partial = document_importer. \
+        validate_found_matches(matches)
+
+    assert validated_matches == "docid-4"
+    assert partial == ["docid-41"]
 
 
 def test_fuzzy_matching(importer_test_data):
