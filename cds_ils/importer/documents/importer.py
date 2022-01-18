@@ -259,26 +259,27 @@ class DocumentImporter(object):
 
     def _validate_volumes(self, existing_document):
         """Validate serial volumes match."""
-        import_doc_serial = self.json_data.get("_serial", None)
+        import_doc_serials = self.json_data.get("_serial", [])
         existing_doc_serials = existing_document.relations.get('serial', [])
 
-        if not (import_doc_serial and existing_doc_serials):
+        if not (import_doc_serials and existing_doc_serials):
             return True
 
-        import_volume = import_doc_serial.get("volume")
-        import_serial_title = import_doc_serial["title"].lower()
+        for import_serial in import_doc_serials:
+            import_volume = import_serial.get("volume")
+            import_serial_title = import_serial["title"].lower()
 
-        same_serial, same_volume, both_have_volumes = False, False, False
+            same_serial, same_volume, both_have_volumes = False, False, False
 
-        for serial in existing_doc_serials:
-            existing_volume = serial.get("volume")
-            existing_title = serial["record_metadata"]["title"].lower()
-            if existing_title == import_serial_title:
-                same_serial = True
-                both_have_volumes = import_volume and existing_volume
-                same_volume = existing_volume == import_volume
-        if same_serial and both_have_volumes and same_volume:
-            return True
+            for serial in existing_doc_serials:
+                existing_volume = serial.get("volume")
+                existing_title = serial["record_metadata"]["title"].lower()
+                if existing_title == import_serial_title:
+                    same_serial = True
+                    both_have_volumes = import_volume and existing_volume
+                    same_volume = existing_volume == import_volume
+            if same_serial and both_have_volumes and same_volume:
+                return True
         return False
 
     def validate_found_matches(self, not_validated_matches):
