@@ -7,6 +7,15 @@
 Changes
 =======
 
+Version 1.2.18 (released 2022-01-18)
+
+- importer: bugfixes
+- ldap: add user deletion script
+- document details: add links to external services
+- global: add privacy policy page
+- document: check if document exists on indexing references
+- circulation: improve CSV export
+
 Version 1.2.13 (released 2022-01-06)
 
 - Importer:
