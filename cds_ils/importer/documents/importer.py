@@ -225,11 +225,11 @@ class DocumentImporter(object):
     def _validate_match_identifiers(self, existing_document):
         """Validate identifiers between matches."""
         import_doc_isbns = self.json_data.get('identifiers', [])
-        import_doc_provider_ids = self.json_data.get('alternative_identifiers',
-                                                     [])
+        import_doc_provider_ids = self.json_data.get(
+            'alternative_identifiers', [])
 
-        doc_alternative_ids = existing_document.get('alternative_identifiers',
-                                                    [])
+        doc_alternative_ids = existing_document.get(
+            'alternative_identifiers', [])
         doc_ids = existing_document.get('identifiers', [])
 
         matching_alternative_ids = [entry for entry in import_doc_provider_ids
@@ -247,14 +247,11 @@ class DocumentImporter(object):
         matching_isbns = [entry for entry in importing_isbn
                           if entry in existing_isbn]
 
-        if matching_isbns:
-            # found isbns match
+        # if one of the records missing isbns, we return ids as valid
+        # to avoid duplicates
+        if matching_isbns or not both_isbns:
             return True
-        if not both_isbns:
-            # if one of the records missing isbns, we return ids as valid
-            # to avoid duplicates
-            return True
-        # not valid - will create a new document
+        # no match found - will create a new document
         return False
 
     def _validate_volumes(self, existing_document):
@@ -262,25 +259,25 @@ class DocumentImporter(object):
         import_doc_serials = self.json_data.get("_serial", [])
         existing_doc_serials = existing_document.relations.get('serial', [])
 
-        if not (import_doc_serials and existing_doc_serials):
+        if not (import_doc_serials or existing_doc_serials):
             return True
 
         for import_serial in import_doc_serials:
             import_volume = import_serial.get("volume")
             import_serial_title = import_serial["title"].lower()
 
-            same_serial, same_volume, both_have_volumes = False, False, False
-
             for serial in existing_doc_serials:
                 existing_volume = serial.get("volume")
                 existing_title = serial["record_metadata"]["title"].lower()
-                if existing_title == import_serial_title:
-                    same_serial = True
-                    both_have_volumes = import_volume and existing_volume
-                    same_volume = existing_volume == import_volume
-            if same_serial and both_have_volumes and same_volume:
-                return True
-        return False
+
+                same_serial = existing_title == import_serial_title
+                both_have_volumes = import_volume and existing_volume
+                same_volume = existing_volume == import_volume
+
+                if same_serial and both_have_volumes and not same_volume:
+                    return False
+
+        return True
 
     def validate_found_matches(self, not_validated_matches):
         """Validate matched & parsed documents have same title/isbn pair."""
