@@ -13,7 +13,8 @@ from invenio_pidstore.errors import PIDDeletedError
 from cds_ils.importer.errors import InvalidProvider, LossyConversion, \
     ManualImportRequired, MissingRequiredField, ProviderNotAllowedDeletion, \
     RecordModelMissing, RecordNotDeletable, SeriesImportError, \
-    SimilarityMatchUnavailable, UnexpectedValue, UnknownProvider
+    SimilarityMatchUnavailable, UnexpectedValue, UnknownProvider, \
+    DocumentHasReferencesError
 from cds_ils.importer.models import ImportRecordLog
 
 
@@ -83,6 +84,7 @@ importer_exception_handlers = {
     ProviderNotAllowedDeletion: importer_exception_handler,
     SeriesImportError: importer_exception_handler,
     RecordHasReferencesError: importer_exception_handler,
+    DocumentHasReferencesError: importer_exception_handler,
     UnknownProvider: importer_exception_handler,
     VocabularyError: importer_exception_handler,
     InvalidProvider: importer_exception_handler,
