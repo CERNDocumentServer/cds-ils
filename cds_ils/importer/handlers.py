@@ -10,11 +10,11 @@ from invenio_app_ils.errors import IlsValidationError, \
     RecordHasReferencesError, VocabularyError
 from invenio_pidstore.errors import PIDDeletedError
 
-from cds_ils.importer.errors import InvalidProvider, LossyConversion, \
-    ManualImportRequired, MissingRequiredField, ProviderNotAllowedDeletion, \
-    RecordModelMissing, RecordNotDeletable, SeriesImportError, \
-    SimilarityMatchUnavailable, UnexpectedValue, UnknownProvider, \
-    DocumentHasReferencesError
+from cds_ils.importer.errors import DocumentHasReferencesError, \
+    InvalidProvider, LossyConversion, ManualImportRequired, \
+    MissingRequiredField, ProviderNotAllowedDeletion, RecordModelMissing, \
+    RecordNotDeletable, SeriesImportError, SimilarityMatchUnavailable, \
+    UnexpectedValue, UnknownProvider
 from cds_ils.importer.models import ImportRecordLog
 
 

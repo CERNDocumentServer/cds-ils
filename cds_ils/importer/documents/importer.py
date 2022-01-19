@@ -222,37 +222,37 @@ class DocumentImporter(object):
             click.secho(e.original_exception.message, fg="red")
             db.session.rollback()
 
-    def _validate_match_identifiers(self, existing_document):
+    def _validate_provider_identifiers(self, existing_document):
         """Validate identifiers between matches."""
-        import_doc_isbns = self.json_data.get('identifiers', [])
+        current_provider = self.metadata_provider.upper()
+
         import_doc_provider_ids = self.json_data.get(
             'alternative_identifiers', [])
 
         doc_alternative_ids = existing_document.get(
             'alternative_identifiers', [])
-        doc_ids = existing_document.get('identifiers', [])
 
-        matching_alternative_ids = [entry for entry in import_doc_provider_ids
-                                    if entry in doc_alternative_ids]
-        if matching_alternative_ids:
+        import_provider_ids = [
+            entry for entry in import_doc_provider_ids
+            if entry["scheme"] == current_provider
+        ]
+
+        doc_provider_ids = [
+            entry for entry in doc_alternative_ids
+            if entry["scheme"] == current_provider
+        ]
+
+        both_have_current_provider_ids = \
+            doc_provider_ids and import_provider_ids
+
+        matching_provider_ids = [entry for entry in import_doc_provider_ids
+                                 if entry in doc_alternative_ids]
+        if both_have_current_provider_ids and not matching_provider_ids:
             # found provider ID match
-            return True
+            return False
 
-        existing_isbn = [entry for entry in doc_ids if
-                         entry["scheme"] == 'ISBN']
-        importing_isbn = [entry for entry in import_doc_isbns if
-                          entry["scheme"] == 'ISBN']
-
-        both_isbns = existing_isbn and importing_isbn
-        matching_isbns = [entry for entry in importing_isbn
-                          if entry in existing_isbn]
-
-        # if one of the records missing isbns, we return ids as valid
-        # to avoid duplicates
-        if matching_isbns or not both_isbns:
-            return True
         # no match found - will create a new document
-        return False
+        return True
 
     def _validate_volumes(self, existing_document):
         """Validate serial volumes match."""
@@ -297,7 +297,7 @@ class DocumentImporter(object):
             document_edition = document.get('edition')
             doc_pub_year = document.get('publication_year')
 
-            both_editions = all([document_edition, import_doc_edition])
+            both_editions = document_edition and import_doc_edition
             editions_not_equal = both_editions and \
                 document_edition != import_doc_edition
 
@@ -305,12 +305,12 @@ class DocumentImporter(object):
             titles_not_equal = document_title.lower() != \
                 import_doc_title.lower()
 
-            invalid_identifiers = not \
-                self._validate_match_identifiers(document)
+            provider_identifiers_not_equal = \
+                not self._validate_provider_identifiers(document)
             invalid_serial_volumes = not self._validate_volumes(document)
 
-            if titles_not_equal or editions_not_equal or pub_year_not_equal \
-                    or invalid_identifiers or invalid_serial_volumes:
+            if any([titles_not_equal, editions_not_equal, pub_year_not_equal,
+                    provider_identifiers_not_equal, invalid_serial_volumes]):
                 partial_matches.append(pid_value)
             else:
                 matches.append(pid_value)
