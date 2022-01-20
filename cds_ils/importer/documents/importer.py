@@ -234,12 +234,12 @@ class DocumentImporter(object):
 
         import_provider_ids = [
             entry for entry in import_doc_provider_ids
-            if entry["scheme"] == current_provider
+            if entry.get("scheme") == current_provider
         ]
 
         doc_provider_ids = [
             entry for entry in doc_alternative_ids
-            if entry["scheme"] == current_provider
+            if entry.get("scheme") == current_provider
         ]
 
         both_have_current_provider_ids = \
