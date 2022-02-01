@@ -46,10 +46,8 @@
 <p>Examples of other ranges:</p>
 
 <ul>
-<li><code>publication_year:{* TO 2020}</code> - All days until 2020.</li>
-
-<li><code>publication_year:[2020 TO *]</code> - All days from 2020.</li>
-
+  <li><code>publication_year:{* TO 2020}</code> - All days until 2020.</li>
+  <li><code>publication_year:[2020 TO *]</code> - All days from 2020.</li>
 </ul>
 
 <h3 id="phrasesearch">Examples of searches on literature</h3>
@@ -59,9 +57,9 @@
 <strong>Example:</strong>
 
 <ul>
-<li><a href="/search?q=9814749133"><code>"9814749133"</code></a> or <a href="/search?q=9789814749138"><code>"9789814749138"</code></a> - ISBN 10 or 13</li>
-<li><a href="/search?q=10.1016\/j.physletb.208020"><code>"10.1016/j.physletb.208020"</code></a> - DOI</li>
-<li><a href="/search?q=1745-2481"><code>"1745-2481"</code></a> - ISSN</li>
+  <li><a href="/search?q=9814749133"><code>"9814749133"</code></a> or <a href="/search?q=9789814749138"><code>"9789814749138"</code></a> - ISBN 10 or 13</li>
+  <li><a href="/search?q=10.1016\/j.physletb.208020"><code>"10.1016/j.physletb.208020"</code></a> - DOI</li>
+  <li><a href="/search?q=1745-2481"><code>"1745-2481"</code></a> - ISSN</li>
   <li><a href="/search?q=NF-EN-81-80"><code>"NF-EN-81-80”</code></a> - Standard number</li>
 </ul>
 
@@ -72,8 +70,8 @@
 <strong>Example:</strong>
 
 <ul>
-<li><a href="/search?q=authors.full_name:(Albert%20Einstein)"><code>authors.full_name:(Albert Einstein)</code></a> - literature from a specific author</li>
-<li><a href="/search?q=authors.affiliations.name:CERN"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
+  <li><a href="/search?q=authors.full_name:(Wilson,%20Robin)"><code>authors.full_name:"Wilson, Robin"</code></a> - literature from a specific author</li>
+  <li><a href="/search?q=authors.affiliations.name:CERN"><code>authors.affiliations.name:CERN</code></a> - literature whose author is affiliated to CERN</li>
   <li><a href="/search?q=authors.full_name.keyword: /Otto, .%2B/"><code>full_name.keyword: /Otto, .+/</code></a> - Look for authors whose last name is Otto</li>
 </ul>
 
@@ -82,9 +80,9 @@
 <strong>Example:</strong>
 
 <ul>
-<li><a href="/search?q=conference_info.acronym:(CHEP*)%20AND%20conference_info.year:2019"><code>conference_info.acronym:(CHEP*) AND conference_info.year:2019</code></a> - conference papers from a particular year</li>
-<li><a href="/search?q=publication_info.journal_title: 'Nucl. Instrum. Methods Phys. Res., A'"><code>publication_info.journal_title: "Nucl. Instrum. Methods Phys. Res., A"</code></a> - publications in a journal</li>
-<li><a href="/search?q=publication_year:2020"><code>publication_year:2020</code></a> - publication year to disambiguate versions</li>
+  <li><a href="/search?q=conference_info.acronym:(CHEP*)%20AND%20conference_info.year:2019"><code>conference_info.acronym:(CHEP*) AND conference_info.year:2019</code></a> - conference papers from a particular year</li>
+  <li><a href="/search?q=publication_info.journal_title: 'Nucl. Instrum. Methods Phys. Res., A'"><code>publication_info.journal_title: "Nucl. Instrum. Methods Phys. Res., A"</code></a> - publications in a journal</li>
+  <li><a href="/search?q=publication_year:2020"><code>publication_year:2020</code></a> - publication year to disambiguate versions</li>
 </ul>
 
 <h3 id="rankingsorting">Ranking/Sorting</h3>
@@ -92,12 +90,12 @@
 <p>By default all searches are sorted according to an internal ranking algorithm that scores each match against your query. In both the user interface and REST API, it's possible to sort the results by:</p>
 
 <ul>
-<li>Recently added</li>
-<li>Most relevant</li>
-<li>Available copies</li>
-<li>Most loaned</li>
-<li>Publication year [oldest / newest]</li>
-<li>Title [A-Z / Z-A]</li>
+  <li>Recently added</li>
+  <li>Most relevant</li>
+  <li>Available copies</li>
+  <li>Most loaned</li>
+  <li>Publication year [oldest / newest]</li>
+  <li>Title [A-Z / Z-A]</li>
 </ul>
 
 <h3 id="advancedconcepts">Advanced concepts</h3>
@@ -142,17 +140,12 @@ The result will match the literature with title referring to cavities also in la
 of what each data type means and what is possible.</p>
 
 <ul>
-<li><strong>string</strong>: Field does not require exact match (example field: <code>title</code>).</li>
-
-<li><strong>string (exact)</strong>: Field requires exact match (example field: <code>title</code>).</li>
-
-<li><strong>CV</strong>: Controlled vocabularies but take only a specific list of values.</li>
-
-<li><strong>integer</strong>: A number (range queries possible).</li>
-
-<li><strong>datetime</strong>: An ISO8601 date or datetime, e.g. <code>2020-12-31</code> (range queries possible).</li>
-
-<li><strong>boolean</strong>: <code>true</code> or <code>false</code>.</li>
+  <li><strong>string</strong>: Field does not require exact match (example field: <code>title</code>).</li>
+  <li><strong>string (exact)</strong>: Field requires exact match (example field: <code>title</code>).</li>
+  <li><strong>CV</strong>: Controlled vocabularies but take only a specific list of values.</li>
+  <li><strong>integer</strong>: A number (range queries possible).</li>
+  <li><strong>datetime</strong>: An ISO8601 date or datetime, e.g. <code>2020-12-31</code> (range queries possible).</li>
+  <li><strong>boolean</strong>: <code>true</code> or <code>false</code>.</li>
 </ul>
 
 <p>In case of multiple subfields, (<code>\*</code>) applies to all of them</p>
@@ -160,9 +153,9 @@ of what each data type means and what is possible.</p>
 <h3 id="fieldsreferencecommon">Common fields</h3>
 
 <table class="ui selectable single line striped unstackable compact table"><thead><tr>
-<th align="left">Field name</th>
-<th align="left">Type</th>
-<th align="left">Notes</th></tr></thead>
+  <th align="left">Field name</th>
+  <th align="left">Type</th>
+  <th align="left">Notes</th></tr></thead>
 <tbody>
 
 <tr>
@@ -302,9 +295,9 @@ of what each data type means and what is possible.</p>
 <h3 id="fieldsreferencedocuments">Documents</h3>
 
 <table class="ui selectable single line striped unstackable compact table"><thead><tr>
-<th align="left">Field name</th>
-<th align="left">Type</th>
-<th align="left">Notes</th></tr></thead>
+  <th align="left">Field name</th>
+  <th align="left">Type</th>
+  <th align="left">Notes</th></tr></thead>
 <tbody>
 
 <tr>
