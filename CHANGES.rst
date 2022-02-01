@@ -1,11 +1,14 @@
 ..
-    Copyright (C) 2019 CERN.
+    Copyright (C) 2019-2022 CERN.
 
     CDS-ILS is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+- fix wrong search guide link
+- update react-invenio-app-ils and react-searchkit to latest
 
 Version 1.2.18 (released 2022-01-18)
 
