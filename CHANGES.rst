@@ -7,6 +7,8 @@
 Changes
 =======
 
+Version 1.2.20 (released 2022-02-01)
+
 - fix wrong search guide link
 - update react-invenio-app-ils and react-searchkit to latest
 
