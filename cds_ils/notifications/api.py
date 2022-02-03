@@ -17,14 +17,14 @@ from invenio_app_ils.notifications.messages import NotificationMsg
 class UserDeletionWarningActiveLoanMessage(NotificationMsg):
     """Message user deletion warning active loans."""
 
-    def __init__(self, patron, loans, **kwargs):
+    def __init__(self, patrons, **kwargs):
         """Constructor."""
         super().__init__(
             template=os.path.join(
                 "cds_ils_notifications",
                 "cds_ils_user_deletion_warning_active_loans.html",
             ),
-            ctx=dict(patron=patron, loans=loans, **kwargs),
+            ctx=dict(patrons=patrons, **kwargs),
             **kwargs,
         )
 

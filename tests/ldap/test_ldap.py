@@ -8,10 +8,12 @@
 """Test LDAP functions."""
 
 from copy import deepcopy
+from unittest.mock import Mock
 
 import pytest
 from flask import current_app
 from invenio_accounts.models import User
+from invenio_app_ils.errors import AnonymizationActiveLoansError
 from invenio_app_ils.patrons.search import PatronsSearch
 from invenio_app_ils.proxies import current_app_ils
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
@@ -21,35 +23,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
-from cds_ils.ldap.api import LdapUserImporter, _delete_invenio_user, \
-    delete_users, import_users, update_users
+from cds_ils.ldap.api import LdapUserImporter, delete_users, \
+    import_users, update_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 from cds_ils.ldap.utils import serialize_ldap_user
-
-
-def test_send_notification_delete_user_with_loans(app, patrons, testdata,
-                                                  app_with_notifs):
-    """Test notification sent when the user is deleted with active loans."""
-    patron1 = patrons[0]
-    with app_with_notifs.extensions["mail"].record_messages() as outbox:
-        assert len(outbox) == 0
-        _delete_invenio_user(patron1.id)
-        assert len(outbox) == 1
-        email = outbox[0]
-        assert (
-            email.recipients
-            == app.config["ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS"]
-        )
-
-        def assert_contains(string):
-            assert string in email.body
-            assert string in email.html
-
-        assert_contains("patron1@cern.ch")
-        assert_contains("loanid-2")
-        assert_contains(
-            "Prairie Fires: The American Dreams of Laura Ingalls" " Wilder"
-        )
 
 
 def test_import_users(app, db, testdata, mocker):
@@ -385,11 +362,11 @@ def test_delete_user(app, db, testdata, mocker):
 
         user_to_delete1 = deepcopy(ldap_users[1])
         ldap_user = serialize_ldap_user(user_to_delete1)
-        user_to_delete_id1 = importer.import_user(ldap_user)
+        importer.import_user(ldap_user)
 
         user_to_delete2 = deepcopy(ldap_users[2])
         ldap_user = serialize_ldap_user(user_to_delete2)
-        user_to_delete_id2 = importer.import_user(ldap_user)
+        importer.import_user(ldap_user)
 
         db.session.commit()
         current_app_ils.patron_indexer.reindex_patrons()
@@ -408,8 +385,8 @@ def test_delete_user(app, db, testdata, mocker):
     assert deleted_accounts == 3
 
 
-def test_delete_user_with_checks(app, db, testdata, mocker):
-    """Test delete users when no longer in ldap."""
+def test_delete_user_with_counter(app, db, testdata, mocker):
+    """Test delete users when no longer in ldap, after <n> checks."""
 
     ldap_users = [
         {
@@ -528,8 +505,6 @@ def test_delete_user_with_checks(app, db, testdata, mocker):
         return_value=fixed_ldap_response,
     )
 
-    db.session.commit()
-
     ldap_users_count, deleted_accounts = delete_users(dry_run=False)
 
     assert ldap_users_count == 2
@@ -547,5 +522,48 @@ def test_delete_user_with_checks(app, db, testdata, mocker):
 
     # make sure account 2 was deleted
     with pytest.raises(NoResultFound):
-        ra2 = RemoteAccount.query.filter(
+        RemoteAccount.query.filter(
             RemoteAccount.user_id == user_to_delete_id2).one()
+
+
+def test_send_email_on_user_deletion_error(app_with_notifs, mocker):
+    """Test that an email is sent when the user deletion failed."""
+    # mock the users exit in LDAP
+    mock_map = Mock()
+    mock_map.get.return_value = True
+    mocker.patch("cds_ils.ldap.api.get_ldap_users",
+                 return_value=(2, [], []))
+    # mock RemoteAccounts
+    mock1 = Mock()
+    mock1.user_id = 1  # patron 1
+    mock2 = Mock()
+    mock2.user_id = 2  # patron 2
+    mocker.patch("cds_ils.ldap.api.remap_invenio_users",
+                 return_value=[mock1, mock2])
+    # mock that the any `InvenioUser` exist
+    raise Exception("Fix me: 'cds_ils.ldap.utils.InvenioUser' is not mocked correctly")
+    mocker.patch("cds_ils.ldap.utils.InvenioUser")
+
+    # mock anonymize, will raise because it has loans
+    mocker.patch(
+        "invenio_app_ils.patrons.anonymization.anonymize_patron_data",
+        side_effect=AnonymizationActiveLoansError
+    )
+
+    with app_with_notifs.extensions["mail"].record_messages() as outbox:
+        assert len(outbox) == 0
+        # delete without marking for deletion
+        delete_users(dry_run=False, mark_for_deletion=False)
+        assert len(outbox) == 1
+        email = outbox[0]
+        assert (
+            email.recipients
+            == app_with_notifs.config["ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS"]
+        )
+
+        def assert_contains(string):
+            assert string in email.body
+            assert string in email.html
+
+        assert_contains("patron1@cern.ch")
+        assert_contains("patron2@cern.ch")
