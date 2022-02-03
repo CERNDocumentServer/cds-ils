@@ -13,7 +13,6 @@ import uuid
 from functools import partial
 
 from flask import current_app
-from invenio_accounts.models import User
 from invenio_app_ils.errors import AnonymizationActiveLoansError
 from invenio_app_ils.patrons.anonymization import anonymize_patron_data
 from invenio_app_ils.patrons.indexer import PatronBaseIndexer
@@ -25,8 +24,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from cds_ils.ldap.client import LdapClient
 from cds_ils.ldap.user_importer import LdapUserImporter
 from cds_ils.ldap.utils import InvenioUser, serialize_ldap_user, user_exists
-from cds_ils.notifications.tasks import \
-    send_warning_notification_patron_has_active_loans
+from cds_ils.notifications.api import UserDeletionWarningActiveLoanMessage, \
+    send_not_logged_notification
 
 
 def import_users():
@@ -60,17 +59,6 @@ def import_users():
     current_app_ils.patron_indexer.reindex_patrons()
 
     print("--- Finished in %s seconds ---" % (time.time() - start_time))
-
-
-def _delete_invenio_user(user_id):
-    """Delete an Invenio user."""
-    try:
-        anonymize_patron_data(user_id)
-        return True
-    except AnonymizationActiveLoansError:
-        send_warning_notification_patron_has_active_loans.apply_async(
-            (user_id,))
-        return False
 
 
 def _log_info(log_uuid, action, extra=dict(), is_error=False):
@@ -254,24 +242,39 @@ def update_users():
 
 def delete_users(dry_run=True, mark_for_deletion=True):
     """Delete users that are still in the DB but not in LDAP."""
-    # disabled at the moment because LDAP fetch is not reliable.
-    # It happened that it returned much less users and many were automatically
-    # deleted.
 
-    invenio_users_deleted_count = 0
-    config_checks_before_deletion = \
-        current_app.config["CDS_ILS_PATRON_DELETION_CHECKS"]
+    def _delete_user(user_id, invenio_user, dry_run=True,
+                     mark_for_deletion=True):
+        ready_to_delete = True
+        config_checks_before_deletion = \
+            current_app.config["CDS_ILS_PATRON_DELETION_CHECKS"]
+
+        if mark_for_deletion:
+            ready_to_delete = False
+            checks = invenio_user.mark_for_deletion()
+            if checks > config_checks_before_deletion:
+                ready_to_delete = True
+
+        if not dry_run and ready_to_delete:
+            try:
+                anonymize_patron_data(user_id)
+            except AnonymizationActiveLoansError:
+                return False
+
+        return True
+
+    users_deleted_count = 0
+    users_ids_cannot_be_deleted = set()
 
     log_uuid = str(uuid.uuid4())
     log_func = partial(_log_info, log_uuid)
 
-    ldap_users_count, ldap_users_map, ldap_users_emails = get_ldap_users(
-        log_func
-    )
+    ldap_users_count, ldap_users_map, _ = get_ldap_users(log_func)
 
     # get all Invenio remote accounts and prepare a list with needed info
     remote_accounts = remap_invenio_users(log_func)
 
+    import ipdb;ipdb.set_trace()
     for remote_account in remote_accounts:
         try:
             invenio_user = InvenioUser(remote_account)
@@ -284,29 +287,38 @@ def delete_users(dry_run=True, mark_for_deletion=True):
 
         if not ldap_user:
             # the user in Invenio does not exist in LDAP, delete it
-
-            # fetch user and needed values before deletion
             user_id = remote_account.user_id
-            success = False
-            ready_to_delete = True
-
-            if mark_for_deletion:
-                ready_to_delete = False
-                checks = invenio_user.mark_for_deletion()
-                if checks > config_checks_before_deletion:
-                    ready_to_delete = True
-
-            if not dry_run and ready_to_delete:
-                success = _delete_invenio_user(user_id)
-            elif dry_run:
-                success = True
-
-            if success:
-                invenio_users_deleted_count += 1
+            if _delete_user(user_id, invenio_user, dry_run, mark_for_deletion):
+                users_deleted_count += 1
+            else:
+                users_ids_cannot_be_deleted.add(user_id)
         else:
+            # user still in LDAP (or re-appeared)
             invenio_user.unmark_for_deletion()
 
     if not dry_run:
         current_app_ils.patron_indexer.reindex_patrons()
 
-    return ldap_users_count, invenio_users_deleted_count
+    if len(users_ids_cannot_be_deleted) > 0:
+        send_alarm_patron_cannot_be_deleted(users_ids_cannot_be_deleted)
+
+    return ldap_users_count, users_deleted_count
+
+
+def send_alarm_patron_cannot_be_deleted(patron_pids):
+    """Notify librarians that some users cannot be deleted.
+
+    :param patron_pids: the pid of the patron.
+    """
+    patrons = []
+    Patron = current_app_ils.patron_cls
+    for patron_pid in patron_pids:
+        patrons.append(Patron.get_patron(patron_pid))
+
+    recipients = [{"email": recipient} for recipient in current_app.config[
+        "ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS"
+    ]]
+    msg = UserDeletionWarningActiveLoanMessage(
+        patrons, recipients=recipients
+    )
+    send_not_logged_notification(recipients, msg)
