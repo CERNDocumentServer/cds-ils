@@ -59,7 +59,7 @@ jobs:
 
       - name: Generate dependencies
         run: |
-          python -m pip install "pip>=20,<20.3" setuptools py twine wheel requirements-builder
+          python -m pip install "pip>=20,<20.3" setuptools py twine wheel requirements-builder "black<22"
           requirements-builder -e "$EXTRAS" --level=${{ matrix.requirements-level }} setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
