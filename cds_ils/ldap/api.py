@@ -256,11 +256,10 @@ def delete_users(dry_run=True, mark_for_deletion=True):
                 ready_to_delete = True
 
         if not dry_run and ready_to_delete:
-            try:
-                anonymize_patron_data(user_id)
-            except AnonymizationActiveLoansError:
-                return False
+            anonymize_patron_data(user_id)
 
+        elif not dry_run and not ready_to_delete:
+            return False
         return True
 
     users_deleted_count = 0
@@ -274,13 +273,11 @@ def delete_users(dry_run=True, mark_for_deletion=True):
     # get all Invenio remote accounts and prepare a list with needed info
     remote_accounts = remap_invenio_users(log_func)
 
-    import ipdb;ipdb.set_trace()
     for remote_account in remote_accounts:
         try:
             invenio_user = InvenioUser(remote_account)
         except NoResultFound:
             continue
-
         ldap_user = ldap_users_map.get(
                 invenio_user.data["remote_account_person_id"]
             )
@@ -288,9 +285,11 @@ def delete_users(dry_run=True, mark_for_deletion=True):
         if not ldap_user:
             # the user in Invenio does not exist in LDAP, delete it
             user_id = remote_account.user_id
-            if _delete_user(user_id, invenio_user, dry_run, mark_for_deletion):
-                users_deleted_count += 1
-            else:
+            try:
+                if _delete_user(user_id, invenio_user, dry_run,
+                                mark_for_deletion):
+                    users_deleted_count += 1
+            except AnonymizationActiveLoansError:
                 users_ids_cannot_be_deleted.add(user_id)
         else:
             # user still in LDAP (or re-appeared)

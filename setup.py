@@ -55,7 +55,7 @@ install_requires = [
     "tomli>=1.2.2,<2.0.0",
     # conflict caused by invenio-previewer, which requires "black v22",
     # requiring "click >8"
-    "black<22",
+    "black>=20.8b0,<22",
 ]
 
 packages = find_packages()
