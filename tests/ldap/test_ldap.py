@@ -23,8 +23,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
-from cds_ils.ldap.api import LdapUserImporter, delete_users, \
-    import_users, update_users
+from cds_ils.ldap.api import LdapUserImporter, delete_users, import_users, \
+    update_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 from cds_ils.ldap.utils import serialize_ldap_user
 
@@ -529,10 +529,24 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
 def test_send_email_on_user_deletion_error(app_with_notifs, mocker):
     """Test that an email is sent when the user deletion failed."""
     # mock the users exit in LDAP
+
+    def mock_get_patron(patron_id):
+        from cds_ils.patrons.api import Patron
+
+        class FakePatron(Patron):
+            def __init__(self, id, revision_id=None):
+                self.id = id
+                self.revision_id = 1
+                self.name = f"Patron{id}"
+                self.email = f"patron{id}@cern.ch"
+        return FakePatron(patron_id)
+
     mock_map = Mock()
     mock_map.get.return_value = True
     mocker.patch("cds_ils.ldap.api.get_ldap_users",
-                 return_value=(2, [], []))
+                 return_value=(2, {}, {}))
+    mocker.patch("invenio_app_ils.patrons.anonymization.current_app_ils.patron_cls.get_patron", mock_get_patron)  # noqa
+    mocker.patch("invenio_app_ils.patrons.anonymization.current_app_ils.patron_indexer.delete")  # noqa
     # mock RemoteAccounts
     mock1 = Mock()
     mock1.user_id = 1  # patron 1
@@ -541,13 +555,16 @@ def test_send_email_on_user_deletion_error(app_with_notifs, mocker):
     mocker.patch("cds_ils.ldap.api.remap_invenio_users",
                  return_value=[mock1, mock2])
     # mock that the any `InvenioUser` exist
-    raise Exception("Fix me: 'cds_ils.ldap.utils.InvenioUser' is not mocked correctly")
-    mocker.patch("cds_ils.ldap.utils.InvenioUser")
+    mocker.patch("cds_ils.ldap.api.InvenioUser")
 
     # mock anonymize, will raise because it has loans
     mocker.patch(
-        "invenio_app_ils.patrons.anonymization.anonymize_patron_data",
-        side_effect=AnonymizationActiveLoansError
+        "cds_ils.ldap.api.anonymize_patron_data",
+        side_effect=AnonymizationActiveLoansError(
+            "Cannot delete user {0}: found {1} active loans.".format(
+                mock1.user_id, 4
+            )
+        )
     )
 
     with app_with_notifs.extensions["mail"].record_messages() as outbox:
