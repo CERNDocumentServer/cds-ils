@@ -11,7 +11,7 @@ Please, take the action to cancel the loans/orders of these users so that data c
 
 Patrons details in the backoffice area:
 {%- for patron in patrons %}
-  *  "{{ patron.name }} <{{ patron.email }}>" (id {{ patron.pid }}, CERN Person id {{patron.person_id}}): <{{ spa_routes.HOST }}{{ spa_routes.PATHS['patron'] }}/{{ patron.pid }}>
+  *  {{ patron.name }} <{{ patron.email }}> (id {{ patron.pid }}): <{{ spa_routes.HOST }}{{ spa_routes.PATHS['patron'] }}/{{ patron.pid }}>
 {% endfor %}
 
 Thank you!
@@ -28,7 +28,7 @@ Patrons details in the backoffice area:<br/>
 <ul>
 {%- for patron in patrons %}
  <li>
-   <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['patron'] }}/{{ patron.pid }}">"{{ patron.name }} <{{ patron.email }}>" (id {{ patron.pid }}, CERN Person id {{patron.person_id}})</a>
+   <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['patron'] }}/{{ patron.pid }}">{{ patron.name }} <{{ patron.email }}> (id {{ patron.pid }} )</a>
  </li>
 {% endfor %}
 </ul>
