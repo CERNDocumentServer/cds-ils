@@ -213,6 +213,48 @@ class SeriesImporter(object):
             "duplicates": matching_series_pid_list
         }
 
+    def _validate_matches(self, json_series, matches):
+        """Validate matched series."""
+        series_class = current_app_ils.series_record_cls
+
+        validated_matches = []
+        json_series_issn = [identifier for identifier in
+                            json_series.get("identifiers") if
+                            identifier["scheme"] == "ISSN"]
+        json_series_publisher = json_series.get("publisher")
+        json_series_pub_year = json_series.get("publication_year")
+        for match in matches:
+            series = series_class.get_record_by_pid(match)
+
+            # drop periodicals and multipart monographs
+            if (series["mode_of_issuance"] != "SERIAL" or
+                    series.get("series_type") == "PERIODICAL"):
+                continue
+
+            existing_series_issn = [identifier for identifier in
+                                    series.get("identifiers") if
+                                    identifier["scheme"] == "ISSN"]
+            both_issns = json_series_issn and existing_series_issn
+            # eliminate sequence relations
+            issns_not_equal = both_issns and \
+                json_series_issn == existing_series_issn
+
+            series_publisher = series.get("publisher")
+            both_publishers = json_series_publisher and series_publisher
+            publishers_not_equal = both_publishers and \
+                json_series_publisher != series_publisher
+
+            series_pub_year = series.get("publication_year")
+            both_pub_year = json_series_pub_year and series_pub_year
+            pub_year_not_equal = both_pub_year and \
+                json_series_pub_year != series_pub_year
+
+            if not (issns_not_equal
+                    or publishers_not_equal
+                    or pub_year_not_equal):
+                validated_matches.append(match)
+        return validated_matches
+
     def import_series(self, document):
         """Import series."""
         series_class = current_app_ils.series_record_cls
@@ -222,8 +264,10 @@ class SeriesImporter(object):
 
         for json_series in self.json_data:
             matching_series_pids = self.search_for_matching_series(json_series)
+            validated_matches = self._validate_matches(json_series,
+                                                       matching_series_pids)
 
-            if len(matching_series_pids) == 1:
+            if len(validated_matches) == 1:
                 matching_series = series_class.get_record_by_pid(
                     matching_series_pids[0]
                 )
@@ -238,7 +282,7 @@ class SeriesImporter(object):
                                          action="update"
                                          ))
 
-            elif len(matching_series_pids) == 0:
+            elif len(validated_matches) == 0:
                 series_record = self.create_series(json_series)
                 self.import_serial_relation(
                     series_record, document, json_series
