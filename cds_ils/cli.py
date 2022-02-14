@@ -662,8 +662,8 @@ def assign_legacy_pid(pid, legacy_pid, legacy_pid_type):
 
     is_document = pid_obj.pid_type == DOCUMENT_PID_TYPE
     is_series = pid_obj.pid_type == SERIES_PID_TYPE
-    is_legacy_document = legacy_pid_type != doc_legacy_pid_cfg
-    is_legacy_series = legacy_pid_type != series_legacy_pid_cfg
+    is_legacy_document = legacy_pid_type == doc_legacy_pid_cfg
+    is_legacy_series = legacy_pid_type == series_legacy_pid_cfg
 
     if not (is_document and is_legacy_document):
         click.secho(
