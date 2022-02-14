@@ -219,7 +219,7 @@ class SeriesImporter(object):
 
         validated_matches = []
         json_series_issn = [identifier for identifier in
-                            json_series.get("identifiers") if
+                            json_series.get("identifiers", []) if
                             identifier["scheme"] == "ISSN"]
         json_series_publisher = json_series.get("publisher")
         json_series_pub_year = json_series.get("publication_year")
@@ -232,7 +232,7 @@ class SeriesImporter(object):
                 continue
 
             existing_series_issn = [identifier for identifier in
-                                    series.get("identifiers") if
+                                    series.get("identifiers", []) if
                                     identifier["scheme"] == "ISSN"]
             both_issns = json_series_issn and existing_series_issn
             # eliminate sequence relations
