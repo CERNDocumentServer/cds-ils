@@ -139,6 +139,9 @@ export const config = {
         },
       },
     },
+    authors: {
+      maxEditable: 20,
+    },
   },
   ILL_BORROWING_REQUESTS: {
     defaultType: 'PHYSICAL_COPY',
