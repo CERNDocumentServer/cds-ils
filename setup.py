@@ -56,6 +56,8 @@ install_requires = [
     # conflict caused by invenio-previewer, which requires "black v22",
     # requiring "click >8"
     "black>=20.8b0,<22",
+    # Version 2.1.0 removes `TimedJSONWebSignatureSerializer`
+    "itsdangerous<2.1.0"
 ]
 
 packages = find_packages()
