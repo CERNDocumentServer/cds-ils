@@ -34,7 +34,7 @@ install_requires = [
     "Flask-BabelEx>=0.9.3",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.4.0,<3.5.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a59",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a61",
     "sentry-sdk>=0.10.2",
     # migrator deps
     "cds-dojson==0.9.0",
