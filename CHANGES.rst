@@ -7,6 +7,13 @@
 Changes
 =======
 
+Version 1.2.22 (released 2022-02-23)
+
+- Pin itsdangerous
+- Increase max authors able to be edited in the document editor
+- Fixing `et al.` display across the system
+
+
 Version 1.2.20 (released 2022-02-01)
 
 - fix wrong search guide link
@@ -74,6 +81,3 @@ Version 1.2.10 (released 2021-11-16)
     - Backend raises exception when wrong provider is chosen
     - Statistics segment does not appear in 2 rows with large numbers anymore
 - Overdue loans can now also be bulk extended
-
-
-

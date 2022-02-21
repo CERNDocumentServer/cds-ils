@@ -140,7 +140,7 @@ export const config = {
       },
     },
     authors: {
-      maxEditable: 20,
+      maxEditable: 30,
     },
   },
   ILL_BORROWING_REQUESTS: {
