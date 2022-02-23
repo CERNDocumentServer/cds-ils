@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.23 (released 2022-02-23)
+
+- Update invenio-opendefinition
+
 Version 1.2.22 (released 2022-02-23)
 
 - Pin itsdangerous
