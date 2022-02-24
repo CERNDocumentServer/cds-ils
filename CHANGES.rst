@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.24 (released 2022-02-24)
+
+- Fix bug with conference info not showing in the frontsite
+
 Version 1.2.23 (released 2022-02-23)
 
 - Update invenio-opendefinition
