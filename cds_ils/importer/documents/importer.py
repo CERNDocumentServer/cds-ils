@@ -279,6 +279,23 @@ class DocumentImporter(object):
 
         return True
 
+    def _matching_isbn(self, existing_document):
+        """Find matching isbns for importing document."""
+        import_doc_identifiers = self.json_data.get("identifiers", [])
+        import_isbns = [
+            entry["value"] for entry in import_doc_identifiers
+            if entry.get("scheme") == "ISBN"
+        ]
+        existing_doc_identifiers = existing_document.get("identifiers", [])
+        existing_isbns = [
+            entry["value"] for entry in existing_doc_identifiers
+            if entry.get("scheme") == "ISBN"
+        ]
+
+        matching_isbns = [isbn for isbn in import_isbns
+                          if isbn in existing_isbns]
+        return matching_isbns
+
     def validate_found_matches(self, not_validated_matches):
         """Validate matched & parsed documents have same title/isbn pair."""
         matches = []
@@ -297,23 +314,30 @@ class DocumentImporter(object):
             document_edition = document.get('edition')
             doc_pub_year = document.get('publication_year')
 
-            both_editions = document_edition and import_doc_edition
-            editions_not_equal = both_editions and \
-                document_edition != import_doc_edition
-
-            pub_year_not_equal = doc_pub_year != import_doc_publication_year
-            titles_not_equal = document_title.lower() != \
-                import_doc_title.lower()
-
-            provider_identifiers_not_equal = \
-                not self._validate_provider_identifiers(document)
-            invalid_serial_volumes = not self._validate_volumes(document)
-
-            if any([titles_not_equal, editions_not_equal, pub_year_not_equal,
-                    provider_identifiers_not_equal, invalid_serial_volumes]):
-                partial_matches.append(pid_value)
-            else:
+            if self._matching_isbn(document):
                 matches.append(pid_value)
+            else:
+                both_editions = document_edition and import_doc_edition
+                editions_not_equal = both_editions and \
+                    document_edition != import_doc_edition
+
+                pub_year_not_equal = doc_pub_year !=\
+                    import_doc_publication_year
+                titles_not_equal = document_title.lower() != \
+                    import_doc_title.lower()
+
+                provider_identifiers_not_equal = \
+                    not self._validate_provider_identifiers(document)
+                invalid_serial_volumes = not self._validate_volumes(document)
+
+                if any([titles_not_equal,
+                        editions_not_equal,
+                        pub_year_not_equal,
+                        provider_identifiers_not_equal,
+                        invalid_serial_volumes]):
+                    partial_matches.append(pid_value)
+                else:
+                    matches.append(pid_value)
 
         if matches:
             match = matches[0]
