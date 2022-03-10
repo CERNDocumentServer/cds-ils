@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.26 (released 2022-03-10)
+
+- fix search phrases for series volumes
+
 Version 1.2.24 (released 2022-02-24)
 
 - Fix bug with conference info not showing in the frontsite
