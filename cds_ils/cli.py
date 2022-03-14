@@ -665,12 +665,12 @@ def assign_legacy_pid(pid, legacy_pid, legacy_pid_type):
     is_legacy_document = legacy_pid_type == doc_legacy_pid_cfg
     is_legacy_series = legacy_pid_type == series_legacy_pid_cfg
 
-    if not (is_document and is_legacy_document):
+    if is_legacy_document and not is_document:
         click.secho(
             "Pid types mismatch. "
             "You are trying to assign ldocid to series record", fg="red")
         return
-    elif not (is_series and is_legacy_series):
+    if is_legacy_series and not is_series:
         click.secho(
             "Pid types mismatch. "
             "You are trying to assign lserid to document record", fg="red")
