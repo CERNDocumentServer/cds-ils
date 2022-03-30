@@ -69,6 +69,19 @@ export const Footer = ({ ...props }) => {
                     Scientific Information Service
                   </a>
                 </List.Item>
+                <List.Item>
+                  Location:{' '}
+                  <a
+                    href="https://maps.web.cern.ch/?cameraCenter=2493195.4,1120517.68,799.11&heading=0&fov=55&tilt=52.63&basemap=plan&mode=3D"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Building 52
+                  </a>
+                </List.Item>
+                <List.Item>
+                  Tel.: <a href="tel:+41227672444">+41 22 767 2444</a>
+                </List.Item>
               </List>
             </Grid.Column>
             <Grid.Column>

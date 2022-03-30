@@ -57,7 +57,13 @@ install_requires = [
     # requiring "click >8"
     "black>=20.8b0,<22",
     # Version 2.1.0 removes `TimedJSONWebSignatureSerializer`
-    "itsdangerous<2.1.0"
+    "itsdangerous<2.1.0",
+    # Version 2.1.0 of Flask requires celery>=5.2.0 and this drops support for python 3.6`
+    "Flask<2.1.0",
+    # Version 2.1.0 of Werkzeug drops support for python 3.6
+    "Werkzeug<2.1.0",
+    # Version 3.1.0 of jinja2 drops support for python 3.6
+    "jinja2<3.1.0"
 ]
 
 packages = find_packages()
