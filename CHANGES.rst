@@ -7,6 +7,12 @@
 Changes
 =======
 
+Version 1.2.27 (released 2022-03-31)
+
+- update links in static pages
+- fix cli to assign legacy pid
+- Adds building and phone information to the footer
+
 Version 1.2.26 (released 2022-03-10)
 
 - fix search phrases for series volumes
