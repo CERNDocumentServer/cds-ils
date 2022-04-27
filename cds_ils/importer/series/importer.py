@@ -237,7 +237,7 @@ class SeriesImporter(object):
             both_issns = json_series_issn and existing_series_issn
             # eliminate sequence relations
             issns_not_equal = both_issns and \
-                json_series_issn == existing_series_issn
+                json_series_issn != existing_series_issn
 
             series_publisher = series.get("publisher")
             both_publishers = json_series_publisher and series_publisher
