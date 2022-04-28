@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.28 (released 2022-04-28)
+
+- fix importer bug to match series correctly
+
 Version 1.2.27 (released 2022-03-31)
 
 - update links in static pages
