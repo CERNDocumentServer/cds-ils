@@ -235,9 +235,13 @@ class SeriesImporter(object):
                                     series.get("identifiers", []) if
                                     identifier["scheme"] == "ISSN"]
             both_issns = json_series_issn and existing_series_issn
+
             # eliminate sequence relations
-            issns_not_equal = both_issns and \
-                json_series_issn != existing_series_issn
+            issn_match = False
+            for issn in json_series_issn:
+                if issn in existing_series_issn:
+                    issn_match = True
+            issns_not_equal = both_issns and issn_match
 
             series_publisher = series.get("publisher")
             both_publishers = json_series_publisher and series_publisher
