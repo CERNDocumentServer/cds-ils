@@ -241,7 +241,7 @@ class SeriesImporter(object):
             for issn in json_series_issn:
                 if issn in existing_series_issn:
                     issn_match = True
-            issns_not_equal = both_issns and issn_match
+            issns_not_equal = both_issns and not issn_match
 
             series_publisher = series.get("publisher")
             both_publishers = json_series_publisher and series_publisher
