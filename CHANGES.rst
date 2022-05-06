@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.31 (released 2022-05-06)
+
+- importer: add series match validation on preview
+
 Version 1.2.30 (released 2022-05-06)
 
 - fix series matching by ISSNs
