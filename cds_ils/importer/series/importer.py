@@ -273,7 +273,7 @@ class SeriesImporter(object):
 
             if len(validated_matches) == 1:
                 matching_series = series_class.get_record_by_pid(
-                    matching_series_pids[0]
+                    validated_matches[0]
                 )
                 self.update_series(matching_series, json_series)
                 self.import_serial_relation(
@@ -282,7 +282,7 @@ class SeriesImporter(object):
                 series.append(
                     self._record_summary(json_series,
                                          matching_series,
-                                         matching_series_pids[0],
+                                         validated_matches[0],
                                          action="update"
                                          ))
 
@@ -315,10 +315,12 @@ class SeriesImporter(object):
 
         for json_series in self.json_data:
             matching_series_pids = self.search_for_matching_series(json_series)
+            validated_matches = self._validate_matches(json_series,
+                                                       matching_series_pids)
 
-            if len(matching_series_pids) == 1:
+            if len(validated_matches) == 1:
                 matched_series = series_class.get_record_by_pid(
-                    matching_series_pids[0]
+                    validated_matches[0]
                 )
                 matched_series["identifiers"] = self._update_field_identifiers(
                     matched_series, json_series
@@ -326,10 +328,10 @@ class SeriesImporter(object):
                 series_preview.append(
                     self._record_summary(json_series,
                                          matched_series,
-                                         matching_series_pids[0],
+                                         validated_matches[0],
                                          action="update"
                                          ))
-            elif len(matching_series_pids) == 0:
+            elif len(validated_matches) == 0:
                 json_series = self._before_create(json_series)
                 series_preview.append(
                     self._record_summary(json_series, series_record=None,
@@ -339,7 +341,7 @@ class SeriesImporter(object):
                     self._record_summary(
                         json_series, series_record=None,
                         output_pid=None, action="create",
-                        matching_series_pid_list=matching_series_pids)
+                        matching_series_pid_list=validated_matches)
                 )
                 raise SeriesImportError(message="Multiple series found.")
         return series_preview
