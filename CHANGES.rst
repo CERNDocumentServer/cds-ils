@@ -7,9 +7,13 @@
 Changes
 =======
 
+Version 1.2.30 (released 2022-05-06)
+
+- fix series matching by ISSNs
+
 Version 1.2.29 (released 2022-05-06)
 
-- match series
+- match series by one of ISSNs
 
 Version 1.2.28 (released 2022-04-28)
 
