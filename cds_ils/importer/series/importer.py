@@ -152,38 +152,30 @@ class SeriesImporter(object):
 
         title = json_series.get("title", None)
 
-        matches = []
-        # check by issn first
-
+        matches = set()
+        # search matching series by ISSN
         for issn in issn_list:
             search = search_series_by_issn(issn)
-            results = search.scan()
-            matches += [x.pid for x in results if x.pid not in matches]
-
+            matches.update({x.pid for x in search.scan()})
+        # search matching series by ISBN
         for isbn in isbn_list:
             search = search_series_by_isbn(isbn)
-            results = search.scan()
-            matches += [x.pid for x in results if x.pid not in matches]
+            matches.update({x.pid for x in search.scan()})
 
+        # search matching series by title
         if title:
             search = search_series_by_title(title)
-            matches += [
-                x.pid
-                for x in search.scan()
-                if x.pid not in matches
-            ]
             if search.count() == 0:
                 # check for known inconsistencies in title
-                simplified_title = title.replace(" series", "")\
-                    .replace(" Series", "").strip()
+                simplified_title = title \
+                    .replace(" series", "") \
+                    .replace(" Series", "") \
+                    .strip()
                 search = search_series_by_title(simplified_title)
-                matches += [
-                    x.pid
-                    for x in search.scan()
-                    if x.pid not in matches
-                ]
 
-        return matches
+            matches.update({x.pid for x in search.scan()})
+
+        return list(matches)
 
     def import_serial_relation(
         self, series_record, document_record, json_series
@@ -216,48 +208,78 @@ class SeriesImporter(object):
     def _validate_matches(self, json_series, matches):
         """Validate matched series."""
         series_class = current_app_ils.series_record_cls
+        all_series = {
+            match: series_class.get_record_by_pid(match) for match in matches
+        }
 
-        validated_matches = []
-        json_series_issn = [identifier for identifier in
-                            json_series.get("identifiers", []) if
-                            identifier["scheme"] == "ISSN"]
+        def filter_non_serials(match):
+            """Drops periodicals and multipart monographs."""
+            _series = all_series[match]
+            # drop multipart monographs
+            is_serial = _series["mode_of_issuance"] == "SERIAL"
+            is_type_serial = _series.get("series_type") == "SERIAL"
+            return is_serial and is_type_serial
+
+        matches = list(filter(filter_non_serials, matches))
+
+        validated_matches = set()
+        json_series_title = json_series.get("title", "").lower().strip()
+        for match in matches:
+            series = all_series[match]
+            # matching by exact title takes precedence over anything else
+            is_same_title = series["title"].lower().strip() == \
+                json_series_title
+            if is_same_title:
+                validated_matches.add(match)
+
+        # if validated_matches contains matches (by title), stop here
+        if validated_matches:
+            return list(validated_matches)
+
+        # Check if matching depending on the available info:
+        # if ISSN exists, must match
+        # if Publisher exists, must match
+        # if Publication Year exists, must match
+
+        json_series_issns = {
+            id_["value"] for id_ in json_series.get("identifiers", [])
+            if id_["scheme"] == "ISSN"
+        }
         json_series_publisher = json_series.get("publisher")
         json_series_pub_year = json_series.get("publication_year")
-        for match in matches:
-            series = series_class.get_record_by_pid(match)
 
-            # drop periodicals and multipart monographs
-            if (series["mode_of_issuance"] != "SERIAL" or
-                    series.get("series_type") == "PERIODICAL"):
+        for match in matches:
+            series = all_series[match]
+
+            # check matching by ISSN
+            series_issns = {
+                id_["value"] for id_ in series.get("identifiers", []) if
+                id_["scheme"] == "ISSN"
+            }
+            same_issns = json_series_issns.intersection(series_issns)
+            if not same_issns:
                 continue
 
-            existing_series_issn = [identifier for identifier in
-                                    series.get("identifiers", []) if
-                                    identifier["scheme"] == "ISSN"]
-            both_issns = json_series_issn and existing_series_issn
-
-            # eliminate sequence relations
-            issn_match = False
-            for issn in json_series_issn:
-                if issn in existing_series_issn:
-                    issn_match = True
-            issns_not_equal = both_issns and not issn_match
-
+            # check matching by Publisher
             series_publisher = series.get("publisher")
-            both_publishers = json_series_publisher and series_publisher
-            publishers_not_equal = both_publishers and \
-                json_series_publisher != series_publisher
+            both_have_publishers = json_series_publisher and series_publisher
+            if both_have_publishers:
+                # if both have Publisher, it must match
+                if json_series_publisher != series_publisher:
+                    continue
 
+            # check matching by Publication year
             series_pub_year = series.get("publication_year")
-            both_pub_year = json_series_pub_year and series_pub_year
-            pub_year_not_equal = both_pub_year and \
-                json_series_pub_year != series_pub_year
+            both_have_pub_year = json_series_pub_year and series_pub_year
+            if both_have_pub_year:
+                # if both have Publication Year, it must match
+                if json_series_pub_year != series_pub_year:
+                    continue
 
-            if not (issns_not_equal
-                    or publishers_not_equal
-                    or pub_year_not_equal):
-                validated_matches.append(match)
-        return validated_matches
+            # everything matched
+            validated_matches.add(match)
+
+        return list(validated_matches)
 
     def import_series(self, document):
         """Import series."""

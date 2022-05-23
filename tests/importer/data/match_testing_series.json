@@ -1,0 +1,53 @@
+[
+  {
+    "title": "The Gulf: The Making of An American Sea",
+    "identifiers": [{"scheme": "ISSN", "value": "523457879896"}],
+    "note": "Will match serid-imp-1 by exact title even if ISSN matches another one"
+  },
+  {
+    "title": "A title that does not exist matching by ISSN",
+    "identifiers": [{"scheme": "ISSN", "value": "523457879896"}],
+    "note": "Will match serid-imp-2 by same ISSN"
+  },
+  {
+    "title": "A title that does not exist matching by same ISSN and publisher",
+    "publisher": "Publisher serid-imp-3",
+    "identifiers": [{"scheme": "ISSN", "value": "987654321"}],
+    "note": "Will match serid-imp-3 by same ISSN and publisher"
+  },
+  {
+    "title": "A title that does not exist matching by same ISSN, year and publisher",
+    "publication_year": "2020",
+    "publisher": "Publisher serid-imp-4",
+    "identifiers": [{"scheme": "ISSN", "value": "987654321"}],
+    "note": "Will match serid-imp-4 by same ISSN, year and publisher"
+  },
+  {
+    "title": "Title a",
+    "identifiers": [{"scheme": "ISSN", "value": "555111"}],
+    "note": "Will not match serid-imp-5 because it is a MULTIPART_MONOGRAPH"
+  },
+  {
+    "title": "Title b",
+    "identifiers": [{"scheme": "ISSN", "value": "555111"}],
+    "note": "Will not match serid-imp-6 because series type is PERIODICAL"
+  },
+  {
+    "title": "Another title that does not exist",
+    "publication_year": "2000",
+    "publisher": "Publisher test 1",
+    "identifiers": [{"scheme": "ISSN", "value": "888777444"}],
+    "note": "Will not match serid-imp-7 (different publication year)"
+  },
+  {
+    "title": "Another title that does not exist",
+    "publication_year": "2022",
+    "publisher": "Publisher does not exist",
+    "identifiers": [{"scheme": "ISSN", "value": "888777444"}],
+    "note": "Will not match serid-imp-7 (different Publisher)"
+  },
+  {
+    "title": "Springer tracts in modern physics",
+    "note": "Matches 2 series duplicated title"
+  }
+]

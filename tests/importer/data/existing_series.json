@@ -1,0 +1,63 @@
+[
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-imp-1",
+    "title": "The Gulf: The Making of An American Sea",
+    "mode_of_issuance": "SERIAL",
+    "series_type": "SERIAL",
+    "identifiers": [{"scheme": "ISSN", "value": "12154647451"}]
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-imp-2",
+    "title": "Springer tracts in modern physics",
+    "mode_of_issuance": "SERIAL",
+    "series_type": "SERIAL",
+    "identifiers": [{"scheme": "ISSN", "value": "523457879896"}]
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-imp-3",
+    "title": "Springer tracts in modern physics",
+    "mode_of_issuance": "SERIAL",
+    "series_type": "SERIAL",
+    "publisher": "Publisher serid-imp-3",
+    "identifiers": [{"scheme": "ISSN", "value": "987654321"}]
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-imp-4",
+    "title": "Another springer tracts in modern physics",
+    "mode_of_issuance": "SERIAL",
+    "series_type": "SERIAL",
+    "publication_year": "2020",
+    "publisher": "Publisher serid-imp-4",
+    "identifiers": [{"scheme": "ISSN", "value": "987654321"}]
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-imp-5",
+    "title": "Title a",
+    "mode_of_issuance": "MULTIPART_MONOGRAPH",
+    "series_type": "SERIAL",
+    "identifiers": [{"scheme": "ISSN", "value": "555111"}]
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-imp-6",
+    "title": "Title b",
+    "mode_of_issuance": "SERIAL",
+    "series_type": "PERIODICAL",
+    "identifiers": [{"scheme": "ISSN", "value": "555111"}]
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/series/series-v1.0.0.json",
+    "pid": "serid-imp-7",
+    "title": "Title d",
+    "mode_of_issuance": "SERIAL",
+    "series_type": "SERIAL",
+    "publication_year": "2022",
+    "publisher": "Publisher test 1",
+    "identifiers": [{"scheme": "ISSN", "value": "888777444"}]
+  }
+]
