@@ -143,7 +143,7 @@ pyasn1-modules==0.2.8
 pycountry==20.7.3
 pycparser==2.21
 Pygments==2.10.0
-PyJWT==2.3.0
+PyJWT==2.4.0
 pynpm==0.1.2
 pyOpenSSL==21.0.0
 pyparsing==3.0.6
