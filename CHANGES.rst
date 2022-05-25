@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.32 (released 2022-05-25)
+
+- importer: change series matching to match by title first.
+
 Version 1.2.31 (released 2022-05-06)
 
 - importer: add series match validation on preview
