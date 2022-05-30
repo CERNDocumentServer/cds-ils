@@ -71,7 +71,7 @@ class SeriesImporter(object):
         """Set the import source for document."""
         record_dict["created_by"] = {
             "type": "import",
-            "value": self.metadata_provider,
+            "value": self.metadata_provider.lower(),
         }
 
     def _before_create(self, json_series):

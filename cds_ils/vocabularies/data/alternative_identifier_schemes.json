@@ -3,12 +3,12 @@
     "type": "alternative_identifier_scheme",
     "key": "ARXIV",
     "text": "arXiv",
-    "data": { "url_path":  "https://arxiv.org/abs/{identifier}"}
+    "data": { "url_path": "https://arxiv.org/abs/{identifier}" }
   },
   {
     "type": "alternative_identifier_scheme",
     "key": "SAFARI",
-    "text": "SAFARI"
+    "text": "Safari"
   },
   {
     "type": "alternative_identifier_scheme",
@@ -31,6 +31,11 @@
   {
     "type": "alternative_identifier_scheme",
     "key": "SPRINGER",
-    "text": "SPRINGER"
+    "text": "Springer"
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "AMS",
+    "text": "American Mathematical Society"
   }
 ]
