@@ -15,7 +15,7 @@ readme = open("README.rst").read()
 history = open("CHANGES.rst").read()
 
 tests_require = [
-    "Sphinx>=3.1.1",
+    "Sphinx>=3.1.1,<5",
     "mock>=2.0.0",
     "pytest-invenio>=1.4.0",
     "pytest-mock>=1.6.0",
@@ -24,7 +24,7 @@ tests_require = [
 
 setup_requires = ["Babel>=2.8.0"]
 
-extras_require = {"docs": ["Sphinx>=1.5.1"], "tests": tests_require}
+extras_require = {"docs": ["Sphinx>=1.5.1,<5"], "tests": tests_require}
 
 extras_require["all"] = []
 for name, reqs in extras_require.items():

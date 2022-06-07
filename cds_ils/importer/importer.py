@@ -81,10 +81,11 @@ class Importer(object):
     def _validate_provider(self):
         """Check if the chosen provider is matching the import data."""
         agency_code = self.json_data.get("agency_code")
-        config_agency_code = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
-            self.metadata_provider]["agency_code"]
         if not agency_code:
             raise UnknownProvider
+        providers = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"]
+        config_agency_code = providers.get(self.metadata_provider, {}).get(
+            "agency_code")
         if agency_code != config_agency_code:
             raise InvalidProvider
 

@@ -72,9 +72,10 @@ class EItemImporter(object):
         if not priority:
             priority = self.current_provider_priority
 
-        eitem_priority = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
-            eitem_provider
-        ]["priority"]
+        PRIORITY_FOR_UNKNOWN = 100  # high number means low priority
+        providers = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"]
+        eitem_priority = providers.get(eitem_provider, {}) \
+            .get("priority", PRIORITY_FOR_UNKNOWN)
 
         # existing_priority = 0, self.priority = 1, returns True
         # 0 is considered higher priority than 1
