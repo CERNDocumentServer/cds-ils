@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.33 (released 2022-06-09)
+
+- importer: add AMS provider to vocabulary and fix an issue with unknown providers.
+
 Version 1.2.32 (released 2022-05-25)
 
 - importer: change series matching to match by title first.
