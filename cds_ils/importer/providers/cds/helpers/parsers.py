@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS MARCXML rules utils."""
+
 import re
 from datetime import date, timedelta
 
@@ -56,7 +57,7 @@ def extract_number_of_pages(value):
     """Extract number of pages from 300 if exists."""
     res = re.findall(r"([0-9]+) *p", value, flags=re.IGNORECASE)
 
-    # If we have more than one occurency of pages its UnexpectedValue
+    # If we have more than one occurrence of pages its UnexpectedValue
     if len(res) == 1 and int(res[0]) < MAX_PAGES_NUMBER:
         return int(res[0])
     return None

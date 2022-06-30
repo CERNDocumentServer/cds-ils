@@ -39,13 +39,19 @@ def test_safari_transformation(app):
                         {
                             "description": "e-book",
                             "value": "https://learning.oreilly.com"
-                                     "/library/view/-/9780814415467/?ar",
-                        }
+                            "/library/view/-/9780814415467/?ar",
+                        },
                     ]
                 },
+                "_serial": [
+                    {
+                        "title": "For dummies",
+                        "volume": "1",
+                    }
+                ],
                 "abstract": "A complete tool kit for handling "
-                            "disciplinary problems in a "
-                            "fair, responsible, and legally defensible way.",
+                "disciplinary problems in a "
+                "fair, responsible, and legally defensible way.",
                 "agency_code": "CaSebORM",
                 "alternative_identifiers": [
                     {"scheme": "SAFARI", "value": "9780814415467"}
@@ -54,32 +60,60 @@ def test_safari_transformation(app):
                     {
                         "type": "SUBTITLE",
                         "value": "A Guide to Progressive Discipline and "
-                                 "Termination",
+                        "Termination",
                     }
                 ],
                 "authors": [
-                    {"full_name": "Falcone, Paul",
-                     "roles": ["AUTHOR"],
-                     "type": "PERSON",
-                     }
+                    {
+                        "full_name": "Falcone, Paul",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                    {
+                        "full_name": "Murray, Andy",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                    {
+                        "full_name": "Bennett, Nigel",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
                 ],
                 "edition": "2nd",
-                "identifiers": [{'material': 'PRINT_VERSION',
-                                 'scheme': 'ISBN',
-                                 'value': '9780814415467'},
-                                {'material': 'PRINT_VERSION',
-                                 'scheme': 'ISBN',
-                                 'value': '9780814415474'},
-                                {'material': 'DIGITAL',
-                                 'scheme': 'ISBN',
-                                 'value': '9780814415467'}],
+                "identifiers": [
+                    {
+                        "material": "PRINT_VERSION",
+                        "scheme": "ISBN",
+                        "value": "9780814415467",
+                    },
+                    {
+                        "material": "DIGITAL",
+                        "scheme": "ISBN",
+                        "value": "9781801073141",
+                    },
+                    {
+                        "material": "DIGITAL",
+                        "scheme": "ISBN",
+                        "value": "9780814415474",
+                    },
+                ],
                 "languages": ["ENG"],
                 "provider_recid": "9780814415467",
-                "imprint": {"publisher": "AMACOM",
-                            "place": "S.L."},
-                "number_of_pages": "1",
-                "publication_year": "2010",
+                "imprint": {
+                    "publisher": "TSO (The Stationary Office)",
+                    "place": "London",
+                },
+                "keywords": [
+                    {"source": "SAFARI", "value": "Project management"},
+                ],
+                "number_of_pages": "399",
+                "publication_year": "2009",
+                "subjects": [
+                    {"scheme": "LOC", "value": "HD69.P75"},
+                    {"scheme": "DEWEY", "value": "658.4/04"},
+                ],
                 "title": "101 Sample Write-Ups for "
-                         "Documenting Employee Performance Problems",
+                "Documenting Employee Performance Problems",
             },
         )

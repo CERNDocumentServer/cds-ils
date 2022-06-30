@@ -8,6 +8,7 @@
 """CDS-ILS Importer providers utils module."""
 
 import re
+import string
 
 from dojson.utils import force_list
 from six import iteritems
