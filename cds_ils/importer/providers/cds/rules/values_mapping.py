@@ -79,11 +79,39 @@ MATERIALS = [
 
 # WARNING! this should be consistent with document_identifiers_materials.json
 IDENTIFIERS_MEDIUM_TYPES = {
-    "DIGITAL": ["ELECTRONIC VERSION", "EBOOK", "E-PROCEEDINGS", "ONLINE"],
-    "HARDBACK": ["PRINT VERSION, HARDBACK"],
-    "PAPERBACK": ["PRINT VERSION, PAPERBACK"],
-    "PRINT_VERSION": ["PRINT VERSION", "PRINT VERSION, SPIRAL-BOUND", "PRINT"],
-    "CD_ROM": ["CDROM", "CD-ROM"],
+    "DIGITAL": [
+        "ADOBE PDF",
+        "ELECTRONIC VERSION",
+        "EBOOK",
+        "E-BOOK",
+        "ELECTRONIC BK",
+        "ELECTRONIC BOOK",
+        "ELECTRONIC PUBLICATION",
+        "E-PROCEEDINGS",
+        "EPUB",
+        "E-PUB",
+        "ONLINE",
+        "PDF",
+    ],
+    "HARDBACK": [
+        "HARDBACK",
+        "HARDCOVER",
+        "PRINT VERSION, HARDBACK",
+    ],
+    "PAPERBACK": [
+        "PAPERBACK",
+        "PRINT VERSION, PAPERBACK",
+    ],
+    "PRINT_VERSION": [
+        "CLOTH",
+        "PRINT",
+        "PRINT VERSION",
+        "PRINT VERSION, SPIRAL-BOUND"
+    ],
+    "CD_ROM": [
+        "CDROM",
+        "CD-ROM",
+    ],
     "AUDIOBOOK": ["AUDIOBOOK"],
     "AUDIO_CD": ["AUDIO CD"],
     "DISKETTE": ["DISKETTE"],
@@ -94,6 +122,19 @@ IDENTIFIERS_MEDIUM_TYPES = {
     "ERRATUM": ["ERRATUM"],
     "ADDENDUM": ["ADDENDUM"],
     "PREPRINT": ["PREPRINT"],
+}
+
+EDITIONS = {
+    "1st": ["FIRST"],
+    "2nd": ["SECOND"],
+    "3rd": ["THIRD"],
+    "4th": ["FOURTH"],
+    "5th": ["FIFTH"],
+    "6th": ["SIXTH"],
+    "7th": ["SEVENT"],
+    "8th": ["EIGHTH"],
+    "9th": ["NINTH"],
+    "10th": ["TENTH"],
 }
 
 APPLICABILITY = {
