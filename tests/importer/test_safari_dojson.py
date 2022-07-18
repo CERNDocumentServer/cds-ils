@@ -52,7 +52,7 @@ def test_safari_transformation(app):
                 "abstract": "A complete tool kit for handling "
                 "disciplinary problems in a "
                 "fair, responsible, and legally defensible way.",
-                "agency_code": "CaSebORM",
+                "agency_code": "OCoLC",
                 "alternative_identifiers": [
                     {"scheme": "SAFARI", "value": "9780814415467"}
                 ],
