@@ -9,7 +9,7 @@ from cds_ils.importer.providers.springer import springer
 def test_matcher():
     cds_document_blob1 = {"003": "SzGeCERN", "690C_": [{"a": "BOOK"}]}
     springer_document_blob1 = {"003": "DE-He213"}
-    safari_document_blob1 = {"003": "CaSebORM"}
+    safari_document_blob1 = {"003": "OCoLC"}
     ebl_document_blob1 = {"003": "MiAaPQ"}
     assert cds_book.model == matcher(
         cds_document_blob1, "cds_ils.importer.models"

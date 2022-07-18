@@ -177,7 +177,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     "clean_importer_preview_logs": {
         "task": "cds_ils.importer.tasks.clean_preview_logs",
-        "schedule": crontab(day_of_week='mon', minute=0, hour=6),
+        "schedule": crontab(day_of_week="mon", minute=0, hour=6),
         # every Monday, 6am
     },
 }
@@ -270,9 +270,10 @@ _OAUTH_REMOTE_APP_COMMON = dict(
         "protocol/openid-connect/auth",
     ),
 )
-OAUTHCLIENT_CERN_OPENID_USERINFO_URL = \
-    "https://keycloak-qa.cern.ch/auth/realms/cern/" \
+OAUTHCLIENT_CERN_OPENID_USERINFO_URL = (
+    "https://keycloak-qa.cern.ch/auth/realms/cern/"
     "protocol/openid-connect/userinfo"
+)
 OAUTHCLIENT_CERN_OPENID_ALLOWED_ROLES = ["cern-user", "librarian", "admin"]
 CERN_APP_OPENID_CREDENTIALS = dict(
     consumer_key=os.environ.get(
@@ -394,7 +395,7 @@ RECORDS_REST_ENDPOINTS[EITEM_PID_TYPE]["search_serializers"] = {
 }
 RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["record_serializers"] = {
     "application/json": "invenio_app_ils.literature.serializers"
-                        ":json_v1_response"
+    ":json_v1_response"
 }
 RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.literature.serializers:json_v1_search",
@@ -497,10 +498,8 @@ ILS_NOTIFICATIONS_TEMPLATES_CIRCULATION = {
 
 ILS_NOTIFICATIONS_TEMPLATES_DOCUMENT_REQUEST = {
     "request_accepted": "cds_document_request_accept.html",
-    "request_declined_user_cancel":
-        "cds_document_request_decline_user_cancel.html",
-    "request_declined_in_catalog":
-        "cds_document_request_decline_in_catalog.html",
+    "request_declined_user_cancel": "cds_document_request_decline_user_cancel.html",  # noqa
+    "request_declined_in_catalog": "cds_document_request_decline_in_catalog.html",  # noqa
     "request_declined_not_found": "cds_document_request_decline_not_found.html",  # noqa
     "request_declined_other": "cds_document_request_decline_other.html",
 }
@@ -637,7 +636,7 @@ CDS_ILS_SYNDETIC_CLIENT = "CHANGE_ME"
 #: EzProxy URL
 CDS_ILS_EZPROXY_URL = "https://ezproxy.cern.ch/login?url={url}"
 # Eitem DOI URL prefix
-CDS_ILS_DOI_URL_PREFIX = 'http://dx.doi.org/{doi}'
+CDS_ILS_DOI_URL_PREFIX = "http://dx.doi.org/{doi}"
 
 ###############################################################################
 # CDS-ILS importer configuration
@@ -655,7 +654,7 @@ CDS_ILS_IMPORTER_PROVIDERS = {
         "agency_code": "DE-He213",
     },
     "ebl": {"priority": 3, "agency_code": "MiAaPQ"},
-    "safari": {"priority": 3, "agency_code": "CaSebORM"},
+    "safari": {"priority": 3, "agency_code": "OCoLC"},
 }
 
 CDS_ILS_IMPORTER_UPLOADS_PATH = "/tmp"
@@ -674,8 +673,9 @@ CDS_ILS_LOAN_LEGACY_PID_TYPE = "lloaid"
 CDS_ILS_INDEX_LOCAL_ACCOUNTS = True
 
 CDS_ILS_MIGRATION_ALLOW_UPDATES = False
-CDS_ILS_MIGRATION_FILES_DIR = '/eos/media/cds/test/books/migration/'
+CDS_ILS_MIGRATION_FILES_DIR = "/eos/media/cds/test/books/migration/"
 
 ILS_ILL_NOTIFICATIONS_FILTER = ill_notifications_filter
-ILS_NOTIFICATIONS_FILTER_DOCUMENT_REQUEST = \
+ILS_NOTIFICATIONS_FILTER_DOCUMENT_REQUEST = (
     document_requests_notifications_filter
+)

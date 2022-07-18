@@ -17,7 +17,7 @@ from cds_ils.importer.providers.safari.ignore_fields import \
 class SafariModel(Base):
     """Safari model class."""
 
-    __query__ = "003:CaSebORM"
+    __query__ = "003:OCoLC"
 
     __ignore_keys__ = SAFARI_IGNORE_FIELDS
 
