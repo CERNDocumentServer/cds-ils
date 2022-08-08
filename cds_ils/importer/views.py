@@ -84,24 +84,28 @@ class ImporterDetailsView(ContentNegotiatedMethodView):
         """Returns the detail views of each subtask by given offset."""
         try:
             log = db.session.query(ImporterImportLog).get(log_id)
+
+            if log is None:
+                abort(404, "Task does not exist.")
+
             return self.make_response(log, record_offset=offset)
         except ObjectDeletedError:
             abort(404, "The task log was deleted.")
-        except NoResultFound:
-            abort(404, "Task does not exist.")
 
     @need_permissions("document-importer")
     def post(self, log_id):
         """Cancels the ongoing celery task."""
         try:
             log = db.session.query(ImporterImportLog).get(log_id)
+
+            if log is None:
+                abort(404, "Task does not exist.")
+
             log.set_cancelled()
             db.session.commit()
             return self.make_response(log, code=200)
         except ObjectDeletedError:
             abort(404, "The task log was deleted.")
-        except NoResultFound:
-            abort(404, "Task does not exist.")
 
 
 class ImporterListView(ContentNegotiatedMethodView):
