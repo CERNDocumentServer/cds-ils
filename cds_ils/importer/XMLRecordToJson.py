@@ -54,13 +54,10 @@ class XMLRecordToJson(object):
             is_deletable = False
 
         # MARCXML -> JSON fields translation
-        try:
-            val = self.dojson_model.do(
-                marc_record,
-                exception_handlers=xml_import_handlers
-            )
-        except AttributeError:
-            raise RecordModelMissing
+        val = self.dojson_model.do(
+            marc_record,
+            exception_handlers=xml_import_handlers
+        )
 
         if not self.ignore_missing:
             # check for missing rules

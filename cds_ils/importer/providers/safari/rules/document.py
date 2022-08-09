@@ -15,7 +15,7 @@ from dojson.utils import for_each_value, force_list
 
 from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.helpers.decorators import \
-    filter_list_values, out_strip
+    filter_empty_dict_values, filter_list_values, out_strip
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.cds.rules.values_mapping import EDITIONS, \
     IDENTIFIERS_MEDIUM_TYPES, mapping
@@ -57,7 +57,7 @@ def authors(self, key, value):
     return _authors
 
 
-@model.over("title", "^2451")
+@model.over("title", "(^2451)|(^2450)")
 @out_strip
 def title(self, key, value):
     """Translates title."""
@@ -186,7 +186,7 @@ def languages(self, key, value):
         raise UnexpectedValue(subfield="a")
 
 
-@model.over("subjects", "^050_4")
+@model.over("subjects", "(^050_4)|(^05004)")
 @filter_list_values
 def subjects_loc(self, key, value):
     """Translates subject classification."""
@@ -197,7 +197,7 @@ def subjects_loc(self, key, value):
     return _subjects
 
 
-@model.over("subjects", "^08204")
+@model.over("subjects", "(^08204)|(^08200)")
 @filter_list_values
 def subjects_dewey(self, key, value):
     """Translates subject classification."""
@@ -228,25 +228,36 @@ def edition(self, key, value):
     )
 
 
-@model.over("imprint", "^260__")
-@out_strip
+@model.over("imprint", "(^260__)|(^264_1)|(^264_4)")
+@filter_empty_dict_values
 def imprint(self, key, value):
     """Translate imprint field."""
     _publication_year = self.get("publication_year")
-    if _publication_year:
-        raise UnexpectedValue(subfield="e", message="doubled publication year")
-    pub_year = clean_val("c", value, str).strip(
+
+    pub_year = clean_val("c", value, str, req=_publication_year is not None)
+    pub_year = pub_year.strip(
         string.punctuation + string.whitespace
     )
+
+    if pub_year and _publication_year:
+        raise UnexpectedValue(subfield="c", message="doubled publication year")
+
     self["publication_year"] = pub_year
 
-    return {
-        "publisher": clean_val("b", value, str).strip(
-            string.punctuation.replace(")", "") + string.whitespace
-        ),  # keep last parenthesis
-        "place": clean_val("a", value, str).strip(
+    publisher = None
+    place = None
+
+    if "b" in value:
+        publisher = clean_val("b", value, str).strip(
+            string.punctuation.replace(")", "") + string.whitespace)
+        # keep last parenthesis
+    if "a" in value:
+        place = clean_val("a", value, str).strip(
             string.punctuation + string.whitespace
-        ),
+        )
+    return {
+        "publisher": publisher,
+        "place": place
     }
 
 
@@ -265,7 +276,7 @@ def abstract(self, key, value):
     return clean_val("a", value, str)
 
 
-@model.over("_serial", "^4901_")
+@model.over("_serial", "(^4901_)|(^4900_)")
 @filter_list_values
 @for_each_value
 def serial(self, key, value):
@@ -292,14 +303,14 @@ def serial(self, key, value):
     }
 
 
-@model.over("table_of_content", "^5051_")
+@model.over("table_of_content", "(^5051_)|(^5050_)")
 @out_strip
 def table_of_content(self, key, value):
     """Translate table of content."""
     return clean_val("a", value, str).split("--")
 
 
-@model.over("keywords", "^650_0")
+@model.over("keywords", "(^650_0)|(^650_7)|(^650_2)")
 @filter_list_values
 def keywords(self, key, value):
     """Translate keywords."""

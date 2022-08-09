@@ -83,5 +83,5 @@ class CdsIlsOverdo(Overdo):
                     if handler is not None:
                         handler(exc, output, key, value, rectype=self.rectype)
                 else:
-                    raise
+                    raise exc
         return output

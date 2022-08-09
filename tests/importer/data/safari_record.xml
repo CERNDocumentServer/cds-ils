@@ -66,10 +66,6 @@
     <marc:subfield code="b">TSO (The Stationary Office),</marc:subfield>
     <marc:subfield code="c">2009.</marc:subfield>
 </marc:datafield>
-<marc:datafield tag="264" ind1=" " ind2="1">
-    <marc:subfield code="b">AMACOM,</marc:subfield>
-    <marc:subfield code="c">2010.</marc:subfield>
-</marc:datafield>
 <marc:datafield tag="300" ind1=" " ind2=" ">
     <marc:subfield code="a">1 online resource (399 pages)</marc:subfield>
 </marc:datafield>

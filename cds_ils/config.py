@@ -395,7 +395,7 @@ RECORDS_REST_ENDPOINTS[EITEM_PID_TYPE]["search_serializers"] = {
 }
 RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["record_serializers"] = {
     "application/json": "invenio_app_ils.literature.serializers"
-    ":json_v1_response"
+                        ":json_v1_response"
 }
 RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.literature.serializers:json_v1_search",
@@ -648,6 +648,54 @@ CDS_ILS_IMPORTER_PROVIDERS = {
     "cds": {
         "priority": 1,
         "agency_code": "SzGeCERN",
+    },
+    "oso": {
+        "priority": 2,
+        "agency_code": "StDuBDS",
+    },
+    "ams": {
+        "priority": 2,
+        "agency_code": "RPAM",
+    },
+    "cbo": {
+        "priority": 2,
+        "agency_code": "UkCbUP",
+    },
+    "ieee": {
+        "priority": 2,
+        "agency_code": "IEEE",
+    },
+    "wsc": {
+        "priority": 2,
+        "agency_code": "WSP",
+    },
+    "iop": {
+        "priority": 2,
+        "agency_code": "IOP",
+    },
+    "gru": {
+        "priority": 2,
+        "agency_code": "DE-B1597",
+    },
+    "taf": {
+        "priority": 2,
+        "agency_code": "FlBoTFG",
+    },
+    "wil": {
+        "priority": 2,
+        "agency_code": "JwS",
+    },
+    "elsevier": {
+        "priority": 2,
+        "agency_code": "OCLC-NEEBV",
+    },
+    "woodhead": {
+        "priority": 2,
+        "agency_code": "OCLC-UKWHP",
+    },
+    "iospress": {
+        "priority": 2,
+        "agency_code": "OCLC-B91",
     },
     "springer": {
         "priority": 2,
