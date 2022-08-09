@@ -649,60 +649,60 @@ CDS_ILS_IMPORTER_PROVIDERS = {
         "priority": 1,
         "agency_code": "SzGeCERN",
     },
-    "oso": {
-        "priority": 2,
-        "agency_code": "StDuBDS",
-    },
-    "ams": {
-        "priority": 2,
-        "agency_code": "RPAM",
-    },
-    "cbo": {
-        "priority": 2,
-        "agency_code": "UkCbUP",
-    },
-    "ieee": {
-        "priority": 2,
-        "agency_code": "IEEE",
-    },
-    "wsc": {
-        "priority": 2,
-        "agency_code": "WSP",
-    },
-    "iop": {
-        "priority": 2,
-        "agency_code": "IOP",
-    },
-    "gru": {
-        "priority": 2,
-        "agency_code": "DE-B1597",
-    },
-    "taf": {
-        "priority": 2,
-        "agency_code": "FlBoTFG",
-    },
-    "wil": {
-        "priority": 2,
-        "agency_code": "JwS",
-    },
-    "elsevier": {
-        "priority": 2,
-        "agency_code": "OCLC-NEEBV",
-    },
-    "woodhead": {
-        "priority": 2,
-        "agency_code": "OCLC-UKWHP",
-    },
-    "iospress": {
-        "priority": 2,
-        "agency_code": "OCLC-B91",
-    },
     "springer": {
         "priority": 2,
         "agency_code": "DE-He213",
     },
-    "ebl": {"priority": 3, "agency_code": "MiAaPQ"},
-    "safari": {"priority": 3, "agency_code": "OCoLC"},
+    "oso": {
+        "priority": 3,
+        "agency_code": "StDuBDS",
+    },
+    "ams": {
+        "priority": 3,
+        "agency_code": "RPAM",
+    },
+    "cbo": {
+        "priority": 3,
+        "agency_code": "UkCbUP",
+    },
+    "ieee": {
+        "priority": 3,
+        "agency_code": "IEEE",
+    },
+    "wsc": {
+        "priority": 3,
+        "agency_code": "WSP",
+    },
+    "iop": {
+        "priority": 3,
+        "agency_code": "IOP",
+    },
+    "gru": {
+        "priority": 3,
+        "agency_code": "DE-B1597",
+    },
+    "taf": {
+        "priority": 3,
+        "agency_code": "FlBoTFG",
+    },
+    "wil": {
+        "priority": 3,
+        "agency_code": "JwS",
+    },
+    "elsevier": {
+        "priority": 3,
+        "agency_code": "OCLC-NEEBV",
+    },
+    "woodhead": {
+        "priority": 3,
+        "agency_code": "OCLC-UKWHP",
+    },
+    "iospress": {
+        "priority": 3,
+        "agency_code": "OCLC-B91",
+    },
+    "ebl": {"priority": 4, "agency_code": "MiAaPQ"},
+    "safari": {"priority": 4, "agency_code": "OCoLC"},
 }
 
 CDS_ILS_IMPORTER_UPLOADS_PATH = "/tmp"

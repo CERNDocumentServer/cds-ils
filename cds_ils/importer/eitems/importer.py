@@ -53,10 +53,16 @@ class EItemImporter(object):
     def _is_imported(self, record):
         return record["created_by"]["type"] == "import"
 
+    def _is_manually_created(self, record):
+        return record["created_by"]["type"] == "user_id" \
+               and record.get("source")
+
     def _get_record_import_provider(self, record):
         """Get an import provider of a given document."""
         if self._is_imported(record):
             return record["created_by"]["value"].lower()
+        elif self._is_manually_created(record):
+            return record.get("source").lower()
 
     def _set_record_import_source(self, record_dict):
         """Set the provider of the record."""
@@ -145,7 +151,7 @@ class EItemImporter(object):
                 self.deleted_list.append(eitem)
                 pid = eitem.pid
                 pid_object_type, pid_object_uuid = pid.object_type, \
-                    pid.object_uuid
+                                                   pid.object_uuid
                 eitem.delete()
                 # mark all PIDs as DELETED
                 all_pids = PersistentIdentifier.query.filter(
@@ -166,8 +172,9 @@ class EItemImporter(object):
 
         comparison_list = []
         for eitem in existing_eitems:
-            is_imported = self._is_imported(eitem)
-            if not is_imported:
+            is_imported_or_created = self._is_imported(eitem) \
+                                     or self._is_manually_created(eitem)
+            if not is_imported_or_created:
                 # skip until you find imported items to compare
                 continue
             existing_has_higher_priority = \
@@ -372,8 +379,9 @@ class EItemImporter(object):
                 )
                 for hit in document_eitems:
                     eitem = eitem_cls.get_record_by_pid(hit.pid)
-                    is_imported = self._is_imported(eitem)
-                    if not is_imported:
+                    is_imported_or_created = self._is_imported(eitem) \
+                        or self._is_manually_created(eitem)
+                    if not is_imported_or_created:
                         continue
                     existing_has_higher_priority = \
                         self._eitem_has_higher_priority(eitem)
