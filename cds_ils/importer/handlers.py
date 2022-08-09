@@ -72,10 +72,18 @@ def importer_exception_handler(exc, log_id, record_recid,
     )
 
 
+def python_exception_handler(exc, output, key, *args, **kwargs):
+    """Default handler for xml to json conversion exceptions."""
+    exception = UnexpectedValue()
+    exception.message = exception.description = f"{str(exc)} in <{key}> "
+    raise exception
+
+
 xml_import_handlers = {
     UnexpectedValue: default_xml_exception_handler,
     MissingRequiredField: default_xml_exception_handler,
-    ManualImportRequired: default_xml_exception_handler
+    ManualImportRequired: default_xml_exception_handler,
+    AttributeError: python_exception_handler,
 }
 
 importer_exception_handlers = {

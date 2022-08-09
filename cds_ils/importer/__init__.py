@@ -7,6 +7,22 @@
 
 """CDS-IlS Importer module."""
 
+from cds_dojson.matcher import matcher
 from cds_dojson.overdo import OverdoBase
+from dojson.contrib.marc21 import model as default_model
 
-marc21 = OverdoBase(entry_point_models="cds_ils.importer.models")
+
+class CDSOverdoBase(OverdoBase):
+    """Override of OverdoBase."""
+
+    def do(self, blob, **kwargs):
+        """Translate blob values and instantiate new model instance."""
+        from .errors import RecordModelMissing
+        model = matcher(blob, self.entry_point_models)
+
+        if model == default_model:
+            raise RecordModelMissing
+        return matcher(blob, self.entry_point_models).do(blob, **kwargs)
+
+
+marc21 = CDSOverdoBase(entry_point_models="cds_ils.importer.models")
