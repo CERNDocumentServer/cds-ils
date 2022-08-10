@@ -17,7 +17,7 @@ history = open("CHANGES.rst").read()
 tests_require = [
     "Sphinx>=3.1.1,<5",
     "mock>=2.0.0",
-    "pytest-invenio>=1.4.0",
+    "pytest-invenio>=1.4.13",
     "pytest-mock>=1.6.0",
     "pytest-random-order>=0.5.4",
 ]
