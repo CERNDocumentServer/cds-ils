@@ -17,7 +17,7 @@ from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 
 
-def _get_correct_ils_contributor_role(subfield, role):
+def _get_correct_ils_contributor_role(subfield, role, raise_unexpected=False):
     """Clean up roles."""
     translations = {
         "author": "AUTHOR",
@@ -33,14 +33,15 @@ def _get_correct_ils_contributor_role(subfield, role):
         "ill": "ILLUSTRATOR",
         "ed. et al.": "EDITOR",
     }
+    clean_role = None
     if role is None:
         return "AUTHOR"
     if isinstance(role, str):
         clean_role = role.lower()
     else:
-        raise UnexpectedValue(subfield=subfield,
-                              message="unknown author role")
-    if clean_role not in translations:
+        if raise_unexpected:
+            raise UnexpectedValue(subfield=subfield, message="unknown author role")
+    if clean_role not in translations or clean_role is None:
         return "AUTHOR"
     return translations[clean_role]
 
@@ -56,9 +57,7 @@ def _extract_json_ils_ids(info, provenance="scheme"):
     for author_id in author_ids:
         match = regex.match(author_id)
         if match:
-            ids.append(
-                {"value": match.group(3), provenance: SOURCES[match.group(1)]}
-            )
+            ids.append({"value": match.group(3), provenance: SOURCES[match.group(1)]})
     try:
         ids.append({"value": info["inspireid"], provenance: "INSPIRE ID"})
     except KeyError:
@@ -86,7 +85,7 @@ def build_ils_contributor(value):
     if role:
         contributor.update({"roles": [role]})
 
-    subfield_q = clean_val('q', value, str)
+    subfield_q = clean_val("q", value, str)
     if subfield_q:
         contributor.update({"alternative_names": [subfield_q]})
 
@@ -98,9 +97,7 @@ def build_ils_contributor(value):
             if x in values_u_list:
                 values_u_list.remove(x)
         contributor["affiliations"] = [{"name": x} for x in values_u_list]
-    contributor = dict(
-        (k, v) for k, v in iteritems(contributor) if v is not None
-    )
+    contributor = dict((k, v) for k, v in iteritems(contributor) if v is not None)
     return contributor
 
 

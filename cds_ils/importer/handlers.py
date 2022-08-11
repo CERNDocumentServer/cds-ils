@@ -35,40 +35,48 @@ def default_xml_exception_handler(exc, output, key, *args, **kwargs):
     raise exc
 
 
-def default_invenio_exception_handler(exc, log_id, record_recid,
-                                      json_data=None, *args, **kwargs):
+def default_invenio_exception_handler(
+    exc, log_id, record_recid, json_data=None, *args, **kwargs
+):
     """Handle invenio exception."""
     ImportRecordLog.create_failure(
-        log_id, record_recid,
-        f"{exc.__class__.__name__} {str(exc)}", report={"raw_json": json_data})
-
-
-def pid_deleted_exception_handler(exc, log_id, record_recid,
-                                  json_data=None, *args, **kwargs):
-    """Handle invenio exception."""
-    ImportRecordLog.create_failure(
-        log_id, record_recid,
-        f"{exc.__class__.__name__} {exc.pid_type}: {exc.pid_value}",
-        report={"raw_json": json_data})
-
-
-def ils_validation_exception_handler(exc, log_id, record_recid,
-                                     json_data=None, *args, **kwargs):
-    """Handle ILS exception."""
-    ImportRecordLog.create_failure(
-        log_id, record_recid,
-        str(exc.original_exception.message),
-        report={"raw_json": json_data}
+        log_id,
+        record_recid,
+        f"{exc.__class__.__name__} {str(exc)}",
+        report={"raw_json": json_data},
     )
 
 
-def importer_exception_handler(exc, log_id, record_recid,
-                               json_data=None, *args, **kwargs):
+def pid_deleted_exception_handler(
+    exc, log_id, record_recid, json_data=None, *args, **kwargs
+):
+    """Handle invenio exception."""
+    ImportRecordLog.create_failure(
+        log_id,
+        record_recid,
+        f"{exc.__class__.__name__} {exc.pid_type}: {exc.pid_value}",
+        report={"raw_json": json_data},
+    )
+
+
+def ils_validation_exception_handler(
+    exc, log_id, record_recid, json_data=None, *args, **kwargs
+):
+    """Handle ILS exception."""
+    ImportRecordLog.create_failure(
+        log_id,
+        record_recid,
+        str(exc.original_exception.message),
+        report={"raw_json": json_data},
+    )
+
+
+def importer_exception_handler(
+    exc, log_id, record_recid, json_data=None, *args, **kwargs
+):
     """Handle importer exception."""
     ImportRecordLog.create_failure(
-        log_id, record_recid,
-        str(exc.description),
-        report={"raw_json": json_data}
+        log_id, record_recid, str(exc.description), report={"raw_json": json_data}
     )
 
 

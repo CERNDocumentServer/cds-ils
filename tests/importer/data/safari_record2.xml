@@ -1,0 +1,316 @@
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
+    <marc:record>
+        <marc:leader>06862cam a22006858i 4500</marc:leader>
+        <marc:controlfield tag="001">on1291562831</marc:controlfield>
+        <marc:controlfield tag="003">OCoLC</marc:controlfield>
+        <marc:controlfield tag="005">20220511213020.0</marc:controlfield>
+        <marc:controlfield tag="006">m o d</marc:controlfield>
+        <marc:controlfield tag="007">cr |||||||||||</marc:controlfield>
+        <marc:controlfield tag="008">211214s2022 mau o 001 0 eng</marc:controlfield>
+        <marc:datafield tag="010" ind1=" " ind2=" ">
+            <marc:subfield code="a">2021058687</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="040" ind1=" " ind2=" ">
+            <marc:subfield code="a">DLC</marc:subfield>
+            <marc:subfield code="b">eng</marc:subfield>
+            <marc:subfield code="e">rda</marc:subfield>
+            <marc:subfield code="c">DLC</marc:subfield>
+            <marc:subfield code="d">OCLCO</marc:subfield>
+            <marc:subfield code="d">OCLCF</marc:subfield>
+            <marc:subfield code="d">OCLCO</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="019" ind1=" " ind2=" ">
+            <marc:subfield code="a">1291191923</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="020" ind1=" " ind2=" ">
+            <marc:subfield code="a">9781647823337</marc:subfield>
+            <marc:subfield code="q">(epub)</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="020" ind1=" " ind2=" ">
+            <marc:subfield code="a">1647823331</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="020" ind1=" " ind2=" ">
+            <marc:subfield code="z">9781647823320</marc:subfield>
+            <marc:subfield code="q">(paperback)</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="035" ind1=" " ind2=" ">
+            <marc:subfield code="a">(OCoLC)1291562831</marc:subfield>
+            <marc:subfield code="z">(OCoLC)1291191923</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="042" ind1=" " ind2=" ">
+            <marc:subfield code="a">pcc</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="050" ind1="0" ind2="0">
+            <marc:subfield code="a">HD5109</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="082" ind1="0" ind2="0">
+            <marc:subfield code="a">331.25/72</marc:subfield>
+            <marc:subfield code="2">23/eng/20220105</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="049" ind1=" " ind2=" ">
+            <marc:subfield code="a">MAIN</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="245" ind1="0" ind2="0">
+            <marc:subfield code="a">HBR guide to managing flexible work.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="246" ind1="3" ind2=" ">
+            <marc:subfield code="a">Harvard Business Review guide to managing flexible work</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="246" ind1="3" ind2="0">
+            <marc:subfield code="a">Managing flexible work</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="263" ind1=" " ind2=" ">
+            <marc:subfield code="a">2205</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="264" ind1=" " ind2="1">
+            <marc:subfield code="a">Boston, Massachusetts :</marc:subfield>
+            <marc:subfield code="b">Harvard Business Review Press,</marc:subfield>
+            <marc:subfield code="c">[2022]</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="300" ind1=" " ind2=" ">
+            <marc:subfield code="a">1 online resource.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="336" ind1=" " ind2=" ">
+            <marc:subfield code="a">text</marc:subfield>
+            <marc:subfield code="b">txt</marc:subfield>
+            <marc:subfield code="2">rdacontent</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="337" ind1=" " ind2=" ">
+            <marc:subfield code="a">computer</marc:subfield>
+            <marc:subfield code="b">c</marc:subfield>
+            <marc:subfield code="2">rdamedia</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="338" ind1=" " ind2=" ">
+            <marc:subfield code="a">online resource</marc:subfield>
+            <marc:subfield code="b">cr</marc:subfield>
+            <marc:subfield code="2">rdacarrier</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="490" ind1="1" ind2=" ">
+            <marc:subfield code="a">Harvard business review guides</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="500" ind1=" " ind2=" ">
+            <marc:subfield code="a">Includes index.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="505" ind1="0" ind2="0">
+            <marc:subfield code="g">Section 1.</marc:subfield>
+            <marc:subfield code="t">Getting Started:</marc:subfield>
+            <marc:subfield code="t">A Primer on True Flexibility: Prioritize company and employee needs equally /
+            </marc:subfield>
+            <marc:subfield code="r">by Ellen Ernst Kossek, Patricia Gettings, and Kaumudi Misra --</marc:subfield>
+            <marc:subfield code="t">What Mix of WFH and Office Time Is Right for You?: Make decisions based on your
+                productivity levels /
+            </marc:subfield>
+            <marc:subfield code="r">by Robert C Pozen and Alexandra Samuel --</marc:subfield>
+            <marc:subfield code="t">Set a Hybrid Schedule That Works for You: When are you most motivated? /
+            </marc:subfield>
+            <marc:subfield code="r">by Elizabeth Grace Saunders --</marc:subfield>
+            <marc:subfield code="g">Section 2.</marc:subfield>
+            <marc:subfield code="t">Making the Ask:</marc:subfield>
+            <marc:subfield code="t">How to Negotiate a Remote Arrangement with Your Boss: Approach the conversation with
+                an open mindset /
+            </marc:subfield>
+            <marc:subfield code="r">by Ruchi Sinha and Carol T Kulik --</marc:subfield>
+            <marc:subfield code="t">Adventures in Alternative Work Arrangements: Tips for parents-that apply to everyone
+                /
+            </marc:subfield>
+            <marc:subfield code="r">By Michele Benton --</marc:subfield>
+            <marc:subfield code="t">Asking Your Boss For a 4-Day Workweek: You don't have to work a certain number of
+                hours to be productive /
+            </marc:subfield>
+            <marc:subfield code="r">by Joe Sanok --</marc:subfield>
+            <marc:subfield code="g">Section 3:</marc:subfield>
+            <marc:subfield code="t">Getting Work Done:</marc:subfield>
+            <marc:subfield code="t">How to Get More Done in Less Time: Be intentional with the time you have /
+            </marc:subfield>
+            <marc:subfield code="r">by Amantha Imber --</marc:subfield>
+            <marc:subfield code="t">Staying Focused When You're Working From Home: Set boundaries-and stick to them /
+            </marc:subfield>
+            <marc:subfield code="r">by Elizabeth Grace Saunders --</marc:subfield>
+            <marc:subfield code="t">Being Mindful in an Online Working World: Block out the noise of your virtual
+                reality /
+            </marc:subfield>
+            <marc:subfield code="r">by Alyson Meister and Amanda Sinclair --</marc:subfield>
+            <marc:subfield code="t">How to Leave Work at Work: Whether you're leaving the office or working from home
+                /
+            </marc:subfield>
+            <marc:subfield code="r">by Elizabeth Grace Saunders --</marc:subfield>
+            <marc:subfield code="g">Section 4.</marc:subfield>
+            <marc:subfield code="t">Staying Connected:</marc:subfield>
+            <marc:subfield code="t">Did You Get My Slack/Email/Text?: Establish your team's communication norms /
+            </marc:subfield>
+            <marc:subfield code="r">By Erica Dhawan -</marc:subfield>
+            <marc:subfield code="t">Staying Visible When Your Team Is In the Office-and You're Not: Stand out as a
+                valued contributor no matter how many hours you work /
+            </marc:subfield>
+            <marc:subfield code="r">By Dorie Clark --</marc:subfield>
+            <marc:subfield code="t">Working on a Team Spread Across Time Zones: What to do when your team is online at
+                different times /
+            </marc:subfield>
+            <marc:subfield code="r">by Donna Flynn --</marc:subfield>
+            <marc:subfield code="t">How to Stay Connected to Your Work Friends: Principles for when time and proximity
+                are not on your side /
+            </marc:subfield>
+            <marc:subfield code="r">by Shasta Nelson --</marc:subfield>
+            <marc:subfield code="t">New to the Team? Here's How to Build Trust (Remotely): Advice for creating
+                connections whenever or wherever you work /
+            </marc:subfield>
+            <marc:subfield code="r">By Ruchi Sinha --</marc:subfield>
+            <marc:subfield code="g">Section 5.</marc:subfield>
+            <marc:subfield code="t">Making the Most of Meetings:</marc:subfield>
+            <marc:subfield code="t">What It Takes to Run a Great Hybrid Meeting: Eight best practices /</marc:subfield>
+            <marc:subfield code="r">by Bob Frisch and Cary Greene --</marc:subfield>
+            <marc:subfield code="t">When Do We Actually Need to Meet in Person?: Decide what you need to get out of
+                meeting face-to-face /
+            </marc:subfield>
+            <marc:subfield code="r">by Rae Ringel --</marc:subfield>
+            <marc:subfield code="t">How to Nail a Hybrid Presentation: Involve the remote participants /</marc:subfield>
+            <marc:subfield code="r">by Sarah Gershman and Rae Ringel --</marc:subfield>
+            <marc:subfield code="g">Section 6.</marc:subfield>
+            <marc:subfield code="t">Managing Your Flexible Team:</marc:subfield>
+            <marc:subfield code="t">Setting Flexible Schedules with Your Team-Fairly: Let your team pick a schedule that
+                suits their needs /
+            </marc:subfield>
+            <marc:subfield code="r">by Joan C. Williams and Marina Multhaup --</marc:subfield>
+            <marc:subfield code="t">The Downside of Flex Time: Protect your team from an &quot;always on&quot; culture
+                /
+            </marc:subfield>
+            <marc:subfield code="r">by Maura Thomas --</marc:subfield>
+            <marc:subfield code="t">What Psychological Safety Looks Like in a Hybrid Workplace: Five steps to create an
+                inclusive environment /
+            </marc:subfield>
+            <marc:subfield code="r">by Amy C. Edmondson and Mark Mortensen --</marc:subfield>
+            <marc:subfield code="t">Giving Feedback When You're Not Face-to-Face: Be sympathetic, but firm /
+            </marc:subfield>
+            <marc:subfield code="r">by Therese Huston --</marc:subfield>
+            <marc:subfield code="t">Tips for Managing an Underperformer: Whether you're at home, in the office, or half
+                the world away /
+            </marc:subfield>
+            <marc:subfield code="r">by Liz Kislik.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="520" ind1=" " ind2=" ">
+            <marc:subfield code="a">&quot;The 9-to-5 office routine no longer exists. Many employees have the option to
+                work anywhere, any time. But how do you find the flexible arrangement that's right for you? And how do
+                you manage a team when they're all working in different places and on different schedules? The HBR Guide
+                to Managing Flexible Work has the answers. Filled with tips, advice, and examples, this book helps
+                individual contributors and managers alike assess the trade-offs that come with flexible work options,
+                advocate for the arrangement that works for them, and remain productive and connected to team members at
+                the same time. You'll learn to: identify key job responsibilities and when and where each one can be
+                done, establish the best arrangements for yourself and your team, create the conditions for success,
+                stay connected and visible, no matter when or where you work, win support for your projects and ideas,
+                and keep people engaged, both in person and virtually&quot;--
+            </marc:subfield>
+            <marc:subfield code="c">Provided by publisher.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="588" ind1=" " ind2=" ">
+            <marc:subfield code="a">Description based on print version record and CIP data provided by publisher;
+                resource not viewed.
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="590" ind1=" " ind2=" ">
+            <marc:subfield code="a">O'Reilly</marc:subfield>
+            <marc:subfield code="b">O'Reilly Online Learning: Academic/Public Library Edition (SAML SSO Access)
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Flexible work arrangements</marc:subfield>
+            <marc:subfield code="v">Handbooks, manuals, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Virtual work teams</marc:subfield>
+            <marc:subfield code="v">Handbooks, manuals, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Virtual work</marc:subfield>
+            <marc:subfield code="v">Handbooks, manuals, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Telecommuting</marc:subfield>
+            <marc:subfield code="v">Handbooks, manuals, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Success in business</marc:subfield>
+            <marc:subfield code="v">Handbooks, manuals, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Industrial management</marc:subfield>
+            <marc:subfield code="v">Handbooks, manuals, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="6">
+            <marc:subfield code="a">Conditions de travail flexibles</marc:subfield>
+            <marc:subfield code="v">Guides, manuels, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="6">
+            <marc:subfield code="a">Équipes virtuelles</marc:subfield>
+            <marc:subfield code="v">Guides, manuels, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="6">
+            <marc:subfield code="a">Travail virtuel (Mécanique analytique)</marc:subfield>
+            <marc:subfield code="v">Guides, manuels, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="6">
+            <marc:subfield code="a">Succès dans les affaires</marc:subfield>
+            <marc:subfield code="v">Guides, manuels, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="6">
+            <marc:subfield code="a">Gestion d'entreprise</marc:subfield>
+            <marc:subfield code="v">Guides, manuels, etc.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="7">
+            <marc:subfield code="a">Flexible work arrangements.</marc:subfield>
+            <marc:subfield code="2">fast</marc:subfield>
+            <marc:subfield code="0">(OCoLC)fst01747946</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="7">
+            <marc:subfield code="a">Industrial management.</marc:subfield>
+            <marc:subfield code="2">fast</marc:subfield>
+            <marc:subfield code="0">(OCoLC)fst00971246</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="7">
+            <marc:subfield code="a">Success in business.</marc:subfield>
+            <marc:subfield code="2">fast</marc:subfield>
+            <marc:subfield code="0">(OCoLC)fst01137062</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="7">
+            <marc:subfield code="a">Telecommuting.</marc:subfield>
+            <marc:subfield code="2">fast</marc:subfield>
+            <marc:subfield code="0">(OCoLC)fst01146098</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="7">
+            <marc:subfield code="a">Virtual work.</marc:subfield>
+            <marc:subfield code="2">fast</marc:subfield>
+            <marc:subfield code="0">(OCoLC)fst01167708</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="7">
+            <marc:subfield code="a">Virtual work teams.</marc:subfield>
+            <marc:subfield code="2">fast</marc:subfield>
+            <marc:subfield code="0">(OCoLC)fst01167709</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="655" ind1=" " ind2="7">
+            <marc:subfield code="a">Handbooks and manuals.</marc:subfield>
+            <marc:subfield code="2">fast</marc:subfield>
+            <marc:subfield code="0">(OCoLC)fst01423877</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="710" ind1="2" ind2=" ">
+            <marc:subfield code="a">Harvard Business Review Press,</marc:subfield>
+            <marc:subfield code="e">issuing body.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="776" ind1="0" ind2="8">
+            <marc:subfield code="i">Print version:</marc:subfield>
+            <marc:subfield code="t">HBR guide to managing flexible wor</marc:subfield>
+            <marc:subfield code="d">Boston, Massachusetts : Harvard Business Review Press, [2022]</marc:subfield>
+            <marc:subfield code="z">9781647823320</marc:subfield>
+            <marc:subfield code="w">(DLC) 2021058686</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="830" ind1=" " ind2="0">
+            <marc:subfield code="a">Harvard business review guides.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="856" ind1="4" ind2="0">
+            <marc:subfield code="u">https://learning.oreilly.com/library/view/-/9781663718914/?ar</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="994" ind1=" " ind2=" ">
+            <marc:subfield code="a">92</marc:subfield>
+            <marc:subfield code="b">CHCER</marc:subfield>
+        </marc:datafield>
+    </marc:record>
+</marc:collection>
