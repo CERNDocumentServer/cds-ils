@@ -1,0 +1,203 @@
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
+    <marc:record>
+        <marc:leader>04682nam a22005657i 4500</marc:leader>
+        <marc:controlfield tag="001">on1311516685</marc:controlfield>
+        <marc:controlfield tag="003">OCoLC</marc:controlfield>
+        <marc:controlfield tag="005">20220507003901.0</marc:controlfield>
+        <marc:controlfield tag="006">m o d</marc:controlfield>
+        <marc:controlfield tag="007">cr cnu|||unuuu</marc:controlfield>
+        <marc:controlfield tag="008">220420s2020 ja ob 000 0 jpn d</marc:controlfield>
+        <marc:datafield tag="040" ind1=" " ind2=" ">
+            <marc:subfield code="a">ORMDA</marc:subfield>
+            <marc:subfield code="b">eng</marc:subfield>
+            <marc:subfield code="e">rda</marc:subfield>
+            <marc:subfield code="e">pn</marc:subfield>
+            <marc:subfield code="c">ORMDA</marc:subfield>
+            <marc:subfield code="d">OCLCO</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="066" ind1=" " ind2=" ">
+            <marc:subfield code="c">$1</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="020" ind1=" " ind2=" ">
+            <marc:subfield code="a">9784873119144</marc:subfield>
+            <marc:subfield code="q">(electronic bk.)</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="020" ind1=" " ind2=" ">
+            <marc:subfield code="a">4873119146</marc:subfield>
+            <marc:subfield code="q">(electronic bk.)</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="035" ind1=" " ind2=" ">
+            <marc:subfield code="a">(OCoLC)1311516685</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="037" ind1=" " ind2=" ">
+            <marc:subfield code="a">9784873119144</marc:subfield>
+            <marc:subfield code="b">O'Reilly Media</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="041" ind1="1" ind2=" ">
+            <marc:subfield code="a">jpn</marc:subfield>
+            <marc:subfield code="h">eng</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="050" ind1=" " ind2="4">
+            <marc:subfield code="a">QA76.9.H85</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="082" ind1="0" ind2="4">
+            <marc:subfield code="a">004.019</marc:subfield>
+            <marc:subfield code="2">23/eng/20220420</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="049" ind1=" " ind2=" ">
+            <marc:subfield code="a">MAIN</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="100" ind1="1" ind2=" ">
+            <marc:subfield code="a">Wendel, Stephen,</marc:subfield>
+            <marc:subfield code="e">author.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="240" ind1="1" ind2="0">
+            <marc:subfield code="a">Designing for behavior change.</marc:subfield>
+            <marc:subfield code="l">Japanese</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="245" ind1="1" ind2="0">
+            <marc:subfield code="6">880-01</marc:subfield>
+            <marc:subfield code="a">Kōdō o kaeru dezain :</marc:subfield>
+            <marc:subfield code="b">shinrigaku to kōdō keizaigaku o purodakuto dezain
+                ni katsuyōsuru /
+            </marc:subfield>
+            <marc:subfield code="c">Stephen Wendel cho ; Takeyama Masanao kan'yaku ;
+                Aijima Masaki, Tannaka Nozomu, Matsumura Sōya yaku = Designing for
+                behavior change : applying psychology and behavioral economics / Stephen
+                Wendel.
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="246" ind1="3" ind2="1">
+            <marc:subfield code="a">Designing for behavior change :</marc:subfield>
+            <marc:subfield code="b">applying psychology and behavioral economics
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="250" ind1=" " ind2=" ">
+            <marc:subfield code="6">880-02</marc:subfield>
+            <marc:subfield code="a">Shohan.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="264" ind1=" " ind2="1">
+            <marc:subfield code="6">880-03</marc:subfield>
+            <marc:subfield code="a">Tōkyō-to Shinjuku-ku :</marc:subfield>
+            <marc:subfield code="b">Orairī Japan,</marc:subfield>
+            <marc:subfield code="c">2020.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="300" ind1=" " ind2=" ">
+            <marc:subfield code="a">1 online resource (464 pages)</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="336" ind1=" " ind2=" ">
+            <marc:subfield code="a">text</marc:subfield>
+            <marc:subfield code="b">txt</marc:subfield>
+            <marc:subfield code="2">rdacontent</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="337" ind1=" " ind2=" ">
+            <marc:subfield code="a">computer</marc:subfield>
+            <marc:subfield code="b">c</marc:subfield>
+            <marc:subfield code="2">rdamedia</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="338" ind1=" " ind2=" ">
+            <marc:subfield code="a">online resource</marc:subfield>
+            <marc:subfield code="b">cr</marc:subfield>
+            <marc:subfield code="2">rdacarrier</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="588" ind1="0" ind2=" ">
+            <marc:subfield code="a">Online resource; title from title details screen
+                (O'Reilly, viewed April 20, 2022).
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="504" ind1=" " ind2=" ">
+            <marc:subfield code="a">Includes bibiographical references.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="520" ind1=" " ind2=" ">
+            <marc:subfield code="a">Abstract
+            </marc:subfield>
+            <marc:subfield code="c">Provided by publisher.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="590" ind1=" " ind2=" ">
+            <marc:subfield code="a">O'Reilly</marc:subfield>
+            <marc:subfield code="b">O'Reilly Online Learning: Academic/Public Library
+                Edition (SAML SSO Access)
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Human-computer interaction.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">User-centered system design.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="6">
+            <marc:subfield code="a">Conception participative (Conception de systèmes)
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="655" ind1=" " ind2="4">
+            <marc:subfield code="a">Electronic books.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="700" ind1="1" ind2=" ">
+            <marc:subfield code="6">880-04</marc:subfield>
+            <marc:subfield code="a">Takeyama, Masanao,</marc:subfield>
+            <marc:subfield code="e">translator,</marc:subfield>
+            <marc:subfield code="e">editor.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="700" ind1="1" ind2=" ">
+            <marc:subfield code="6">880-05</marc:subfield>
+            <marc:subfield code="a">Aijima, Masaki,</marc:subfield>
+            <marc:subfield code="e">translator.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="765" ind1="0" ind2="8">
+            <marc:subfield code="i">Translation of:</marc:subfield>
+            <marc:subfield code="a">Wendel, Stephen.</marc:subfield>
+            <marc:subfield code="t">Designing for behavior change.</marc:subfield>
+            <marc:subfield code="d">Beijing : O'Reilly, 2014</marc:subfield>
+            <marc:subfield code="z">9781449367626</marc:subfield>
+            <marc:subfield code="w">(OCoLC)868997865</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="856" ind1="4" ind2="0">
+            <marc:subfield code="u">
+                https://learning.oreilly.com/library/view/-/9784873119144/?ar
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="880" ind1="1" ind2="0">
+            <marc:subfield code="6">245-01/$1</marc:subfield>
+            <marc:subfield code="a">行動を変えるデザイン :</marc:subfield>
+            <marc:subfield code="b">心理学と行動経済学をプロダクトデザインに活用する /</marc:subfield>
+            <marc:subfield code="c">Stephen Wendel著 ; 武山政直監訳 ; 相島雅樹, 反中望, 松村草也訳 =
+                Designing for behavior change : applying psychology and behavioral
+                economics / Stephen Wendel.
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="880" ind1=" " ind2=" ">
+            <marc:subfield code="6">250-02/$1</marc:subfield>
+            <marc:subfield code="a">初版.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="880" ind1=" " ind2="1">
+            <marc:subfield code="6">264-03/$1</marc:subfield>
+            <marc:subfield code="a">東京都新宿区 :</marc:subfield>
+            <marc:subfield code="b">オライリー・ジャパン,</marc:subfield>
+            <marc:subfield code="c">2020.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="880" ind1=" " ind2=" ">
+            <marc:subfield code="6">520-00/$1</marc:subfield>
+            <marc:subfield code="a">&quot;本書は、行動経済学と心理学をもとに、人々の行動、日常習慣を変える&quot;行動変容&quot;を促すプロダクトをデザインするための書籍です。主にヘルスケア（健康管理）、金融（資産管理）など、これまでITプロダクト（サービス、アプリなど）がなかなか使われてこなかった分野を対象に、ユーザーがやりたいと思っていたものの実行できなかった行動の実現を助けるプロダクトを作り出すための、実践的な視点や知識を提供します。&quot;
+                --
+            </marc:subfield>
+            <marc:subfield code="c">Provided by publisher.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="880" ind1="1" ind2=" ">
+            <marc:subfield code="6">700-04/$1</marc:subfield>
+            <marc:subfield code="a">武山政直,</marc:subfield>
+            <marc:subfield code="e">translator,</marc:subfield>
+            <marc:subfield code="e">editor.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="880" ind1="1" ind2=" ">
+            <marc:subfield code="6">700-05/$1</marc:subfield>
+            <marc:subfield code="a">相島雅樹,</marc:subfield>
+            <marc:subfield code="e">translator.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="994" ind1=" " ind2=" ">
+            <marc:subfield code="a">92</marc:subfield>
+            <marc:subfield code="b">CHCER</marc:subfield>
+        </marc:datafield>
+    </marc:record>
+</marc:collection>

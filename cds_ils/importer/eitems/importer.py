@@ -33,9 +33,9 @@ class EItemImporter(object):
         login_required,
     ):
         """Constructor."""
-        priority = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][
-            metadata_provider
-        ]["priority"]
+        priority = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][metadata_provider][
+            "priority"
+        ]
         self.json_data = json_metadata
         self.metadata_provider = metadata_provider
         self.current_provider_priority = priority
@@ -54,8 +54,7 @@ class EItemImporter(object):
         return record["created_by"]["type"] == "import"
 
     def _is_manually_created(self, record):
-        return record["created_by"]["type"] == "user_id" \
-               and record.get("source")
+        return record["created_by"]["type"] == "user_id" and record.get("source")
 
     def _get_record_import_provider(self, record):
         """Get an import provider of a given document."""
@@ -80,8 +79,9 @@ class EItemImporter(object):
 
         PRIORITY_FOR_UNKNOWN = 100  # high number means low priority
         providers = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"]
-        eitem_priority = providers.get(eitem_provider, {}) \
-            .get("priority", PRIORITY_FOR_UNKNOWN)
+        eitem_priority = providers.get(eitem_provider, {}).get(
+            "priority", PRIORITY_FOR_UNKNOWN
+        )
 
         # existing_priority = 0, self.priority = 1, returns True
         # 0 is considered higher priority than 1
@@ -129,9 +129,7 @@ class EItemImporter(object):
         eitem_search = current_app_ils.eitem_search_cls()
         eitem_cls = current_app_ils.eitem_record_cls
 
-        document_eitems = eitem_search.search_by_document_pid(
-            matched_document["pid"]
-        )
+        document_eitems = eitem_search.search_by_document_pid(matched_document["pid"])
         for hit in document_eitems:
             yield eitem_cls.get_record_by_pid(hit.pid)
 
@@ -145,13 +143,11 @@ class EItemImporter(object):
             if not is_imported:
                 continue
 
-            existing_has_higher_priority = \
-                self._eitem_has_higher_priority(eitem)
+            existing_has_higher_priority = self._eitem_has_higher_priority(eitem)
             if not existing_has_higher_priority:
                 self.deleted_list.append(eitem)
                 pid = eitem.pid
-                pid_object_type, pid_object_uuid = pid.object_type, \
-                                                   pid.object_uuid
+                pid_object_type, pid_object_uuid = pid.object_type, pid.object_uuid
                 eitem.delete()
                 # mark all PIDs as DELETED
                 all_pids = PersistentIdentifier.query.filter(
@@ -172,13 +168,13 @@ class EItemImporter(object):
 
         comparison_list = []
         for eitem in existing_eitems:
-            is_imported_or_created = self._is_imported(eitem) \
-                                     or self._is_manually_created(eitem)
+            is_imported_or_created = self._is_imported(
+                eitem
+            ) or self._is_manually_created(eitem)
             if not is_imported_or_created:
                 # skip until you find imported items to compare
                 continue
-            existing_has_higher_priority = \
-                self._eitem_has_higher_priority(eitem)
+            existing_has_higher_priority = self._eitem_has_higher_priority(eitem)
 
             comparison_list.append(existing_has_higher_priority)
 
@@ -186,8 +182,7 @@ class EItemImporter(object):
         # or none were imported
         return not any(comparison_list)
 
-    def _build_eitem_json(self, eitem_json, document_pid, urls=None,
-                          description=None):
+    def _build_eitem_json(self, eitem_json, document_pid, urls=None, description=None):
         """Provide initial metadata dictionary."""
         self._apply_url_login(eitem_json)
         self._set_record_import_source(eitem_json)
@@ -242,8 +237,9 @@ class EItemImporter(object):
         self.import_eitem_action(search)
 
         # determine currently imported eitem provider priority
-        should_eitem_be_imported = \
-            self._should_import_eitem_by_priority(matched_document)
+        should_eitem_be_imported = self._should_import_eitem_by_priority(
+            matched_document
+        )
 
         if self.action == "create" and should_eitem_be_imported:
             self.eitem_record = self.create_eitem(matched_document)
@@ -279,9 +275,7 @@ class EItemImporter(object):
 
         for record in results:
             existing_eitem = eitem_cls.get_record_by_pid(record["pid"])
-            self.deleted_list.append(
-                self._delete_existing_record(existing_eitem)
-            )
+            self.deleted_list.append(self._delete_existing_record(existing_eitem))
 
     def preview_delete(self, matched_document):
         """Preview delete action on eitems for given document."""
@@ -312,16 +306,13 @@ class EItemImporter(object):
                     )
 
                     self.eitem_json["pid"] = provider.pid.pid_value
-                    self.eitem_record = eitem_cls.create(
-                        self.eitem_json, record_uuid)
+                    self.eitem_record = eitem_cls.create(self.eitem_json, record_uuid)
                 db.session.commit()
                 self.action = "create"
                 self.output_pid = self.eitem_record["pid"]
                 return self.eitem_record
             except IlsValidationError as e:
-                click.secho(
-                    "Field: {}".format(e.errors[0].res["field"]), fg="red"
-                )
+                click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
                 click.secho(e.original_exception.message, fg="red")
                 db.session.rollback()
                 raise e
@@ -334,7 +325,7 @@ class EItemImporter(object):
             "output_pid": self.output_pid,
             "duplicates": self.ambiguous_list,
             "action": self.action,
-            "deleted_eitems": self.deleted_list
+            "deleted_eitems": self.deleted_list,
         }
 
     def preview_import(self, matched_document):
@@ -345,8 +336,9 @@ class EItemImporter(object):
             search = self.eitems_search(matched_document)
             self.import_eitem_action(search)
             # determine currently imported eitem provider priority
-            should_eitem_be_imported = \
-                self._should_import_eitem_by_priority(matched_document)
+            should_eitem_be_imported = self._should_import_eitem_by_priority(
+                matched_document
+            )
 
             if self.action == "update":
 
@@ -379,12 +371,14 @@ class EItemImporter(object):
                 )
                 for hit in document_eitems:
                     eitem = eitem_cls.get_record_by_pid(hit.pid)
-                    is_imported_or_created = self._is_imported(eitem) \
-                        or self._is_manually_created(eitem)
+                    is_imported_or_created = self._is_imported(
+                        eitem
+                    ) or self._is_manually_created(eitem)
                     if not is_imported_or_created:
                         continue
-                    existing_has_higher_priority = \
-                        self._eitem_has_higher_priority(eitem)
+                    existing_has_higher_priority = self._eitem_has_higher_priority(
+                        eitem
+                    )
                     if not existing_has_higher_priority:
                         self.deleted_list.append(eitem)
                 if self.deleted_list:

@@ -63,7 +63,7 @@ install_requires = [
     # Version 2.1.0 of Werkzeug drops support for python 3.6
     "Werkzeug<2.1.0",
     # Version 3.1.0 of jinja2 drops support for python 3.6
-    "jinja2<3.1.0"
+    "jinja2<3.1.0",
 ]
 
 packages = find_packages()

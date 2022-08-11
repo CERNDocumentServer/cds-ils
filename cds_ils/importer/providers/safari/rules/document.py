@@ -43,14 +43,18 @@ def agency_code(self, key, value):
 def authors(self, key, value):
     """Translates authors."""
     _authors = self.get("authors", [])
+    clean_roles = None
+
+    roles = _get_correct_ils_contributor_role(
+        "e", clean_val("e", value, str, multiple_values=True))
+    if roles:
+        clean_roles = [roles.strip(string.punctuation + string.whitespace)]
 
     author = {
         "full_name": clean_val("a", value, str, req=True).strip(
             string.punctuation + string.whitespace
         ),
-        "roles": [
-            _get_correct_ils_contributor_role("e", clean_val("e", value, str))
-        ],
+        "roles": clean_roles,
         "type": "PERSON",
     }
     _authors.append(author)
@@ -82,7 +86,7 @@ def title(self, key, value):
     return title
 
 
-@model.over("alternative_titles", "^246__")
+@model.over("alternative_titles", "^246")
 @filter_list_values
 def alternative_titles_doc(self, key, value):
     """Alternative titles."""
@@ -129,7 +133,7 @@ def eitem(self, key, value):
 # OPTIONAL FIELDS
 
 
-@model.over("identifiers", "^020__")
+@model.over("identifiers", "^020*_")
 @filter_list_values
 def identifiers(self, key, value):
     """Translate identifiers."""
@@ -152,16 +156,15 @@ def identifiers(self, key, value):
                 _qs = _qs[0]
 
             val_q = _qs.strip(string.punctuation + string.whitespace)
-            material = mapping(
-                IDENTIFIERS_MEDIUM_TYPES,
-                val_q,
-            ) or "PRINT_VERSION"
+            material = (
+                mapping(
+                    IDENTIFIERS_MEDIUM_TYPES,
+                    val_q,
+                )
+                or "PRINT_VERSION"
+            )
 
-        return {
-            "scheme": "ISBN",
-            "value": val,
-            "material": material
-        }
+        return {"scheme": "ISBN", "value": val, "material": material}
 
     identifier_a = get_identifier("a")
     if identifier_a and identifier_a not in _identifiers:
@@ -174,7 +177,7 @@ def identifiers(self, key, value):
     return _identifiers
 
 
-@model.over("languages", "^0410_")
+@model.over("languages", "^041")
 @for_each_value
 @out_strip
 def languages(self, key, value):
@@ -186,7 +189,7 @@ def languages(self, key, value):
         raise UnexpectedValue(subfield="a")
 
 
-@model.over("subjects", "(^050_4)|(^05004)")
+@model.over("subjects", "(^050_4)|(^05004)|(^05000)")
 @filter_list_values
 def subjects_loc(self, key, value):
     """Translates subject classification."""
@@ -235,30 +238,23 @@ def imprint(self, key, value):
     _publication_year = self.get("publication_year")
 
     pub_year = clean_val("c", value, str, req=_publication_year is not None)
-    pub_year = pub_year.strip(
-        string.punctuation + string.whitespace
-    )
+    if pub_year:
+        pub_year = pub_year.strip(string.punctuation + string.whitespace)
 
-    if pub_year and _publication_year:
-        raise UnexpectedValue(subfield="c", message="doubled publication year")
-
-    self["publication_year"] = pub_year
+    if not _publication_year and pub_year:
+        self["publication_year"] = pub_year
 
     publisher = None
     place = None
 
     if "b" in value:
         publisher = clean_val("b", value, str).strip(
-            string.punctuation.replace(")", "") + string.whitespace)
+            string.punctuation.replace(")", "") + string.whitespace
+        )
         # keep last parenthesis
     if "a" in value:
-        place = clean_val("a", value, str).strip(
-            string.punctuation + string.whitespace
-        )
-    return {
-        "publisher": publisher,
-        "place": place
-    }
+        place = clean_val("a", value, str).strip(string.punctuation + string.whitespace)
+    return {"publisher": publisher, "place": place}
 
 
 @model.over("number_of_pages", "^300__")
@@ -269,10 +265,12 @@ def number_of_pages(self, key, value):
     return numbers[0] if numbers else None
 
 
-@model.over("abstract", "^520__")
+@model.over("abstract", "^520")
 @out_strip
 def abstract(self, key, value):
     """Translate abstract."""
+    if "b" in value:
+        return f"{clean_val('a', value, str)} {clean_val('b', value, str)}"
     return clean_val("a", value, str)
 
 
@@ -296,21 +294,33 @@ def serial(self, key, value):
             serial_title = rreplace(serial_title, word, "series", 1)
 
     return {
-        "title": serial_title.strip(
-            string.punctuation + string.whitespace
-        ),
+        "title": serial_title.strip(string.punctuation + string.whitespace),
         "volume": volume[0] if volume else None,
     }
 
 
-@model.over("table_of_content", "(^5051_)|(^5050_)")
+@model.over("table_of_content", "(^5051)|(^5058)")
 @out_strip
 def table_of_content(self, key, value):
     """Translate table of content."""
     return clean_val("a", value, str).split("--")
 
 
-@model.over("keywords", "(^650_0)|(^650_7)|(^650_2)")
+@model.over("table_of_content", "^5050")
+@out_strip
+def table_of_content_additional(self, key, value):
+    """Alternative TOC transformation."""
+    _toc = self.get("table_of_content", [])
+    for v in force_list(value):
+        if "t" in v:
+            val_t = clean_val("t", v, str, multiple_values=True)
+            _toc += val_t
+    if "a" in value:
+        return table_of_content(self, key, value)
+    return _toc
+
+
+@model.over("keywords", "(^650)")
 @filter_list_values
 def keywords(self, key, value):
     """Translate keywords."""
