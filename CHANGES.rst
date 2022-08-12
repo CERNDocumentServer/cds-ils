@@ -7,6 +7,12 @@
 Changes
 =======
 
+Version 1.2.34 (released 2022-08-12)
+
+- importer: add new safari rules
+- importer: add providers priority
+- bump invenio-app-ils
+
 Version 1.2.33 (released 2022-06-09)
 
 - importer: add AMS provider to vocabulary and fix an issue with unknown providers.
