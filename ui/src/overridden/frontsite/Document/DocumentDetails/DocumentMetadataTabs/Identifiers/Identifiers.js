@@ -25,7 +25,7 @@ export class Identifiers extends Component {
       return (
         <>
           <Divider horizontal>Identifiers</Divider>
-          'No identifiers'
+          No identifiers
         </>
       );
     }
