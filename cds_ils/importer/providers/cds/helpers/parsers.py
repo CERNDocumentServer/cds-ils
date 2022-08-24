@@ -208,13 +208,19 @@ def clean_val(
             return default
         raise MissingRequiredField(subfield=subfield)
 
-    if multiple_values and type(to_clean) is tuple:
-        cleaned_values = []
-        for v in to_clean:
-            cleaned_values.append(_clean(v))
-        return cleaned_values
-    elif not multiple_values and type(to_clean) is tuple:
+    is_tuple = type(to_clean) is tuple
+    if is_tuple and not multiple_values:
         raise UnexpectedValue(subfield=subfield)
+
+    if multiple_values:
+        if is_tuple:
+            cleaned_values = []
+            for v in to_clean:
+                cleaned_values.append(_clean(v))
+            return cleaned_values
+        else:
+            # always return a list when `multiple_values` is True
+            return [_clean(to_clean)]
     else:
         return _clean(to_clean)
 

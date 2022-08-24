@@ -38,17 +38,17 @@ def agency_code(self, key, value):
     return value
 
 
-@model.over("authors", "(^1001)|(^7001)")
+@model.over("authors", "(^100)|(^7001)")
 @filter_list_values
 def authors(self, key, value):
     """Translates authors."""
     _authors = self.get("authors", [])
     clean_roles = None
 
-    roles = _get_correct_ils_contributor_role(
-        "e", clean_val("e", value, str, multiple_values=True))
-    if roles:
-        clean_roles = [roles.strip(string.punctuation + string.whitespace)]
+    roles = clean_val("e", value, str, multiple_values=True)
+    role = _get_correct_ils_contributor_role("e", roles)
+    if role:
+        clean_roles = [role.strip(string.punctuation + string.whitespace)]
 
     author = {
         "full_name": clean_val("a", value, str, req=True).strip(
@@ -150,19 +150,10 @@ def identifiers(self, key, value):
 
         material = "PRINT_VERSION"
         _qs = clean_val("q", value, str, multiple_values=True)
-        if _qs:
-            # get only the first when multiple
-            if len(force_list(_qs)) > 1:
-                _qs = _qs[0]
-
-            val_q = _qs.strip(string.punctuation + string.whitespace)
-            material = (
-                mapping(
-                    IDENTIFIERS_MEDIUM_TYPES,
-                    val_q,
-                )
-                or "PRINT_VERSION"
-            )
+        if _qs and _qs[0]:
+            val_q = _qs[0].strip(string.punctuation + string.whitespace)
+            mapped = mapping(IDENTIFIERS_MEDIUM_TYPES, val_q)
+            material = mapped or "PRINT_VERSION"
 
         return {"scheme": "ISBN", "value": val, "material": material}
 
@@ -189,7 +180,7 @@ def languages(self, key, value):
         raise UnexpectedValue(subfield="a")
 
 
-@model.over("subjects", "(^050_4)|(^05004)|(^05000)")
+@model.over("subjects", "(^050_4)|(^05004)|(^05000)|(^05010a)|(^05014a)")
 @filter_list_values
 def subjects_loc(self, key, value):
     """Translates subject classification."""
@@ -200,7 +191,7 @@ def subjects_loc(self, key, value):
     return _subjects
 
 
-@model.over("subjects", "(^08204)|(^08200)")
+@model.over("subjects", "(^08204)|(^082_4)|(^08200)")
 @filter_list_values
 def subjects_dewey(self, key, value):
     """Translates subject classification."""
@@ -231,7 +222,7 @@ def edition(self, key, value):
     )
 
 
-@model.over("imprint", "(^260__)|(^264_1)|(^264_4)")
+@model.over("imprint", "(^260__)|(^264_1)|(^264_2)|(^264_4)")
 @filter_empty_dict_values
 def imprint(self, key, value):
     """Translate imprint field."""
@@ -248,12 +239,18 @@ def imprint(self, key, value):
     place = None
 
     if "b" in value:
-        publisher = clean_val("b", value, str).strip(
-            string.punctuation.replace(")", "") + string.whitespace
-        )
-        # keep last parenthesis
+        publishers = clean_val("b", value, str, multiple_values=True)
+        if publishers:
+            # keep last parenthesis
+            publisher = publishers[0].strip(
+                string.punctuation.replace(")", "") + string.whitespace
+            )
+
     if "a" in value:
-        place = clean_val("a", value, str).strip(string.punctuation + string.whitespace)
+        places = clean_val("a", value, str, multiple_values=True)
+        if places:
+            place = places[0].strip(string.punctuation + string.whitespace)
+
     return {"publisher": publisher, "place": place}
 
 
