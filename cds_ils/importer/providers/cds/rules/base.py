@@ -92,12 +92,9 @@ def created(self, key, value):
             date_values = clean_val(
                 "w", value, int, regex_format=r"^\d{6}$", multiple_values=True
             )
-            if not date_values:
+            if not date_values or not date_values[0]:
                 return datetime.date.today().isoformat()
-            if type(date_values) is list:
-                date = min(date_values)
-            else:
-                date = date_values
+            date = min(date_values)
             if not (100000 < date < 999999):
                 raise UnexpectedValue("Wrong date format", subfield='w')
             if date:
@@ -850,41 +847,19 @@ def conference_info(self, key, value):
             conference_identifiers.append({"scheme": "INSPIRE_CNUM",
                                            "value": val_i})
 
-        country_code = clean_val("w", v, str, multiple_values=True)
-        place = clean_val("c", v, str, req=required)
-        country_codes = []
+        country_codes = clean_val("w", v, str, multiple_values=True)
         country = None
-        if country_code:
+        if country_codes and country_codes[0]:
             try:
-                if isinstance(country_code, list):
-                    country_codes = []
-                    for code in country_code:
-                        country_codes.append(str(
-                            pycountry.countries.get(alpha_2=code).alpha_3
-                        ))
-                    country = country_codes[0]
-                else:
-                    if country_code == "Online":
-                        if place != "Online":
-                            raise UnexpectedValue(subfield="c and w")
-                        else:
-                            place = "Online"
-
-                    else:
-                        country_code = str(
-                            pycountry.countries.get(
-                                alpha_2=country_code
-                            ).alpha_3
-                        )
-                        country = country_code
+                _country = pycountry.countries.get(alpha_2=country_codes[0])
+                country = str(_country.alpha_3)
             except (KeyError, AttributeError):
                 raise UnexpectedValue(subfield="w")
 
-        series_number = clean_val("n", v, int, multiple_values=True)
-        if type(series_number) is list:
-            series_number = ", ".join(str(x) for x in series_number)
-        else:
-            series_number = str(series_number) if series_number else None
+        place = clean_val("c", v, str, req=required)
+
+        series_numbers = clean_val("n", v, int, multiple_values=True)
+        series_number = ", ".join(str(x) for x in series_numbers if x) or None
 
         return {
             "title": clean_val("a", v, str, req=required),

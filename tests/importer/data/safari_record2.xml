@@ -65,7 +65,9 @@
         </marc:datafield>
         <marc:datafield tag="264" ind1=" " ind2="1">
             <marc:subfield code="a">Boston, Massachusetts :</marc:subfield>
+            <marc:subfield code="a">Should be ignored :</marc:subfield>
             <marc:subfield code="b">Harvard Business Review Press,</marc:subfield>
+            <marc:subfield code="b">Ignore me</marc:subfield>
             <marc:subfield code="c">[2022]</marc:subfield>
         </marc:datafield>
         <marc:datafield tag="300" ind1=" " ind2=" ">

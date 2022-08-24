@@ -54,14 +54,20 @@ class EItemImporter(object):
         return record["created_by"]["type"] == "import"
 
     def _is_manually_created(self, record):
-        return record["created_by"]["type"] == "user_id" and record.get("source")
+        return record["created_by"]["type"] == "user_id"
+
+    def _is_migrated(self, record):
+        return record["created_by"]["type"] == "script" and \
+            record["created_by"]["value"] == "migration"
 
     def _get_record_import_provider(self, record):
         """Get an import provider of a given document."""
         if self._is_imported(record):
             return record["created_by"]["value"].lower()
         elif self._is_manually_created(record):
-            return record.get("source").lower()
+            return record.get("source", "").lower()
+        elif self._is_migrated(record):
+            return record.get("source", "").lower()
 
     def _set_record_import_source(self, record_dict):
         """Set the provider of the record."""
@@ -73,13 +79,14 @@ class EItemImporter(object):
 
     def _eitem_has_higher_priority(self, eitem, priority=None):
         """Replace the eitems with higher priority providers."""
-        eitem_provider = self._get_record_import_provider(eitem)
-        if not priority:
-            priority = self.current_provider_priority
+        priority = priority or self.current_provider_priority
 
         PRIORITY_FOR_UNKNOWN = 100  # high number means low priority
-        providers = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"]
-        eitem_priority = providers.get(eitem_provider, {}).get(
+        PROVIDERS = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"]
+
+        eitem_provider = self._get_record_import_provider(eitem)
+        provider_definition = PROVIDERS.get(eitem_provider, {})
+        eitem_priority = provider_definition.get(
             "priority", PRIORITY_FOR_UNKNOWN
         )
 
@@ -168,9 +175,9 @@ class EItemImporter(object):
 
         comparison_list = []
         for eitem in existing_eitems:
-            is_imported_or_created = self._is_imported(
-                eitem
-            ) or self._is_manually_created(eitem)
+            is_imported_or_created = self._is_imported(eitem) \
+                or self._is_manually_created(eitem) \
+                or self._is_migrated(eitem)
             if not is_imported_or_created:
                 # skip until you find imported items to compare
                 continue
@@ -371,9 +378,9 @@ class EItemImporter(object):
                 )
                 for hit in document_eitems:
                     eitem = eitem_cls.get_record_by_pid(hit.pid)
-                    is_imported_or_created = self._is_imported(
-                        eitem
-                    ) or self._is_manually_created(eitem)
+                    is_imported_or_created = self._is_imported(eitem) \
+                        or self._is_manually_created(eitem) \
+                        or self._is_migrated(eitem)
                     if not is_imported_or_created:
                         continue
                     existing_has_higher_priority = self._eitem_has_higher_priority(
