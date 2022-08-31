@@ -82,7 +82,9 @@
             <marc:subfield code="6">880-03</marc:subfield>
             <marc:subfield code="a">Tōkyō-to Shinjuku-ku :</marc:subfield>
             <marc:subfield code="b">Orairī Japan,</marc:subfield>
-            <marc:subfield code="c">2020.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="264" ind1=" " ind2="4">
+            <marc:subfield code="c">©2020</marc:subfield>
         </marc:datafield>
         <marc:datafield tag="300" ind1=" " ind2=" ">
             <marc:subfield code="a">1 online resource (464 pages)</marc:subfield>

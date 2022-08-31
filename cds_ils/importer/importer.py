@@ -123,14 +123,21 @@ class Importer(object):
         if eitem["output_pid"]:
             eitem = eitem_class.get_record_by_pid(eitem["output_pid"])
             record_indexer.index(eitem)
+            # wait for ES refresh
+            current_search.flush_and_refresh(index="eitems")
 
         document = document_class.get_record_by_pid(document["pid"])
         record_indexer.index(document)
+        # wait for ES refresh
+        current_search.flush_and_refresh(index="documents")
 
         for series in series_list:
             series_record = \
                 series_class.get_record_by_pid(series["series_record"]["pid"])
             record_indexer.index(series_record)
+
+        # wait for ES refresh
+        current_search.flush_and_refresh(index="series")
 
     def find_partial_matches(self, pids_list=None, exact_match=None):
         """Get all partial matches."""

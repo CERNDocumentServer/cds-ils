@@ -180,7 +180,7 @@ def languages(self, key, value):
         raise UnexpectedValue(subfield="a")
 
 
-@model.over("subjects", "(^050_4)|(^05004)|(^05000)|(^05010a)|(^05014a)")
+@model.over("subjects", "(^050_4)|(^05004)|(^05000)|(^05010)|(^05014)")
 @filter_list_values
 def subjects_loc(self, key, value):
     """Translates subject classification."""
@@ -225,20 +225,22 @@ def edition(self, key, value):
 @model.over("imprint", "(^260__)|(^264_1)|(^264_2)|(^264_4)")
 @filter_empty_dict_values
 def imprint(self, key, value):
-    """Translate imprint field."""
-    _publication_year = self.get("publication_year")
+    """Translate imprint field.
 
-    pub_year = clean_val("c", value, str, req=_publication_year is not None)
-    if pub_year:
-        pub_year = pub_year.strip(string.punctuation + string.whitespace)
+    The year, publisher and place can be in multiple fields.
+    Keep only the value from the first found.
+    """
+    pub_year = self.get("publication_year")
+    if not pub_year and "c" in value:
+        pub_year = clean_val("c", value, str)
+        if pub_year:
+            only_digits = re.findall(r"\d+", pub_year)
+            if only_digits:
+                self["publication_year"] = only_digits[0]
 
-    if not _publication_year and pub_year:
-        self["publication_year"] = pub_year
-
-    publisher = None
-    place = None
-
-    if "b" in value:
+    publisher = self.get("imprint", {}).get("publisher")
+    # use previously set value first, otherwise check if present here
+    if not publisher and "b" in value:
         publishers = clean_val("b", value, str, multiple_values=True)
         if publishers:
             # keep last parenthesis
@@ -246,7 +248,9 @@ def imprint(self, key, value):
                 string.punctuation.replace(")", "") + string.whitespace
             )
 
-    if "a" in value:
+    place = self.get("imprint", {}).get("place")
+    # use previously set value first, otherwise check if present here
+    if not place and "a" in value:
         places = clean_val("a", value, str, multiple_values=True)
         if places:
             place = places[0].strip(string.punctuation + string.whitespace)

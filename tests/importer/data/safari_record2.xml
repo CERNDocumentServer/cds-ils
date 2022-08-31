@@ -70,6 +70,9 @@
             <marc:subfield code="b">Ignore me</marc:subfield>
             <marc:subfield code="c">[2022]</marc:subfield>
         </marc:datafield>
+        <marc:datafield tag="264" ind1=" " ind2="4">
+            <marc:subfield code="c">©2021</marc:subfield>
+        </marc:datafield>
         <marc:datafield tag="300" ind1=" " ind2=" ">
             <marc:subfield code="a">1 online resource.</marc:subfield>
         </marc:datafield>
