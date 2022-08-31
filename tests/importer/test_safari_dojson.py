@@ -114,6 +114,7 @@ def test_safari_transformation(app):
                 "publication_year": "2009",
                 "subjects": [
                     {"scheme": "LOC", "value": "HD69.P75"},
+                    {"scheme": "LOC", "value": "HD69.P86"},
                     {"scheme": "DEWEY", "value": "658.4/04"},
                 ],
                 "title": "101 Sample Write-Ups for "
