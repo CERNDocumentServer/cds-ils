@@ -701,6 +701,10 @@ CDS_ILS_IMPORTER_PROVIDERS = {
         "priority": 3,
         "agency_code": "OCLC-B91",
     },
+    "mitpress": {
+        "priority": 3,
+        "agency_code": "MaCbMITP",
+    },
     "ebl": {"priority": 4, "agency_code": "MiAaPQ"},
     "safari": {"priority": 4, "agency_code": "OCoLC"},
 }

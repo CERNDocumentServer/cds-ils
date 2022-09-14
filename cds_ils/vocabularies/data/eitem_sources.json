@@ -1,82 +1,87 @@
 [
   {
-    "key": "EBL",
-    "type": "eitem_sources",
-    "text": "E-Book Central"
-  },
-  {
-    "key": "SAFARI",
-    "type": "eitem_sources",
-    "text": "O'Reilly"
-  },
-  {
-    "key": "SPRINGER",
-    "type": "eitem_sources",
-    "text": "Springer"
-  },
-  {
-    "key": "OSO",
-    "type": "eitem_sources",
-    "text": "Oxford University Press"
+    "key": "AMS",
+    "text": "American Mathematical Society",
+    "type": "eitem_sources"
   },
   {
     "key": "CBO",
-    "type": "eitem_sources",
-    "text": "Cambridge University Press"
+    "text": "Cambridge University Press",
+    "type": "eitem_sources"
   },
   {
-    "key": "IEEE",
-    "type": "eitem_sources",
-    "text": "IEEE"
-  },
-  {
-    "key": "AMS",
-    "type": "eitem_sources",
-    "text": "American Mathematical Society"
-  },
-  {
-    "key": "WSC",
-    "type": "eitem_sources",
-    "text": "World Scientific"
-  },
-  {
-    "key": "WIL",
-    "type": "eitem_sources",
-    "text": "Wiley"
-  },
-  {
-    "key": "IOP",
-    "type": "eitem_sources",
-    "text": "Institute of Physics"
-  },
-  {
-    "key": "TAF",
-    "type": "eitem_sources",
-    "text": "Taylor and Francis"
+    "key": "EBL",
+    "text": "E-Book Central",
+    "type": "eitem_sources"
   },
   {
     "key": "ELS",
-    "type": "eitem_sources",
-    "text": "Elsevier"
-  },
-  {
-    "key": "WOO",
-    "type": "eitem_sources",
-    "text": "Woodhead Publishing"
-  },
-  {
-    "key": "IOS",
-    "type": "eitem_sources",
-    "text": "IOS Press"
+    "text": "Elsevier",
+    "type": "eitem_sources"
   },
   {
     "key": "GRU",
-    "type": "eitem_sources",
-    "text": "De Gruyter"
+    "text": "De Gruyter",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "IEEE",
+    "text": "IEEE",
+    "type": "eitem_sources"
   },
   {
     "key": "IGI",
-    "type": "eitem_sources",
-    "text": "IGI Global"
+    "text": "IGI Global",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "IOS",
+    "text": "IOS Press",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "IOP",
+    "text": "Institute of Physics",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "MIT",
+    "text": "MIT Press",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "OSO",
+    "text": "Oxford University Press",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "SAFARI",
+    "text": "O'Reilly",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "SPRINGER",
+    "text": "Springer",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "TAF",
+    "text": "Taylor and Francis",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "WIL",
+    "text": "Wiley",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "WOO",
+    "text": "Woodhead Publishing",
+    "type": "eitem_sources"
+  },
+  {
+    "key": "WSC",
+    "text": "World Scientific",
+    "type": "eitem_sources"
   }
 ]
