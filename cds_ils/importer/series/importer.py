@@ -100,6 +100,11 @@ class SeriesImporter(object):
 
         return existing_identifiers + new_identifiers
 
+    @staticmethod
+    def _normalize_title(title):
+        """Return a normalized title."""
+        return title.lower().replace(" series", "").replace(" Series", "").strip()
+
     def update_series(self, matched_series, json_series):
         """Update series record."""
         matched_series["identifiers"] = self._update_field_identifiers(
@@ -150,8 +155,6 @@ class SeriesImporter(object):
             if identifier["scheme"] == "ISBN"
         ]
 
-        title = json_series.get("title", None)
-
         matches = set()
         # search matching series by ISSN
         for issn in issn_list:
@@ -163,23 +166,20 @@ class SeriesImporter(object):
             matches.update({x.pid for x in search.scan()})
 
         # search matching series by title
+        title = json_series.get("title", None)
         if title:
+            title = title.lower().strip()
             search = search_series_by_title(title)
             if search.count() == 0:
                 # check for known inconsistencies in title
-                simplified_title = title \
-                    .replace(" series", "") \
-                    .replace(" Series", "") \
-                    .strip()
+                simplified_title = self._normalize_title(title)
                 search = search_series_by_title(simplified_title)
 
             matches.update({x.pid for x in search.scan()})
 
         return list(matches)
 
-    def import_serial_relation(
-        self, series_record, document_record, json_series
-    ):
+    def import_serial_relation(self, series_record, document_record, json_series):
         """Create serial relation type."""
         try:
             rr = RecordRelationsParentChild()
@@ -194,23 +194,21 @@ class SeriesImporter(object):
         except RecordRelationsError as e:
             click.secho(str(e), fg="red")
 
-    def _record_summary(self, json,
-                        series_record, output_pid, action,
-                        matching_series_pid_list=None):
+    def _record_summary(
+        self, json, series_record, output_pid, action, matching_series_pid_list=None
+    ):
         return {
             "series_json": self._before_create(json),
             "series_record": series_record,
             "action": action,
             "output_pid": output_pid,
-            "duplicates": matching_series_pid_list
+            "duplicates": matching_series_pid_list,
         }
 
     def _validate_matches(self, json_series, matches):
         """Validate matched series."""
         series_class = current_app_ils.series_record_cls
-        all_series = {
-            match: series_class.get_record_by_pid(match) for match in matches
-        }
+        all_series = {match: series_class.get_record_by_pid(match) for match in matches}
 
         def filter_non_serials(match):
             """Drops periodicals and multipart monographs."""
@@ -221,14 +219,17 @@ class SeriesImporter(object):
             return is_serial and is_type_serial
 
         matches = list(filter(filter_non_serials, matches))
-
         validated_matches = set()
+
+        # matching by exact title takes precedence over anything else
         json_series_title = json_series.get("title", "").lower().strip()
         for match in matches:
             series = all_series[match]
-            # matching by exact title takes precedence over anything else
-            is_same_title = series["title"].lower().strip() == \
-                json_series_title
+            series_title = series["title"].lower().strip()
+
+            is_same_title = series_title == json_series_title or self._normalize_title(
+                series_title
+            ) == self._normalize_title(json_series_title)
             if is_same_title:
                 validated_matches.add(match)
 
@@ -242,7 +243,8 @@ class SeriesImporter(object):
         # if Publication Year exists, must match
 
         json_series_issns = {
-            id_["value"] for id_ in json_series.get("identifiers", [])
+            id_["value"]
+            for id_ in json_series.get("identifiers", [])
             if id_["scheme"] == "ISSN"
         }
         json_series_publisher = json_series.get("publisher")
@@ -253,8 +255,9 @@ class SeriesImporter(object):
 
             # check matching by ISSN
             series_issns = {
-                id_["value"] for id_ in series.get("identifiers", []) if
-                id_["scheme"] == "ISSN"
+                id_["value"]
+                for id_ in series.get("identifiers", [])
+                if id_["scheme"] == "ISSN"
             }
             same_issns = json_series_issns.intersection(series_issns)
             if not same_issns:
@@ -290,40 +293,43 @@ class SeriesImporter(object):
 
         for json_series in self.json_data:
             matching_series_pids = self.search_for_matching_series(json_series)
-            validated_matches = self._validate_matches(json_series,
-                                                       matching_series_pids)
+            validated_matches = self._validate_matches(
+                json_series, matching_series_pids
+            )
 
             if len(validated_matches) == 1:
-                matching_series = series_class.get_record_by_pid(
-                    validated_matches[0]
-                )
+                matching_series = series_class.get_record_by_pid(validated_matches[0])
                 self.update_series(matching_series, json_series)
-                self.import_serial_relation(
-                    matching_series, document, json_series
-                )
+                self.import_serial_relation(matching_series, document, json_series)
                 series.append(
-                    self._record_summary(json_series,
-                                         matching_series,
-                                         validated_matches[0],
-                                         action="update"
-                                         ))
+                    self._record_summary(
+                        json_series,
+                        matching_series,
+                        validated_matches[0],
+                        action="update",
+                    )
+                )
 
             elif len(validated_matches) == 0:
                 series_record = self.create_series(json_series)
-                self.import_serial_relation(
-                    series_record, document, json_series
-                )
+                self.import_serial_relation(series_record, document, json_series)
                 series.append(
-                    self._record_summary(json_series,
-                                         series_record=series_record,
-                                         output_pid=series_record['pid'],
-                                         action="create"))
+                    self._record_summary(
+                        json_series,
+                        series_record=series_record,
+                        output_pid=series_record["pid"],
+                        action="create",
+                    )
+                )
             else:
                 series.append(
                     self._record_summary(
-                        json_series, series_record=None,
-                        output_pid=None, action="error",
-                        matching_series_pid_list=matching_series_pids)
+                        json_series,
+                        series_record=None,
+                        output_pid=None,
+                        action="error",
+                        matching_series_pid_list=matching_series_pids,
+                    )
                 )
                 raise SeriesImportError(message="Multiple series found.")
         return series
@@ -337,33 +343,42 @@ class SeriesImporter(object):
 
         for json_series in self.json_data:
             matching_series_pids = self.search_for_matching_series(json_series)
-            validated_matches = self._validate_matches(json_series,
-                                                       matching_series_pids)
+            validated_matches = self._validate_matches(
+                json_series, matching_series_pids
+            )
 
             if len(validated_matches) == 1:
-                matched_series = series_class.get_record_by_pid(
-                    validated_matches[0]
-                )
+                matched_series = series_class.get_record_by_pid(validated_matches[0])
                 matched_series["identifiers"] = self._update_field_identifiers(
                     matched_series, json_series
                 )
                 series_preview.append(
-                    self._record_summary(json_series,
-                                         matched_series,
-                                         validated_matches[0],
-                                         action="update"
-                                         ))
+                    self._record_summary(
+                        json_series,
+                        matched_series,
+                        validated_matches[0],
+                        action="update",
+                    )
+                )
             elif len(validated_matches) == 0:
                 json_series = self._before_create(json_series)
                 series_preview.append(
-                    self._record_summary(json_series, series_record=None,
-                                         output_pid=None, action="create"))
+                    self._record_summary(
+                        json_series,
+                        series_record=None,
+                        output_pid=None,
+                        action="create",
+                    )
+                )
             else:
                 series_preview.append(
                     self._record_summary(
-                        json_series, series_record=None,
-                        output_pid=None, action="create",
-                        matching_series_pid_list=validated_matches)
+                        json_series,
+                        series_record=None,
+                        output_pid=None,
+                        action="create",
+                        matching_series_pid_list=validated_matches,
+                    )
                 )
                 raise SeriesImportError(message="Multiple series found.")
         return series_preview
