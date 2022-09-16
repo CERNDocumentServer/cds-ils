@@ -1,17 +1,38 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 CERN.
+# Copyright (C) 2020-2022 CERN.
 #
 # invenio-app-ils is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS mail message objects."""
+
 import json
 import os
 
 from flask import current_app
 from invenio_app_ils.notifications.api import _get_notification_backends
 from invenio_app_ils.notifications.messages import NotificationMsg
+
+
+class AlarmMessage(NotificationMsg):
+    """Message for alarms."""
+
+    def __init__(self, name, error_msg, exception_msg, **kwargs):
+        """Constructor."""
+        super().__init__(
+            template=os.path.join(
+                "cds_ils_notifications",
+                "cds_ils_alarm.html",
+            ),
+            ctx=dict(
+                name=name,
+                error_msg=error_msg,
+                exception_msg=exception_msg,
+                **kwargs,
+            ),
+            **kwargs,
+        )
 
 
 class UserDeletionWarningActiveLoanMessage(NotificationMsg):

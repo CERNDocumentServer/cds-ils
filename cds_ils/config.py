@@ -133,13 +133,13 @@ THEME_FRONTPAGE = False
 # Email
 ###############################################################################
 #: Email address for support.
-SUPPORT_EMAIL = "cds.support@cern.ch"
+SUPPORT_EMAIL = "noreply@cern.ch"
 #: Librarians email for internal system notifications.
-ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS = ["cds.internal@cern.ch"]
+ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS = []
 #: Disable email sending by default.
 MAIL_SUPPRESS_SEND = True
 #: Email address for email notification sender.
-MAIL_NOTIFY_SENDER = "library.desk@cern.ch"
+MAIL_NOTIFY_SENDER = ""
 
 ###############################################################################
 # Accounts

@@ -1,0 +1,34 @@
+{% block title %}
+CERN Library Catalogue: alarm triggered!
+{% endblock %}
+
+{% block body_plain %}
+Dear admins,
+the alarm named <{{ name }}> was just triggered.
+
+Error: {{ error_msg }}
+Exception: {{ exception_msg }}
+
+You should find a Sentry exception for this error, which you might want to resolve when the issue is fixed.
+Have a look to the recipes documentation on how to solve this issue.
+
+Thank you!
+{% endblock %}
+
+{% block body_html %}
+Dear admins,<br/><br/>
+the alarm named <{{ name }}> was just triggered.<br/>
+
+<ul>
+  <li>Error: {{ error_msg }}</li>
+  <li>Exception: {{ exception_msg }}</li>
+</ul>
+
+<br/><br/>
+
+You should find a Sentry exception for this error, which you might want to resolve when the issue is fixed.
+Have a look to the recipes documentation on how to solve this issue.
+
+<br/><br/>
+Thank you!<br/>
+{% endblock %}
