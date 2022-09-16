@@ -5,6 +5,10 @@
     "note": "Will match serid-imp-1 by exact title even if ISSN matches another one"
   },
   {
+    "title": "the gulf: The making of An American Sea series ",
+    "note": "Will match serid-imp-1 by normalized title"
+  },
+  {
     "title": "A title that does not exist matching by ISSN",
     "identifiers": [{"scheme": "ISSN", "value": "523457879896"}],
     "note": "Will match serid-imp-2 by same ISSN"
