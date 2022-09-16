@@ -49,6 +49,8 @@ def app_config(app_config):
     tests_config = {
         "APP_ALLOWED_HOSTS": "localhost",
         "CELERY_TASK_ALWAYS_EAGER": True,
+        "MAIL_NOTIFY_SENDER": "sender@test.com",
+        "ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS": ["internal@test.com"],
         "CDS_ILS_LITERATURE_UPDATE_COVERS": False,
         "SQLALCHEMY_DATABASE_URI":
             "postgresql+psycopg2://invenio:invenio@localhost/invenio",

@@ -13,6 +13,7 @@ from celery.utils.log import get_task_logger
 from flask import current_app
 from invenio_db import db
 
+from ..notifications.api import AlarmMessage, send_not_logged_notification
 from .api import delete_users, update_users
 from .models import LdapSynchronizationLog
 
@@ -32,14 +33,17 @@ def synchronize_users_task():
         db.session.rollback()
         current_app.logger.exception(e)
         log.set_failed(e)
+        _send_alarm_notification(
+            name="synchronize_users_task",
+            error_msg="error running the sync user task",
+            exception=e,
+        )
 
 
 @shared_task
 def anonymize_users_task():
     """Run user deletion/anonymization task."""
-    log = LdapSynchronizationLog.create_celery(
-        synchronize_users_task.request.id
-    )
+    log = LdapSynchronizationLog.create_celery(anonymize_users_task.request.id)
 
     try:
         result = delete_users(dry_run=False)
@@ -48,3 +52,18 @@ def anonymize_users_task():
         db.session.rollback()
         current_app.logger.exception(e)
         log.set_failed(e)
+        _send_alarm_notification(
+            name="anonymize_users_task",
+            error_msg="error running the anonymize user task",
+            exception=e,
+        )
+
+
+def _send_alarm_notification(name, error_msg, exception):
+    """Send error notification to admins."""
+    recipients = [{"email": current_app.config["SUPPORT_EMAIL"]}]
+    exception_msg = "%s: %s" % (type(exception).__name__, str(exception))
+    msg = AlarmMessage(
+        name=name, error_msg=error_msg, exception_msg=exception_msg
+    )
+    send_not_logged_notification(recipients, msg)

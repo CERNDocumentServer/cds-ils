@@ -26,6 +26,7 @@ from cds_ils.config import OAUTH_REMOTE_APP_NAME
 from cds_ils.ldap.api import LdapUserImporter, delete_users, import_users, \
     update_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
+from cds_ils.ldap.tasks import synchronize_users_task
 from cds_ils.ldap.utils import serialize_ldap_user
 
 
@@ -39,7 +40,7 @@ def test_import_users(app, db, testdata, mocker):
             "mail": [b"ldap.user@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"111"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         }
     ]
 
@@ -82,7 +83,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user111@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00111"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"A new name"],
@@ -91,7 +92,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user222@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00222"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"Nothing changed"],
@@ -100,7 +101,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user333@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00333"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"Name 1"],
@@ -109,7 +110,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user555@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00555"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"Name 2"],
@@ -118,7 +119,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user555@cern.ch"],  # same email as 555
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00666"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"Name"],
@@ -127,7 +128,7 @@ def test_update_users(app, db, testdata, mocker):
             # missing email, should be skipped
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00777"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"Name"],
@@ -137,7 +138,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user999@test.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00999"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"Nothing changed"],
@@ -147,7 +148,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user333@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"9152364"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"Name"],
@@ -157,7 +158,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b""],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00444"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
     ]
 
@@ -185,7 +186,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"ldap.user444@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00444"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         }
         ldap_user = serialize_ldap_user(COULD_BE_DELETED)
         importer.import_user(ldap_user)
@@ -202,7 +203,7 @@ def test_update_users(app, db, testdata, mocker):
             "mail": [b"other555@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00555"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         }
         importer = LdapUserImporter()
         ldap_user = serialize_ldap_user(duplicated)
@@ -234,8 +235,11 @@ def test_update_users(app, db, testdata, mocker):
     patrons_search = PatronsSearch()
 
     def check_existence(
-        expected_email, expected_name, expected_department, expected_person_id,
-        expected_mailbox
+        expected_email,
+        expected_name,
+        expected_department,
+        expected_person_id,
+        expected_mailbox,
     ):
         """Assert exist in DB and ES."""
         # check if saved in DB
@@ -259,19 +263,29 @@ def test_update_users(app, db, testdata, mocker):
         "ldap.user111@cern.ch", "New user", "A department", "00111", "M12345"
     )
     check_existence(
-        "ldap.user222@cern.ch", "A new name", "A new department", "00222",
-        "M12345"
+        "ldap.user222@cern.ch",
+        "A new name",
+        "A new department",
+        "00222",
+        "M12345",
     )
     check_existence(
-        "ldap.user333@cern.ch", "Nothing changed", "Same department", "00333",
-        "M12345"
+        "ldap.user333@cern.ch",
+        "Nothing changed",
+        "Same department",
+        "00333",
+        "M12345",
     )
     check_existence(
-        "ldap.user444@cern.ch", "old user left CERN", "Department", "00444",
-        "M12345"
+        "ldap.user444@cern.ch",
+        "old user left CERN",
+        "Department",
+        "00444",
+        "M12345",
     )
-    check_existence("ldap.user555@cern.ch", "Name 1", "Department 1", "00555",
-                    "M12345")
+    check_existence(
+        "ldap.user555@cern.ch", "Name 1", "Department 1", "00555", "M12345"
+    )
 
     # try ot import duplicated userUID
     with pytest.raises(IntegrityError):
@@ -317,7 +331,7 @@ def test_delete_user(app, db, testdata, mocker):
             "mail": [b"ldap.user111@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00111"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"A new name"],
@@ -326,7 +340,7 @@ def test_delete_user(app, db, testdata, mocker):
             "mail": [b"ldap.user222@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00222"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"old user left CERN"],
@@ -335,8 +349,8 @@ def test_delete_user(app, db, testdata, mocker):
             "mail": [b"ldap.user444@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00444"],
-            "postOfficeBox": [b"M12345"]
-        }
+            "postOfficeBox": [b"M12345"],
+        },
     ]
 
     new_ldap_response = [
@@ -347,7 +361,7 @@ def test_delete_user(app, db, testdata, mocker):
             "mail": [b"ldap.user111@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00111"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         }
     ]
 
@@ -396,7 +410,7 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "mail": [b"ldap.user111@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00111"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"A new name"],
@@ -405,7 +419,7 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "mail": [b"ldap.user222@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00222"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"old user left CERN"],
@@ -414,8 +428,8 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "mail": [b"ldap.user444@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00444"],
-            "postOfficeBox": [b"M12345"]
-        }
+            "postOfficeBox": [b"M12345"],
+        },
     ]
 
     new_ldap_response = [
@@ -426,7 +440,7 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "mail": [b"ldap.user111@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00111"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         }
     ]
 
@@ -464,16 +478,19 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
     assert deleted_accounts == 0
 
     ra1 = RemoteAccount.query.filter(
-        RemoteAccount.user_id == user_to_delete_id1).one()
+        RemoteAccount.user_id == user_to_delete_id1
+    ).one()
     ra2 = RemoteAccount.query.filter(
-        RemoteAccount.user_id == user_to_delete_id2).one()
+        RemoteAccount.user_id == user_to_delete_id2
+    ).one()
 
     assert ra1.extra_data["deletion_countdown"] == 1
     assert ra2.extra_data["deletion_countdown"] == 1
 
     # set to be deleted now
-    config_checks_before_deletion = \
-        current_app.config["CDS_ILS_PATRON_DELETION_CHECKS"]
+    config_checks_before_deletion = current_app.config[
+        "CDS_ILS_PATRON_DELETION_CHECKS"
+    ]
 
     # mark for total deletion
     ra2.extra_data["deletion_countdown"] = config_checks_before_deletion
@@ -487,7 +504,7 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "mail": [b"ldap.user111@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00111"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
         {
             "displayName": [b"A new name"],
@@ -496,7 +513,7 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "mail": [b"ldap.user222@cern.ch"],
             "cernAccountType": [b"Primary"],
             "employeeID": [b"00222"],
-            "postOfficeBox": [b"M12345"]
+            "postOfficeBox": [b"M12345"],
         },
     ]
 
@@ -515,7 +532,8 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
     current_search.flush_and_refresh(index="*")
 
     ra1 = RemoteAccount.query.filter(
-        RemoteAccount.user_id == user_to_delete_id1).one()
+        RemoteAccount.user_id == user_to_delete_id1
+    ).one()
 
     # make sure first account was unmarked for deletion
     assert ra1.extra_data["deletion_countdown"] == 0
@@ -523,7 +541,31 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
     # make sure account 2 was deleted
     with pytest.raises(NoResultFound):
         RemoteAccount.query.filter(
-            RemoteAccount.user_id == user_to_delete_id2).one()
+            RemoteAccount.user_id == user_to_delete_id2
+        ).one()
+
+
+def test_send_email_on_error(app_with_notifs, mocker):
+    """Test that an email is sent when an exception is raised."""
+    mocker.patch(
+        "cds_ils.ldap.api.get_ldap_users",
+        side_effect=RuntimeError("exception triggered"),
+    )
+
+    with app_with_notifs.extensions["mail"].record_messages() as outbox:
+        assert len(outbox) == 0
+        synchronize_users_task()
+        assert len(outbox) == 1
+        email = outbox[0]
+        assert email.recipients == [app_with_notifs.config["SUPPORT_EMAIL"]]
+
+        def assert_contains(string):
+            assert string in email.body
+            assert string in email.html
+
+        assert_contains("synchronize_users_task")
+        assert_contains(RuntimeError.__name__)
+        assert_contains("exception triggered")
 
 
 def test_send_email_on_user_deletion_error(app_with_notifs, mocker):
@@ -539,21 +581,25 @@ def test_send_email_on_user_deletion_error(app_with_notifs, mocker):
                 self.revision_id = 1
                 self.name = f"Patron{id}"
                 self.email = f"patron{id}@cern.ch"
+
         return FakePatron(patron_id)
 
-    mock_map = Mock()
-    mock_map.get.return_value = True
-    mocker.patch("cds_ils.ldap.api.get_ldap_users",
-                 return_value=(2, {}, {}))
-    mocker.patch("invenio_app_ils.patrons.anonymization.current_app_ils.patron_cls.get_patron", mock_get_patron)  # noqa
-    mocker.patch("invenio_app_ils.patrons.anonymization.current_app_ils.patron_indexer.delete")  # noqa
+    mocker.patch("cds_ils.ldap.api.get_ldap_users", return_value=(2, {}, {}))
+    mocker.patch(
+        "invenio_app_ils.patrons.anonymization.current_app_ils.patron_cls.get_patron",
+        mock_get_patron,
+    )  # noqa
+    mocker.patch(
+        "invenio_app_ils.patrons.anonymization.current_app_ils.patron_indexer.delete"
+    )  # noqa
     # mock RemoteAccounts
     mock1 = Mock()
     mock1.user_id = 1  # patron 1
     mock2 = Mock()
     mock2.user_id = 2  # patron 2
-    mocker.patch("cds_ils.ldap.api.remap_invenio_users",
-                 return_value=[mock1, mock2])
+    mocker.patch(
+        "cds_ils.ldap.api.remap_invenio_users", return_value=[mock1, mock2]
+    )
     # mock that the any `InvenioUser` exist
     mocker.patch("cds_ils.ldap.api.InvenioUser")
 
@@ -564,7 +610,7 @@ def test_send_email_on_user_deletion_error(app_with_notifs, mocker):
             "Cannot delete user {0}: found {1} active loans.".format(
                 mock1.user_id, 4
             )
-        )
+        ),
     )
 
     with app_with_notifs.extensions["mail"].record_messages() as outbox:
