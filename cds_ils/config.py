@@ -139,7 +139,7 @@ ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS = []
 #: Disable email sending by default.
 MAIL_SUPPRESS_SEND = True
 #: Email address for email notification sender.
-MAIL_NOTIFY_SENDER = ""
+MAIL_NOTIFY_SENDER = "noreply@cern.ch"
 
 ###############################################################################
 # Accounts
