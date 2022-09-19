@@ -119,7 +119,7 @@ kombu==5.1.0
 limits==1.6
 lorem==0.1.1
 lxml==4.9.1
-Mako==1.1.6
+Mako==1.2.2
 MarkupSafe==2.0.1
 marshmallow==3.14.1
 maxminddb==2.2.0
