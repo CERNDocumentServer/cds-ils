@@ -7,6 +7,12 @@
 Changes
 =======
 
+Version 1.2.37 (released 2022-09-19)
+
+- importer: add new provider
+- importer: fix an issue with title matching
+- bump dependencies
+
 Version 1.2.34 (released 2022-08-12)
 
 - importer: add new safari rules

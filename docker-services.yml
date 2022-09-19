@@ -8,7 +8,7 @@
 version: '2.3'
 services:
   cache:
-    image: redis
+    image: redis:7
     restart: "always"
     read_only: true
     ports:
