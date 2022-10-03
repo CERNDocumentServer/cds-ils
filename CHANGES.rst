@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.38 (released 2022-10-03)
+
+- udpated library location
+
 Version 1.2.37 (released 2022-09-19)
 
 - importer: add new provider
