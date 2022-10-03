@@ -72,11 +72,11 @@ export const Footer = ({ ...props }) => {
                 <List.Item>
                   Location:{' '}
                   <a
-                    href="https://maps.web.cern.ch/?cameraCenter=2493195.4,1120517.68,799.11&heading=0&fov=55&tilt=52.63&basemap=plan&mode=3D"
+                    href="https://maps.web.cern.ch/?cameraCenter=2493210.37,1120517.59,820.34&heading=0&fov=55&tilt=52.63&basemap=plan&mode=3D"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Building 52
+                    Building 3
                   </a>
                 </List.Item>
                 <List.Item>
