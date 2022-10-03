@@ -17,7 +17,7 @@ history = open("CHANGES.rst").read()
 tests_require = [
     "Sphinx>=3.1.1,<5",
     "mock>=2.0.0",
-    "pytest-invenio>=1.4.0",
+    "pytest-invenio>=1.4.0,<2.0.0",
     "pytest-mock>=1.6.0",
     "pytest-random-order>=0.5.4",
 ]
@@ -34,7 +34,7 @@ install_requires = [
     "Flask-BabelEx>=0.9.3",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.4.0,<3.5.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a66",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a67",
     "sentry-sdk>=0.10.2",
     # migrator deps
     "cds-dojson==0.9.0",
