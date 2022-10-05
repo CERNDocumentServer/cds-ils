@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.39 (released 2022-10-05)
+
+- revert previous bump of dependencies due to missing support python version 3.6. 
+
 Version 1.2.38 (released 2022-10-03)
 
 - udpated library location
