@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.40 (released 2022-10-06)
+
+- bump invenio-app-ils
+
 Version 1.2.39 (released 2022-10-05)
 
 - revert previous bump of dependencies due to missing support python version 3.6. 
