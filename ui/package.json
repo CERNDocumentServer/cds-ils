@@ -1,9 +1,9 @@
 {
   "name": "cds-ils",
-  "version": "1.2.36",
+  "version": "1.2.42",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
-    "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.70",
+    "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.71",
     "@rjsf/core": "^2.5.0",
     "@rjsf/semantic-ui": "^2.5.0",
     "axios": "^0.21.0",
