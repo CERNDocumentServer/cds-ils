@@ -7,13 +7,17 @@
 Changes
 =======
 
+Version 1.2.41 (released 2022-10-07)
+
+- Change location link and display text (RQF2137656)
+
 Version 1.2.40 (released 2022-10-06)
 
 - bump invenio-app-ils
 
 Version 1.2.39 (released 2022-10-05)
 
-- revert previous bump of dependencies due to missing support python version 3.6. 
+- revert previous bump of dependencies due to missing support python version 3.6.
 
 Version 1.2.38 (released 2022-10-03)
 
