@@ -260,7 +260,8 @@ class SeriesImporter(object):
                 if id_["scheme"] == "ISSN"
             }
             same_issns = json_series_issns.intersection(series_issns)
-            if not same_issns:
+            both_have_issns = json_series_issns and series_issns
+            if both_have_issns and not same_issns:
                 continue
 
             # check matching by Publisher
