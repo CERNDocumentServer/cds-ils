@@ -14,24 +14,24 @@ on:
     branches: master
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '0 3 * * 6'
+    - cron: "0 3 * * 6"
   workflow_dispatch:
     inputs:
       reason:
-        description: 'Reason'
+        description: "Reason"
         required: false
-        default: 'Manual trigger'
+        default: "Manual trigger"
 
 jobs:
   Python_Tests:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-          python-version: [3.6, 3.7, 3.8, 3.9]
-          requirements-level: [pypi]
-          db-service: [postgresql12]
-          search-service: [elasticsearch7]
-          include:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        requirements-level: [pypi]
+        db-service: [postgresql12]
+        search-service: [elasticsearch7]
+        include:
           - db-service: postgresql12
             DB_EXTRAS: "postgresql"
 
@@ -59,7 +59,7 @@ jobs:
 
       - name: Generate dependencies
         run: |
-          python -m pip install setuptools py twine wheel requirements-builder "black>=20.8b0,<22"
+          python -m pip install "setuptools<58" py twine wheel requirements-builder "black>=20.8b0,<22"
           requirements-builder -e "$EXTRAS" --level=${{ matrix.requirements-level }} setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
@@ -117,4 +117,3 @@ jobs:
         env:
           # avoid fail on warnings
           CI: false
-

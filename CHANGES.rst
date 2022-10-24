@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.44 (released 2022-10-24)
+
+- change eitems source vocabulary size (INC3273709)
+
 Version 1.2.41 (released 2022-10-07)
 
 - Change location link and display text (RQF2137656)
