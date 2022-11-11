@@ -19,6 +19,7 @@ from invenio_app_ils.series.api import SeriesIdProvider
 from invenio_db import db
 
 from cds_ils.importer.errors import SeriesImportError
+from cds_ils.importer.providers.utils import rreplace
 from cds_ils.importer.series.api import search_series_by_isbn, \
     search_series_by_issn, search_series_by_title
 from cds_ils.importer.vocabularies_validator import \
@@ -103,7 +104,13 @@ class SeriesImporter(object):
     @staticmethod
     def _normalize_title(title):
         """Return a normalized title."""
-        return title.lower().replace(" series", "").replace(" Series", "").strip()
+        t = title.lower()
+        # remove `series` only at the end of the title
+        # `International Series of Numerical Mathematics series`
+        # will become
+        # `international series of numerical mathematics`
+        t = rreplace(t, " series", "")
+        return t.strip()
 
     def update_series(self, matched_series, json_series):
         """Update series record."""

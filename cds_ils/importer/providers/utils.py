@@ -104,7 +104,7 @@ def build_ils_contributor(value):
     return contributor
 
 
-def rreplace(s, old, new, occurrence):
+def rreplace(s, old, new, occurrence=1):
     """Reverse replace."""
     li = s.rsplit(old, occurrence)
     return new.join(li)
