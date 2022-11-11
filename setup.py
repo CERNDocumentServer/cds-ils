@@ -34,36 +34,22 @@ install_requires = [
     "Flask-BabelEx>=0.9.3",
     "fuzzywuzzy>=0.18.0",
     "python-ldap>=3.4.0,<3.5.0",
-    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0a69",
+    "invenio-app-ils[lorem,elasticsearch7,postgresql]==1.0.0rc1",
     "sentry-sdk>=0.10.2",
     # migrator deps
     "cds-dojson==0.9.0",
     "lxml>=4.6.5",
-    # temporarily breaking the builds, remove when fixed
-    "sqlalchemy>=1.3,<1.4",
-    "flask-sqlalchemy>=2.4,<2.5",
     # unsupported ES version issue
     "elasticsearch>=6.0.0,<7.14",
-    "pluggy>=0.13.1,<1.0.0",
-    # breaking changes in version 4
-    "jsonschema>=3.0.0,<4.0.0",
-    # version conflict by invenio-oauth2server
-    "WTForms<3.0.0,>=2.3.3",
-    # invenio-celery conflict fix
-    "celery<5.2,>=5.1.0",
-    # conflict caused by "black"
-    "tomli>=1.2.2,<2.0.0",
-    # conflict caused by invenio-previewer, which requires "black v22",
-    # requiring "click >8"
-    "black>=20.8b0,<22",
-    # Version 2.1.0 removes `TimedJSONWebSignatureSerializer`
-    "itsdangerous<2.1.0",
     # Version 2.1.0 of Flask requires celery>=5.2.0 and this drops support for python 3.6`
     "Flask<2.1.0",
     # Version 2.1.0 of Werkzeug drops support for python 3.6
     "Werkzeug<2.1.0",
     # Version 3.1.0 of jinja2 drops support for python 3.6
     "jinja2<3.1.0",
+    # jsonref 1.0.0/jsonresolver 0.3.2 drops support for python 3.6
+    "jsonref<1.0.0",
+    "jsonresolver<0.3.2",
 ]
 
 packages = find_packages()

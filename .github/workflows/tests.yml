@@ -27,8 +27,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
-        requirements-level: [pypi]
+        python-version: [3.6, 3.9]
         db-service: [postgresql12]
         search-service: [elasticsearch7]
         include:
@@ -50,27 +49,27 @@ jobs:
           sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Generate dependencies
         run: |
-          python -m pip install "setuptools<58" py twine wheel requirements-builder "black>=20.8b0,<22"
-          requirements-builder -e "$EXTRAS" --level=${{ matrix.requirements-level }} setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
+          python -m pip install "setuptools<58" py twine wheel requirements-builder
+          requirements-builder -e "$EXTRAS" --level=pypi setup.py > .pypi-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('.${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('.pypi-${{ matrix.python-version }}-requirements.txt') }}
 
       - name: Install dependencies
         run: |
-          pip install -r .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
+          pip install -r .pypi-${{ matrix.python-version }}-requirements.txt
           pip install .[$EXTRAS]
           pip freeze
           docker --version
@@ -85,12 +84,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Use Node.js v14.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: '14.x'
 
       - name: Install & Build
         working-directory: ./ui
@@ -102,14 +101,6 @@ jobs:
         env:
           # avoid fail on warnings
           CI: false
-
-      # - name: Test
-      #   working-directory: ./ui
-      #   run: npm test
-
-      # - name: Coverage
-      #   working-directory: ./ui
-      #   run: npm test -- --coverage
 
       - name: Build
         working-directory: ./ui
