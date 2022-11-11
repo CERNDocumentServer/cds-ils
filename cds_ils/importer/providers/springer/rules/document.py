@@ -233,7 +233,7 @@ def serial(self, key, value):
     identifiers = None
 
     if subfield_x:
-        issn_value = rreplace(subfield_x, ";", "", 1).strip()
+        issn_value = rreplace(subfield_x, ";", "").strip()
         if issn_value:
             identifiers = [{"scheme": "ISSN", "value": issn_value}]
 
@@ -249,7 +249,7 @@ def serial(self, key, value):
     for word in words_to_replace:
         # check if the word on the end of the title
         if re.search(f"{word}$", serial_title):
-            serial_title = rreplace(serial_title, word, "series", 1)
+            serial_title = rreplace(serial_title, word, "series")
 
     # remove excess white spaces
     serial_title = " ".join(serial_title.split())

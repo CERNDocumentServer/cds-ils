@@ -292,7 +292,7 @@ def serial(self, key, value):
     for word in words_to_replace:
         # check if the word on the end of the title
         if re.search(f"{word}$", serial_title):
-            serial_title = rreplace(serial_title, word, "series", 1)
+            serial_title = rreplace(serial_title, word, "series")
 
     return {
         "title": serial_title.strip(string.punctuation + string.whitespace),

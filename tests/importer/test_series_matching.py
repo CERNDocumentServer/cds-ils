@@ -39,45 +39,50 @@ def test_series_search_matching(importer_test_data):
     assert len(validated_matches) == 1
     assert validated_matches[0] == "serid-imp-1"
 
-    # test matching by ISSN
+    # test not matching by normalized title
     json_series = series_to_import[2]
+    validated_matches = match(json_series)
+    assert len(validated_matches) == 0
+
+    # test matching by ISSN
+    json_series = series_to_import[3]
     validated_matches = match(json_series)
     assert len(validated_matches) == 1
     assert validated_matches[0] == "serid-imp-2"
 
     # test matching by ISSN and publisher
-    json_series = series_to_import[3]
+    json_series = series_to_import[4]
     validated_matches = match(json_series)
     assert len(validated_matches) == 1
     assert validated_matches[0] == "serid-imp-3"
 
     # test matching by ISSN, year and publisher
-    json_series = series_to_import[4]
+    json_series = series_to_import[5]
     validated_matches = match(json_series)
     assert len(validated_matches) == 1
     assert validated_matches[0] == "serid-imp-4"
 
     # test wrong `mode_of_issuance`
-    json_series = series_to_import[5]
-    validated_matches = match(json_series)
-    assert len(validated_matches) == 0
-
-    # test wrong `series_type`
     json_series = series_to_import[6]
     validated_matches = match(json_series)
     assert len(validated_matches) == 0
 
-    # test different year
+    # test wrong `series_type`
     json_series = series_to_import[7]
     validated_matches = match(json_series)
     assert len(validated_matches) == 0
 
-    # test different publisher
+    # test different year
     json_series = series_to_import[8]
     validated_matches = match(json_series)
     assert len(validated_matches) == 0
 
-    # test duplicated title
+    # test different publisher
     json_series = series_to_import[9]
+    validated_matches = match(json_series)
+    assert len(validated_matches) == 0
+
+    # test duplicated title
+    json_series = series_to_import[10]
     validated_matches = match(json_series)
     assert len(validated_matches) == 2
