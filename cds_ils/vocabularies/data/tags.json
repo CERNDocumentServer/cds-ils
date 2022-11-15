@@ -6,6 +6,11 @@
   },
   {
     "type": "tag",
+    "key": "BOOK_SUGGESTION",
+    "text": "Book suggestion"
+  },
+  {
+    "type": "tag",
     "key": "DIDACTIC_LIBRARY",
     "text": "Didactic Library"
   },
@@ -16,8 +21,8 @@
   },
   {
     "type": "tag",
-    "key": "BOOK_SUGGESTION",
-    "text": "Book suggestion"
+    "key": "OMBUD_LIBRARY",
+    "text": "Ombud's Library"
   },
   {
     "type": "tag",
