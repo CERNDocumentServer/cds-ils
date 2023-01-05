@@ -96,7 +96,7 @@ def test_safari_transformation(app):
                         "value": "9780814415474",
                     },
                 ],
-                "languages": ["ENG"],
+                "languages": ["ENG", "ITA"],
                 "provider_recid": "9780814415467",
                 "imprint": {
                     "publisher": "TSO (The Stationary Office)",
@@ -121,7 +121,7 @@ def test_safari_transformation(app):
 
 
 def test_safari_additional(app):
-    """Test additional fields."""
+    """Test additional fields and missing language, default to ENG."""
     dirname = os.path.join(os.path.dirname(__file__), "data")
     with open(os.path.join(dirname, "safari_record2.xml"), "r") as fp:
         example = fp.read()
@@ -163,6 +163,7 @@ def test_safari_additional(app):
                 ],
                 "title": "HBR guide to managing flexible work",
                 "publication_year": "2022",
+                "languages": ["ENG"],
                 "imprint": {
                     "publisher": "Harvard Business Review Press",
                     "place": "Boston, Massachusetts",
