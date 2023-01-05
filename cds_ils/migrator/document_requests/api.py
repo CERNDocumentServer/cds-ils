@@ -13,11 +13,9 @@ import json
 import click
 from invenio_db import db
 
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
-from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, \
-    get_patron_pid
+from cds_ils.migrator.utils import bulk_index_records, get_acq_ill_notes, get_patron_pid
 
 VOCABULARIES_FIELDS = {
     "medium": {
@@ -71,7 +69,7 @@ def import_document_requests_from_json(dump_file, rectype="document-request"):
                 migrate_document_request(record),
                 rectype=rectype,
                 legacy_id=record["legacy_id"],
-                mint_legacy_pid=False
+                mint_legacy_pid=False,
             )
             ils_records.append(ils_record)
         db.session.commit()

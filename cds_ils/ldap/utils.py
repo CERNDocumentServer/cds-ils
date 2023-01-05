@@ -39,11 +39,13 @@ def serialize_ldap_user(ldap_user_data, log_func=None):
 
     def validate_required(ldap_user_data, employee_id, log_func):
         if "mail" not in ldap_user_data:
-            log_func_missing_email = \
-                partial(log_func, extra=dict(employee_id=employee_id))
+            log_func_missing_email = partial(
+                log_func, extra=dict(employee_id=employee_id)
+            )
             raise InvalidLdapUser(
-                f"LDAP user with employeeID {employee_id}"
-                f"has no email address.", log_func=log_func_missing_email)
+                f"LDAP user with employeeID {employee_id}" f"has no email address.",
+                log_func=log_func_missing_email,
+            )
 
     def validate_user_data(serialized_ldap_user_data, employee_id, log_func):
         """Validate user data values."""
@@ -51,11 +53,13 @@ def serialize_ldap_user(ldap_user_data, log_func=None):
         # check if email is empty string.
         # It happens when the account is not fully created on LDAP
         if not email:
-            log_func_missing_email = \
-                partial(log_func, extra=dict(employee_id=employee_id))
+            log_func_missing_email = partial(
+                log_func, extra=dict(employee_id=employee_id)
+            )
             raise InvalidLdapUser(
-                f"LDAP user with employeeID {employee_id}"
-                f" has no email address.", log_func=log_func_missing_email)
+                f"LDAP user with employeeID {employee_id}" f" has no email address.",
+                log_func=log_func_missing_email,
+            )
 
     employee_id = ldap_user_data["employeeID"][0].decode("utf8")
     try:
@@ -79,8 +83,7 @@ def user_exists(ldap_user):
         return True
 
     user_identity_exists = (
-        UserIdentity.query.filter_by(
-            id_user=ldap_user["user_identity_id"]).count() > 0
+        UserIdentity.query.filter_by(id_user=ldap_user["user_identity_id"]).count() > 0
     )
     if user_identity_exists:
         return True
@@ -93,10 +96,8 @@ class InvenioUser:
         """Constructor."""
         self.user_id = remote_account.user_id
         self.remote_account = remote_account
-        self.user_profile = UserProfile.query.filter_by(
-            user_id=self.user_id).one()
-        self.user_identity = UserIdentity.query.filter_by(
-            id_user=self.user_id).one()
+        self.user_profile = UserProfile.query.filter_by(user_id=self.user_id).one()
+        self.user_identity = UserIdentity.query.filter_by(id_user=self.user_id).one()
         self.user = User.query.filter_by(id=self.user_id).one()
         self.data = self._get_full_user_info()
 
@@ -107,14 +108,9 @@ class InvenioUser:
             user_email=self.user.email,
             user_identity_id=self.user_identity.id,
             remote_account_id=self.remote_account.id,
-            remote_account_person_id=str(self.remote_account.extra_data[
-                "person_id"
-            ]),
-            remote_account_department=self.remote_account.extra_data.get(
-                "department"
-            ),
-            remote_account_mailbox=self.remote_account.extra_data.
-            get("mailbox"),
+            remote_account_person_id=str(self.remote_account.extra_data["person_id"]),
+            remote_account_department=self.remote_account.extra_data.get("department"),
+            remote_account_mailbox=self.remote_account.extra_data.get("mailbox"),
         )
         return user_info
 

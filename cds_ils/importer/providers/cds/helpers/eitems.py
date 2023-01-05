@@ -8,10 +8,11 @@
 """CDS-ILS EItems helpers."""
 
 
-def clean_url_provider(url_value,
-                       url_description,
-                       record_dict,
-                       ):
+def clean_url_provider(
+    url_value,
+    url_description,
+    record_dict,
+):
     """Clean eitem provider url object for migration.
 
     :param url_value: URI of eitem
@@ -57,9 +58,7 @@ def clean_url_provider(url_value,
     # local files
     # No need to check for open_access since for local files open_access is
     # controlled by files restriction itself
-    elif all(
-        [elem in url_value for elem in ["cds", ".cern.ch/record/", "/files"]]
-    ):
+    elif all([elem in url_value for elem in ["cds", ".cern.ch/record/", "/files"]]):
         eitems_files.append(eitem_dict)
         record_dict["_migration"]["eitems_has_files"] = True
     elif url_description in ["ebook", "e-book", "e-proceedings"]:

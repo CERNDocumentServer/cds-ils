@@ -59,19 +59,26 @@ from invenio_app_ils.proxies import current_app_ils
 from invenio_circulation.proxies import current_circulation
 from invenio_db import db
 
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.default_records import MIGRATION_PROVIDER_PID
-from cds_ils.migrator.errors import BorrowingRequestError, \
-    ItemMigrationError, ProviderError
+from cds_ils.migrator.errors import (
+    BorrowingRequestError,
+    ItemMigrationError,
+    ProviderError,
+)
 from cds_ils.migrator.handlers import json_records_exception_handlers
 from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.loans.api import validate_loan
 from cds_ils.migrator.providers.api import get_provider_by_legacy_id
-from cds_ils.migrator.utils import find_correct_document_pid, \
-    get_acq_ill_notes, get_cost, get_date, get_patron_pid
+from cds_ils.migrator.utils import (
+    find_correct_document_pid,
+    get_acq_ill_notes,
+    get_cost,
+    get_date,
+    get_patron_pid,
+)
 
 records_logger = logging.getLogger("borrowing_requests_logger")
 
@@ -161,8 +168,9 @@ def clean_record_json(record):
 
     try:
         # library_pid
-        provider = get_provider_by_legacy_id(record["id_crcLIBRARY"],
-                                             provider_type="LIBRARY")
+        provider = get_provider_by_legacy_id(
+            record["id_crcLIBRARY"], provider_type="LIBRARY"
+        )
         provider_pid = provider.pid.pid_value
     except ProviderError as e:
         provider_pid = MIGRATION_PROVIDER_PID
@@ -182,9 +190,7 @@ def clean_record_json(record):
 
     expected_delivery_date = record.get("expected_date")
     if expected_delivery_date:
-        new_record.update(
-            expected_delivery_date=get_date(expected_delivery_date)
-        )
+        new_record.update(expected_delivery_date=get_date(expected_delivery_date))
 
     received_date = record.get("arrival_date")
     if received_date:
@@ -226,10 +232,7 @@ def create_loan_when_ongoing(ill, legacy_record):
         return
 
     patron_pid = ill["patron_pid"]
-    item_pid = {
-        "value": ill.pid.pid_value,
-        "type": ill.pid.pid_type
-    }
+    item_pid = {"value": ill.pid.pid_value, "type": ill.pid.pid_type}
     document_pid = ill["document_pid"]
 
     loan_dict = dict(
@@ -241,16 +244,13 @@ def create_loan_when_ongoing(ill, legacy_record):
         state="ITEM_ON_LOAN",
         start_date=ill["received_date"],
         # former due date of borrowing request becomes due date of the loan
-        end_date=legacy_record.get("due_date", CDS_ILS_FALLBACK_CREATION_DATE)
+        end_date=legacy_record.get("due_date", CDS_ILS_FALLBACK_CREATION_DATE),
     )
 
     validate_loan(loan_dict, item_pid["value"], borrower_id=patron_pid)
 
     loan = import_record(
-        loan_dict,
-        rectype="loan",
-        legacy_id="ILL loan",
-        mint_legacy_pid=False
+        loan_dict, rectype="loan", legacy_id="ILL loan", mint_legacy_pid=False
     )
     current_circulation.loan_indexer().index(loan)
     db.session.commit()

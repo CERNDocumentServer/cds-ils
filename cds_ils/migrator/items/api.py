@@ -16,15 +16,14 @@ from elasticsearch_dsl import Q
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ItemMigrationError
 from cds_ils.migrator.handlers import json_records_exception_handlers
-from cds_ils.migrator.internal_locations.api import \
-    get_internal_location_by_legacy_recid
-from cds_ils.migrator.items.utils import clean_item_record, \
-    find_document_for_item
+from cds_ils.migrator.internal_locations.api import (
+    get_internal_location_by_legacy_recid,
+)
+from cds_ils.migrator.items.utils import clean_item_record, find_document_for_item
 
 items_logger = logging.getLogger("items_logger")
 
@@ -69,9 +68,7 @@ def import_items_from_json(dump_file, rectype="item"):
             )
 
             click.echo(
-                'Importing item "{0}({1})"...'.format(
-                    record["barcode"], rectype
-                )
+                'Importing item "{0}({1})"...'.format(record["barcode"], rectype)
             )
             try:
                 set_internal_location_pid(record)
@@ -115,14 +112,10 @@ def get_item_by_barcode(barcode, raise_exception=True):
     if not result.hits or hits_total < 1:
         click.secho("no item found with barcode {}".format(barcode), fg="red")
         if raise_exception:
-            raise ItemMigrationError(
-                "no item found with barcode {}".format(barcode)
-            )
+            raise ItemMigrationError("no item found with barcode {}".format(barcode))
     elif hits_total > 1:
         raise ItemMigrationError(
             "found more than one item with barcode {}".format(barcode)
         )
     else:
-        return current_app_ils.item_record_cls.get_record_by_pid(
-            result.hits[0].pid
-        )
+        return current_app_ils.item_record_cls.get_record_by_pid(result.hits[0].pid)

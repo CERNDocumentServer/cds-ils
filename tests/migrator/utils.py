@@ -11,13 +11,14 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 def reindex_record(pid_type, record_class, record_indexer_class):
     """Reindex records of given pid type."""
-    query = (x[0] for x in PersistentIdentifier.query.filter_by(
-        object_type='rec', status=PIDStatus.REGISTERED
-    ).filter(
-        PersistentIdentifier.pid_type.in_((pid_type,))
-    ).values(
-        PersistentIdentifier.pid_value
-    ))
+    query = (
+        x[0]
+        for x in PersistentIdentifier.query.filter_by(
+            object_type="rec", status=PIDStatus.REGISTERED
+        )
+        .filter(PersistentIdentifier.pid_type.in_((pid_type,)))
+        .values(PersistentIdentifier.pid_value)
+    )
 
     for pid in query:
         record_indexer_class.index(record_class.get_record_by_pid(pid))

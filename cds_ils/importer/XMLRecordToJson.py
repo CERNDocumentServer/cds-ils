@@ -29,7 +29,7 @@ class XMLRecordToJson(object):
         latest_only=False,
         pid_fetchers=None,
         dojson_model=marc21,
-        ignore_missing=False
+        ignore_missing=False,
     ):
         """Initialize class."""
         self.resolver = Resolver(
@@ -54,10 +54,7 @@ class XMLRecordToJson(object):
             is_deletable = False
 
         # MARCXML -> JSON fields translation
-        val = self.dojson_model.do(
-            marc_record,
-            exception_handlers=xml_import_handlers
-        )
+        val = self.dojson_model.do(marc_record, exception_handlers=xml_import_handlers)
 
         if not self.ignore_missing:
             # check for missing rules

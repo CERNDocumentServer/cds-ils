@@ -19,10 +19,11 @@ from invenio_accounts.models import Role, User
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
 from invenio_app_ils.eitems.api import EITEM_PID_TYPE, EItem
-from invenio_app_ils.ill.api import BORROWING_REQUEST_PID_TYPE, \
-    BorrowingRequest
-from invenio_app_ils.internal_locations.api import \
-    INTERNAL_LOCATION_PID_TYPE, InternalLocation
+from invenio_app_ils.ill.api import BORROWING_REQUEST_PID_TYPE, BorrowingRequest
+from invenio_app_ils.internal_locations.api import (
+    INTERNAL_LOCATION_PID_TYPE,
+    InternalLocation,
+)
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
 from invenio_app_ils.providers.api import PROVIDER_PID_TYPE, Provider
@@ -52,8 +53,7 @@ def app_config(app_config):
         "MAIL_NOTIFY_SENDER": "sender@test.com",
         "ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS": ["internal@test.com"],
         "CDS_ILS_LITERATURE_UPDATE_COVERS": False,
-        "SQLALCHEMY_DATABASE_URI":
-            "postgresql+psycopg2://invenio:invenio@localhost/invenio",
+        "SQLALCHEMY_DATABASE_URI": "postgresql+psycopg2://invenio:invenio@localhost/invenio",
         "EXTEND_LOANS_LOCATION_UPDATED": False,
         "JSONSCHEMAS_SCHEMAS": [
             "acquisition",
@@ -95,9 +95,7 @@ def admin(app, db):
         )
         # Give role to admin
         admin_role = Role(name="admin")
-        db.session.add(
-            ActionRoles(action=superuser_access.value, role=admin_role)
-        )
+        db.session.add(ActionRoles(action=superuser_access.value, role=admin_role))
         datastore.add_role_to_user(admin, admin_role)
     db.session.commit()
 
@@ -133,9 +131,7 @@ def patrons(app, db):
         client_id=client_id,
         **dict(
             user_id=user_id,
-            extra_data=dict(
-                person_id="1", department="Department", legacy_id="1"
-            ),
+            extra_data=dict(person_id="1", department="Department", legacy_id="1"),
         )
     )
     db.session.add(remote_account)
@@ -167,9 +163,7 @@ def testdata(app, db, es_clear, patrons):
     locations = _create_records(db, data, Location, LOCATION_PID_TYPE)
 
     data = load_json_from_datadir("internal_locations.json")
-    int_locs = _create_records(
-        db, data, InternalLocation, INTERNAL_LOCATION_PID_TYPE
-    )
+    int_locs = _create_records(db, data, InternalLocation, INTERNAL_LOCATION_PID_TYPE)
 
     data = load_json_from_datadir("documents.json")
     documents = _create_records(db, data, Document, DOCUMENT_PID_TYPE)
@@ -225,9 +219,7 @@ def testdata(app, db, es_clear, patrons):
 def app_with_notifs(app):
     """App with notifications test templates."""
     app.register_blueprint(
-        Blueprint(
-            "invenio_app_ils_tests", __name__, template_folder="templates"
-        )
+        Blueprint("invenio_app_ils_tests", __name__, template_folder="templates")
     )
     # add extra test templates to the search app blueprint, to fake the
     # existence of `invenio-theme` base templates.

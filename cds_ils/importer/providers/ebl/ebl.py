@@ -31,11 +31,7 @@ class EBLModel(Base):
     ):
         """Overwrite the do method."""
         init_fields = deepcopy(self._default_fields)
-        return super().do(
-            blob, ignore_missing, exception_handlers, init_fields
-        )
+        return super().do(blob, ignore_missing, exception_handlers, init_fields)
 
 
-model = EBLModel(
-    bases=(model_base,), entry_point_group="cds_ils.importer.document"
-)
+model = EBLModel(bases=(model_base,), entry_point_group="cds_ils.importer.document")

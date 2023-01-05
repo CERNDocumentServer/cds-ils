@@ -18,24 +18,44 @@ from dateutil.parser import ParserError
 from dojson.errors import IgnoreKey
 from dojson.utils import filter_values, flatten, for_each_value, force_list
 from flask import current_app
-from invenio_app_ils.relations.api import EDITION_RELATION, \
-    LANGUAGE_RELATION, OTHER_RELATION
+from invenio_app_ils.relations.api import (
+    EDITION_RELATION,
+    LANGUAGE_RELATION,
+    OTHER_RELATION,
+)
 
-from cds_ils.importer.errors import ManualImportRequired, \
-    MissingRequiredField, UnexpectedValue
+from cds_ils.importer.errors import (
+    ManualImportRequired,
+    MissingRequiredField,
+    UnexpectedValue,
+)
 from cds_ils.importer.providers.cds.cds import model
-from cds_ils.importer.providers.cds.rules.values_mapping import \
-    ACQUISITION_METHOD, APPLICABILITY, COLLECTION, DOCUMENT_TYPE, \
-    EXTERNAL_SYSTEM_IDENTIFIERS, EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE, \
-    IDENTIFIERS_MEDIUM_TYPES, ITEMS_MEDIUMS, MATERIALS, SERIAL, \
-    TAGS_TO_IGNORE, mapping
+from cds_ils.importer.providers.cds.rules.values_mapping import (
+    ACQUISITION_METHOD,
+    APPLICABILITY,
+    COLLECTION,
+    DOCUMENT_TYPE,
+    EXTERNAL_SYSTEM_IDENTIFIERS,
+    EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE,
+    IDENTIFIERS_MEDIUM_TYPES,
+    ITEMS_MEDIUMS,
+    MATERIALS,
+    SERIAL,
+    TAGS_TO_IGNORE,
+    mapping,
+)
 
 from ...utils import build_ils_contributor
-from ..helpers.decorators import filter_list_values, out_strip, \
-    replace_in_result
+from ..helpers.decorators import filter_list_values, out_strip, replace_in_result
 from ..helpers.eitems import clean_url_provider
-from ..helpers.parsers import clean_email, clean_val, extract_parts, \
-    extract_volume_number, get_week_start, is_excluded
+from ..helpers.parsers import (
+    clean_email,
+    clean_val,
+    extract_parts,
+    extract_volume_number,
+    get_week_start,
+    is_excluded,
+)
 
 
 @model.over("legacy_recid", "^001")
@@ -57,11 +77,11 @@ def agency_code(self, key, value):
 @model.over("sync", "^599__")
 def sync_tag(self, key, value):
     """Synchronisation tag."""
-    sync_tag = clean_val('a', value, str).upper()
+    sync_tag = clean_val("a", value, str).upper()
     if sync_tag in ["ILSSYNC", "ILSLINK"]:
         return True
     else:
-        raise UnexpectedValue(subfield='a')
+        raise UnexpectedValue(subfield="a")
 
 
 @model.over("created_by", "^859__")
@@ -96,7 +116,7 @@ def created(self, key, value):
                 return datetime.date.today().isoformat()
             date = min(date_values)
             if not (100000 < date < 999999):
-                raise UnexpectedValue("Wrong date format", subfield='w')
+                raise UnexpectedValue("Wrong date format", subfield="w")
             if date:
                 year, week = str(date)[:4], str(date)[4:]
                 date = get_week_start(int(year), int(week))
@@ -107,10 +127,7 @@ def created(self, key, value):
     elif key == "595__":
         try:
             _migration = self["_migration"]
-            _eitems_internal_notes = _migration.get(
-                "eitems_internal_notes",
-                ""
-            )
+            _eitems_internal_notes = _migration.get("eitems_internal_notes", "")
             sub_a_internal_notes = clean_val(
                 "a", value, str, regex_format=r"[A-Z]{3,4}[0-9]{4,6}$"
             )
@@ -119,17 +136,11 @@ def created(self, key, value):
                     _eitems_internal_notes = sub_a_internal_notes
                 else:
                     _eitems_internal_notes += f"; {sub_a_internal_notes}"
-                _migration.update(
-                    {
-                        "eitems_internal_notes": _eitems_internal_notes
-                    }
-                )
+                _migration.update({"eitems_internal_notes": _eitems_internal_notes})
         except UnexpectedValue as e:
             pass
         try:
-            sub_a = clean_val(
-                "a", value, str, regex_format=r"[A-Z]{3}[0-9]{6}$"
-            )
+            sub_a = clean_val("a", value, str, regex_format=r"[A-Z]{3}[0-9]{6}$")
             if sub_a:
                 source = sub_a[:3]
                 self["source"] = source
@@ -225,22 +236,15 @@ def document_type(self, key, value):
         if not val_a and not val_b and not _doc_type:
             continue
 
-        if val_a and val_b and val_b != "STANDARD" \
-                and (val_a != val_b != _doc_type):
-            raise ManualImportRequired(
-                "inconsistent doc type", subfield="a or b"
-            )
+        if val_a and val_b and val_b != "STANDARD" and (val_a != val_b != _doc_type):
+            raise ManualImportRequired("inconsistent doc type", subfield="a or b")
         if val_a:
             if _doc_type and _doc_type != "STANDARD" and _doc_type != val_a:
-                raise ManualImportRequired(
-                    "Inconsistent doc type", subfield="a"
-                )
+                raise ManualImportRequired("Inconsistent doc type", subfield="a")
             _doc_type = val_a
         if val_b:
             if _doc_type and val_b != "STANDARD" and _doc_type != val_b:
-                raise ManualImportRequired(
-                    "Inconsistent doc type", subfield="b"
-                )
+                raise ManualImportRequired("Inconsistent doc type", subfield="b")
             _doc_type = val_b
     return _doc_type
 
@@ -260,9 +264,7 @@ def authors(self, key, value):
             val_e = list(force_list(value.get("e", [])))
             other_authors_fields = val_e + val_u
             has_other_authors = [
-                i
-                for i in other_authors_possible_values
-                if i in other_authors_fields
+                i for i in other_authors_possible_values if i in other_authors_fields
             ]
             if has_other_authors:
                 self["other_authors"] = True
@@ -445,11 +447,9 @@ def related_records(self, key, value):
             "relation_type": relation_type,
             "relation_description": relation_description,
         }
-        if 'n' in value:
+        if "n" in value:
             new_relation.update({"volume": clean_val("n", value, str)})
-        _related.append(
-            new_relation
-        )
+        _related.append(new_relation)
         _migration.update({"related": _related, "has_related": True})
         raise IgnoreKey("_migration")
     except ManualImportRequired as e:
@@ -517,8 +517,7 @@ def urls(self, key, value):
     # Value of the url
     sub_u = clean_val("u", value, str, req=True)
 
-    return clean_url_provider(url_value=sub_u, url_description=sub_y,
-                              record_dict=self)
+    return clean_url_provider(url_value=sub_u, url_description=sub_y, record_dict=self)
 
 
 @model.over(
@@ -548,11 +547,7 @@ def isbns(self, key, value):
                     raise ManualImportRequired(subfield="u")
                 self["volume"] = volume
             # WARNING! vocabulary document_identifiers_materials
-            material = mapping(
-                IDENTIFIERS_MEDIUM_TYPES,
-                subfield_u,
-                subfield="u"
-            )
+            material = mapping(IDENTIFIERS_MEDIUM_TYPES, subfield_u, subfield="u")
             if material:
                 isbn.update({"material": material})
         if isbn not in _isbns:
@@ -595,7 +590,9 @@ def alternative_identifiers(self, key, value):
         elif field_type and field_type.lower() == "asin":
             raise IgnoreKey("alternative_identifiers")
         else:
-            raise UnexpectedValue(subfield="2", )
+            raise UnexpectedValue(
+                subfield="2",
+            )
     if key == "035__":
         if "CERCER" in sub_a:
             raise IgnoreKey("alternative_identifiers")
@@ -629,13 +626,13 @@ def alternative_identifiers(self, key, value):
 def dois(self, key, value):
     """Translates dois fields."""
     _identifiers = self.get("identifiers", [])
-    dois_url_prefix = current_app.config['CDS_ILS_DOI_URL_PREFIX']
+    dois_url_prefix = current_app.config["CDS_ILS_DOI_URL_PREFIX"]
 
     def _clean_doi_access(subfield):
         return subfield.lower().replace("(open access)", "").strip()
 
     def clean_material(subfield_q):
-        return re.sub(r'\([^)]*\)', '', subfield_q).strip()
+        return re.sub(r"\([^)]*\)", "", subfield_q).strip()
 
     def create_eitem(subfield_a, subfield_q):
         eitems_external = self["_migration"]["eitems_external"]
@@ -644,12 +641,11 @@ def dois(self, key, value):
             open_access = "open access" in subfield_q.lower()
             subfield_q = _clean_doi_access(subfield_q)
         eitem = {
-            "url":
-                {
-                    "description": subfield_q or "e-book",
-                    "value": dois_url_prefix.format(doi=subfield_a),
-                },
-            "open_access": open_access
+            "url": {
+                "description": subfield_q or "e-book",
+                "value": dois_url_prefix.format(doi=subfield_a),
+            },
+            "open_access": open_access,
         }
         eitems_external.append(eitem)
 
@@ -754,8 +750,7 @@ def arxiv_eprints(self, key, value):
             duplicated = [
                 elem
                 for i, elem in enumerate(_alternative_identifiers)
-                if elem["value"] == eprint_id
-                and elem["scheme"].lower() == "arxiv"
+                if elem["value"] == eprint_id and elem["scheme"].lower() == "arxiv"
             ]
             if not duplicated:
                 eprint = {"value": eprint_id, "scheme": "ARXIV"}
@@ -795,7 +790,7 @@ def subject_classification(self, key, value):
     scheme = scheme_mapping[key]
     _subject_classification = {
         "value": clean_val("a", value, str, req=True),
-        "scheme": scheme
+        "scheme": scheme,
     }
     if _subject_classification not in prev_subjects:
         return _subject_classification
@@ -841,11 +836,9 @@ def conference_info(self, key, value):
         val_i = clean_val("i", v, str)
 
         if val_g:
-            conference_identifiers.append({"scheme": "CERN",
-                                           "value": val_g})
+            conference_identifiers.append({"scheme": "CERN", "value": val_g})
         if val_i:
-            conference_identifiers.append({"scheme": "INSPIRE_CNUM",
-                                           "value": val_i})
+            conference_identifiers.append({"scheme": "INSPIRE_CNUM", "value": val_i})
 
         country_codes = clean_val("w", v, str, multiple_values=True)
         country = None
@@ -895,7 +888,7 @@ def conference_info(self, key, value):
             elif "a" in value and "x" in value and len(value) == 3:
                 acronym = clean_val("x", v, str)
                 acronym_value = clean_val("a", v, str)
-                if acronym and acronym.lower() != 'acronym':
+                if acronym and acronym.lower() != "acronym":
                     raise UnexpectedValue(subfield="x")
                 raise IgnoreKey("conference_info")
             # if the field is marked as acronym, migrate
@@ -924,19 +917,21 @@ def imprint(self, key, value):
     if reprint:
         reprint = reprint.lower().replace("repr.", "").strip()
     try:
-        date = parser.parse(date_value,
-                            default=datetime.datetime(1954, 1, 1))
+        date = parser.parse(date_value, default=datetime.datetime(1954, 1, 1))
         cleaned_date = date.date().isoformat()
         pub_year = str(date.date().year)
     except ParserError:
         date_range = date_value.split("-")
         if len(date_range) == 2:
-            start_date = parser.parse(date_range[0],
-                                      default=datetime.datetime(1954, 1, 1))
-            end_date = parser.parse(date_range[1],
-                                    default=datetime.datetime(1954, 1, 1))
-            cleaned_date = f"{start_date.date().isoformat()} - " \
-                           f"{end_date.date().isoformat()} "
+            start_date = parser.parse(
+                date_range[0], default=datetime.datetime(1954, 1, 1)
+            )
+            end_date = parser.parse(
+                date_range[1], default=datetime.datetime(1954, 1, 1)
+            )
+            cleaned_date = (
+                f"{start_date.date().isoformat()} - " f"{end_date.date().isoformat()} "
+            )
             pub_year = f"{start_date.date().year} - {end_date.date().year}"
         else:
             raise UnexpectedValue(subfield="c")
@@ -1013,7 +1008,7 @@ def licenses(self, key, value):
         MATERIALS,
         clean_val("3", value, str, transform="lower"),
         raise_exception=True,
-        subfield="3"
+        subfield="3",
     )
 
     if material:
@@ -1031,9 +1026,7 @@ def licenses(self, key, value):
             license_id = "arXiv-nonexclusive-distrib-1.0"
 
     if license_id:
-        _license["license"] = dict(
-            id=license_id
-        )
+        _license["license"] = dict(id=license_id)
     else:
         raise UnexpectedValue()
 
@@ -1071,7 +1064,7 @@ def table_of_content(self, key, value):
     ).strip()
     if text != "--":
         chapters = re.split(r"; | -- |--", text)
-        chapters = [elem.strip(' ') for elem in chapters]
+        chapters = [elem.strip(" ") for elem in chapters]
         return list(filter(None, chapters))
     else:
         raise UnexpectedValue(subfield="a or t")
@@ -1184,7 +1177,7 @@ def medium(self, key, value):
             ITEMS_MEDIUMS,
             val_a.upper().replace("-", ""),
             raise_exception=True,
-            subfield="a"
+            subfield="a",
         )
 
     for barcode in barcodes:

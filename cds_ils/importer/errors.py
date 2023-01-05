@@ -18,8 +18,9 @@ class LossyConversion(DoJSONException):
     def __init__(self, *args, **kwargs):
         """Exception custom initialisation."""
         self.missing = kwargs.pop("missing", None)
-        self.message = self.description = \
-            "Lossy conversion: {0}".format(self.missing or "")
+        self.message = self.description = "Lossy conversion: {0}".format(
+            self.missing or ""
+        )
         super().__init__(*args, **kwargs)
 
 
@@ -38,9 +39,9 @@ class ProviderNotAllowedDeletion(DoJSONException):
     def __init__(self, *args, **kwargs):
         """Exception custom initialisation."""
         self.provider = kwargs.pop("provider", None)
-        self.message = self.description = \
-            "This provider {0} is not allowed to delete records"\
-            .format(self.provider)
+        self.message = (
+            self.description
+        ) = "This provider {0} is not allowed to delete records".format(self.provider)
         super().__init__(*args, **kwargs)
 
 
@@ -125,5 +126,7 @@ class InvalidProvider(CDSImporterException):
 class SimilarityMatchUnavailable(CDSImporterException):
     """Similarity match unavailable exception."""
 
-    message = "Title similarity matching cannot be performed for " \
-              "this record. Please import it manually."
+    message = (
+        "Title similarity matching cannot be performed for "
+        "this record. Please import it manually."
+    )

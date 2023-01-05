@@ -22,8 +22,11 @@ from invenio_search import current_search
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter
-from cds_ils.importer.errors import InvalidProvider, \
-    SimilarityMatchUnavailable, UnknownProvider
+from cds_ils.importer.errors import (
+    InvalidProvider,
+    SimilarityMatchUnavailable,
+    UnknownProvider,
+)
 from cds_ils.importer.series.importer import SeriesImporter
 
 from .errors import DocumentHasReferencesError
@@ -85,7 +88,8 @@ class Importer(object):
             raise UnknownProvider
         providers = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"]
         config_agency_code = providers.get(self.metadata_provider, {}).get(
-            "agency_code")
+            "agency_code"
+        )
         if agency_code != config_agency_code:
             raise InvalidProvider
 
@@ -97,11 +101,11 @@ class Importer(object):
         """Search the catalogue for existing document."""
         document_importer = self.document_importer
 
-        not_validated_matches = \
-            document_importer.search_for_matching_documents()
+        not_validated_matches = document_importer.search_for_matching_documents()
 
-        exact_match, partial_matching_pids = \
-            document_importer.validate_found_matches(not_validated_matches)
+        exact_match, partial_matching_pids = document_importer.validate_found_matches(
+            not_validated_matches
+        )
 
         return exact_match, partial_matching_pids
 
@@ -132,8 +136,9 @@ class Importer(object):
         current_search.flush_and_refresh(index="documents")
 
         for series in series_list:
-            series_record = \
-                series_class.get_record_by_pid(series["series_record"]["pid"])
+            series_record = series_class.get_record_by_pid(
+                series["series_record"]["pid"]
+            )
             record_indexer.index(series_record)
 
         # wait for ES refresh
@@ -146,14 +151,17 @@ class Importer(object):
         # ambiguous = matching fails
         # (inconsistent identifiers/title pairs, duplicates etc)
         amibiguous_matches = [
-            {"pid": match, "type": "ambiguous"} for match in
-            pids_list]
+            {"pid": match, "type": "ambiguous"} for match in pids_list
+        ]
 
         # fuzzy = trying to match similar titles and authors to spot typos
         try:
             fuzzy_results = self.document_importer.fuzzy_match_documents()
-            fuzzy_matches = [{"pid": match.pid, "type": "similar"} for match in
-                             fuzzy_results if match.pid != exact_match]
+            fuzzy_matches = [
+                {"pid": match.pid, "type": "similar"}
+                for match in fuzzy_results
+                if match.pid != exact_match
+            ]
         except TransportError:
             raise SimilarityMatchUnavailable
         return fuzzy_matches + amibiguous_matches
@@ -161,15 +169,13 @@ class Importer(object):
     def update_exact_match(self, exact_match):
         """Update exact importing record match."""
         document_class = current_app_ils.document_record_cls
-        matched_document = document_class.get_record_by_pid(
-            exact_match)
+        matched_document = document_class.get_record_by_pid(exact_match)
 
         self.document_importer.update_document(matched_document)
         self.eitem_importer.update_eitems(matched_document)
 
         eitem = self.eitem_importer.summary()
-        series = self.series_importer.import_series(
-            matched_document)
+        series = self.series_importer.import_series(matched_document)
         return matched_document, eitem, series
 
     def import_record(self):
@@ -181,17 +187,19 @@ class Importer(object):
         exact_match, partial_matches = self._match_document()
         # finds the multiple matches or fuzzy matches, does not create new doc
         # requires manual intervention, to avoid duplicates
-        partial_matches = self.find_partial_matches(partial_matches,
-                                                    exact_match)
+        partial_matches = self.find_partial_matches(partial_matches, exact_match)
 
         # finds the exact match, update records
         if exact_match:
             document, eitem, series = self.update_exact_match(exact_match)
             self.index_records(document, eitem, series)
-            return self.report(document=document,
-                               action="update",
-                               partial_matches=partial_matches,
-                               eitem=eitem, series=series)
+            return self.report(
+                document=document,
+                action="update",
+                partial_matches=partial_matches,
+                eitem=eitem,
+                series=series,
+            )
 
         document = self.document_importer.create_document()
         if document:
@@ -201,10 +209,13 @@ class Importer(object):
             series = self.series_importer.import_series(document)
             self.index_records(document, eitem, series)
 
-        return self.report(document=document,
-                           action=action,
-                           partial_matches=partial_matches,
-                           eitem=eitem, series=series)
+        return self.report(
+            document=document,
+            action=action,
+            partial_matches=partial_matches,
+            eitem=eitem,
+            series=series,
+        )
 
     def delete_record(self):
         """Deletes the eitems of the record."""
@@ -215,8 +226,7 @@ class Importer(object):
         self._validate_provider()
 
         exact_match, partial_matches = self._match_document()
-        partial_matches = self.find_partial_matches(partial_matches,
-                                                    exact_match)
+        partial_matches = self.find_partial_matches(partial_matches, exact_match)
 
         if exact_match:
             matched_document = document_class.get_record_by_pid(exact_match)
@@ -224,20 +234,22 @@ class Importer(object):
             eitem = self.delete_eitem(matched_document)
             db.session.commit()
             current_search.flush_and_refresh(index="*")
-            document_has_only_serial_relations = \
-                len(matched_document.relations.keys()) \
-                and 'serial' in matched_document.relations.keys()
+            document_has_only_serial_relations = (
+                len(matched_document.relations.keys())
+                and "serial" in matched_document.relations.keys()
+            )
 
-            if not matched_document.has_references() \
-                    or document_has_only_serial_relations:
+            if (
+                not matched_document.has_references()
+                or document_has_only_serial_relations
+            ):
 
                 # remove serial relations
                 rr = RecordRelationsParentChild()
-                serial_relations = matched_document.relations.get('serial', [])
+                serial_relations = matched_document.relations.get("serial", [])
                 relation_type = Relation.get_relation_by_name("serial")
                 for relation in serial_relations:
-                    serial = series_class.get_record_by_pid(
-                        relation["pid_value"])
+                    serial = series_class.get_record_by_pid(relation["pid_value"])
                     rr.remove(serial, matched_document, relation_type)
 
             pid = matched_document.pid
@@ -254,19 +266,23 @@ class Importer(object):
 
             db.session.commit()
             document_indexer.delete(matched_document)
-            return self.report(document=matched_document,
-                               action="delete",
-                               partial_matches=partial_matches,
-                               eitem=eitem)
+            return self.report(
+                document=matched_document,
+                action="delete",
+                partial_matches=partial_matches,
+                eitem=eitem,
+            )
 
         return self.report(partial_matches=partial_matches)
 
-    def report(self,
-               document=None,
-               action="none",
-               partial_matches=None,
-               eitem=None,
-               series=None):
+    def report(
+        self,
+        document=None,
+        action="none",
+        partial_matches=None,
+        eitem=None,
+        series=None,
+    ):
         """Generate import report."""
         doc_json = {}
         doc_pid = None
@@ -291,8 +307,7 @@ class Importer(object):
         action = "none"
         # finds the exact match, update records
         exact_match, partial_matches = self._match_document()
-        partial_matches = self.find_partial_matches(partial_matches,
-                                                    exact_match)
+        partial_matches = self.find_partial_matches(partial_matches, exact_match)
 
         if exact_match:
             document = document_class.get_record_by_pid(exact_match)
@@ -300,8 +315,12 @@ class Importer(object):
             self.preview_delete_document(document)
             action = "delete"
 
-        return self.report(document=document, action=action,
-                           partial_matches=partial_matches, eitem=eitem)
+        return self.report(
+            document=document,
+            action=action,
+            partial_matches=partial_matches,
+            eitem=eitem,
+        )
 
     def preview_import(self):
         """Previews the record import."""
@@ -312,8 +331,7 @@ class Importer(object):
         exact_match, partial_matches = self._match_document()
         # finds the multiple matches or fuzzy matches, does not create new doc
         # requires manual intervention, to avoid duplicates
-        partial_matches = self.find_partial_matches(partial_matches,
-                                                    exact_match)
+        partial_matches = self.find_partial_matches(partial_matches, exact_match)
 
         if exact_match:
             document = document_class.get_record_by_pid(exact_match)
@@ -329,9 +347,13 @@ class Importer(object):
         if partial_matches:
             action = "error"
 
-        return self.report(document=document, action=action,
-                           eitem=eitem, series=series,
-                           partial_matches=partial_matches)
+        return self.report(
+            document=document,
+            action=action,
+            eitem=eitem,
+            series=series,
+            partial_matches=partial_matches,
+        )
 
     def preview_delete_document(self, document):
         """Delete Document record."""
@@ -379,8 +401,7 @@ class Importer(object):
         related_refs = set()
         for _, related_objects in document.relations.items():
             for obj in related_objects:
-                if not obj["record_metadata"].get("mode_of_issuance") \
-                       == "SERIAL":
+                if not obj["record_metadata"].get("mode_of_issuance") == "SERIAL":
                     related_refs.add("{pid_value}:{pid_type}".format(**obj))
         if related_refs:
             raise RecordHasReferencesError(

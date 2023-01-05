@@ -21,9 +21,7 @@ def index_extra_fields_for_loan(loan_dict):
     document_class = current_app_ils.document_record_cls
     item_suggestion = {}
     try:
-        document_record = document_class.get_record_by_pid(
-            loan_dict["document_pid"]
-        )
+        document_record = document_class.get_record_by_pid(loan_dict["document_pid"])
     except PIDDeletedError:
         # Document might have been deleted while reindexing asynchronously.
         return
@@ -32,8 +30,9 @@ def index_extra_fields_for_loan(loan_dict):
 
     on_shelf = document["items"]["on_shelf"]
 
-    is_request = loan_dict["state"] in \
-        current_app.config["CIRCULATION_STATES_LOAN_REQUEST"]
+    is_request = (
+        loan_dict["state"] in current_app.config["CIRCULATION_STATES_LOAN_REQUEST"]
+    )
 
     # There may be no items on shelf, making impossible to suggest an item.
     if not on_shelf or not is_request:
@@ -60,6 +59,4 @@ def index_extra_fields_for_loan(loan_dict):
     ]:
         item_suggestion.pop(field, None)
 
-    loan_dict[
-        "item_suggestion"
-    ] = item_suggestion
+    loan_dict["item_suggestion"] = item_suggestion

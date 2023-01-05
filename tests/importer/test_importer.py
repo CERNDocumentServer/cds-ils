@@ -12,17 +12,14 @@ def test_modify_documents(importer_test_data):
     eitem_search_cls = current_app_ils.eitem_search_cls
     eitem_cls = current_app_ils.eitem_record_cls
 
-    json_data = load_json_from_datadir(
-        "modify_document_data.json", relpath="importer"
-    )
+    json_data = load_json_from_datadir("modify_document_data.json", relpath="importer")
 
     importer = Importer(json_data[0], "springer")
     report = importer.import_record()
     assert report["document_json"]
     assert report["action"] == "update"
 
-    updated_document = document_cls.get_record_by_pid(
-        report["document_json"]["pid"])
+    updated_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
     # wait for indexing
     current_search.flush_and_refresh(index="*")
 
@@ -50,20 +47,15 @@ def test_import_documents(app, db):
     eitem_search_cls = current_app_ils.eitem_search_cls
     eitem_cls = current_app_ils.eitem_record_cls
 
-    json_data = load_json_from_datadir(
-        "create_documents_data.json", relpath="importer"
-    )
+    json_data = load_json_from_datadir("create_documents_data.json", relpath="importer")
     importer = Importer(json_data[0], "springer")
     report = importer.import_record()
     assert report["document_json"]
     assert report["action"] == "create"
 
-    document = document_cls.get_record_by_pid(
-        report["document_json"]["pid"])
+    document = document_cls.get_record_by_pid(report["document_json"]["pid"])
     time.sleep(1)
-    search = eitem_search_cls().search_by_document_pid(
-        document_pid=document["pid"]
-    )
+    search = eitem_search_cls().search_by_document_pid(document_pid=document["pid"])
     results = search.execute()
     assert results.hits.total.value == 1
 
@@ -84,9 +76,7 @@ def test_replace_eitems_by_provider_priority(importer_test_data):
     eitem_search_cls = current_app_ils.eitem_search_cls
     eitem_cls = current_app_ils.eitem_record_cls
 
-    json_data = load_json_from_datadir(
-        "modify_document_data.json", relpath="importer"
-    )
+    json_data = load_json_from_datadir("modify_document_data.json", relpath="importer")
 
     document_before_update = document_cls.get_record_by_pid("docid-1")
     search = eitem_search_cls().search_by_document_pid(
@@ -107,8 +97,7 @@ def test_replace_eitems_by_provider_priority(importer_test_data):
     assert report["document_json"]
     assert report["action"] == "update"
 
-    updated_document = document_cls.get_record_by_pid(
-        report["document_json"]["pid"])
+    updated_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
     # wait for indexing
     time.sleep(1)
 
@@ -143,24 +132,17 @@ def test_add_document_to_serial(app, db):
     assert report["action"] == "create"
     assert report["series"]
 
-    created_document = document_cls.get_record_by_pid(
-        report["document_json"]["pid"])
+    created_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
 
     series_list = []
     for series in report["series"]:
-        series_list.append(series_cls.get_record_by_pid(
-            series["series_record"]["pid"]))
+        series_list.append(series_cls.get_record_by_pid(series["series_record"]["pid"]))
 
     assert series_list[0]["title"] == "Advances in Nuclear Physics ;"
-    assert series_list[0]["identifiers"] == [
-        {"scheme": "ISSN", "value": "123455"}
-    ]
+    assert series_list[0]["identifiers"] == [{"scheme": "ISSN", "value": "123455"}]
     # check if relations creates
     assert (
         created_document["relations_extra_metadata"]["serial"][0]["pid_value"]
         == series_list[0]["pid"]
     )
-    assert (
-        created_document["relations_extra_metadata"]["serial"][0]["volume"]
-        == "26"
-    )
+    assert created_document["relations_extra_metadata"]["serial"][0]["volume"] == "26"

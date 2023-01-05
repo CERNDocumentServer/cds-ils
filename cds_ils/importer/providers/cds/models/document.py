@@ -21,7 +21,7 @@ class CDSDocument(CdsIlsOverdo):
     """Translation Index for CDS Books."""
 
     __query__ = (
-        '003:SzGeCERN 690C_:BOOK OR 690C_:CONFERENCE OR '
+        "003:SzGeCERN 690C_:BOOK OR 690C_:CONFERENCE OR "
         '690C_:"YELLOW REPORT" OR '
         "980__:PROCEEDINGS OR "
         "(-980:STANDARD 980:BOOK) OR "
@@ -48,9 +48,7 @@ class CDSDocument(CdsIlsOverdo):
 
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__
 
-    _default_fields = {
-        "_migration": {**get_helper_dict(record_type="document")}
-    }
+    _default_fields = {"_migration": {**get_helper_dict(record_type="document")}}
 
     rectype = "document"
 
@@ -63,9 +61,7 @@ class CDSDocument(CdsIlsOverdo):
     ):
         """Overwrite the do method."""
         init_fields = deepcopy(self._default_fields)
-        return super().do(
-            blob, ignore_missing, exception_handlers, init_fields
-        )
+        return super().do(blob, ignore_missing, exception_handlers, init_fields)
 
 
 model = CDSDocument(

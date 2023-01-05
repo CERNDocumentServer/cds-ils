@@ -45,9 +45,7 @@ class LdapSynchronizationLogModelView(ModelView):
 
         return_url = get_redirect_target() or self.get_url(".index_view")
 
-        return self.render(
-            "cds_ils_admin/create_task.html", return_url=return_url
-        )
+        return self.render("cds_ils_admin/create_task.html", return_url=return_url)
 
     @staticmethod
     def start_task():

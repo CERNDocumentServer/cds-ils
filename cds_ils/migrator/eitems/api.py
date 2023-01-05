@@ -23,9 +23,13 @@ from invenio_db import db
 from invenio_files_rest.models import Bucket, ObjectVersion
 
 from cds_ils.importer.providers.cds.rules.values_mapping import mapping
-from cds_ils.migrator.documents.api import get_all_documents_with_files, \
-    get_documents_with_ebl_eitems, get_documents_with_external_eitems, \
-    get_documents_with_proxy_eitems, get_documents_with_safari_eitems
+from cds_ils.migrator.documents.api import (
+    get_all_documents_with_files,
+    get_documents_with_ebl_eitems,
+    get_documents_with_external_eitems,
+    get_documents_with_proxy_eitems,
+    get_documents_with_safari_eitems,
+)
 from cds_ils.migrator.errors import EItemMigrationError, FileMigrationError
 from cds_ils.migrator.handlers import eitems_exception_handlers
 
@@ -37,7 +41,7 @@ def import_legacy_files(file_link):
     """Download file from legacy."""
     # needed to ignore the migrator in the legacy statistics
     files_dir = current_app.config["CDS_ILS_MIGRATION_FILES_DIR"]
-    file = open(os.path.join(files_dir, file_link), 'rb')
+    file = open(os.path.join(files_dir, file_link), "rb")
 
     return file
 
@@ -91,21 +95,15 @@ def create_eitem(document_pid, open_access=True):
 
 def add_eitem_extra_metadata(eitem, document):
     """Adds internal notes to the e-items."""
-    PROVIDERS_MAPPING = {
-        "safari": "SAF",
-        "springer": "SPR",
-        "ebl": "EBL"
-    }
+    PROVIDERS_MAPPING = {"safari": "SAF", "springer": "SPR", "ebl": "EBL"}
     internal_notes = document["_migration"].get("eitems_internal_notes")
     if internal_notes:
         eitem["internal_notes"] = internal_notes
         # It must be only one value to update created_by
         if ";" not in internal_notes:
-            raw_provider = re.findall('^[A-Z]{3,4}', internal_notes)[0]
+            raw_provider = re.findall("^[A-Z]{3,4}", internal_notes)[0]
             provider = mapping(
-                PROVIDERS_MAPPING,
-                raw_provider,
-                default_val=raw_provider
+                PROVIDERS_MAPPING, raw_provider, default_val=raw_provider
             )
             eitem["created_by"]["value"] = provider
 
@@ -152,7 +150,7 @@ def process_files_from_legacy():
     """
     search = get_all_documents_with_files()
     click.echo("Found {} documents with files.".format(search.count()))
-    for hit in search.params(scroll='4h').scan():
+    for hit in search.params(scroll="4h").scan():
         # make sure the document is in DB not only ES
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
@@ -177,8 +175,7 @@ def process_files_from_legacy():
 
                 click.echo("File: {}".format(file_dump["url"]))
 
-                is_restricted = file_dump.get("status").upper() in \
-                    ["SSO", "RESTRICTED"]
+                is_restricted = file_dump.get("status").upper() in ["SSO", "RESTRICTED"]
                 eitem, bucket = create_eitem_with_bucket_for_document(
                     document["pid"], open_access=not is_restricted
                 )
@@ -226,11 +223,9 @@ def process_files_from_legacy():
 def migrate_external_links(raise_exceptions=True):
     """Migrate external links from documents."""
     search = get_documents_with_external_eitems()
-    click.echo(
-        "Found {} documents with external links.".format(search.count())
-    )
+    click.echo("Found {} documents with external links.".format(search.count()))
 
-    for hit in search.params(scroll='2h').scan():
+    for hit in search.params(scroll="2h").scan():
         # make sure the document is in DB not only ES
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
@@ -268,7 +263,7 @@ def migrate_ezproxy_links(raise_exceptions=True):
     """Migrate external links from documents."""
     search = get_documents_with_proxy_eitems()
     click.echo("Found {} documents with ezproxy links.".format(search.count()))
-    for hit in search.params(scroll='2h').scan():
+    for hit in search.params(scroll="2h").scan():
         # make sure the document is in DB not only ES
         Document = current_app_ils.document_record_cls
         document = Document.get_record_by_pid(hit.pid)
@@ -306,9 +301,7 @@ def migrate_ezproxy_links(raise_exceptions=True):
 def create_ebl_eitem(item, ebl_id_list, document, raise_exceptions=True):
     """Create eitem record for given migration url and document."""
     eitem_indexer = current_app_ils.eitem_indexer
-    url_template = (
-        "https://ebookcentral.proquest.com/lib/cern/detail.action?docID={}"
-    )
+    url_template = "https://ebookcentral.proquest.com/lib/cern/detail.action?docID={}"
 
     # match document EBL ID with the one stored in url to validate
     matched_ebl_id = [
@@ -359,7 +352,7 @@ def migrate_ebl_links(raise_exceptions=True):
     search = get_documents_with_ebl_eitems()
     click.echo("Found {} documents with ebl links.".format(search.count()))
 
-    for hit in search.params(scroll='2h').scan():
+    for hit in search.params(scroll="2h").scan():
         # make sure the document is in DB not only ES
         document = document_class.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))
@@ -375,9 +368,7 @@ def migrate_ebl_links(raise_exceptions=True):
             if not ebl_id_list:
                 raise EItemMigrationError(
                     "Document {pid} has no EBL alternative identifier"
-                    " while EBL ebook link was found".format(
-                        pid=document["pid"]
-                    )
+                    " while EBL ebook link was found".format(pid=document["pid"])
                 )
 
             for item in document["_migration"]["eitems_ebl"]:
@@ -403,7 +394,7 @@ def migrate_safari_links(raise_exceptions=True):
     search = get_documents_with_safari_eitems()
     click.echo("Found {} documents with safari links.".format(search.count()))
 
-    for hit in search.params(scroll='2h').scan():
+    for hit in search.params(scroll="2h").scan():
         # make sure the document is in DB not only ES
         document = document_class.get_record_by_pid(hit.pid)
         click.echo("Processing document {}...".format(document["pid"]))

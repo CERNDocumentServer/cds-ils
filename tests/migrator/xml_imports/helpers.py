@@ -14,6 +14,6 @@ def load_json(datadir, filename):
     """Load file in json format."""
     filepath = join(datadir, filename)
     data = None
-    with open(filepath, 'r') as file_:
+    with open(filepath, "r") as file_:
         data = json.load(file_)
     return data

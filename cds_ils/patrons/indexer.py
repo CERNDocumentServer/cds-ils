@@ -24,9 +24,7 @@ class PatronIndexer(ILSPatronIndexer):
         indexer = PatronBaseIndexer()
         Patron = current_app_ils.patron_cls
         # cannot use bulk operation because Patron is not a real record
-        index_local_accounts = current_app.config[
-            "CDS_ILS_INDEX_LOCAL_ACCOUNTS"
-        ]
+        index_local_accounts = current_app.config["CDS_ILS_INDEX_LOCAL_ACCOUNTS"]
         if index_local_accounts:
             all_user_ids = db.session.query(User.id).all()
         else:

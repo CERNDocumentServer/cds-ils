@@ -35,14 +35,13 @@ def test_import_ills(test_data_migration, patrons, es_clear):
     assert results.hits.total.value == 1
     assert results[0].status == "RETURNED"
     assert (
-        results[0].notes
-        == "request type: book\n\n"
-           "due date: 2010-09-17T00:00:00\n\n"
-           "cost: 0 EUR\n\n"
-           "item info: {'publisher': '', 'isbn': '',"
-           " 'title': \"Documentation Eaux usées et Stations d'épuration\", "
-           "'authors': '', 'edition': '', 'place': '', 'year': ''}"
-           "\n\nlibrary notes: {}\n"
+        results[0].notes == "request type: book\n\n"
+        "due date: 2010-09-17T00:00:00\n\n"
+        "cost: 0 EUR\n\n"
+        "item info: {'publisher': '', 'isbn': '',"
+        " 'title': \"Documentation Eaux usées et Stations d'épuration\", "
+        "'authors': '', 'edition': '', 'place': '', 'year': ''}"
+        "\n\nlibrary notes: {}\n"
     )
 
     ill_pid = results[0].pid
@@ -50,9 +49,9 @@ def test_import_ills(test_data_migration, patrons, es_clear):
     loan_search = current_circulation.loan_search_cls
     search = (
         loan_search()
-            .filter("term", item_pid__value=ill_pid)
-            .filter("term", item_pid__type=BORROWING_REQUEST_PID_TYPE)
-            .filter("term", state="ITEM_ON_LOAN")
+        .filter("term", item_pid__value=ill_pid)
+        .filter("term", item_pid__type=BORROWING_REQUEST_PID_TYPE)
+        .filter("term", state="ITEM_ON_LOAN")
     )
     results = search.execute()
     assert results.hits.total.value == 0
@@ -61,19 +60,18 @@ def test_import_ills(test_data_migration, patrons, es_clear):
     results = search.execute()
     assert results.hits.total.value == 1
 
-    expected = ("request type: book\n\n"
-                "due date: 2021-01-04T00:00:00\n\n"
-                "cost: CHF 11.15\n\n"
-                "item info: {'publisher': '', 'isbn': '', "
-                "'title': '', 'authors': 'A. Agüero, J.M. Albella', "
-                "'edition': '', 'place': '', 'year': ''}\n\n"
-                "library notes: {'2010-09-28 10:40:50': "
-                "\"Il libro non e disponibile in italiano, "
-                "cancellata: la civiltà.\"}\n")
-    assert (
-        results[0].notes
-        == expected
+    expected = (
+        "request type: book\n\n"
+        "due date: 2021-01-04T00:00:00\n\n"
+        "cost: CHF 11.15\n\n"
+        "item info: {'publisher': '', 'isbn': '', "
+        "'title': '', 'authors': 'A. Agüero, J.M. Albella', "
+        "'edition': '', 'place': '', 'year': ''}\n\n"
+        "library notes: {'2010-09-28 10:40:50': "
+        '"Il libro non e disponibile in italiano, '
+        'cancellata: la civiltà."}\n'
     )
+    assert results[0].notes == expected
 
     assert results[0].status == "ON_LOAN"
     ill_pid = results[0].pid
@@ -82,9 +80,9 @@ def test_import_ills(test_data_migration, patrons, es_clear):
     loan_search = current_circulation.loan_search_cls
     search = (
         loan_search()
-            .filter("term", item_pid__value=ill_pid)
-            .filter("term", item_pid__type=BORROWING_REQUEST_PID_TYPE)
-            .filter("term", state="ITEM_ON_LOAN")
+        .filter("term", item_pid__value=ill_pid)
+        .filter("term", item_pid__type=BORROWING_REQUEST_PID_TYPE)
+        .filter("term", state="ITEM_ON_LOAN")
     )
     results = search.execute()
     assert results.hits.total.value == 1

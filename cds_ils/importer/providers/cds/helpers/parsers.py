@@ -12,8 +12,11 @@ from datetime import date, timedelta
 
 from dojson.utils import force_list
 
-from cds_ils.importer.errors import ManualImportRequired, \
-    MissingRequiredField, UnexpectedValue
+from cds_ils.importer.errors import (
+    ManualImportRequired,
+    MissingRequiredField,
+    UnexpectedValue,
+)
 
 MAX_PAGES_NUMBER = 8192
 
@@ -117,11 +120,11 @@ def extract_volume_number(value):
 
 def extract_volume_info(value):
     """Extract volume number and physical description."""
-    result = re.search(r'(.*?)\(+(?P<volume>[^\(]+)\)+', value.strip())
+    result = re.search(r"(.*?)\(+(?P<volume>[^\(]+)\)+", value.strip())
     if result:
         return dict(
             description=result.group(1).strip(),
-            volume=extract_volume_number(result.groupdict()['volume']),
+            volume=extract_volume_number(result.groupdict()["volume"]),
         )
     return None
 
@@ -181,9 +184,7 @@ def clean_val(
         if value_to_clean is not None:
             try:
                 if var_type is str:
-                    return clean_str(
-                        value_to_clean, regex_format, req, transform
-                    )
+                    return clean_str(value_to_clean, regex_format, req, transform)
                 elif var_type is bool:
                     return bool(value_to_clean)
                 elif var_type is int:
@@ -229,9 +230,7 @@ def clean_email(value):
     """Cleans the email field."""
     if value:
         email = (
-            value.strip()
-            .replace(" [CERN]", "@cern.ch")
-            .replace("[CERN]", "@cern.ch")
+            value.strip().replace(" [CERN]", "@cern.ch").replace("[CERN]", "@cern.ch")
         )
         return email
 

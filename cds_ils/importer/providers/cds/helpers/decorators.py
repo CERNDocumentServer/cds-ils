@@ -19,9 +19,7 @@ def replace_in_result(phrase, replace_with, key=None):
             res = fn_decorated(*args, **kwargs)
             if res:
                 if not key:
-                    return [
-                        k.replace(phrase, replace_with).strip() for k in res
-                    ]
+                    return [k.replace(phrase, replace_with).strip() for k in res]
                 else:
                     return [
                         dict(
@@ -50,9 +48,7 @@ def filter_list_values(f):
         out = f(self, key, value)
         if out:
             clean_list = [
-                dict((k, v) for k, v in elem.items() if v)
-                for elem in out
-                if elem
+                dict((k, v) for k, v in elem.items() if v) for elem in out if elem
             ]
             clean_list = [elem for elem in clean_list if elem]
             if not clean_list:
@@ -88,8 +84,10 @@ def out_strip(fn_decorated):
 
 def filter_empty_dict_values(f):
     """Remove None values from dictionary."""
+
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         out = f(*args, **kwargs)
         return dict((k, v) for k, v in out.items() if v)
+
     return wrapper

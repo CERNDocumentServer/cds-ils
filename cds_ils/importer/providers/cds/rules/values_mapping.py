@@ -57,7 +57,7 @@ ITEMS_MEDIUMS = {
     "DVD": ["DVD VIDEO", "DVD"],
     "VHS": ["VHS"],
     "ONLINE": ["EBOOK"],
-    "AUDIO_CD": ["AUDIO CD"]
+    "AUDIO_CD": ["AUDIO CD"],
 }
 
 # can be inconsistent with the medium types
@@ -102,12 +102,7 @@ IDENTIFIERS_MEDIUM_TYPES = {
         "PAPERBACK",
         "PRINT VERSION, PAPERBACK",
     ],
-    "PRINT_VERSION": [
-        "CLOTH",
-        "PRINT",
-        "PRINT VERSION",
-        "PRINT VERSION, SPIRAL-BOUND"
-    ],
+    "PRINT_VERSION": ["CLOTH", "PRINT", "PRINT VERSION", "PRINT VERSION, SPIRAL-BOUND"],
     "CD_ROM": [
         "CDROM",
         "CD-ROM",
@@ -194,9 +189,7 @@ EXPERIMENTS = {
     "CTF2": ["CTF2"],
     "CTF3": ["CTF3"],
     "DELPHI": ["DELPHI"],
-    "DEUTERON_PRODUCTION_IN_PP_COLLISONS": [
-        "Deuteron production in pp collisons"
-    ],
+    "DEUTERON_PRODUCTION_IN_PP_COLLISONS": ["Deuteron production in pp collisons"],
     "DIRAC": ["DIRAC"],
     "DREAM": ["DREAM"],
     "E51": ["E51"],
@@ -1596,8 +1589,7 @@ EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE = [
 ]
 
 
-def mapping(field_map, val, raise_exception=False,
-            default_val=None, subfield=None):
+def mapping(field_map, val, raise_exception=False, default_val=None, subfield=None):
     """
     Maps the old value to a new one according to the map.
 

@@ -21,10 +21,11 @@ from invenio_db import db
 from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.importer.documents.importer import VOCABULARIES_FIELDS
-from cds_ils.importer.providers.cds.utils import add_cds_url, \
-    add_title_from_conference_info
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.providers.cds.utils import (
+    add_cds_url,
+    add_title_from_conference_info,
+)
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.errors import DumpRevisionException
@@ -50,8 +51,7 @@ class CDSDocumentDumpLoader(object):
         record["_migration"]["files"] = []
         for key, meta in files.items():
             obj = cls.create_file(None, key, meta)
-            if obj.get("format").lower() in \
-                    [".ps.gz", ".png", '.jpg', ".jpeg"]:
+            if obj.get("format").lower() in [".ps.gz", ".png", ".jpg", ".jpeg"]:
                 continue
             # remove not needed, ES cannot handle list of lists
             del obj["recids_doctype"]
@@ -109,9 +109,7 @@ class CDSDocumentDumpLoader(object):
         try:
             with db.session.begin_nested():
                 # checks if the document with this legacy_recid already exists
-                legacy_pid_type = current_app.config[
-                    "CDS_ILS_RECORD_LEGACY_PID_TYPE"
-                ]
+                legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
                 # First mint the legacy_recid before assigning the pid. In case
                 # it fails while importing an existing record we will update it
                 # and don't want the new pid, since there is already one there
@@ -132,9 +130,7 @@ class CDSDocumentDumpLoader(object):
                 json_data["pid"] = provider.pid.pid_value
                 document = document_cls.create(json_data, record_uuid)
 
-                created_date = json_data.get(
-                    "_created", CDS_ILS_FALLBACK_CREATION_DATE
-                )
+                created_date = json_data.get("_created", CDS_ILS_FALLBACK_CREATION_DATE)
 
                 document.model.created = parser.parse(created_date)
                 document.model.updated = timestamp.replace(tzinfo=None)
@@ -154,15 +150,11 @@ class CDSDocumentDumpLoader(object):
             click.secho(e.original_exception.message, fg="red")
             raise e
         except PIDAlreadyExists as e:
-            allow_updates = current_app.config.get(
-                "CDS_ILS_MIGRATION_ALLOW_UPDATES"
-            )
+            allow_updates = current_app.config.get("CDS_ILS_MIGRATION_ALLOW_UPDATES")
             if not allow_updates:
                 raise e
             # update document if already exists with legacy_recid
-            legacy_pid_type = current_app.config[
-                "CDS_ILS_RECORD_LEGACY_PID_TYPE"
-            ]
+            legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
             # When updating we don't want to change the pid
             if "pid" in json_data:
                 del json_data["pid"]

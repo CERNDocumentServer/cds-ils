@@ -14,10 +14,8 @@ import time
 import click
 
 from cds_ils.importer.series.importer import VOCABULARIES_FIELDS
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
-from cds_ils.migrator.series.multipart import import_multipart, \
-    import_multivolume
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
+from cds_ils.migrator.series.multipart import import_multipart, import_multivolume
 from cds_ils.migrator.series.xml_series_loader import CDSSeriesDumpLoader
 from cds_ils.migrator.utils import add_cover_metadata, clean_created_by_field
 
@@ -35,9 +33,7 @@ class CDSMultipartDumpLoader(CDSSeriesDumpLoader):
         vocabulary_validator.validate(VOCABULARIES_FIELDS, json_data)
 
         add_cover_metadata(json_data)
-        is_multivolume_record = json_data["_migration"].get(
-            "multivolume_record", False
-        )
+        is_multivolume_record = json_data["_migration"].get("multivolume_record", False)
 
         if is_multivolume_record:
             click.echo("Multivolume record.")

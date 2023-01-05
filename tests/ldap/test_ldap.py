@@ -23,8 +23,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from cds_ils.config import OAUTH_REMOTE_APP_NAME
-from cds_ils.ldap.api import LdapUserImporter, delete_users, import_users, \
-    update_users
+from cds_ils.ldap.api import LdapUserImporter, delete_users, import_users, update_users
 from cds_ils.ldap.models import Agent, LdapSynchronizationLog, TaskStatus
 from cds_ils.ldap.tasks import synchronize_users_task
 from cds_ils.ldap.utils import serialize_ldap_user
@@ -49,9 +48,7 @@ def test_import_users(app, db, testdata, mocker):
         "cds_ils.ldap.api.LdapClient.get_primary_accounts",
         return_value=ldap_users,
     )
-    mocker.patch(
-        "invenio_app_ils.patrons.indexer.PatronIndexer.reindex_patrons"
-    )
+    mocker.patch("invenio_app_ils.patrons.indexer.PatronIndexer.reindex_patrons")
 
     import_users()
 
@@ -65,9 +62,7 @@ def test_import_users(app, db, testdata, mocker):
     assert UserProfile.query.filter(UserProfile.user_id == user.id).one()
 
     uid_number = ldap_user["user_identity_id"]
-    user_identity = UserIdentity.query.filter(
-        UserIdentity.id == uid_number
-    ).one()
+    user_identity = UserIdentity.query.filter(UserIdentity.id == uid_number).one()
     assert user_identity
     assert user_identity.method == OAUTH_REMOTE_APP_NAME
     assert RemoteAccount.query.filter(RemoteAccount.user_id == user.id).one()
@@ -283,9 +278,7 @@ def test_update_users(app, db, testdata, mocker):
         "00444",
         "M12345",
     )
-    check_existence(
-        "ldap.user555@cern.ch", "Name 1", "Department 1", "00555", "M12345"
-    )
+    check_existence("ldap.user555@cern.ch", "Name 1", "Department 1", "00555", "M12345")
 
     # try ot import duplicated userUID
     with pytest.raises(IntegrityError):
@@ -477,20 +470,14 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
     assert ldap_users_count == 1
     assert deleted_accounts == 0
 
-    ra1 = RemoteAccount.query.filter(
-        RemoteAccount.user_id == user_to_delete_id1
-    ).one()
-    ra2 = RemoteAccount.query.filter(
-        RemoteAccount.user_id == user_to_delete_id2
-    ).one()
+    ra1 = RemoteAccount.query.filter(RemoteAccount.user_id == user_to_delete_id1).one()
+    ra2 = RemoteAccount.query.filter(RemoteAccount.user_id == user_to_delete_id2).one()
 
     assert ra1.extra_data["deletion_countdown"] == 1
     assert ra2.extra_data["deletion_countdown"] == 1
 
     # set to be deleted now
-    config_checks_before_deletion = current_app.config[
-        "CDS_ILS_PATRON_DELETION_CHECKS"
-    ]
+    config_checks_before_deletion = current_app.config["CDS_ILS_PATRON_DELETION_CHECKS"]
 
     # mark for total deletion
     ra2.extra_data["deletion_countdown"] = config_checks_before_deletion
@@ -531,18 +518,14 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
 
     current_search.flush_and_refresh(index="*")
 
-    ra1 = RemoteAccount.query.filter(
-        RemoteAccount.user_id == user_to_delete_id1
-    ).one()
+    ra1 = RemoteAccount.query.filter(RemoteAccount.user_id == user_to_delete_id1).one()
 
     # make sure first account was unmarked for deletion
     assert ra1.extra_data["deletion_countdown"] == 0
 
     # make sure account 2 was deleted
     with pytest.raises(NoResultFound):
-        RemoteAccount.query.filter(
-            RemoteAccount.user_id == user_to_delete_id2
-        ).one()
+        RemoteAccount.query.filter(RemoteAccount.user_id == user_to_delete_id2).one()
 
 
 def test_send_email_on_error(app_with_notifs, mocker):
@@ -597,9 +580,7 @@ def test_send_email_on_user_deletion_error(app_with_notifs, mocker):
     mock1.user_id = 1  # patron 1
     mock2 = Mock()
     mock2.user_id = 2  # patron 2
-    mocker.patch(
-        "cds_ils.ldap.api.remap_invenio_users", return_value=[mock1, mock2]
-    )
+    mocker.patch("cds_ils.ldap.api.remap_invenio_users", return_value=[mock1, mock2])
     # mock that the any `InvenioUser` exist
     mocker.patch("cds_ils.ldap.api.InvenioUser")
 
@@ -607,9 +588,7 @@ def test_send_email_on_user_deletion_error(app_with_notifs, mocker):
     mocker.patch(
         "cds_ils.ldap.api.anonymize_patron_data",
         side_effect=AnonymizationActiveLoansError(
-            "Cannot delete user {0}: found {1} active loans.".format(
-                mock1.user_id, 4
-            )
+            "Cannot delete user {0}: found {1} active loans.".format(mock1.user_id, 4)
         ),
     )
 

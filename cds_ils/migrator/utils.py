@@ -16,11 +16,12 @@ from flask import current_app
 from invenio_accounts.models import User
 from invenio_app_ils.acquisition.api import Order, OrderIdProvider
 from invenio_app_ils.circulation.api import IlsCirculationLoanIdProvider
-from invenio_app_ils.document_requests.api import DocumentRequest, \
-    DocumentRequestIdProvider
+from invenio_app_ils.document_requests.api import (
+    DocumentRequest,
+    DocumentRequestIdProvider,
+)
 from invenio_app_ils.documents.api import DocumentIdProvider
-from invenio_app_ils.ill.api import BorrowingRequest, \
-    BorrowingRequestIdProvider
+from invenio_app_ils.ill.api import BorrowingRequest, BorrowingRequestIdProvider
 from invenio_app_ils.internal_locations.api import InternalLocationIdProvider
 from invenio_app_ils.items.api import ItemIdProvider
 from invenio_app_ils.providers.api import Provider, ProviderIdProvider

@@ -49,9 +49,8 @@ def search_document_by_title_authors(title, authors, subtitle=None):
             .filter("match", authors__full_name__full_words=" ".join(authors))
         )
     else:
-        search = (
-            document_search.filter("term", title__normalized_keyword=title)
-            .filter("match", authors__full_name__full_words=" ".join(authors))
+        search = document_search.filter("term", title__normalized_keyword=title).filter(
+            "match", authors__full_name__full_words=" ".join(authors)
         )
     return search
 

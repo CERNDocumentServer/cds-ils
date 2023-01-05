@@ -18,8 +18,13 @@ from cds_ils.importer.errors import MissingRequiredField, UnexpectedValue
 
 from ..helpers.decorators import filter_list_values, out_strip
 from ..helpers.eitems import clean_url_provider
-from ..helpers.parsers import clean_val, extract_parts, extract_volume_info, \
-    extract_volume_number, is_volume_index
+from ..helpers.parsers import (
+    clean_val,
+    extract_parts,
+    extract_volume_info,
+    extract_volume_number,
+    is_volume_index,
+)
 from ..models.multipart import model
 from .base import alternative_identifiers as alternative_identifiers_base
 from .base import alternative_titles
@@ -81,9 +86,7 @@ def isbns(self, key, value):
                 "identifiers": [isbn],
             }
             if physical_description:
-                volume_obj.update(
-                    {"physical_description": physical_description}
-                )
+                volume_obj.update({"physical_description": physical_description})
             _insert_volume(
                 _migration,
                 volume_number,
@@ -120,7 +123,7 @@ def dois(self, key, value):
     _identifiers = self.get("identifiers", [])
     volume_info = None
     material = None
-    dois_url_prefix = current_app.config['CDS_ILS_DOI_URL_PREFIX']
+    dois_url_prefix = current_app.config["CDS_ILS_DOI_URL_PREFIX"]
 
     def _clean_doi_access(subfield):
         return subfield.lower().replace("(open access)", "").strip()
@@ -136,16 +139,14 @@ def dois(self, key, value):
                 "description": subfield_q,
                 "value": dois_url_prefix.format(doi=subfield_a),
             },
-            "open_access": open_access
+            "open_access": open_access,
         }
         eitems_proxy.append(eitem)
 
     for v in force_list(value):
         val_2 = clean_val("2", v, str)
         if val_2 and val_2 != "DOI":
-            raise UnexpectedValue(
-                subfield="2", message=" field is not equal to DOI"
-            )
+            raise UnexpectedValue(subfield="2", message=" field is not equal to DOI")
         val_q = clean_val("q", v, str, transform="lower")
         val_a = clean_val("a", v, str, req=True)
 
@@ -156,7 +157,7 @@ def dois(self, key, value):
                     IDENTIFIERS_MEDIUM_TYPES,
                     volume_info["description"].upper(),
                     raise_exception=True,
-                    subfield='q'
+                    subfield="q",
                 )
         doi = {
             "value": val_a,
@@ -166,16 +167,18 @@ def dois(self, key, value):
         if volume_info:
             # create partial child object for each
             # volume with its own _migration
-            volume_migration_dict = {"_migration": {'eitems_proxy': []}}
+            volume_migration_dict = {"_migration": {"eitems_proxy": []}}
             # this identifier is for a specific volume
-            create_eitem(subfield_a=val_a, subfield_q=val_q,
-                         migration_dict=volume_migration_dict)
+            create_eitem(
+                subfield_a=val_a, subfield_q=val_q, migration_dict=volume_migration_dict
+            )
             volume_migration_dict["_migration"]["eitems_has_proxy"] = True
             if material:
                 doi.update(
                     {  # WARNING! vocabulary document_identifiers_materials
                         "material": material
-                    })
+                    }
+                )
             volume_obj = {"identifiers": [doi], **volume_migration_dict}
             _insert_volume(
                 _migration,
@@ -190,13 +193,14 @@ def dois(self, key, value):
                 if re.match(r".* \(.*\)", val_q):
                     raise UnexpectedValue(
                         subfield="q",
-                        message=" found a volume "
-                                "number but could not extract it",
+                        message=" found a volume " "number but could not extract it",
                     )
                 # WARNING! vocabulary document_identifiers_materials
                 doi["material"] = mapping(
-                    IDENTIFIERS_MEDIUM_TYPES, val_q.upper(),
-                    raise_exception=True, subfield='q',
+                    IDENTIFIERS_MEDIUM_TYPES,
+                    val_q.upper(),
+                    raise_exception=True,
+                    subfield="q",
                 )
             if doi not in _identifiers:
                 _identifiers.append(doi)
@@ -283,7 +287,8 @@ def volumes_titles(self, key, value):
 
         if not val_n and not val_p:
             raise UnexpectedValue(
-                subfield="n", message=" this record is probably not a series",
+                subfield="n",
+                message=" this record is probably not a series",
             )
         if val_p and not val_n:
             raise UnexpectedValue(
@@ -298,7 +303,8 @@ def volumes_titles(self, key, value):
                 obj["publication_year"] = val_y
             else:
                 raise UnexpectedValue(
-                    subfield="y", message=" unrecognized publication year",
+                    subfield="y",
+                    message=" unrecognized publication year",
                 )
         if val_z:
             obj["physical_description"] = val_z
@@ -363,7 +369,8 @@ def multivolume_record(self, key, value):
         raise Exception("This record should not be migrated!")
     else:
         raise UnexpectedValue(
-            subfield="a", message=" unrecognized migration multipart tag",
+            subfield="a",
+            message=" unrecognized migration multipart tag",
         )
     _migration["multivolume_record"] = parsed
     raise IgnoreKey("multivolume_record")
@@ -392,29 +399,31 @@ def urls(self, key, value):
         description = volume_info["description"]
         volume_number = volume_info["volume"]
         if description not in ["ebook", "e-book", "e-proceedings"]:
-            raise UnexpectedValue(subfield="y",
-                                  message=" unsupported value",
-                                  )
+            raise UnexpectedValue(
+                subfield="y",
+                message=" unsupported value",
+            )
 
         # create partial child object for each volume with its own _migration
-        volume_migration_dict = {"_migration": {
-            "record_type": "document",
-            "eitems_ebl": [],
-            "eitems_safari": [],
-            "eitems_external": [],
-            "eitems_proxy": [],
-            "eitems_file_links": []
-        }}
-        url_obj = clean_url_provider(url_value=sub_u, url_description=sub_y,
-                                     record_dict=volume_migration_dict)
+        volume_migration_dict = {
+            "_migration": {
+                "record_type": "document",
+                "eitems_ebl": [],
+                "eitems_safari": [],
+                "eitems_external": [],
+                "eitems_proxy": [],
+                "eitems_file_links": [],
+            }
+        }
+        url_obj = clean_url_provider(
+            url_value=sub_u, url_description=sub_y, record_dict=volume_migration_dict
+        )
         volume_obj = {**volume_migration_dict}
 
         if url_obj:
             volume_obj.update({"urls": [url_obj]})
 
-        _insert_volume(
-            _migration, volume_number, volume_obj, field_key="volumes_urls"
-        )
+        _insert_volume(_migration, volume_number, volume_obj, field_key="volumes_urls")
         raise IgnoreKey("urls")
     else:
         return urls_base(self, key, value)

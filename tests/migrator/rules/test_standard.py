@@ -22,9 +22,7 @@ marcxml = (
 
 def check_transformation(marcxml_body, json_body):
     blob = create_record(marcxml.format(marcxml_body))
-    model._default_fields = {
-        "_migration": {**get_helper_dict(record_type="document")}
-    }
+    model._default_fields = {"_migration": {**get_helper_dict(record_type="document")}}
 
     record = model.do(blob, ignore_missing=False)
     expected = {"_migration": {**get_helper_dict(record_type="document")}}
@@ -176,18 +174,16 @@ def test_publication_info(app):
                     **get_helper_dict(record_type="document"),
                 },
                 "urls": [
-                    {
-                        "value": f"{host}/legacy/2155631",
-                        "description": "is chapter of"
-                    }
+                    {"value": f"{host}/legacy/2155631", "description": "is chapter of"}
                 ],
                 "publication_info": [
                     {
-                        "pages": '1',
+                        "pages": "1",
                     }
                 ],
             },
         )
+
 
 def test_subject_classification(app):
     """Test subject classification."""
@@ -219,10 +215,12 @@ def test_subject_classification(app):
                 <subfield code="c">25.80.Nv</subfield>
             </datafield>
             """,
-            {"subjects": [
-                {"value": "13.75.Jz", "scheme": "ICS"},
-                {"value": "13.60.Rj", "scheme": "ICS"},
-                {"value": "14.20.Jn", "scheme": "ICS"},
-                {"value": "25.80.Nv", "scheme": "ICS"},
-            ]},
+            {
+                "subjects": [
+                    {"value": "13.75.Jz", "scheme": "ICS"},
+                    {"value": "13.60.Rj", "scheme": "ICS"},
+                    {"value": "14.20.Jn", "scheme": "ICS"},
+                    {"value": "25.80.Nv", "scheme": "ICS"},
+                ]
+            },
         )

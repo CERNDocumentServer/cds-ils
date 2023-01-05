@@ -31,7 +31,7 @@ def create_importer_blueprint(app):
         ImporterListView.view_name,
         default_media_type="application/json",
         serializers={
-            'application/json': task_log_response,
+            "application/json": task_log_response,
         },
     )
     blueprint.add_url_rule(
@@ -44,8 +44,8 @@ def create_importer_blueprint(app):
         ImporterDetailsView.view_name,
         default_media_type="application/json",
         serializers={
-            'application/json': task_entry_response,
-        }
+            "application/json": task_entry_response,
+        },
     )
     blueprint.add_url_rule(
         "/importer/<int:log_id>/offset/<int:offset>",
@@ -73,11 +73,7 @@ class ImporterDetailsView(ContentNegotiatedMethodView):
 
     def __init__(self, serializers=None, *args, **kwargs):
         """Constructor."""
-        super(ImporterDetailsView, self).__init__(
-            serializers,
-            *args,
-            **kwargs
-        )
+        super(ImporterDetailsView, self).__init__(serializers, *args, **kwargs)
 
     @need_permissions("document-importer")
     def get(self, log_id, offset):
@@ -115,11 +111,7 @@ class ImporterListView(ContentNegotiatedMethodView):
 
     def __init__(self, serializers=None, *args, **kwargs):
         """Constructor."""
-        super(ImporterListView, self).__init__(
-            serializers,
-            *args,
-            **kwargs
-        )
+        super(ImporterListView, self).__init__(serializers, *args, **kwargs)
 
     @need_permissions("document-importer")
     def post(self, **kwargs):
@@ -143,16 +135,13 @@ class ImporterListView(ContentNegotiatedMethodView):
                 original_filename = file.filename
                 file.filename = rename_file(file.filename)
                 source_path = os.path.join(
-                    current_app.config["CDS_ILS_IMPORTER_UPLOADS_PATH"],
-                    file.filename
+                    current_app.config["CDS_ILS_IMPORTER_UPLOADS_PATH"], file.filename
                 )
                 file.save(source_path)
 
-                log = create_import_task(source_path,
-                                         original_filename,
-                                         provider, mode,
-                                         ignore_missing_rules
-                                         )
+                log = create_import_task(
+                    source_path, original_filename, provider, mode, ignore_missing_rules
+                )
 
                 return self.make_response(log)
             else:
@@ -164,7 +153,9 @@ class ImporterListView(ContentNegotiatedMethodView):
     def get(self):
         """Get method."""
         list_count = 50
-        logs = ImporterImportLog.query \
-            .order_by(ImporterImportLog.id.desc()) \
-            .limit(list_count).all()
+        logs = (
+            ImporterImportLog.query.order_by(ImporterImportLog.id.desc())
+            .limit(list_count)
+            .all()
+        )
         return self.make_response(logs)

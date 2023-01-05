@@ -11,13 +11,7 @@ def test_matcher():
     springer_document_blob1 = {"003": "DE-He213"}
     safari_document_blob1 = {"003": "OCoLC"}
     ebl_document_blob1 = {"003": "MiAaPQ"}
-    assert cds_book.model == matcher(
-        cds_document_blob1, "cds_ils.importer.models"
-    )
-    assert springer.model == matcher(
-        springer_document_blob1, "cds_ils.importer.models"
-    )
-    assert safari.model == matcher(
-        safari_document_blob1, "cds_ils.importer.models"
-    )
+    assert cds_book.model == matcher(cds_document_blob1, "cds_ils.importer.models")
+    assert springer.model == matcher(springer_document_blob1, "cds_ils.importer.models")
+    assert safari.model == matcher(safari_document_blob1, "cds_ils.importer.models")
     assert ebl.model == matcher(ebl_document_blob1, "cds_ils.importer.models")

@@ -18,6 +18,7 @@ class CDSOverdoBase(OverdoBase):
     def do(self, blob, **kwargs):
         """Translate blob values and instantiate new model instance."""
         from .errors import RecordModelMissing
+
         model = matcher(blob, self.entry_point_models)
 
         if model == default_model:

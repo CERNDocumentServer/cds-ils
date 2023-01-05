@@ -7,14 +7,10 @@ from ..helpers import load_json_from_datadir
 
 def test_series_search_matching(importer_test_data):
     def match(json_series):
-        matching_series_pids = series_importer.search_for_matching_series(
-            json_series
-        )
+        matching_series_pids = series_importer.search_for_matching_series(json_series)
         # sort randomly to ensure tests are not based on order
         random.shuffle(matching_series_pids)
-        return series_importer._validate_matches(
-            json_series, matching_series_pids
-        )
+        return series_importer._validate_matches(json_series, matching_series_pids)
 
     metadata_provider = "springer"
 

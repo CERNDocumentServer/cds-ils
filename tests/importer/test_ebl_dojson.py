@@ -61,26 +61,35 @@ def test_ebl_transformation(app):
                     {"scheme": "EBL", "value": "263817"},
                 ],
                 "authors": [
-                    {"full_name": "Tishin, A. M", "type": "PERSON",
-                     'roles': ['AUTHOR'],
-                     },
-                    {"full_name": "Spichkin, Y. I", "type": "PERSON",
-                     'roles': ['AUTHOR'],
-                     },
-                    {"full_name": "Tishin, A.M", "type": "PERSON",
-                     'roles': ['AUTHOR'],
-                     },
-                    {"full_name": "Spichkin, Y.I", "type": "PERSON",
-                     'roles': ['AUTHOR'],
-                     },
+                    {
+                        "full_name": "Tishin, A. M",
+                        "type": "PERSON",
+                        "roles": ["AUTHOR"],
+                    },
+                    {
+                        "full_name": "Spichkin, Y. I",
+                        "type": "PERSON",
+                        "roles": ["AUTHOR"],
+                    },
+                    {
+                        "full_name": "Tishin, A.M",
+                        "type": "PERSON",
+                        "roles": ["AUTHOR"],
+                    },
+                    {
+                        "full_name": "Spichkin, Y.I",
+                        "type": "PERSON",
+                        "roles": ["AUTHOR"],
+                    },
                 ],
                 "edition": "1st",
                 "identifiers": [
-                    {"scheme": "ISBN", "value": "9781420033373",
-                     "material": "DIGITAL"},
-                    {"scheme": "ISBN", "value": "9780750309226",
-                     "material": "PRINT_VERSION"
-                     },
+                    {"scheme": "ISBN", "value": "9781420033373", "material": "DIGITAL"},
+                    {
+                        "scheme": "ISBN",
+                        "value": "9780750309226",
+                        "material": "PRINT_VERSION",
+                    },
                 ],
                 "imprint": {
                     "place": "Baton Rouge ",
@@ -109,13 +118,11 @@ def test_ebl_transformation(app):
                     "Acknowledgments",
                     "Chapter 1. Introduction",
                     "Chapter 2. Physics and models of magnetocaloric effect",
-                    "Chapter 3. Methods of magnetocaloric properties "
-                    "investigation",
+                    "Chapter 3. Methods of magnetocaloric properties " "investigation",
                     "Chapter 4. Magnetocaloric effect in 3d metals, alloys "
                     "and compounds",
                     "Chapter 5. Magnetocaloric effect in oxides",
-                    "Chapter 6. Magnetocaloric effect in intermetallic "
-                    "compounds",
+                    "Chapter 6. Magnetocaloric effect in intermetallic " "compounds",
                     "Chapter 7. Magnetocaloric effect in rare "
                     "earth-metalloid compounds",
                     "Chapter 8. Magnetocaloric effect in rare earth metals "
@@ -132,6 +139,6 @@ def test_ebl_transformation(app):
                     "Index",
                     "Back Cover.",
                 ],
-                'title': 'The Magnetocaloric Effect and Its Applications',
+                "title": "The Magnetocaloric Effect and Its Applications",
             },
         )

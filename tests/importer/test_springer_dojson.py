@@ -35,7 +35,7 @@ def test_springer_transformation(app):
             {
                 "_eitem": {
                     "internal_notes": "Physics and Astronomy (R0) "
-                                      "(SpringerNature-43715)",
+                    "(SpringerNature-43715)",
                     "urls": [
                         {
                             "description": "e-book",
@@ -52,49 +52,51 @@ def test_springer_transformation(app):
                 ],
                 "abstract": "The four articles ...",
                 "agency_code": "DE-He213",
-                "alternative_titles": [
-                    {"type": "SUBTITLE", "value": "Volume 26 "}
-                ],
+                "alternative_titles": [{"type": "SUBTITLE", "value": "Volume 26 "}],
                 "alternative_identifiers": [
                     {"scheme": "SPRINGER", "value": "978-0-306-47915-1"}
                 ],
                 "authors": [
-                    {"full_name": "Negele, J.W",
-                     "roles": ["EDITOR"],
-                     "type": "PERSON",
-                     },
-                    {"full_name": "Vogt, Erich W",
-                     "roles": ["EDITOR"],
-                     "type": "PERSON",
-                     },
+                    {
+                        "full_name": "Negele, J.W",
+                        "roles": ["EDITOR"],
+                        "type": "PERSON",
+                    },
+                    {
+                        "full_name": "Vogt, Erich W",
+                        "roles": ["EDITOR"],
+                        "type": "PERSON",
+                    },
                 ],
                 "document_type": "BOOK",
                 "edition": "1st",
                 "identifiers": [
-                    {"scheme": "ISBN", "value": "9780306479151",
-                     "material": "DIGITAL"},
-                    {"scheme": "ISBN",
-                     "value": "9780306479151X",
-                     "material": "DIGITAL"
-                     },
+                    {"scheme": "ISBN", "value": "9780306479151", "material": "DIGITAL"},
+                    {
+                        "scheme": "ISBN",
+                        "value": "9780306479151X",
+                        "material": "DIGITAL",
+                    },
                     {
                         "scheme": "DOI",
                         "material": "DIGITAL",
-                        "value": "10.1007/b100336"
+                        "value": "10.1007/b100336",
                     },
-                    {"scheme": "ISBN",
-                     "material": "PRINT_VERSION",
-                     "value": "9780306466854"
-                     },
-                    {"scheme": "ISBN",
-                     "material": "PRINT_VERSION",
-                     "value": "9781475705683"
-                     },
-                    {"scheme": "ISBN",
-                     "material": "PRINT_VERSION",
-                     "value": "9781475705690"
-                     }
-
+                    {
+                        "scheme": "ISBN",
+                        "material": "PRINT_VERSION",
+                        "value": "9780306466854",
+                    },
+                    {
+                        "scheme": "ISBN",
+                        "material": "PRINT_VERSION",
+                        "value": "9781475705683",
+                    },
+                    {
+                        "scheme": "ISBN",
+                        "material": "PRINT_VERSION",
+                        "value": "9781475705690",
+                    },
                 ],
                 "imprint": {
                     "place": "New York, NY ",
@@ -117,8 +119,7 @@ def test_springer_transformation(app):
                 ],
                 "table_of_content": [
                     "The Spin Structure of the Nucleon",
-                    "Liquid-Gas Phase Transition in Nuclear "
-                    "Multifragmentation",
+                    "Liquid-Gas Phase Transition in Nuclear " "Multifragmentation",
                     "High Spin Properties of Atomic Nuclei",
                     "The Deuteron: Structure and Form Factors.",
                 ],

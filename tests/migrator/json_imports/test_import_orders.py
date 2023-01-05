@@ -15,8 +15,9 @@ def test_import_orders(test_data_migration, patrons, es_clear):
     file = open(os.path.join(datadir, "orders.json"), "r")
     import_orders_from_json(file)
 
-    reindex_record(ORDER_PID_TYPE, current_ils_acq.order_record_cls,
-                   current_ils_acq.order_indexer)
+    reindex_record(
+        ORDER_PID_TYPE, current_ils_acq.order_record_cls, current_ils_acq.order_indexer
+    )
 
     current_search.flush_and_refresh(index="*")
 
@@ -27,13 +28,13 @@ def test_import_orders(test_data_migration, patrons, es_clear):
     results = search.execute()
 
     assert results.hits.total.value == 1
-    assert results[0].status == 'RECEIVED'
+    assert results[0].status == "RECEIVED"
 
     search = order_search().filter("term", legacy_id="56277")
     results = search.execute()
     assert results.hits.total.value == 1
 
-    assert results[0].status == 'ORDERED'
+    assert results[0].status == "ORDERED"
     file.close()
 
 

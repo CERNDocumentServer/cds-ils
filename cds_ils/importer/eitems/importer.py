@@ -57,8 +57,10 @@ class EItemImporter(object):
         return record["created_by"]["type"] == "user_id"
 
     def _is_migrated(self, record):
-        return record["created_by"]["type"] == "script" and \
-            record["created_by"]["value"] == "migration"
+        return (
+            record["created_by"]["type"] == "script"
+            and record["created_by"]["value"] == "migration"
+        )
 
     def _get_record_import_provider(self, record):
         """Get an import provider of a given document."""
@@ -86,9 +88,7 @@ class EItemImporter(object):
 
         eitem_provider = self._get_record_import_provider(eitem)
         provider_definition = PROVIDERS.get(eitem_provider, {})
-        eitem_priority = provider_definition.get(
-            "priority", PRIORITY_FOR_UNKNOWN
-        )
+        eitem_priority = provider_definition.get("priority", PRIORITY_FOR_UNKNOWN)
 
         # existing_priority = 0, self.priority = 1, returns True
         # 0 is considered higher priority than 1
@@ -175,9 +175,11 @@ class EItemImporter(object):
 
         comparison_list = []
         for eitem in existing_eitems:
-            is_imported_or_created = self._is_imported(eitem) \
-                or self._is_manually_created(eitem) \
+            is_imported_or_created = (
+                self._is_imported(eitem)
+                or self._is_manually_created(eitem)
                 or self._is_migrated(eitem)
+            )
             if not is_imported_or_created:
                 # skip until you find imported items to compare
                 continue
@@ -378,9 +380,11 @@ class EItemImporter(object):
                 )
                 for hit in document_eitems:
                     eitem = eitem_cls.get_record_by_pid(hit.pid)
-                    is_imported_or_created = self._is_imported(eitem) \
-                        or self._is_manually_created(eitem) \
+                    is_imported_or_created = (
+                        self._is_imported(eitem)
+                        or self._is_manually_created(eitem)
                         or self._is_migrated(eitem)
+                    )
                     if not is_imported_or_created:
                         continue
                     existing_has_higher_priority = self._eitem_has_higher_priority(

@@ -10,8 +10,7 @@ from copy import deepcopy
 
 from cds_ils.importer.base_model import Base
 from cds_ils.importer.base_model import model as model_base
-from cds_ils.importer.providers.safari.ignore_fields import \
-    SAFARI_IGNORE_FIELDS
+from cds_ils.importer.providers.safari.ignore_fields import SAFARI_IGNORE_FIELDS
 
 
 class SafariModel(Base):

@@ -23,9 +23,7 @@ class SeriesCSVSerializer(CSVSerializer):
         format_login_required_urls(series["metadata"].get("access_urls", []))
         return series
 
-    def transform_search_hit(
-        self, pid, record_hit, links_factory=None, **kwargs
-    ):
+    def transform_search_hit(self, pid, record_hit, links_factory=None, **kwargs):
         """Transform search result hit into an intermediate representation."""
         hit = super().transform_search_hit(
             pid, record_hit, links_factory=links_factory, **kwargs

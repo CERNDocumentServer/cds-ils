@@ -18,11 +18,11 @@ from cds_ils.importer.models import ImporterImportLog, ImportRecordLog
 
 def render_html_link(func):
     """Generate a object formatter for links."""
+
     def formatter(v, c, m, p):
         text, link = func(m)
-        return Markup(
-            '<a href="{0}">{1}</a>'.format(link, text)
-        )
+        return Markup('<a href="{0}">{1}</a>'.format(link, text))
+
     return formatter
 
 
@@ -43,13 +43,16 @@ class ImporterTaskModelView(ModelView):
     # Link to filter by import_id
     column_formatters = dict(
         records=render_html_link(
-            lambda o: ("Record updates",
-                       url_for("importrecordlog.index_view", flt0_0=o.id)),
+            lambda o: (
+                "Record updates",
+                url_for("importrecordlog.index_view", flt0_0=o.id),
+            ),
         )
     )
 
     column_details_list = [
-        *[c.key for c in ImporterImportLog.__table__.columns], "records"
+        *[c.key for c in ImporterImportLog.__table__.columns],
+        "records",
     ]
     column_list = column_details_list
 
@@ -68,9 +71,7 @@ def _json_code_formatter(view, context, model, name):
     """JSON handler for details page."""
     value = getattr(model, name)
     return (
-        Markup("<pre>{0}</pre>").format(
-            json.dumps(value, indent=2, sort_keys=True)
-        )
+        Markup("<pre>{0}</pre>").format(json.dumps(value, indent=2, sort_keys=True))
         if value
         else None
     )
@@ -101,10 +102,10 @@ class ImporterRecordLogModelView(ModelView):
     # display the id instead of __str__
     _common_formatters = {
         "importer_task": render_html_link(
-            lambda o: (o.import_id,
-                       url_for(
-                           "importerimportlog.index_view", flt0_0=o.import_id
-                       )),
+            lambda o: (
+                o.import_id,
+                url_for("importerimportlog.index_view", flt0_0=o.import_id),
+            ),
         )
     }
 
@@ -142,4 +143,7 @@ importer_records = {
     "category": _("Importer"),
 }
 
-__all__ = ("importer_tasks", "importer_records",)
+__all__ = (
+    "importer_tasks",
+    "importer_records",
+)

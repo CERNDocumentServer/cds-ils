@@ -8,8 +8,7 @@
 """CDS-ILS CDS Importer."""
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
-from invenio_pidstore.errors import PersistentIdentifierError, \
-    PIDDoesNotExistError
+from invenio_pidstore.errors import PersistentIdentifierError, PIDDoesNotExistError
 
 from cds_ils.importer.importer import Importer
 from cds_ils.literature.api import get_record_by_legacy_recid
@@ -38,15 +37,11 @@ class CDSImporter(Importer):
         document_class = current_app_ils.document_record_cls
         summary = super().import_record()
         if summary["action"] == "create" and summary["output_pid"]:
-            legacy_pid_type = current_app.config[
-                "CDS_ILS_RECORD_LEGACY_PID_TYPE"
-            ]
+            legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
             document = document_class.get_record_by_pid(summary["output_pid"])
             record_uuid = document.pid.object_uuid
 
-            legacy_recid_minter(
-                document["legacy_recid"], legacy_pid_type, record_uuid
-            )
+            legacy_recid_minter(document["legacy_recid"], legacy_pid_type, record_uuid)
         return summary
 
     def _extract_eitems_json(self):
@@ -71,10 +66,12 @@ class CDSImporter(Importer):
         internal_notes = eitem.get("internal_notes", "")
         if not open_access:
             eitem["open_access"] = self.json_data["_migration"].get(
-                "eitems_open_access", False)
+                "eitems_open_access", False
+            )
 
         if not internal_notes:
-            eitem["internal_notes"] = \
-                self.json_data["_migration"]["eitems_internal_notes"]
+            eitem["internal_notes"] = self.json_data["_migration"][
+                "eitems_internal_notes"
+            ]
 
         return eitem

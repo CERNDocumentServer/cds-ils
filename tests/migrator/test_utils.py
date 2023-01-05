@@ -1,8 +1,10 @@
 import pytest
 
 from cds_ils.importer.errors import MissingRequiredField
-from cds_ils.importer.providers.cds.helpers.parsers import \
-    extract_volume_info, extract_volume_number
+from cds_ils.importer.providers.cds.helpers.parsers import (
+    extract_volume_info,
+    extract_volume_number,
+)
 
 volume_params = [
     ("v1", "v1", False),
@@ -31,10 +33,7 @@ def test_extract_volume_number(value, expected, raise_exception):
     """Test extracting volume number."""
     if raise_exception:
         with pytest.raises(MissingRequiredField):
-            assert (
-                extract_volume_number(value)
-                == expected
-            )
+            assert extract_volume_number(value) == expected
     else:
         assert extract_volume_number(value) == expected
 

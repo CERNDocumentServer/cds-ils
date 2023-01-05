@@ -21,9 +21,7 @@ class Patron(ILSPatron):
         super().__init__(id, revision_id)
 
         self.extra_info = None
-        client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
-            "consumer_key"
-        ]
+        client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"]["consumer_key"]
         remote_user = RemoteAccount.get(id, client_id)
         if remote_user:
             self.extra_info = remote_user.extra_data

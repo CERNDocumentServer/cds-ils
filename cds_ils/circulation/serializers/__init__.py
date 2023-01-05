@@ -37,7 +37,7 @@ csv_v1 = LoanCSVSerializer(
         "metadata_document_publication_year",
         "metadata_patron_id",
         "metadata_item_suggestion_internal_location_location_name",
-    ]
+    ],
 )
 csv_v1_response = record_responsify_no_etag(csv_v1, "text/csv")
 csv_v1_search = search_responsify(csv_v1, "text/csv")

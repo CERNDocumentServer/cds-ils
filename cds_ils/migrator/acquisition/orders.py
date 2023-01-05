@@ -55,18 +55,23 @@ import click
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
-from cds_ils.migrator.default_records import MIGRATION_DOCUMENT_PID, \
-    MIGRATION_PROVIDER_PID
-from cds_ils.migrator.errors import AcqOrderError, ItemMigrationError, \
-    ProviderError
+from cds_ils.migrator.default_records import (
+    MIGRATION_DOCUMENT_PID,
+    MIGRATION_PROVIDER_PID,
+)
+from cds_ils.migrator.errors import AcqOrderError, ItemMigrationError, ProviderError
 from cds_ils.migrator.handlers import acquisition_order_exception_handler
 from cds_ils.migrator.items.api import get_item_by_barcode
 from cds_ils.migrator.providers.api import get_provider_by_legacy_id
-from cds_ils.migrator.utils import find_correct_document_pid, \
-    get_acq_ill_notes, get_cost, get_date, get_patron_pid
+from cds_ils.migrator.utils import (
+    find_correct_document_pid,
+    get_acq_ill_notes,
+    get_cost,
+    get_date,
+    get_patron_pid,
+)
 
 DEFAULT_ITEM_MEDIUM = "DIGITAL"
 LIBRARIAN_IDS = [
@@ -184,11 +189,11 @@ def get_payment_mode(record):
     """Return payment mode."""
     budget_code = record.get("budget_code")
     if not budget_code:
-        return 'INDIVIDUAL_PAYMENT'
+        return "INDIVIDUAL_PAYMENT"
     elif budget_code and budget_code.lower() == "cash":
-        return 'INDIVIDUAL_PAYMENT'
+        return "INDIVIDUAL_PAYMENT"
     else:
-        return 'BUDGET_CODE'
+        return "BUDGET_CODE"
 
 
 def create_order_line(record, order_status):
@@ -212,7 +217,7 @@ def create_order_line(record, order_status):
         if document["document_type"] == "BOOK":
             item_medium = "PAPER"
 
-    if record["request_type"] == 'acq-book':
+    if record["request_type"] == "acq-book":
         item_medium = "PAPER"
 
     new_order_line = dict(
@@ -279,12 +284,12 @@ def migrate_order(record):
         new_order.update(grand_total=grand_total)
     try:
 
-        provider_type = 'VENDOR'
+        provider_type = "VENDOR"
 
         # due to migrating the article requests as orders
         # (formerly treated as ILLs)
-        if record['request_type'] == 'article':
-            provider_type = 'LIBRARY'
+        if record["request_type"] == "article":
+            provider_type = "LIBRARY"
 
         provider_legacy_id = record["id_crcLIBRARY"]
 
@@ -292,17 +297,17 @@ def migrate_order(record):
         vendor_merge_mapper = {"63": 19, "47": 20, "48": 37}
         library_merge_mapper = {"72": 33, "74": 42}
 
-        if provider_type == 'VENDOR' and provider_legacy_id in [63, 47, 48]:
+        if provider_type == "VENDOR" and provider_legacy_id in [63, 47, 48]:
             provider_legacy_id = vendor_merge_mapper[str(provider_legacy_id)]
-            provider_type = 'LIBRARY'
+            provider_type = "LIBRARY"
 
-        elif provider_type == 'LIBRARY' and provider_legacy_id in [72, 74]:
-            provider_type = 'VENDOR'
+        elif provider_type == "LIBRARY" and provider_legacy_id in [72, 74]:
+            provider_type = "VENDOR"
             provider_legacy_id = library_merge_mapper[str(provider_legacy_id)]
 
-        provider = get_provider_by_legacy_id(provider_legacy_id,
-                                             provider_type=provider_type,
-                                             grand_total=grand_total)
+        provider = get_provider_by_legacy_id(
+            provider_legacy_id, provider_type=provider_type, grand_total=grand_total
+        )
         provider_pid = provider.pid.pid_value
     except ProviderError as e:
         provider_pid = MIGRATION_PROVIDER_PID
@@ -310,9 +315,7 @@ def migrate_order(record):
 
     expected_delivery_date = record.get("expected_date")
     if expected_delivery_date:
-        new_order.update(
-            expected_delivery_date=get_date(expected_delivery_date)
-        )
+        new_order.update(expected_delivery_date=get_date(expected_delivery_date))
 
     received_date = record.get("arrival_date")
     if received_date:
@@ -329,9 +332,7 @@ def migrate_order(record):
     return new_order
 
 
-def import_orders_from_json(
-    dump_file, rectype="acq-order", raise_exceptions=False
-):
+def import_orders_from_json(dump_file, rectype="acq-order", raise_exceptions=False):
     """Imports orders from JSON data files."""
     click.echo("Importing acquisition orders ..")
     with click.progressbar(json.load(dump_file)) as input_data:
@@ -345,9 +346,7 @@ def import_orders_from_json(
                     mint_legacy_pid=True,
                 )
             except Exception as exc:
-                handler = acquisition_order_exception_handler.get(
-                    exc.__class__
-                )
+                handler = acquisition_order_exception_handler.get(exc.__class__)
                 if handler:
                     handler(
                         exc,
