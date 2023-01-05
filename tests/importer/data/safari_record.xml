@@ -37,6 +37,9 @@
 <marc:datafield tag="041" ind1="0" ind2=" ">
     <marc:subfield code="a">eng</marc:subfield>
 </marc:datafield>
+<marc:datafield tag="041" ind1="0" ind2=" ">
+    <marc:subfield code="a">ita</marc:subfield>
+</marc:datafield>
 <marc:datafield tag="050" ind1=" " ind2="4">
     <marc:subfield code="a">HD69.P75</marc:subfield>
     <marc:subfield code="b">M868 2009eb</marc:subfield>

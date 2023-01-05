@@ -22,6 +22,17 @@ class SafariModel(Base):
 
     _default_fields = {"document_type": "BOOK"}
 
+    @staticmethod
+    def _add_missing_fields(document):
+        """Adds missing fields.
+
+        Adds necessary fields when missing after the transformation.
+        """
+        # Cannot be set before the transformation, otherwise ENG will be always there,
+        # even if another language is already defined (languages are appended).
+        document.setdefault("languages", ["ENG"])
+        return document
+
     def do(
         self,
         blob,
@@ -31,7 +42,8 @@ class SafariModel(Base):
     ):
         """Overwrite the do method."""
         init_fields = deepcopy(self._default_fields)
-        return super().do(blob, ignore_missing, exception_handlers, init_fields)
+        mapped = super().do(blob, ignore_missing, exception_handlers, init_fields)
+        return self._add_missing_fields(mapped)
 
 
 model = SafariModel(bases=(model_base,), entry_point_group="cds_ils.importer.document")
