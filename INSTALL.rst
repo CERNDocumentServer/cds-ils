@@ -103,14 +103,6 @@ this:
 For more information about end-to-end testing see `pytest-invenio
 <https://pytest-invenio.readthedocs.io/en/latest/usage.html#running-e2e-tests>`_
 
-Documentation
--------------
-You can build the documentation with:
-
-.. code-block:: console
-
-    $ sphinx-build
-
 Production environment
 ----------------------
 You can use simulate a full production environment using the

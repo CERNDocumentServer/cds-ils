@@ -89,9 +89,7 @@ Ready to contribute? Here's how to set up `cds-ils` for local development.
 
       $ ./run-tests.sh
 
-   The tests will provide you with test coverage and also check PEP8
-   (code style), PEP257 (documentation), flake8 as well as build the Sphinx
-   documentation and run doctests.
+   The tests will provide you with test coverage and also check the code style.
 
 6. Commit your changes and push your branch to GitHub:
 
