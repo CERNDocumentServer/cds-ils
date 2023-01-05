@@ -59,7 +59,7 @@ jobs:
       - name: Generate dependencies
         run: |
           python -m pip install "setuptools<58" py twine wheel requirements-builder
-          requirements-builder -e "$EXTRAS" --level=pypi setup.py > .pypi-${{ matrix.python-version }}-requirements.txt
+          requirements-builder -e $EXTRAS --level=pypi setup.py > .pypi-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
         uses: actions/cache@v3

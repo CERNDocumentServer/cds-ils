@@ -16,14 +16,12 @@
 
 include .dockerignore
 include .editorconfig
-include .tx/config
 include *.rst
 include *.sh
 include *.txt
 include *.yml
 include babel.ini
 include LICENSE
-include pytest.ini
 include scripts/bootstrap
 include scripts/celery
 include scripts/console
@@ -34,13 +32,7 @@ include scripts/update
 include scripts/ldap_sync
 include scripts/life_data_setup
 include tests
-prune docs/_build
 recursive-include .github/workflows *.yml
-recursive-include docs *.bat
-recursive-include docs *.py
-recursive-include docs *.rst
-recursive-include docs *.txt
-recursive-include docs Makefile
 recursive-include cds_ils *.gitkeep
 recursive-include cds_ils *.po *.pot *.mo
 recursive-include cds_ils *.json *.html *.js *.scss
