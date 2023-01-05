@@ -10,8 +10,10 @@ import time
 
 import pytest
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
-from invenio_app_ils.internal_locations.api import \
-    INTERNAL_LOCATION_PID_TYPE, InternalLocation
+from invenio_app_ils.internal_locations.api import (
+    INTERNAL_LOCATION_PID_TYPE,
+    InternalLocation,
+)
 from invenio_app_ils.items.api import ITEM_PID_TYPE, Item
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE, Location
 from invenio_app_ils.providers.api import PROVIDER_PID_TYPE, Provider
@@ -31,9 +33,7 @@ def test_data_migration(app, db, es_clear, patrons):
     locations = _create_records(db, data, Location, LOCATION_PID_TYPE)
 
     data = load_json_from_datadir("internal_locations.json")
-    int_locs = _create_records(
-        db, data, InternalLocation, INTERNAL_LOCATION_PID_TYPE
-    )
+    int_locs = _create_records(db, data, InternalLocation, INTERNAL_LOCATION_PID_TYPE)
 
     data = load_json_from_datadir("documents.json")
     documents = _create_records(db, data, Document, DOCUMENT_PID_TYPE)
@@ -49,9 +49,7 @@ def test_data_migration(app, db, es_clear, patrons):
 
     # index
     ri = RecordIndexer()
-    for rec in (
-        locations + int_locs + documents + items + ill_libraries + vendors
-    ):
+    for rec in locations + int_locs + documents + items + ill_libraries + vendors:
         ri.index(rec)
 
     # wait for indexing

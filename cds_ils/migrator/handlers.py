@@ -12,28 +12,40 @@ import logging
 from copy import deepcopy
 
 import click
-from invenio_app_ils.errors import IlsValidationError, RecordRelationsError, \
-    VocabularyError
+from invenio_app_ils.errors import (
+    IlsValidationError,
+    RecordRelationsError,
+    VocabularyError,
+)
 from invenio_pidstore.errors import PIDAlreadyExists, PIDDoesNotExistError
 
 from cds_ils.importer.errors import ManualImportRequired
 from cds_ils.literature.api import get_record_by_legacy_recid
-from cds_ils.migrator.errors import AcqOrderError, DocumentMigrationError, \
-    DumpRevisionException, EItemMigrationError, FileMigrationError, \
-    ItemMigrationError, JSONConversionException, LoanMigrationError, \
-    LossyConversion, ProviderError, RelationMigrationError, \
-    SeriesMigrationError
-from cds_ils.migrator.utils import get_legacy_pid_type_by_provider, \
-    model_provider_by_rectype
+from cds_ils.migrator.errors import (
+    AcqOrderError,
+    DocumentMigrationError,
+    DumpRevisionException,
+    EItemMigrationError,
+    FileMigrationError,
+    ItemMigrationError,
+    JSONConversionException,
+    LoanMigrationError,
+    LossyConversion,
+    ProviderError,
+    RelationMigrationError,
+    SeriesMigrationError,
+)
+from cds_ils.migrator.utils import (
+    get_legacy_pid_type_by_provider,
+    model_provider_by_rectype,
+)
 
 cli_logger = logging.getLogger("migrator")
 documents_logger = logging.getLogger("documents_logger")
 items_logger = logging.getLogger("items_logger")
 
 
-def migration_exception_handler(
-    exc, output, key, value, rectype=None, **kwargs
-):
+def migration_exception_handler(exc, output, key, value, rectype=None, **kwargs):
     """Migration exception handling - log to files.
 
     :param exc: exception
@@ -44,17 +56,13 @@ def migration_exception_handler(
     """
     logger = logging.getLogger(f"{rectype}s_logger")
     cli_logger.error(
-        "#RECID: #{0} - {1}  MARC FIELD: *{2}*, input value: {3}, -> {4}, "
-        .format(
+        "#RECID: #{0} - {1}  MARC FIELD: *{2}*, input value: {3}, -> {4}, ".format(
             output["legacy_recid"], exc.message, key, value, output
         )
     )
     logger.error(
-        "MARC: {0}, INPUT VALUE: {1} ERROR: {2}"
-        "".format(key, value, exc.message),
-        extra=dict(
-            legacy_id=output["legacy_recid"], status="WARNING", new_pid=None
-        ),
+        "MARC: {0}, INPUT VALUE: {1} ERROR: {2}" "".format(key, value, exc.message),
+        extra=dict(legacy_id=output["legacy_recid"], status="WARNING", new_pid=None),
     )
 
 
@@ -68,9 +76,7 @@ def revision_exception_handler(exc, legacy_id=None, rectype=None, **kwargs):
     )
 
 
-def lossy_conversion_exception_handler(
-    exc, legacy_id=None, rectype=None, **kwargs
-):
+def lossy_conversion_exception_handler(exc, legacy_id=None, rectype=None, **kwargs):
     """Handle lossy conversion exception."""
     logger = logging.getLogger(f"{rectype}s_logger")
     logger.error(
@@ -79,9 +85,7 @@ def lossy_conversion_exception_handler(
     )
 
 
-def json_conversion_exception_handler(
-    exc, legacy_id=None, rectype=None, **kwargs
-):
+def json_conversion_exception_handler(exc, legacy_id=None, rectype=None, **kwargs):
     """Handle json conversion exception."""
     logger = logging.getLogger(f"{rectype}s_logger")
     logger.error(
@@ -90,17 +94,13 @@ def json_conversion_exception_handler(
     )
 
 
-def ils_validation_error_handler(
-    exc, legacy_id=None, rectype="document", **kwargs
-):
+def ils_validation_error_handler(exc, legacy_id=None, rectype="document", **kwargs):
     """Handle validation error."""
     logger = logging.getLogger(f"{rectype}s_logger")
     logger.error(
         f"{str(exc.original_exception.message)}: "
         f"{str([error.res for error in exc.errors])}",
-        extra=dict(
-            legacy_id=legacy_id, status="ERROR", new_pid=None, **kwargs
-        ),
+        extra=dict(legacy_id=legacy_id, status="ERROR", new_pid=None, **kwargs),
     )
 
 
@@ -111,9 +111,7 @@ def migration_validation_error_handler(
     logger = logging.getLogger(f"{rectype}s_logger")
     logger.error(
         str(exc),
-        extra=dict(
-            legacy_id=legacy_id, status="ERROR", new_pid=None, **kwargs
-        ),
+        extra=dict(legacy_id=legacy_id, status="ERROR", new_pid=None, **kwargs),
     )
 
 
@@ -147,9 +145,7 @@ def loan_migration_exception_handler(exc, legacy_id=None, **kwargs):
     loans_logger = logging.getLogger("loans_logger")
     loans_logger.error(
         str(exc),
-        extra=dict(
-            legacy_id=legacy_id, new_pid=None, status="ERROR", **kwargs
-        ),
+        extra=dict(legacy_id=legacy_id, new_pid=None, status="ERROR", **kwargs),
     )
 
 
@@ -172,8 +168,9 @@ def eitem_migration_exception_handler(exc, document_pid=None, *kwargs):
     """Handle Eitem migration exception."""
     eitems_logger = logging.getLogger("eitems_logger")
     click.secho(str(exc), fg="red")
-    eitems_logger.error(str(exc), extra=dict(document_pid=document_pid,
-                                             new_pid=None, status="ERROR"))
+    eitems_logger.error(
+        str(exc), extra=dict(document_pid=document_pid, new_pid=None, status="ERROR")
+    )
 
 
 def vocabulary_exception_handler(
@@ -204,8 +201,12 @@ def relation_exception_handler(exc, **kwargs):
     """Handle relation already exists exception."""
     relations_logger = logging.getLogger("relations_logger")
     relations_logger.warning(
-        str(exc), extra=dict(legacy_id=kwargs.get("legacy_id"), status="ERROR",
-                             new_pid=kwargs.get("new_pid"))
+        str(exc),
+        extra=dict(
+            legacy_id=kwargs.get("legacy_id"),
+            status="ERROR",
+            new_pid=kwargs.get("new_pid"),
+        ),
     )
 
 
@@ -213,13 +214,16 @@ def related_record_not_found(exc, raise_exceptions=False, **kwargs):
     """Handle not found exceptions."""
     relations_logger = logging.getLogger("relations_logger")
     if isinstance(exc, PIDDoesNotExistError):
-        message = f"Record legacy " \
-                  f"id {exc.pid_value}({exc.pid_type}) not found."
+        message = f"Record legacy " f"id {exc.pid_value}({exc.pid_type}) not found."
     else:
         message = str(exc)
     relations_logger.error(
-        message, extra=dict(legacy_id=kwargs.get("legacy_id"), status="ERROR",
-                            new_pid=kwargs.get("new_pid"))
+        message,
+        extra=dict(
+            legacy_id=kwargs.get("legacy_id"),
+            status="ERROR",
+            new_pid=kwargs.get("new_pid"),
+        ),
     )
 
     if raise_exceptions:
@@ -233,9 +237,7 @@ def default_error_handler(
     logger = logging.getLogger(f"{rectype}s_logger")
     logger.error(
         str(exc),
-        extra=dict(
-            legacy_id=legacy_id, status="ERROR", new_pid=None, **kwargs
-        ),
+        extra=dict(legacy_id=legacy_id, status="ERROR", new_pid=None, **kwargs),
     )
     if raise_exceptions:
         raise exc
@@ -273,7 +275,8 @@ multipart_record_exception_handler.update(
 
 acquisition_order_exception_handler = deepcopy(json_records_exception_handlers)
 
-acquisition_order_exception_handler.update({
+acquisition_order_exception_handler.update(
+    {
         AcqOrderError: migration_validation_error_handler,
         ProviderError: migration_validation_error_handler,
     }
@@ -283,12 +286,12 @@ eitems_exception_handlers = {
     IlsValidationError: ils_validation_error_handler,
     EItemMigrationError: eitem_migration_exception_handler,
     AssertionError: eitem_migration_exception_handler,
-    FileMigrationError: eitem_migration_exception_handler
+    FileMigrationError: eitem_migration_exception_handler,
 }
 
 relation_exception_handlers = {
     RecordRelationsError: relation_exception_handler,
     RelationMigrationError: related_record_not_found,
     PIDDoesNotExistError: related_record_not_found,
-    DocumentMigrationError: relation_exception_handler
+    DocumentMigrationError: relation_exception_handler,
 }

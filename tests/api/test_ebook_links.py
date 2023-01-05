@@ -34,11 +34,9 @@ def test_ebook_links(app, client, testdata, json_headers, admin):
 
     def _get_item(doc, eitem_pid):
         """Get item from the document record."""
-        return [
-            eitem
-            for eitem in doc["eitems"]["hits"]
-            if eitem["pid"] == eitem_pid
-        ][0]
+        return [eitem for eitem in doc["eitems"]["hits"] if eitem["pid"] == eitem_pid][
+            0
+        ]
 
     def assert_urls(urls):
         """Test urls."""

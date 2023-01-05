@@ -119,8 +119,9 @@ class ImporterTaskDetailLogV1(ImporterTaskLogV1):
     @post_dump
     def records_statuses(self, data, **kwargs):
         """Return correct record statuses."""
-        children_entries_query = ImportRecordLog.query \
-            .filter_by(import_id=data.get('id'))
+        children_entries_query = ImportRecordLog.query.filter_by(
+            import_id=data.get("id")
+        )
 
         first_entry = children_entries_query.first()
 
@@ -129,10 +130,13 @@ class ImporterTaskDetailLogV1(ImporterTaskLogV1):
         if first_entry:
             initial_id = first_entry.id
 
-        entries = children_entries_query \
-            .filter(ImportRecordLog.id >= initial_id + self.records_offset) \
-            .order_by(ImportRecordLog.id.asc()) \
+        entries = (
+            children_entries_query.filter(
+                ImportRecordLog.id >= initial_id + self.records_offset
+            )
+            .order_by(ImportRecordLog.id.asc())
             .all()
+        )
 
         data["loaded_entries"] = children_entries_query.count()
         data["records"] = ImporterRecordReportSchemaV1(many=True).dump(entries)

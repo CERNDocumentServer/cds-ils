@@ -18,10 +18,15 @@ from invenio_app_ils.series.api import SERIES_PID_TYPE
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
-from cds_ils.migrator.constants import MIGRATION_DESIGN_PID, \
-    MIGRATION_DOCUMENT_PID, MIGRATION_ITEM_PID, MIGRATION_PROVIDER_PID
-from cds_ils.migrator.internal_locations.api import \
-    get_internal_location_by_legacy_recid
+from cds_ils.migrator.constants import (
+    MIGRATION_DESIGN_PID,
+    MIGRATION_DOCUMENT_PID,
+    MIGRATION_ITEM_PID,
+    MIGRATION_PROVIDER_PID,
+)
+from cds_ils.migrator.internal_locations.api import (
+    get_internal_location_by_legacy_recid,
+)
 
 
 def mint_migration_records(pid_type, pid_field, data):
@@ -77,8 +82,7 @@ def create_unknown_provider():
         "legacy_ids": ["0"],
         "type": "LIBRARY",
         "notes": "This provider is used whenever "
-                 "we had provider ID 0 in CDS Acquisition and ILL data.",
-
+        "we had provider ID 0 in CDS Acquisition and ILL data.",
     }
 
     return create_default_record(
@@ -109,7 +113,8 @@ def create_unknown_item():
     """Create unknown item."""
     DEFAULT_INTERNAL_LOCATION_LEGACY_ID = 3
     int_loc_pid_value = get_internal_location_by_legacy_recid(
-        DEFAULT_INTERNAL_LOCATION_LEGACY_ID).pid.pid_value
+        DEFAULT_INTERNAL_LOCATION_LEGACY_ID
+    ).pid.pid_value
     data = {
         "created_by": {"type": "script", "value": "migration"},
         "internal_location_pid": int_loc_pid_value,

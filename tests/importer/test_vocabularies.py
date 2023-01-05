@@ -44,14 +44,14 @@ RECORD = {
         },
         {
             "subfield3": "SUBFIELD3_VALID_KEY_2",
-        }
+        },
     ],
     "field4": "FIELD4_VALID_KEY",
     "field5": [
         "FIELD5_VALID_KEY_1",
         "FIELD5_VALID_KEY_2",
         "FIELD5_VALID_KEY_3",
-    ]
+    ],
 }
 
 

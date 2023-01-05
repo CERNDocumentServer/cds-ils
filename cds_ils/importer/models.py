@@ -89,8 +89,7 @@ class ImporterImportLog(db.Model):
     """The agent that initiated the task."""
 
     status = db.Column(
-        Enum(ImporterTaskStatus), nullable=False,
-        default=ImporterTaskStatus.RUNNING
+        Enum(ImporterTaskStatus), nullable=False, default=ImporterTaskStatus.RUNNING
     )
     """The current status of the task."""
 
@@ -106,9 +105,7 @@ class ImporterImportLog(db.Model):
     original_filename = db.Column(db.String, nullable=False)
     """The original name of the imported file."""
 
-    start_time = db.Column(
-        db.DateTime, nullable=False, default=lambda: datetime.now()
-    )
+    start_time = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now())
     """Task start time."""
 
     end_time = db.Column(db.DateTime, nullable=True)
@@ -176,8 +173,9 @@ class ImportRecordLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     __tablename__ = "import_record_log"
 
-    import_id = db.Column(db.Integer, db.ForeignKey('importer_import_log.id',
-                                                    ondelete="CASCADE"))
+    import_id = db.Column(
+        db.Integer, db.ForeignKey("importer_import_log.id", ondelete="CASCADE")
+    )
     """The parent task."""
 
     entry_recid = db.Column(db.String, nullable=False)
@@ -188,7 +186,7 @@ class ImportRecordLog(db.Model):
 
     importer_task = db.relationship(
         ImporterImportLog,
-        backref=db.backref('records', lazy='dynamic', passive_deletes=True)
+        backref=db.backref("records", lazy="dynamic", passive_deletes=True),
     )
     """Relationship."""
 
@@ -202,9 +200,7 @@ class ImportRecordLog(db.Model):
     series = db.Column(db.JSON, nullable=True)
 
     # default ordering
-    __mapper_args__ = {
-        "order_by": id
-    }
+    __mapper_args__ = {"order_by": id}
 
     @classmethod
     def __create(cls, data):
@@ -218,11 +214,7 @@ class ImportRecordLog(db.Model):
     def create_success(cls, import_id, entry_recid, report):
         """Mark this record as successfully imported."""
         return cls.__create(
-            {
-                **dict(import_id=import_id,
-                       entry_recid=entry_recid),
-                **report
-            }
+            {**dict(import_id=import_id, entry_recid=entry_recid), **report}
         )
 
     @classmethod
@@ -232,10 +224,11 @@ class ImportRecordLog(db.Model):
             report = {}
         return cls.__create(
             {
-                **dict(import_id=import_id,
-                       entry_recid=entry_recid,
-                       error=_format_exception(exception)
-                       ),
-                **report
+                **dict(
+                    import_id=import_id,
+                    entry_recid=entry_recid,
+                    error=_format_exception(exception),
+                ),
+                **report,
             }
         )

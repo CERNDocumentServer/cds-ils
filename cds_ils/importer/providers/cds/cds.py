@@ -52,6 +52,4 @@ class CDSBase(Base):
     """Translation Index for CDS Books."""
 
 
-model = CDSBase(
-    bases=(model_base,), entry_point_group="cds_ils.importer.cds.base"
-)
+model = CDSBase(bases=(model_base,), entry_point_group="cds_ils.importer.cds.base")

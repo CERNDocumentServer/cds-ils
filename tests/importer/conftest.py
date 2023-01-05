@@ -25,9 +25,7 @@ def importer_test_data(app, db, es_clear):
     Series = current_app_ils.series_record_cls
     series = _create_records(db, data, Series, SERIES_PID_TYPE)
 
-    data = load_json_from_datadir(
-        "existing_documents.json", relpath="importer"
-    )
+    data = load_json_from_datadir("existing_documents.json", relpath="importer")
     Document = current_app_ils.document_record_cls
     documents = _create_records(db, data, Document, DOCUMENT_PID_TYPE)
 

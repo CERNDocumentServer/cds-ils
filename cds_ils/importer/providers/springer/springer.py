@@ -10,8 +10,7 @@ from copy import deepcopy
 
 from cds_ils.importer.base_model import Base
 from cds_ils.importer.base_model import model as model_base
-from cds_ils.importer.providers.springer.ignore_fields import \
-    SPRINGER_IGNORE_FIELDS
+from cds_ils.importer.providers.springer.ignore_fields import SPRINGER_IGNORE_FIELDS
 
 
 class SpringerDocument(Base):
@@ -21,7 +20,7 @@ class SpringerDocument(Base):
 
     __ignore_keys__ = SPRINGER_IGNORE_FIELDS
 
-    _default_fields = {"document_type": "BOOK", "languages": ['ENG']}
+    _default_fields = {"document_type": "BOOK", "languages": ["ENG"]}
 
     def do(
         self,
@@ -32,9 +31,7 @@ class SpringerDocument(Base):
     ):
         """Overwrite the do method."""
         init_fields = deepcopy(self._default_fields)
-        return super().do(
-            blob, ignore_missing, exception_handlers, init_fields
-        )
+        return super().do(blob, ignore_missing, exception_handlers, init_fields)
 
 
 model = SpringerDocument(

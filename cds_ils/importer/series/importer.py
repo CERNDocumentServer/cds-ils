@@ -20,10 +20,12 @@ from invenio_db import db
 
 from cds_ils.importer.errors import SeriesImportError
 from cds_ils.importer.providers.utils import rreplace
-from cds_ils.importer.series.api import search_series_by_isbn, \
-    search_series_by_issn, search_series_by_title
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.series.api import (
+    search_series_by_isbn,
+    search_series_by_issn,
+    search_series_by_title,
+)
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 
 VOCABULARIES_FIELDS = {
     "access_urls": {

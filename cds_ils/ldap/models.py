@@ -50,14 +50,10 @@ class LdapSynchronizationLog(db.Model):
     task_id = db.Column(db.String, nullable=True)
     """The task identifier, in case of a celery task."""
 
-    status = db.Column(
-        Enum(TaskStatus), nullable=False, default=TaskStatus.RUNNING
-    )
+    status = db.Column(Enum(TaskStatus), nullable=False, default=TaskStatus.RUNNING)
     """The current status of the task."""
 
-    start_time = db.Column(
-        db.DateTime, nullable=False, default=lambda: datetime.now()
-    )
+    start_time = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now())
     """Task start time."""
 
     end_time = db.Column(db.DateTime, nullable=True)

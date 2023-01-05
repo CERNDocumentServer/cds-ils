@@ -14,32 +14,36 @@ from logging import FileHandler
 import click
 from flask.cli import with_appcontext
 
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.acquisition.orders import import_orders_from_json
-from cds_ils.migrator.api import document_migration_report, \
-    import_documents_from_dump, items_migration_report
-from cds_ils.migrator.default_records import create_default_records, \
-    create_unknown_item
-from cds_ils.migrator.document_requests.api import \
-    import_document_requests_from_json
-from cds_ils.migrator.eitems.api import migrate_ebl_links, \
-    migrate_external_links, migrate_ezproxy_links, migrate_safari_links, \
-    process_files_from_legacy
+from cds_ils.migrator.api import (
+    document_migration_report,
+    import_documents_from_dump,
+    items_migration_report,
+)
+from cds_ils.migrator.default_records import create_default_records, create_unknown_item
+from cds_ils.migrator.document_requests.api import import_document_requests_from_json
+from cds_ils.migrator.eitems.api import (
+    migrate_ebl_links,
+    migrate_external_links,
+    migrate_ezproxy_links,
+    migrate_safari_links,
+    process_files_from_legacy,
+)
 from cds_ils.migrator.ill.api import import_ill_borrowing_requests_from_json
-from cds_ils.migrator.internal_locations.api import \
-    import_internal_locations_from_json
+from cds_ils.migrator.internal_locations.api import import_internal_locations_from_json
 from cds_ils.migrator.items.api import import_items_from_json
 from cds_ils.migrator.loans.api import import_loans_from_json
 from cds_ils.migrator.patrons.api import import_users_from_json
 from cds_ils.migrator.providers.api import import_vendors_from_json
 from cds_ils.migrator.relations.api import link_documents_and_serials
-from cds_ils.migrator.relations.documents import \
-    migrate_document_siblings_relation
+from cds_ils.migrator.relations.documents import migrate_document_siblings_relation
 from cds_ils.migrator.relations.series import migrate_series_relations
 from cds_ils.migrator.series.api import validate_serial_records
-from cds_ils.migrator.series.series_import import import_serial_from_file, \
-    import_series_from_dump
+from cds_ils.migrator.series.series_import import (
+    import_serial_from_file,
+    import_series_from_dump,
+)
 from cds_ils.migrator.series.xml_multipart_loader import CDSMultipartDumpLoader
 from cds_ils.migrator.utils import commit, reindex_pidtype
 
@@ -113,15 +117,14 @@ def migration():
     is_flag=True,
 )
 @with_appcontext
-def documents(sources, source_type, include, skip_indexing,
-              fail_on_exceptions=False):
+def documents(sources, source_type, include, skip_indexing, fail_on_exceptions=False):
     """Migrate documents from CDS legacy."""
     import_documents_from_dump(
         sources=sources,
         source_type=source_type,
         eager=True,
         include=include,
-        raise_exceptions=fail_on_exceptions
+        raise_exceptions=fail_on_exceptions,
     )
     # We don't get the record back from _loadrecord so re-index all documents
     if not skip_indexing:
@@ -144,7 +147,9 @@ def multipart(sources, rectype="multipart"):
     """Migrate multiparts from xml dump file."""
     click.echo("Migrating {}s...".format(rectype))
     import_series_from_dump(
-        sources, rectype=rectype, loader_class=CDSMultipartDumpLoader,
+        sources,
+        rectype=rectype,
+        loader_class=CDSMultipartDumpLoader,
     )
 
 
@@ -241,9 +246,7 @@ def acquisition_orders(sources, fail_on_exceptions):
     """Migrate acquisition orders and document requests from CDS legacy."""
     for idx, source in enumerate(sources, 1):
         click.echo(
-            "({}/{}) Migrating orders in {}...".format(
-                idx, len(sources), source.name
-            )
+            "({}/{}) Migrating orders in {}...".format(idx, len(sources), source.name)
         )
         import_orders_from_json(source, raise_exceptions=fail_on_exceptions)
 
@@ -293,8 +296,7 @@ def loans(sources, fail_on_exceptions):
 def loan_requests(sources, fail_on_exceptions):
     """Migrate loan_requests from CDS legacy."""
     for idx, source in enumerate(sources, 1):
-        import_loans_from_json(source, fail_on_exceptions,
-                               mint_legacy_pid=False)
+        import_loans_from_json(source, fail_on_exceptions, mint_legacy_pid=False)
 
 
 @migration.group()

@@ -38,7 +38,7 @@ def test_safari_transformation(app):
                         {
                             "description": "e-book",
                             "value": "https://learning.oreilly.com"
-                                     "/library/view/-/9780814415467/?ar",
+                            "/library/view/-/9780814415467/?ar",
                         },
                     ]
                 },
@@ -49,8 +49,8 @@ def test_safari_transformation(app):
                     }
                 ],
                 "abstract": "A complete tool kit for handling "
-                            "disciplinary problems in a "
-                            "fair, responsible, and legally defensible way.",
+                "disciplinary problems in a "
+                "fair, responsible, and legally defensible way.",
                 "agency_code": "OCoLC",
                 "alternative_identifiers": [
                     {"scheme": "SAFARI", "value": "9780814415467"}
@@ -104,11 +104,8 @@ def test_safari_transformation(app):
                 },
                 "keywords": [
                     {"source": "SAFARI", "value": "Project management"},
-                    {'source': 'SAFARI',
-                     'value': 'Gestion de projet'},
-                    {'source': 'SAFARI',
-                     'value': 'Project other'},
-
+                    {"source": "SAFARI", "value": "Gestion de projet"},
+                    {"source": "SAFARI", "value": "Project other"},
                 ],
                 "number_of_pages": "399",
                 "publication_year": "2009",
@@ -118,7 +115,7 @@ def test_safari_transformation(app):
                     {"scheme": "DEWEY", "value": "658.4/04"},
                 ],
                 "title": "101 Sample Write-Ups for "
-                         "Documenting Employee Performance Problems",
+                "Documenting Employee Performance Problems",
             },
         )
 
@@ -138,13 +135,14 @@ def test_safari_additional(app):
                 "alternative_identifiers": [
                     {"scheme": "SAFARI", "value": "on1291562831"}
                 ],
-                'alternative_titles': [
-                    {'type': 'ALTERNATIVE_TITLE',
-                     'value': 'Harvard Business Review guide to managing '
-                              'flexible work'},
-                    {'type': 'ALTERNATIVE_TITLE',
-                     'value': 'Managing flexible work'}],
-
+                "alternative_titles": [
+                    {
+                        "type": "ALTERNATIVE_TITLE",
+                        "value": "Harvard Business Review guide to managing "
+                        "flexible work",
+                    },
+                    {"type": "ALTERNATIVE_TITLE", "value": "Managing flexible work"},
+                ],
                 "agency_code": "OCoLC",
                 "identifiers": [
                     {"scheme": "ISBN", "value": "9781647823337", "material": "DIGITAL"},
@@ -171,34 +169,34 @@ def test_safari_additional(app):
                 },
                 "_serial": [{"title": "Harvard business review guides"}],
                 "abstract": '"The 9-to-5 office routine no longer exists. '
-                            'Many employees have the option to\n'
-                            "                work anywhere, any "
-                            "time. But how do you find "
-                            "the flexible arrangement "
-                            "that's right for you? And how do\n               "
-                            " you manage a team when they're all "
-                            "working in different places and on different schedules? "
-                            "The HBR Guide\n                "
-                            "to Managing Flexible Work has the answers. "
-                            "Filled with tips, advice, and examples, this "
-                            "book helps\n                individual contributors "
-                            "and managers alike assess the "
-                            "trade-offs that come with flexible "
-                            "work options,\n               "
-                            " advocate for the arrangement that works for them, "
-                            "and remain productive and "
-                            "connected to team members at\n               "
-                            " the same time. You'll learn to: "
-                            "identify key job responsibilities and when and "
-                            "where each one can be\n       "
-                            "         done, establish the best arrangements for "
-                            "yourself and your team, "
-                            "create the conditions for success,\n                "
-                            "stay connected and visible, "
-                            "no matter when or where you work, win support for "
-                            "your projects and ideas,\n          "
-                            '      and keep people engaged, both in '
-                            'person and virtually"--',
+                "Many employees have the option to\n"
+                "                work anywhere, any "
+                "time. But how do you find "
+                "the flexible arrangement "
+                "that's right for you? And how do\n               "
+                " you manage a team when they're all "
+                "working in different places and on different schedules? "
+                "The HBR Guide\n                "
+                "to Managing Flexible Work has the answers. "
+                "Filled with tips, advice, and examples, this "
+                "book helps\n                individual contributors "
+                "and managers alike assess the "
+                "trade-offs that come with flexible "
+                "work options,\n               "
+                " advocate for the arrangement that works for them, "
+                "and remain productive and "
+                "connected to team members at\n               "
+                " the same time. You'll learn to: "
+                "identify key job responsibilities and when and "
+                "where each one can be\n       "
+                "         done, establish the best arrangements for "
+                "yourself and your team, "
+                "create the conditions for success,\n                "
+                "stay connected and visible, "
+                "no matter when or where you work, win support for "
+                "your projects and ideas,\n          "
+                "      and keep people engaged, both in "
+                'person and virtually"--',
                 "keywords": [
                     {"source": "SAFARI", "value": "Flexible work arrangements"},
                     {"source": "SAFARI", "value": "Virtual work teams"},
@@ -206,18 +204,15 @@ def test_safari_additional(app):
                     {"source": "SAFARI", "value": "Telecommuting"},
                     {"source": "SAFARI", "value": "Success in business"},
                     {"source": "SAFARI", "value": "Industrial management"},
-                    {'source': 'SAFARI',
-                     'value': 'Conditions de travail flexibles'},
-                    {'source': 'SAFARI',
-                     'value': 'Équipes virtuelles'},
-                    {'source': 'SAFARI',
-                     'value': 'Travail virtuel (Mécanique analytique'},
-                    {'source': 'SAFARI',
-                     'value': 'Succès dans les affaires'},
-                    {'source': 'SAFARI',
-                     'value': "Gestion d'entreprise"},
+                    {"source": "SAFARI", "value": "Conditions de travail flexibles"},
+                    {"source": "SAFARI", "value": "Équipes virtuelles"},
+                    {
+                        "source": "SAFARI",
+                        "value": "Travail virtuel (Mécanique analytique",
+                    },
+                    {"source": "SAFARI", "value": "Succès dans les affaires"},
+                    {"source": "SAFARI", "value": "Gestion d'entreprise"},
                 ],
-
                 "_eitem": {
                     "urls": [
                         {
@@ -309,45 +304,78 @@ def test_safari_additional2(app):
     with app.app_context():
         check_transformation(
             example,
-            {'document_type': 'BOOK',
-             'provider_recid': 'on1311516685',
-             'alternative_identifiers': [
-                 {'scheme': 'SAFARI', 'value': 'on1311516685'}],
-             'agency_code': 'OCoLC', 'identifiers': [
-                {'scheme': 'ISBN', 'value': '9784873119144', 'material': 'DIGITAL'},
-                {'scheme': 'ISBN', 'value': '4873119146', 'material': 'DIGITAL'}],
-             'languages': ['JPN'],
-             'subjects': [{'scheme': 'LOC', 'value': 'QA76.9.H85'},
-                          {'scheme': 'DEWEY', 'value': '004.019'}],
-             'authors': [{'full_name': 'Wendel, Stephen', 'roles': ['AUTHOR'],
-                          'type': 'PERSON'}, {'full_name': 'Takeyama, Masanao',
-                                              'roles': ['AUTHOR'],
-                                              'type': 'PERSON'},
-                         {'full_name': 'Aijima, Masaki', 'roles': ['AUTHOR'],
-                          'type': 'PERSON'}], 'alternative_titles': [{
-                'value': 'shinrigaku to kōdō keizaigaku o purodakuto dezain\n '
-                         '               ni katsuyōsuru',
-                'type': 'SUBTITLE'},
-                {
-                    'value': 'Designing for behavior change :',
-                    'type': 'ALTERNATIVE_TITLE'},
-                {
-                    'value': 'applying psychology and behavioral economics',
-                    'type': 'SUBTITLE'}],
-             'title': 'Kōdō o kaeru dezain', 'edition': 'shohan',
-             'publication_year': '2020',
-             'imprint': {'publisher': 'Orairī Japan',
-                         'place': 'Tōkyō-to Shinjuku-ku'},
-             'number_of_pages': '464',
-             'abstract': "Abstract",
-             'keywords': [
-                 {'source': 'SAFARI', 'value': 'Human-computer interaction'},
-                 {'source': 'SAFARI', 'value': 'User-centered system design'},
-                 {'source': 'SAFARI',
-                  'value': 'Conception participative (Conception de systèmes'}],
-             '_eitem':
-                 {'urls':
-                      [{'description': 'e-book',
-                        'value':
-                            'https://learning.oreilly.com/library/view/-/9784873119144/?ar'}]}}  # noqa
+            {
+                "document_type": "BOOK",
+                "provider_recid": "on1311516685",
+                "alternative_identifiers": [
+                    {"scheme": "SAFARI", "value": "on1311516685"}
+                ],
+                "agency_code": "OCoLC",
+                "identifiers": [
+                    {"scheme": "ISBN", "value": "9784873119144", "material": "DIGITAL"},
+                    {"scheme": "ISBN", "value": "4873119146", "material": "DIGITAL"},
+                ],
+                "languages": ["JPN"],
+                "subjects": [
+                    {"scheme": "LOC", "value": "QA76.9.H85"},
+                    {"scheme": "DEWEY", "value": "004.019"},
+                ],
+                "authors": [
+                    {
+                        "full_name": "Wendel, Stephen",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                    {
+                        "full_name": "Takeyama, Masanao",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                    {
+                        "full_name": "Aijima, Masaki",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                ],
+                "alternative_titles": [
+                    {
+                        "value": "shinrigaku to kōdō keizaigaku o purodakuto dezain\n "
+                        "               ni katsuyōsuru",
+                        "type": "SUBTITLE",
+                    },
+                    {
+                        "value": "Designing for behavior change :",
+                        "type": "ALTERNATIVE_TITLE",
+                    },
+                    {
+                        "value": "applying psychology and behavioral economics",
+                        "type": "SUBTITLE",
+                    },
+                ],
+                "title": "Kōdō o kaeru dezain",
+                "edition": "shohan",
+                "publication_year": "2020",
+                "imprint": {
+                    "publisher": "Orairī Japan",
+                    "place": "Tōkyō-to Shinjuku-ku",
+                },
+                "number_of_pages": "464",
+                "abstract": "Abstract",
+                "keywords": [
+                    {"source": "SAFARI", "value": "Human-computer interaction"},
+                    {"source": "SAFARI", "value": "User-centered system design"},
+                    {
+                        "source": "SAFARI",
+                        "value": "Conception participative (Conception de systèmes",
+                    },
+                ],
+                "_eitem": {
+                    "urls": [
+                        {
+                            "description": "e-book",
+                            "value": "https://learning.oreilly.com/library/view/-/9784873119144/?ar",
+                        }
+                    ]
+                },
+            },  # noqa
         )

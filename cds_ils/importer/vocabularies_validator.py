@@ -85,9 +85,7 @@ class Validator(object):
             return set([value]) if value is not None else set()
         else:
             raise VocabularyError(
-                "Definition {0} is wrong, unknown source {1}".format(
-                    definition, source
-                )
+                "Definition {0} is wrong, unknown source {1}".format(definition, source)
             )
 
     def _vocab_has_key(self, vocab_type, key, definition):

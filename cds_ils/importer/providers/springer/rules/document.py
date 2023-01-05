@@ -13,12 +13,13 @@ from dojson.utils import for_each_value, force_list
 from invenio_app_ils.documents.api import Document
 
 from cds_ils.importer.errors import ManualImportRequired, UnexpectedValue
-from cds_ils.importer.providers.cds.helpers.decorators import \
-    filter_list_values, out_strip
+from cds_ils.importer.providers.cds.helpers.decorators import (
+    filter_list_values,
+    out_strip,
+)
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.springer.springer import model
-from cds_ils.importer.providers.utils import \
-    _get_correct_ils_contributor_role, rreplace
+from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role, rreplace
 
 
 # REQUIRED_FIELDS
@@ -45,10 +46,8 @@ def title(self, key, value):
 
     if "b" in value:
         _alternative_titles = self.get("alternative_titles", [])
-        subtitle = clean_val("b", value, str).rstrip('/')
-        _alternative_titles.append(
-            {"value": subtitle, "type": "SUBTITLE"}
-        )
+        subtitle = clean_val("b", value, str).rstrip("/")
+        _alternative_titles.append({"value": subtitle, "type": "SUBTITLE"})
         self["alternative_titles"] = _alternative_titles
 
     title = clean_val("a", value, str, req=True).rstrip("/")
@@ -69,12 +68,10 @@ def authors(self, key, value):
     if orcid:
         identifiers = [{"scheme": "ORCID", "value": orcid}]
     author = {
-        "full_name": clean_val("a", value, str, req=True).rstrip('.'),
+        "full_name": clean_val("a", value, str, req=True).rstrip("."),
         "identifiers": identifiers,
-        "roles": [
-            _get_correct_ils_contributor_role("e", clean_val("e", value, str))
-        ],
-        "type": "PERSON"
+        "roles": [_get_correct_ils_contributor_role("e", clean_val("e", value, str))],
+        "type": "PERSON",
     }
     _authors.append(author)
     return _authors
@@ -98,12 +95,11 @@ def imprint(self, key, value):
     """Translate imprint field."""
     _publication_year = self.get("publication_year")
     if _publication_year:
-        raise UnexpectedValue(subfield="e",
-                              message="doubled publication year")
-    self["publication_year"] = clean_val("c", value, str).rstrip('.')
+        raise UnexpectedValue(subfield="e", message="doubled publication year")
+    self["publication_year"] = clean_val("c", value, str).rstrip(".")
 
     return {
-        "place": clean_val("a", value, str).rstrip(':'),
+        "place": clean_val("a", value, str).rstrip(":"),
         "publisher": "Springer",
     }
 
@@ -155,8 +151,7 @@ def identifiers(self, key, value):
         material = clean_val("u", v, str)
         sub_a = clean_val("a", v, str)
         if sub_a:
-            isbn = {"value": sub_a, "scheme": "ISBN",
-                    "material": "DIGITAL"}
+            isbn = {"value": sub_a, "scheme": "ISBN", "material": "DIGITAL"}
             if isbn not in _isbns:
                 _isbns.append(isbn)
     return _isbns
@@ -207,9 +202,9 @@ def subjects_dewey(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translate edition field."""
-    _edition = clean_val("a", value, str)\
-        .replace("ed.", "")\
-        .replace("edition", "").rstrip('.')
+    _edition = (
+        clean_val("a", value, str).replace("ed.", "").replace("edition", "").rstrip(".")
+    )
     _edition = re.sub(r"\d{4}", "", _edition)
     return _edition.strip()
 
@@ -241,9 +236,7 @@ def serial(self, key, value):
     if volume:
         volume = re.findall(r"\d+", volume)
 
-    serial_title = \
-        clean_val("a", value, str, req=True).rstrip(',').rstrip(';')\
-        .strip()
+    serial_title = clean_val("a", value, str, req=True).rstrip(",").rstrip(";").strip()
 
     words_to_replace = ["ser.", "Ser."]
     for word in words_to_replace:
@@ -293,8 +286,10 @@ def keywords(self, key, value):
     """Translate keywords."""
     _keywords = self.get("keywords", [])
 
-    keyword = {"source": "SPR",
-               "value": clean_val("a", value, str, req=True).rstrip('.')}
+    keyword = {
+        "source": "SPR",
+        "value": clean_val("a", value, str, req=True).rstrip("."),
+    }
 
     if keyword not in _keywords:
         _keywords.append(keyword)
@@ -307,7 +302,7 @@ def id_isbns(self, key, value):
     """Translate identifiers isbn."""
     _identifiers = self.get("identifiers", [])
 
-    isbn_value = clean_val("a", value, str) or (clean_val('z', value, str))
+    isbn_value = clean_val("a", value, str) or (clean_val("z", value, str))
     material = clean_val("u", value, str)
 
     if isbn_value:

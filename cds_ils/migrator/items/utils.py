@@ -24,30 +24,28 @@ def clean_circulation_restriction(record):
     """Translates circulation restrictions of the item."""
     record["circulation_restriction"] = "NO_RESTRICTION"
     intloc_record_cls = current_app_ils.internal_location_record_cls
-    intloc = intloc_record_cls.get_record_by_pid(
-        record["internal_location_pid"]
-    )
+    intloc = intloc_record_cls.get_record_by_pid(record["internal_location_pid"])
     if "loan_period" in record:
         options = {"1 week": "ONE_WEEK", "4 weeks": "NO_RESTRICTION"}
         # Only update status to "FOR_REFERENCE_ONLY" if item belongs to
         # LSL library (legacy_id = 9) and if item is not missing.
-        if "9" in intloc["legacy_ids"] and record["status"] != "MISSING" and\
-                record["loan_period"].lower() == "reference":
+        if (
+            "9" in intloc["legacy_ids"]
+            and record["status"] != "MISSING"
+            and record["loan_period"].lower() == "reference"
+        ):
             record["status"] = "FOR_REFERENCE_ONLY"
-        elif record["loan_period"] == "" or \
-                record["loan_period"].lower() == "reference":
+        elif (
+            record["loan_period"] == "" or record["loan_period"].lower() == "reference"
+        ):
             record["circulation_restriction"] = "NO_RESTRICTION"
         else:
             try:
-                record["circulation_restriction"] = options[
-                    record["loan_period"]
-                ]
+                record["circulation_restriction"] = options[record["loan_period"]]
             except KeyError:
                 raise ItemMigrationError(
                     "Unknown circulation restriction (loan period) on "
-                    "barcode {0}: {1}".format(
-                        record["barcode"], record["loan_period"]
-                    )
+                    "barcode {0}: {1}".format(record["barcode"], record["loan_period"])
                 )
         del record["loan_period"]
 

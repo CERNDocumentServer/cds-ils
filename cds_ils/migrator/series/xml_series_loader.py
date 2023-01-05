@@ -20,8 +20,7 @@ from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.importer.providers.cds.utils import add_cds_url
 from cds_ils.importer.series.importer import VOCABULARIES_FIELDS
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
 from cds_ils.migrator.series.api import serial_already_exists
@@ -58,8 +57,7 @@ class CDSSeriesDumpLoader(object):
             with db.session.begin_nested():
                 timestamp, json_data = dump.revisions[-1]
 
-                if rectype == 'serial'\
-                        and serial_already_exists(json_data["title"]):
+                if rectype == "serial" and serial_already_exists(json_data["title"]):
                     return
 
                 json_data = clean_created_by_field(json_data)
@@ -82,9 +80,7 @@ class CDSSeriesDumpLoader(object):
                     )
                 add_cover_metadata(json_data)
                 series = series_cls.create(json_data, record_uuid)
-                created_date = json_data.get(
-                    "_created", CDS_ILS_FALLBACK_CREATION_DATE
-                )
+                created_date = json_data.get("_created", CDS_ILS_FALLBACK_CREATION_DATE)
                 series.model.created = parser.parse(created_date)
                 series.model.updated = timestamp.replace(tzinfo=None)
                 series.commit()
@@ -99,15 +95,11 @@ class CDSSeriesDumpLoader(object):
             )
             return series
         except PIDAlreadyExists as e:
-            allow_updates = current_app.config.get(
-                "CDS_ILS_MIGRATION_ALLOW_UPDATES"
-            )
+            allow_updates = current_app.config.get("CDS_ILS_MIGRATION_ALLOW_UPDATES")
             if not allow_updates:
                 raise e
             # update document if already exists with legacy_recid
-            legacy_pid_type = current_app.config[
-                "CDS_ILS_SERIES_LEGACY_PID_TYPE"
-            ]
+            legacy_pid_type = current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
             # When updating we don't want to change the pid
             if "pid" in json_data:
                 del json_data["pid"]

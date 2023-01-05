@@ -41,8 +41,9 @@ def validate_user(loan_record):
 
 def validate_item(record, raise_exception=True):
     """Validate loan item."""
-    return get_item_by_barcode(record["item_barcode"].upper(),
-                               raise_exception=raise_exception)
+    return get_item_by_barcode(
+        record["item_barcode"].upper(), raise_exception=raise_exception
+    )
 
 
 def validate_document_pid(record, item):
@@ -58,16 +59,14 @@ def validate_document_pid(record, item):
             "no document id for loan {}".format(record["legacy_id"])
         )
     document_legacy_recid = document.get("legacy_recid", None)
-    if document_legacy_recid and \
-            document_legacy_recid != record["legacy_document_id"]:
+    if document_legacy_recid and document_legacy_recid != record["legacy_document_id"]:
         # this might happen when record merged or migrated,
         # the already migrated document should take precedence
         raise LoanMigrationError(
             "inconsistent document dependencies for loan {} "
             "(attached document legacy recid: {}, "
             "legacy recid found via attached item: {}".format(
-                record["legacy_id"], record["legacy_document_id"],
-                document_legacy_recid
+                record["legacy_id"], record["legacy_document_id"], document_legacy_recid
             ),
         )
     return document_pid
@@ -88,11 +87,12 @@ def provide_valid_loan_state_metadata(record, loan_dict):
         )
         item_pid = record.get("item_pid")
         document_pid = record.get("document_pid")
-        if (item_pid and item_pid["value"] == MIGRATION_ITEM_PID) or \
-                document_pid == MIGRATION_DOCUMENT_PID:
+        if (
+            item_pid and item_pid["value"] == MIGRATION_ITEM_PID
+        ) or document_pid == MIGRATION_DOCUMENT_PID:
             loan_dict.update(
-                dict(state="CANCELLED",
-                     cancel_reason="Migration: unknown item"))
+                dict(state="CANCELLED", cancel_reason="Migration: unknown item")
+            )
 
     elif record["status"] == "returned":
         loan_dict.update(
@@ -134,14 +134,13 @@ def validate_loan(new_loan_dict, item_barcode, borrower_id):
     ):
         raise LoanMigrationError(
             "Loan on item {0} has ongoing state "
-            "while the patron is anonymous (ccid:{1})".format(
-                item_barcode, borrower_id
-            )
+            "while the patron is anonymous (ccid:{1})".format(item_barcode, borrower_id)
         )
 
 
-def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan",
-                           mint_legacy_pid=True):
+def import_loans_from_json(
+    dump_file, raise_exceptions=False, rectype="loan", mint_legacy_pid=True
+):
     """Imports loan objects from JSON."""
     default_location_pid_value, _ = current_app_ils.get_default_location_pid
 
@@ -155,11 +154,9 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan",
                 item = validate_item(record, raise_exception=False)
                 if not item:
                     item = current_app_ils.item_record_cls.get_record_by_pid(
-                        MIGRATION_ITEM_PID)
-                item_pid = {
-                    "value": item.pid.pid_value,
-                    "type": item.pid.pid_type
-                }
+                        MIGRATION_ITEM_PID
+                    )
+                item_pid = {"value": item.pid.pid_value, "type": item.pid.pid_type}
                 document_pid = validate_document_pid(record, item)
 
                 # create a loan
@@ -171,21 +168,18 @@ def import_loans_from_json(dump_file, raise_exceptions=False, rectype="loan",
                     item_pid=item_pid,
                 )
 
-                loan_dict = provide_valid_loan_state_metadata(
-                    record, loan_dict
-                )
+                loan_dict = provide_valid_loan_state_metadata(record, loan_dict)
                 if not loan_dict:
                     continue
-                validate_loan(loan_dict,
-                              record["item_barcode"],
-                              record["id_crcBORROWER"]
-                              )
+                validate_loan(
+                    loan_dict, record["item_barcode"], record["id_crcBORROWER"]
+                )
 
                 import_record(
                     loan_dict,
                     rectype=rectype,
                     legacy_id=record["legacy_id"],
-                    mint_legacy_pid=mint_legacy_pid
+                    mint_legacy_pid=mint_legacy_pid,
                 )
                 db.session.commit()
 

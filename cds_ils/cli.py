@@ -63,9 +63,7 @@ def pages():
 
     def page_data(page):
         return (
-            pkg_resources.resource_stream(
-                "cds_ils", os.path.join("static_pages", page)
-            )
+            pkg_resources.resource_stream("cds_ils", os.path.join("static_pages", page))
             .read()
             .decode("utf8")
         )
@@ -265,9 +263,7 @@ def recreate_cover(pid, record_class):
 
 
 @covers.command()
-@click.option(
-    "-t", "--pid-type", required=True, type=click.Choice(["docid", "serid"])
-)
+@click.option("-t", "--pid-type", required=True, type=click.Choice(["docid", "serid"]))
 @click.option("-a", "--all", required=False, is_flag=True)
 @click.option("-p", "--pid")
 @with_appcontext
@@ -368,9 +364,7 @@ def create_loan(user_email, is_past_loan):
     past_loan_doc_pid = "qaywb-gfe4B"
 
     active_loan = (
-        get_active_loan_by_item_pid(
-            {"type": "pitmid", "value": ongoing_loan_item_pid}
-        )
+        get_active_loan_by_item_pid({"type": "pitmid", "value": ongoing_loan_item_pid})
         .execute()
         .hits
     )
@@ -380,8 +374,7 @@ def create_loan(user_email, is_past_loan):
 
     if total > 0 and not is_past_loan:
         click.secho(
-            "Item for ongoing loan is already loaned by patron with email {0}."
-            .format(
+            "Item for ongoing loan is already loaned by patron with email {0}.".format(
                 active_loan[0].patron.email
             ),
             fg="red",
@@ -393,9 +386,9 @@ def create_loan(user_email, is_past_loan):
 
     loc_pid, _ = current_app_ils.get_default_location_pid
 
-    delivery = list(
-        current_app.config["ILS_CIRCULATION_DELIVERY_METHODS"].keys()
-    )[randint(0, 1)]
+    delivery = list(current_app.config["ILS_CIRCULATION_DELIVERY_METHODS"].keys())[
+        randint(0, 1)
+    ]
 
     loan_dict = {
         "pid": RecordIdProviderV2.create().pid.pid_value,
@@ -409,9 +402,7 @@ def create_loan(user_email, is_past_loan):
     if is_past_loan:
         loan_dict["state"] = "ITEM_RETURNED"
         loan_dict["document_pid"] = past_loan_doc_pid
-        transaction_date = start_date = arrow.utcnow() - timedelta(
-            days=365
-        )
+        transaction_date = start_date = arrow.utcnow() - timedelta(days=365)
         end_date = start_date + timedelta(weeks=4)
         item_pid = past_loan_item_pid
     else:
@@ -420,9 +411,7 @@ def create_loan(user_email, is_past_loan):
         transaction_date = start_date = arrow.utcnow() - (
             timedelta(weeks=4)
             - timedelta(
-                days=current_app.config[
-                    "ILS_CIRCULATION_LOAN_WILL_EXPIRE_DAYS"
-                ]
+                days=current_app.config["ILS_CIRCULATION_LOAN_WILL_EXPIRE_DAYS"]
             )
         )
         end_date = start_date + timedelta(weeks=4)
@@ -478,9 +467,7 @@ def clean_loans(user_email, given_date):
 
     for hit in patron_document_requests:
         document_request = (
-            current_app_ils.document_request_record_cls.get_record_by_pid(
-                hit.pid
-            )
+            current_app_ils.document_request_record_cls.get_record_by_pid(hit.pid)
         )
         document_request.delete(force=True)
         db.session.commit()
@@ -514,8 +501,7 @@ def clean_loans(user_email, given_date):
     current_search.flush_and_refresh(index="*")
 
     click.secho(
-        "Loans and document requests of user with pid '{0}' have been deleted."
-        .format(
+        "Loans and document requests of user with pid '{0}' have been deleted.".format(
             patron_pid
         ),
         fg="blue",
@@ -566,15 +552,11 @@ def prepare(user_email, verbose):
     run_command("user-testing create-loan  --user-email " + user_email)
 
     # create past loan
-    run_command(
-        "user-testing create-loan --is-past-loan --user-email " + user_email
-    )
+    run_command("user-testing create-loan --is-past-loan --user-email " + user_email)
 
 
 @user_testing.command()
-@click.option(
-    "--user-email", help="User to delete all of the loans they created."
-)
+@click.option("--user-email", help="User to delete all of the loans they created.")
 @click.option(
     "--given-date",
     help="All loans created on this day by the user will be deleted.",
@@ -625,8 +607,7 @@ def revert_delete_record(pid):
     # revert to previous revision
     record = deleted.revert(deleted.revision_id - 1)
 
-    all_pid_objects = PersistentIdentifier.query.filter_by(
-        object_uuid=record_uuid)
+    all_pid_objects = PersistentIdentifier.query.filter_by(object_uuid=record_uuid)
 
     # trying to get all the pid types (including legacy pids)
     for pid_object in all_pid_objects:
@@ -647,16 +628,15 @@ def revert_delete_record(pid):
 def assign_legacy_pid(pid, legacy_pid, legacy_pid_type):
     """Assign legacy pid to given record."""
     doc_legacy_pid_cfg = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
-    series_legacy_pid_cfg =\
-        current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
+    series_legacy_pid_cfg = current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
 
     if legacy_pid_type not in [doc_legacy_pid_cfg, series_legacy_pid_cfg]:
-        click.secho(
-            "Invalid legacy pid type", fg="red")
+        click.secho("Invalid legacy pid type", fg="red")
         return
 
     pid_obj = PersistentIdentifier.query.filter(
-        PersistentIdentifier.pid_value == pid).one()
+        PersistentIdentifier.pid_value == pid
+    ).one()
 
     is_document = pid_obj.pid_type == DOCUMENT_PID_TYPE
     is_series = pid_obj.pid_type == SERIES_PID_TYPE
@@ -665,13 +645,15 @@ def assign_legacy_pid(pid, legacy_pid, legacy_pid_type):
 
     if is_legacy_document and not is_document:
         click.secho(
-            "Pid types mismatch. "
-            "You are trying to assign ldocid to series record", fg="red")
+            "Pid types mismatch. " "You are trying to assign ldocid to series record",
+            fg="red",
+        )
         return
     if is_legacy_series and not is_series:
         click.secho(
-            "Pid types mismatch. "
-            "You are trying to assign lserid to document record", fg="red")
+            "Pid types mismatch. " "You are trying to assign lserid to document record",
+            fg="red",
+        )
         return
 
     PersistentIdentifier.create(

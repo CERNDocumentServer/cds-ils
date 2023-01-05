@@ -7,8 +7,10 @@
 
 """CDS-ILS Document Importer module."""
 from cds_ils.importer.documents.importer import DocumentImporter
-from cds_ils.importer.providers.cds.utils import add_cds_url, \
-    add_title_from_conference_info
+from cds_ils.importer.providers.cds.utils import (
+    add_cds_url,
+    add_title_from_conference_info,
+)
 
 
 class CDSDocumentImporter(DocumentImporter):

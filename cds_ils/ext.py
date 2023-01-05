@@ -32,8 +32,9 @@ class CdsIls(object):
         )
         app.register_blueprint(
             Blueprint(
-                "cds_ils_notifications", __name__,
-                template_folder="notifications/templates"
+                "cds_ils_notifications",
+                __name__,
+                template_folder="notifications/templates",
             )
         )
 
@@ -54,9 +55,7 @@ class CdsIls(object):
         )
 
 
-def before_loan_index_hook(
-    sender, json=None, record=None, index=None, **kwargs
-):
+def before_loan_index_hook(sender, json=None, record=None, index=None, **kwargs):
     """Hook to transform loan record before ES indexing.
 
     :param sender: The entity sending the signal.

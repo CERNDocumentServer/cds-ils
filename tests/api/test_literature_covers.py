@@ -10,8 +10,7 @@
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
-from cds_ils.literature.covers import build_cover_urls, \
-    should_record_have_cover
+from cds_ils.literature.covers import build_cover_urls, should_record_have_cover
 from cds_ils.literature.tasks import pick_identifier_with_cover
 
 
@@ -55,9 +54,7 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
     def test_with_identifiers_with_valid_cover(doc):
         """It should have the ISBN in cover_metadata."""
         # return cover is valid
-        mocker.patch(
-            "cds_ils.literature.tasks.is_valid_cover", return_value=True
-        )
+        mocker.patch("cds_ils.literature.tasks.is_valid_cover", return_value=True)
 
         doc["identifiers"] = [dict(scheme="ISBN", value="valid-isbn")]
         doc["cover_metadata"] = dict(ISBN="valid-isbn")
@@ -72,9 +69,7 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
     def test_with_invalid_identifiers_no_valid_cover(doc):
         """It should remove cover_metadata, the ISBN is not valid."""
         # return cover is not valid
-        mocker.patch(
-            "cds_ils.literature.tasks.is_valid_cover", return_value=False
-        )
+        mocker.patch("cds_ils.literature.tasks.is_valid_cover", return_value=False)
 
         # the ISBN has been changed to a not valid one
         doc["identifiers"] = [dict(scheme="ISBN", value="not-valid-isbn")]
@@ -91,9 +86,7 @@ def test_pick_identifier_with_cover_task(app, testdata, mocker):
     def test_add_new_identifier(doc):
         """It should change the cover_metadata to the new identifier."""
         # return cover is not valid
-        mocker.patch(
-            "cds_ils.literature.tasks.is_valid_cover", return_value=True
-        )
+        mocker.patch("cds_ils.literature.tasks.is_valid_cover", return_value=True)
 
         # the ISBN has been changed to a not valid one
         doc["identifiers"] = [dict(scheme="ISBN", value="valid-isbn")]

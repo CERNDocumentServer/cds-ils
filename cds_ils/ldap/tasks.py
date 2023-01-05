@@ -23,9 +23,7 @@ celery_logger = get_task_logger(__name__)
 @shared_task
 def synchronize_users_task():
     """Run the task to update users from LDAP."""
-    log = LdapSynchronizationLog.create_celery(
-        synchronize_users_task.request.id
-    )
+    log = LdapSynchronizationLog.create_celery(synchronize_users_task.request.id)
     try:
         result = update_users()
         log.set_succeeded(*result)
@@ -63,7 +61,5 @@ def _send_alarm_notification(name, error_msg, exception):
     """Send error notification to admins."""
     recipients = [{"email": current_app.config["SUPPORT_EMAIL"]}]
     exception_msg = "%s: %s" % (type(exception).__name__, str(exception))
-    msg = AlarmMessage(
-        name=name, error_msg=error_msg, exception_msg=exception_msg
-    )
+    msg = AlarmMessage(name=name, error_msg=error_msg, exception_msg=exception_msg)
     send_not_logged_notification(recipients, msg)

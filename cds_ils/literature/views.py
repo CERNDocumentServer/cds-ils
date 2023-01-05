@@ -19,25 +19,20 @@ legacy_blueprint = Blueprint("cds_ils_legacy", __name__)
 @legacy_blueprint.route("/legacy/<id>")
 def legacy_redirect(id):
     """Redirect to the documents."""
-    document_legacy_pid_type = \
-        current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
-    series_legacy_pid_type = \
-        current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
+    document_legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+    series_legacy_pid_type = current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
     is_document = False
     is_series = False
 
     # check if exists in ldocid
     try:
-        record = get_record_by_legacy_recid(
-            Record, document_legacy_pid_type, id
-        )
+        record = get_record_by_legacy_recid(Record, document_legacy_pid_type, id)
         is_document = True
     except PIDDoesNotExistError:
         pass
     # check if exists in lserid
     try:
-        record = get_record_by_legacy_recid(
-            Record, series_legacy_pid_type, id)
+        record = get_record_by_legacy_recid(Record, series_legacy_pid_type, id)
         is_series = True
     except PIDDoesNotExistError:
         pass
@@ -50,9 +45,9 @@ def legacy_redirect(id):
     documents_list_route = current_app.config["RECORDS_REST_ENDPOINTS"][
         DOCUMENT_PID_TYPE
     ]["list_route"]
-    series_list_route = current_app.config["RECORDS_REST_ENDPOINTS"][
-        SERIES_PID_TYPE
-    ]["list_route"]
+    series_list_route = current_app.config["RECORDS_REST_ENDPOINTS"][SERIES_PID_TYPE][
+        "list_route"
+    ]
 
     url_path = series_list_route if is_series else documents_list_route
 

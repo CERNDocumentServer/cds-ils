@@ -6,15 +6,27 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer exception handlers module."""
-from invenio_app_ils.errors import IlsValidationError, \
-    RecordHasReferencesError, VocabularyError
+from invenio_app_ils.errors import (
+    IlsValidationError,
+    RecordHasReferencesError,
+    VocabularyError,
+)
 from invenio_pidstore.errors import PIDDeletedError
 
-from cds_ils.importer.errors import DocumentHasReferencesError, \
-    InvalidProvider, LossyConversion, ManualImportRequired, \
-    MissingRequiredField, ProviderNotAllowedDeletion, RecordModelMissing, \
-    RecordNotDeletable, SeriesImportError, SimilarityMatchUnavailable, \
-    UnexpectedValue, UnknownProvider
+from cds_ils.importer.errors import (
+    DocumentHasReferencesError,
+    InvalidProvider,
+    LossyConversion,
+    ManualImportRequired,
+    MissingRequiredField,
+    ProviderNotAllowedDeletion,
+    RecordModelMissing,
+    RecordNotDeletable,
+    SeriesImportError,
+    SimilarityMatchUnavailable,
+    UnexpectedValue,
+    UnknownProvider,
+)
 from cds_ils.importer.models import ImportRecordLog
 
 

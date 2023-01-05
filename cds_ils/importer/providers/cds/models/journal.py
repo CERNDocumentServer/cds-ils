@@ -92,9 +92,7 @@ class CDSJournal(CdsIlsOverdo):
     }
 
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__
-    _default_fields = {
-        "_migration": {**get_helper_dict(record_type="journal")}
-    }
+    _default_fields = {"_migration": {**get_helper_dict(record_type="journal")}}
 
     rectype = "journal"
 
@@ -107,9 +105,7 @@ class CDSJournal(CdsIlsOverdo):
     ):
         """Overwrite the do method."""
         init_fields = deepcopy(self._default_fields)
-        return super().do(
-            blob, ignore_missing, exception_handlers, init_fields
-        )
+        return super().do(blob, ignore_missing, exception_handlers, init_fields)
 
 
 model = CDSJournal(

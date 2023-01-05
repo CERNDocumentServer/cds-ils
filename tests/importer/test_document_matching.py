@@ -22,8 +22,7 @@ def test_document_search_matching(importer_test_data):
     )
 
     matches = document_importer.search_for_matching_documents()
-    validated_matches, partial = document_importer.\
-        validate_found_matches(matches)
+    validated_matches, partial = document_importer.validate_found_matches(matches)
 
     assert validated_matches == "docid-1"
 
@@ -36,8 +35,7 @@ def test_document_search_matching(importer_test_data):
     )
 
     matches = document_importer.search_for_matching_documents()
-    validated_matches, partial = document_importer. \
-        validate_found_matches(matches)
+    validated_matches, partial = document_importer.validate_found_matches(matches)
 
     assert validated_matches == "docid-3"
 
@@ -50,8 +48,7 @@ def test_document_search_matching(importer_test_data):
     )
 
     matches = document_importer.search_for_matching_documents()
-    validated_matches, partial = document_importer. \
-        validate_found_matches(matches)
+    validated_matches, partial = document_importer.validate_found_matches(matches)
 
     assert validated_matches == "docid-4"
 
@@ -64,8 +61,7 @@ def test_document_search_matching(importer_test_data):
     )
 
     matches = document_importer.search_for_matching_documents()
-    validated_matches, partial = document_importer. \
-        validate_found_matches(matches)
+    validated_matches, partial = document_importer.validate_found_matches(matches)
 
     assert validated_matches == "docid-4"
     assert partial == ["docid-41"]
@@ -77,9 +73,7 @@ def test_fuzzy_matching(importer_test_data):
         "match_testing_documents.json", relpath="importer"
     )[3]
 
-    authors = [
-        author["full_name"] for author in data_to_update.get("authors", [])
-    ]
+    authors = [author["full_name"] for author in data_to_update.get("authors", [])]
 
     results = fuzzy_search_document(data_to_update["title"], authors).scan()
     matches = [x.pid for x in results]

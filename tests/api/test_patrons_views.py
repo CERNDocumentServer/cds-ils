@@ -19,11 +19,7 @@ from cds_ils.patrons.permissions import retrieve_patron_loans_access_action
 def test_patron_loans_view(app, patrons, testdata, client):
     """Test check for users update in sync command."""
     patron1 = patrons[0]
-    db.session.add(
-        ActionUsers.allow(
-            retrieve_patron_loans_access_action, user=patron1
-        )
-    )
+    db.session.add(ActionUsers.allow(retrieve_patron_loans_access_action, user=patron1))
     db.session.commit()
 
     patron = Patron(patron1.id)
@@ -32,9 +28,7 @@ def test_patron_loans_view(app, patrons, testdata, client):
 
     login_user_via_session(client, email=patron1.email)
 
-    resp = client.get(
-        url_for("cds_ils_patron_loans.patron_loans", person_id=1)
-    )
+    resp = client.get(url_for("cds_ils_patron_loans.patron_loans", person_id=1))
 
     assert resp.status_code == 200
 
@@ -45,12 +39,11 @@ def test_patron_loans_view(app, patrons, testdata, client):
                 "pid": {
                     "type": "pitmid",
                     "value": "itemid-2",
-                }
+                },
             },
             "start_date": "2018-06-28",
             "end_date": "2018-07-28",
-            "title": "Prairie Fires: The American Dreams of "
-                     "Laura Ingalls Wilder",
+            "title": "Prairie Fires: The American Dreams of " "Laura Ingalls Wilder",
         },
         {
             "item": {
@@ -58,12 +51,12 @@ def test_patron_loans_view(app, patrons, testdata, client):
                 "pid": {
                     "type": "illbid",
                     "value": "illbid-1",
-                }
+                },
             },
             "start_date": "2018-06-28",
             "end_date": "2018-07-28",
             "title": "The Gulf: The Making of An American Sea",
-        }
+        },
     ]
     expected_loan_requests = [
         {

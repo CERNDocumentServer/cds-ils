@@ -70,9 +70,7 @@ def test_journal_relation_from_publication_info(app):
         DOCUMENT_PID_TYPE, "pid", {"pid": document_data["pid"]}
     )
     document = Document.create(document_data, record_uuid)
-    record_uuid = mint_record_pid(
-        SERIES_PID_TYPE, "pid", {"pid": journal_data["pid"]}
-    )
+    record_uuid = mint_record_pid(SERIES_PID_TYPE, "pid", {"pid": journal_data["pid"]})
     journal = Series.create(journal_data, record_uuid)
     legacy_pid_type = current_app.config["CDS_ILS_SERIES_LEGACY_PID_TYPE"]
     legacy_recid_minter(journal["legacy_recid"], legacy_pid_type, record_uuid)

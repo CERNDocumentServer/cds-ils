@@ -18,13 +18,13 @@ def test_replace_lower_priority(importer_test_data):
             {
                 "description": "Protected URL",
                 "value": "http://protected-cds-ils.ch/",
-                "login_required": True
+                "login_required": True,
             },
             {
                 "description": "Another open URL",
                 "value": "http://cds-ils.ch/",
-                "login_required": True
-            }
+                "login_required": True,
+            },
         ]
     }
     metadata_provider = "springer"
@@ -32,21 +32,23 @@ def test_replace_lower_priority(importer_test_data):
     EITEM_OPEN_ACCESS = False
     EITEM_URLS_LOGIN_REQUIRED = True
 
-    eitem_importer_preview = EItemImporter(matched_document,
-                                           current_import_eitem,
-                                           metadata_provider,
-                                           IS_PROVIDER_PRIORITY_SENSITIVE,
-                                           EITEM_OPEN_ACCESS,
-                                           EITEM_URLS_LOGIN_REQUIRED
-                                           )
+    eitem_importer_preview = EItemImporter(
+        matched_document,
+        current_import_eitem,
+        metadata_provider,
+        IS_PROVIDER_PRIORITY_SENSITIVE,
+        EITEM_OPEN_ACCESS,
+        EITEM_URLS_LOGIN_REQUIRED,
+    )
 
-    eitem_importer = EItemImporter(matched_document,
-                                   current_import_eitem,
-                                   metadata_provider,
-                                   IS_PROVIDER_PRIORITY_SENSITIVE,
-                                   EITEM_OPEN_ACCESS,
-                                   EITEM_URLS_LOGIN_REQUIRED
-                                   )
+    eitem_importer = EItemImporter(
+        matched_document,
+        current_import_eitem,
+        metadata_provider,
+        IS_PROVIDER_PRIORITY_SENSITIVE,
+        EITEM_OPEN_ACCESS,
+        EITEM_URLS_LOGIN_REQUIRED,
+    )
 
     preview_summary = eitem_importer_preview.preview_import(matched_document)
 
@@ -64,9 +66,7 @@ def test_replace_lower_priority(importer_test_data):
     with pytest.raises(PIDDeletedError):
         eitem_cls.get_record_by_pid("eitemid-6")
     # check if deleted from the index
-    search = eitem_search_cls().search_by_document_pid(
-        "docid-6"
-    )
+    search = eitem_search_cls().search_by_document_pid("docid-6")
     assert search.count() == 0
 
     # check if preview equals report
@@ -86,13 +86,13 @@ def test_import_equal_priority(importer_test_data):
             {
                 "description": "Protected URL",
                 "value": "http://protected-cds-ils.ch/",
-                "login_required": True
+                "login_required": True,
             },
             {
                 "description": "Another open URL",
                 "value": "http://cds-ils.ch/",
-                "login_required": True
-            }
+                "login_required": True,
+            },
         ]
     }
     metadata_provider = "ebl"
@@ -100,20 +100,22 @@ def test_import_equal_priority(importer_test_data):
     EITEM_OPEN_ACCESS = False
     EITEM_URLS_LOGIN_REQUIRED = True
 
-    eitem_importer = EItemImporter(matched_document,
-                                   current_import_eitem,
-                                   metadata_provider,
-                                   IS_PROVIDER_PRIORITY_SENSITIVE,
-                                   EITEM_OPEN_ACCESS,
-                                   EITEM_URLS_LOGIN_REQUIRED
-                                   )
-    preview_eitem_importer = EItemImporter(matched_document,
-                                           current_import_eitem,
-                                           metadata_provider,
-                                           IS_PROVIDER_PRIORITY_SENSITIVE,
-                                           EITEM_OPEN_ACCESS,
-                                           EITEM_URLS_LOGIN_REQUIRED
-                                           )
+    eitem_importer = EItemImporter(
+        matched_document,
+        current_import_eitem,
+        metadata_provider,
+        IS_PROVIDER_PRIORITY_SENSITIVE,
+        EITEM_OPEN_ACCESS,
+        EITEM_URLS_LOGIN_REQUIRED,
+    )
+    preview_eitem_importer = EItemImporter(
+        matched_document,
+        current_import_eitem,
+        metadata_provider,
+        IS_PROVIDER_PRIORITY_SENSITIVE,
+        EITEM_OPEN_ACCESS,
+        EITEM_URLS_LOGIN_REQUIRED,
+    )
 
     preview_summary = preview_eitem_importer.preview_import(matched_document)
 
@@ -143,13 +145,13 @@ def test_do_not_import_lower_priority(importer_test_data):
             {
                 "description": "Protected URL",
                 "value": "http://protected-cds-ils.ch/",
-                "login_required": True
+                "login_required": True,
             },
             {
                 "description": "Another open URL",
                 "value": "http://cds-ils.ch/",
-                "login_required": True
-            }
+                "login_required": True,
+            },
         ]
     }
     metadata_provider = "ebl"
@@ -157,20 +159,22 @@ def test_do_not_import_lower_priority(importer_test_data):
     EITEM_OPEN_ACCESS = False
     EITEM_URLS_LOGIN_REQUIRED = True
 
-    eitem_importer = EItemImporter(matched_document,
-                                   current_import_eitem,
-                                   metadata_provider,
-                                   IS_PROVIDER_PRIORITY_SENSITIVE,
-                                   EITEM_OPEN_ACCESS,
-                                   EITEM_URLS_LOGIN_REQUIRED
-                                   )
-    preview_eitem_importer = EItemImporter(matched_document,
-                                           current_import_eitem,
-                                           metadata_provider,
-                                           IS_PROVIDER_PRIORITY_SENSITIVE,
-                                           EITEM_OPEN_ACCESS,
-                                           EITEM_URLS_LOGIN_REQUIRED
-                                           )
+    eitem_importer = EItemImporter(
+        matched_document,
+        current_import_eitem,
+        metadata_provider,
+        IS_PROVIDER_PRIORITY_SENSITIVE,
+        EITEM_OPEN_ACCESS,
+        EITEM_URLS_LOGIN_REQUIRED,
+    )
+    preview_eitem_importer = EItemImporter(
+        matched_document,
+        current_import_eitem,
+        metadata_provider,
+        IS_PROVIDER_PRIORITY_SENSITIVE,
+        EITEM_OPEN_ACCESS,
+        EITEM_URLS_LOGIN_REQUIRED,
+    )
 
     preview_summary = preview_eitem_importer.preview_import(matched_document)
 
@@ -200,13 +204,13 @@ def test_ignore_if_existing_item_not_imported(importer_test_data):
             {
                 "description": "Protected URL",
                 "value": "http://protected-cds-ils.ch/",
-                "login_required": True
+                "login_required": True,
             },
             {
                 "description": "Another open URL",
                 "value": "http://cds-ils.ch/",
-                "login_required": True
-            }
+                "login_required": True,
+            },
         ]
     }
     metadata_provider = "springer"
@@ -214,20 +218,22 @@ def test_ignore_if_existing_item_not_imported(importer_test_data):
     EITEM_OPEN_ACCESS = False
     EITEM_URLS_LOGIN_REQUIRED = True
 
-    eitem_importer = EItemImporter(matched_document,
-                                   current_import_eitem,
-                                   metadata_provider,
-                                   IS_PROVIDER_PRIORITY_SENSITIVE,
-                                   EITEM_OPEN_ACCESS,
-                                   EITEM_URLS_LOGIN_REQUIRED
-                                   )
-    preview_eitem_importer = EItemImporter(matched_document,
-                                           current_import_eitem,
-                                           metadata_provider,
-                                           IS_PROVIDER_PRIORITY_SENSITIVE,
-                                           EITEM_OPEN_ACCESS,
-                                           EITEM_URLS_LOGIN_REQUIRED
-                                           )
+    eitem_importer = EItemImporter(
+        matched_document,
+        current_import_eitem,
+        metadata_provider,
+        IS_PROVIDER_PRIORITY_SENSITIVE,
+        EITEM_OPEN_ACCESS,
+        EITEM_URLS_LOGIN_REQUIRED,
+    )
+    preview_eitem_importer = EItemImporter(
+        matched_document,
+        current_import_eitem,
+        metadata_provider,
+        IS_PROVIDER_PRIORITY_SENSITIVE,
+        EITEM_OPEN_ACCESS,
+        EITEM_URLS_LOGIN_REQUIRED,
+    )
     preview_summary = preview_eitem_importer.preview_import(matched_document)
 
     eitem_importer.update_eitems(matched_document)

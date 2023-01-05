@@ -7,8 +7,9 @@
 
 """Literature CSV serializers."""
 
-from invenio_app_ils.literature.serializers.csv import \
-    LiteratureCSVSerializer as IlsLiteratureCSVSerializer
+from invenio_app_ils.literature.serializers.csv import (
+    LiteratureCSVSerializer as IlsLiteratureCSVSerializer,
+)
 
 from cds_ils.utils import format_login_required_urls
 
@@ -24,9 +25,7 @@ class LiteratureCSVSerializer(IlsLiteratureCSVSerializer):
         format_login_required_urls(literature["metadata"].get("urls", []))
         return literature
 
-    def transform_search_hit(
-        self, pid, record_hit, links_factory=None, **kwargs
-    ):
+    def transform_search_hit(self, pid, record_hit, links_factory=None, **kwargs):
         """Transform search result hit into an intermediate representation."""
         hit = super().transform_search_hit(
             pid, record_hit, links_factory=links_factory, **kwargs

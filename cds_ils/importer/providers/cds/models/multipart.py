@@ -24,11 +24,10 @@ class CDSMultipart(CdsIlsOverdo):
 
     __query__ = "596__:MULTIVOLUMES -980__:DELETED -980__:MIGRATED"
 
-    __ignore_keys__ = CDS_IGNORE_FIELDS | \
-        {
-          "084__c",
-          "084__b",
-        }
+    __ignore_keys__ = CDS_IGNORE_FIELDS | {
+        "084__c",
+        "084__b",
+    }
 
     _default_fields = {
         "_migration": {**get_helper_dict(record_type="document")},
@@ -46,9 +45,7 @@ class CDSMultipart(CdsIlsOverdo):
         """Overwrite the do method."""
         self._default_fields["_migration"]["record_type"] = "multipart"
         init_fields = deepcopy(self._default_fields)
-        return super().do(
-            blob, ignore_missing, exception_handlers, init_fields
-        )
+        return super().do(blob, ignore_missing, exception_handlers, init_fields)
 
 
 model = CDSMultipart(

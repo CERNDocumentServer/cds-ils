@@ -14,13 +14,16 @@ from dojson.errors import IgnoreKey
 from dojson.utils import for_each_value, force_list
 
 from cds_ils.importer.errors import UnexpectedValue
-from cds_ils.importer.providers.cds.helpers.decorators import \
-    filter_empty_dict_values, filter_list_values, out_strip
+from cds_ils.importer.providers.cds.helpers.decorators import (
+    filter_empty_dict_values,
+    filter_list_values,
+    out_strip,
+)
 from cds_ils.importer.providers.cds.helpers.parsers import clean_val
 from cds_ils.importer.providers.ebl.ebl import model
+
 # REQUIRED_FIELDS
-from cds_ils.importer.providers.utils import \
-    _get_correct_ils_contributor_role, rreplace
+from cds_ils.importer.providers.utils import _get_correct_ils_contributor_role, rreplace
 
 
 @model.over("alternative_identifiers", "^001")
@@ -46,12 +49,9 @@ def authors(self, key, value):
     _authors = self.get("authors", [])
 
     author = {
-        "full_name":
-            clean_val("a", value, str, req=True).rstrip("."),
-        "roles": [
-            _get_correct_ils_contributor_role("e", clean_val("e", value, str))
-            ],
-        "type": "PERSON"
+        "full_name": clean_val("a", value, str, req=True).rstrip("."),
+        "roles": [_get_correct_ils_contributor_role("e", clean_val("e", value, str))],
+        "type": "PERSON",
     }
     _authors.append(author)
     return _authors
@@ -68,13 +68,13 @@ def title(self, key, value):
         _alternative_titles = self.get("alternative_titles", [])
         _alternative_titles.append(
             {
-                "value": clean_val("b", value, str).rstrip('.'),
+                "value": clean_val("b", value, str).rstrip("."),
                 "type": "SUBTITLE",
             }
         )
         self["alternative_titles"] = _alternative_titles
 
-    title = clean_val("a", value, str, req=True).rstrip('.').rstrip(':')
+    title = clean_val("a", value, str, req=True).rstrip(".").rstrip(":")
     # remove excess white spaces
     title = " ".join(title.split())
     return title
@@ -103,6 +103,7 @@ def eitem(self, key, value):
 
 # OPTIONAL FIELDS
 
+
 @model.over("identifiers", "^020__")
 @filter_list_values
 def identifiers(self, key, value):
@@ -112,7 +113,7 @@ def identifiers(self, key, value):
         isbn = {
             "scheme": "ISBN",
             "value": clean_val("a", value, str, req=True),
-            "material": "DIGITAL"
+            "material": "DIGITAL",
         }
         if isbn not in _identifiers:
             _identifiers.append(isbn)
@@ -120,7 +121,7 @@ def identifiers(self, key, value):
         isbn = {
             "scheme": "ISBN",
             "value": clean_val("z", value, str, req=True),
-            "material": "PRINT_VERSION"
+            "material": "PRINT_VERSION",
         }
         if isbn not in _identifiers:
             _identifiers.append(isbn)
@@ -137,10 +138,7 @@ def alternative_identifiers(self, key, value):
         val_a = clean_val("a", value, str, req=True)
         if "(Au-PeEL)" in val_a:
             val_a = val_a.replace("(Au-PeEL)", "").replace("EBL", "")
-            identifier = {
-                "scheme": "EBL",
-                "value": val_a
-            }
+            identifier = {"scheme": "EBL", "value": val_a}
             if identifier not in _alternative_identifiers:
                 _alternative_identifiers.append(identifier)
     return _alternative_identifiers
@@ -189,8 +187,7 @@ def subjects_dewey(self, key, value):
 @out_strip
 def edition(self, key, value):
     """Translate edition field."""
-    return clean_val("a", value, str)\
-        .replace("ed.", "").replace("edition", "")
+    return clean_val("a", value, str).replace("ed.", "").replace("edition", "")
 
 
 @model.over("imprint", "^264_1")
@@ -199,14 +196,13 @@ def imprint(self, key, value):
     """Translate imprint field."""
     _publication_year = self.get("publication_year")
     if _publication_year:
-        raise UnexpectedValue(subfield="e",
-                              message="doubled publication year")
-    pub_year = clean_val("c", value, str).rstrip('.')
+        raise UnexpectedValue(subfield="e", message="doubled publication year")
+    pub_year = clean_val("c", value, str).rstrip(".")
     self["publication_year"] = pub_year
 
     return {
-        "place": clean_val("a", value, str).rstrip(':'),
-        "publisher": clean_val("b", value, str).rstrip(','),
+        "place": clean_val("a", value, str).rstrip(":"),
+        "publisher": clean_val("b", value, str).rstrip(","),
     }
 
 
@@ -226,15 +222,13 @@ def serial(self, key, value):
     issn_value = clean_val("x", value, str)
     identifiers = None
     if issn_value:
-        identifiers = [{"scheme": "ISSN", "value": issn_value.rstrip(';')}]
+        identifiers = [{"scheme": "ISSN", "value": issn_value.rstrip(";")}]
 
     volume = clean_val("v", value, str)
     if volume:
         volume = re.findall(r"\d+", volume)
 
-    serial_title = \
-        clean_val("a", value, str, req=True).rstrip(',').rstrip(';')\
-        .strip()
+    serial_title = clean_val("a", value, str, req=True).rstrip(",").rstrip(";").strip()
 
     words_to_replace = ["ser.", "Ser."]
     for word in words_to_replace:
@@ -272,8 +266,10 @@ def keywords(self, key, value):
     """Translate keywords."""
     _keywords = self.get("keywords", [])
 
-    keyword = {"source": "EBL",
-               "value": clean_val("a", value, str, req=True).rstrip(':')}
+    keyword = {
+        "source": "EBL",
+        "value": clean_val("a", value, str, req=True).rstrip(":"),
+    }
 
     if keyword not in _keywords:
         _keywords.append(keyword)

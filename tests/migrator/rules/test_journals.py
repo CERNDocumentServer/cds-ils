@@ -120,7 +120,8 @@ def test_abbreviated_title(app):
             """,
             {
                 "alternative_titles": [
-                    {"type": "ABBREVIATION", "value": "Bull. CERN Comm."}]
+                    {"type": "ABBREVIATION", "value": "Bull. CERN Comm."}
+                ]
             },
         )
 
@@ -155,9 +156,7 @@ def test_internal_notes(app):
             </datafield>
             """,
             {
-                "internal_notes": [
-                    {"value": "Online archives purchased 2014"}
-                ],
+                "internal_notes": [{"value": "Online archives purchased 2014"}],
             },
         )
 
@@ -223,7 +222,7 @@ def test_access_urls(app):
             {
                 "access_urls": [
                     {
-                        "access_restriction": ['RESTRICTED_PACKAGE_DEAL'],
+                        "access_restriction": ["RESTRICTED_PACKAGE_DEAL"],
                         "description": "some notes (some text)",
                         "value": "https://url.cern.ch/journal",
                         "login_required": False,
@@ -243,7 +242,7 @@ def test_access_urls(app):
             {
                 "access_urls": [
                     {
-                        "access_restriction": ['OPEN_ACCESS'],
+                        "access_restriction": ["OPEN_ACCESS"],
                         "description": "some notes",
                         "value": "https://url.cern.ch/journal",
                         "login_required": False,
@@ -271,7 +270,7 @@ def test_access_urls(app):
                 {
                     "access_urls": [
                         {
-                            "access_restriction": ['RESTRICTED_PACKAGE_DEAL'],
+                            "access_restriction": ["RESTRICTED_PACKAGE_DEAL"],
                             "description": "some text",
                             "login_required": True,
                             "value": "https://url.cern.ch/journal",
@@ -319,13 +318,15 @@ def test_urls(app):
             {
                 "access_urls": [
                     {
-                        "access_restriction": ["RESTRICTED_PERPETUAL_ACCESS_BACKFILES",
-                                                "RESTRICTED_PACKAGE_DEAL",
-                                                "RESTRICTED_UNDEFINED"],
+                        "access_restriction": [
+                            "RESTRICTED_PERPETUAL_ACCESS_BACKFILES",
+                            "RESTRICTED_PACKAGE_DEAL",
+                            "RESTRICTED_UNDEFINED",
+                        ],
                         "description": "v 1 (1992) - (tada)",
                         "value": "https://www.radioeng.cz/search.htm",
-                        'login_required': False,
-                        'open_access': False,
+                        "login_required": False,
+                        "open_access": False,
                     },
                 ],
             },
@@ -543,8 +544,7 @@ def test_electronic_volumes_description(app):
             </datafield>
             """,
             {
-                "note":
-                    "Dates of publication: v 23 (1960) - v 64 (2002) ; v 70 (2008) -",
+                "note": "Dates of publication: v 23 (1960) - v 64 (2002) ; v 70 (2008) -",
             },
         )
 
@@ -594,7 +594,7 @@ def test_physical_volumes_(app):
                     {
                         "description": "v 92 no 7/8 (2014) - v 97 (2019)",
                         "location": "DE2",
-                    }
+                    },
                 ],
             },
         )
@@ -612,7 +612,5 @@ def test_created(app):
                 <subfield code="x">19920121</subfield>
             </datafield>
             """,
-            {
-                "_created": "1992-01-21"
-            },
+            {"_created": "1992-01-21"},
         )

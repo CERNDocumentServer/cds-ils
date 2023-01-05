@@ -19,8 +19,10 @@ def serialize_on_loan_literature_info(loan):
         barcode = loan["item"]["barcode"]
     else:
         barcode = ""
-    item = dict(pid=dict(type=loan["item_pid"]["type"],
-                         value=loan["item_pid"]["value"]), barcode=barcode)
+    item = dict(
+        pid=dict(type=loan["item_pid"]["type"], value=loan["item_pid"]["value"]),
+        barcode=barcode,
+    )
     return dict(
         item=item,
         start_date=loan["start_date"],
@@ -49,14 +51,12 @@ def patron_loans_to_dict(patron_loans):
     """
     literature_on_loan_results = patron_loans["active_loans"].scan()
     literature_on_loan = [
-        serialize_on_loan_literature_info(loan)
-        for loan in literature_on_loan_results
+        serialize_on_loan_literature_info(loan) for loan in literature_on_loan_results
     ]
 
     loan_requests_results = patron_loans["pending_loans"].scan()
     loan_requests = [
-        serialize_loan_request_literature_info(loan)
-        for loan in loan_requests_results
+        serialize_loan_request_literature_info(loan) for loan in loan_requests_results
     ]
 
     response = dict(

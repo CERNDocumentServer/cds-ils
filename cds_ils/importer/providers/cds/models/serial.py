@@ -273,9 +273,7 @@ class CDSSerial(CdsIlsOverdo):
     ):
         """Overwrite the do method."""
         init_fields = deepcopy(self._default_fields)
-        return super().do(
-            blob, ignore_missing, exception_handlers, init_fields
-        )
+        return super().do(blob, ignore_missing, exception_handlers, init_fields)
 
 
 model = CDSSerial(bases=(), entry_point_group="cds_ils.importer.series")

@@ -13,8 +13,11 @@ import arrow
 from cds_dojson.marc21.utils import create_record
 from flask import current_app
 
-from cds_ils.importer.errors import ManualImportRequired, \
-    MissingRequiredField, UnexpectedValue
+from cds_ils.importer.errors import (
+    ManualImportRequired,
+    MissingRequiredField,
+    UnexpectedValue,
+)
 from cds_ils.migrator import migrator_marc21
 from cds_ils.migrator.errors import JSONConversionException, LossyConversion
 from cds_ils.migrator.handlers import migration_exception_handler

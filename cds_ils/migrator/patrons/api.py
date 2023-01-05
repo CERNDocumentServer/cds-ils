@@ -31,9 +31,7 @@ def import_users_from_json(dump_file):
     with click.progressbar(json.load(dump_file)) as bar:
         for record in bar:
             click.echo(
-                'Importing user "{0}({1})"...'.format(
-                    record["id"], record["email"]
-                )
+                'Importing user "{0}({1})"...'.format(record["id"], record["email"])
             )
             ccid = record.get("ccid")
             if not ccid:
@@ -59,16 +57,12 @@ def import_users_from_json(dump_file):
                 client_id = current_app.config["CERN_APP_OPENID_CREDENTIALS"][
                     "consumer_key"
                 ]
-                account = RemoteAccount.get(
-                    user_id=user.id, client_id=client_id
-                )
+                account = RemoteAccount.get(user_id=user.id, client_id=client_id)
                 extra_data = account.extra_data
                 if "legacy_id" in extra_data:
                     del extra_data["legacy_id"]
                 # add legacy_id information
-                account.extra_data.update(
-                    legacy_id=str(record["id"]), **extra_data
-                )
+                account.extra_data.update(legacy_id=str(record["id"]), **extra_data)
                 db.session.add(account)
                 patron = Patron(user.id)
                 PatronIndexer().index(patron)
@@ -86,9 +80,7 @@ def get_user_by_person_id(person_id):
     results = search.execute()
     hits_total = results.hits.total.value
     if not results.hits or hits_total < 1:
-        click.secho(
-            "no user found with person_id {}".format(person_id), fg="red"
-        )
+        click.secho("no user found with person_id {}".format(person_id), fg="red")
         return None
     elif hits_total > 1:
         raise UserMigrationError(
@@ -109,9 +101,7 @@ def get_user_by_legacy_id(legacy_id):
     results = search.execute()
     hits_total = results.hits.total.value
     if not results.hits or hits_total < 1:
-        click.secho(
-            "no user found with legacy_id {}".format(legacy_id), fg="red"
-        )
+        click.secho("no user found with legacy_id {}".format(legacy_id), fg="red")
         return None
     elif hits_total > 1:
         raise UserMigrationError(

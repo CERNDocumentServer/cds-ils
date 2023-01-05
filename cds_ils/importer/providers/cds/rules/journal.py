@@ -10,8 +10,11 @@ import datetime
 
 from dojson.errors import IgnoreKey
 from dojson.utils import for_each_value, force_list
-from invenio_app_ils.relations.api import LANGUAGE_RELATION, OTHER_RELATION, \
-    SEQUENCE_RELATION
+from invenio_app_ils.relations.api import (
+    LANGUAGE_RELATION,
+    OTHER_RELATION,
+    SEQUENCE_RELATION,
+)
 
 from cds_ils.importer.errors import UnexpectedValue
 from cds_ils.importer.providers.cds.models.journal import model
@@ -19,8 +22,14 @@ from cds_ils.importer.providers.cds.models.journal import model
 from ..helpers.decorators import filter_list_values, out_strip
 from ..helpers.parsers import clean_val
 from .base import title as base_title
-from .values_mapping import ACCESS_TYPE, ACQUISITION_METHOD, COLLECTION, \
-    IDENTIFIERS_MEDIUM_TYPES, TAGS_TO_IGNORE, mapping
+from .values_mapping import (
+    ACCESS_TYPE,
+    ACQUISITION_METHOD,
+    COLLECTION,
+    IDENTIFIERS_MEDIUM_TYPES,
+    TAGS_TO_IGNORE,
+    mapping,
+)
 
 
 @model.over("legacy_recid", "^001", override=True)
@@ -188,9 +197,7 @@ def urls(self, key, value):
     return _urls
 
 
-@model.over(
-    "_migration", "(^770__)|(^772__)|(^780__)|(^785__)|(^787__)", override=True
-)
+@model.over("_migration", "(^770__)|(^772__)|(^780__)|(^785__)|(^787__)", override=True)
 def related_records(self, key, value):
     """Translates related_records field."""
     _migration = self.get("_migration", {})
@@ -202,24 +209,24 @@ def related_records(self, key, value):
     if relation_type_tag:
         relation_type_tag = relation_type_tag.upper()
     else:
-        raise UnexpectedValue('Relation type missing.',
-                              subfield="x")
+        raise UnexpectedValue("Relation type missing.", subfield="x")
 
     if relation_type_tag not in ["LANGUAGE", "EDITION", "SEQUENCE", "OTHER"]:
-        raise UnexpectedValue(f'Unsupported relation type {relation_type_tag}',
-                              subfield="x")
+        raise UnexpectedValue(
+            f"Unsupported relation type {relation_type_tag}", subfield="x"
+        )
     # language
-    if key == "787__" and relation_type_tag == 'LANGUAGE':
+    if key == "787__" and relation_type_tag == "LANGUAGE":
         relation_type = LANGUAGE_RELATION.name
 
     # has supplement/supplement to
     if key == "770__" or key == "772__":
-        if "i" in value and relation_type_tag == 'OTHER':
+        if "i" in value and relation_type_tag == "OTHER":
             description = clean_val("i", value, str)
 
     # continues/is continued by
     if key == "780__" or key == "785__":
-        if relation_type_tag == 'SEQUENCE':
+        if relation_type_tag == "SEQUENCE":
             relation_type = SEQUENCE_RELATION.name
             if key == "780__":
                 sequence_order = "next"
@@ -295,9 +302,11 @@ def created(self, key, value):
     _created_by = self.get("created_by", {})
     date_value = clean_val("x", value, int, regex_format=r"\d{8}$")
     if date_value:
-        year, week, day = str(date_value)[:4],\
-                          str(date_value)[4:6],\
-                          str(date_value)[6:8]
+        year, week, day = (
+            str(date_value)[:4],
+            str(date_value)[4:6],
+            str(date_value)[6:8],
+        )
         date = datetime.date(int(year), int(week), int(day))
         return date.isoformat()
 

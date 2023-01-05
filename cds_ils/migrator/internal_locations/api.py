@@ -16,8 +16,7 @@ from invenio_app_ils.internal_locations.api import InternalLocation
 from invenio_app_ils.internal_locations.search import InternalLocationSearch
 from invenio_app_ils.proxies import current_app_ils
 
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ItemMigrationError
 from cds_ils.migrator.providers.api import VOCABULARIES_FIELDS
@@ -81,9 +80,7 @@ def get_internal_location_by_legacy_recid(legacy_recid):
     hits_total = result.hits.total.value
     if not result.hits or hits_total < 1:
         click.secho(
-            "no internal location found with legacy id {}".format(
-                legacy_recid
-            ),
+            "no internal location found with legacy id {}".format(legacy_recid),
             fg="red",
         )
         raise ItemMigrationError(

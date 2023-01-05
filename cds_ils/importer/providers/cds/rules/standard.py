@@ -14,10 +14,15 @@ from dojson.utils import for_each_value, force_list
 from flask import current_app
 
 from cds_ils.importer.errors import UnexpectedValue
-from cds_ils.importer.providers.cds.helpers.decorators import \
-    filter_list_values, out_strip
-from cds_ils.importer.providers.cds.helpers.parsers import clean_val, \
-    extract_parts, is_excluded
+from cds_ils.importer.providers.cds.helpers.decorators import (
+    filter_list_values,
+    out_strip,
+)
+from cds_ils.importer.providers.cds.helpers.parsers import (
+    clean_val,
+    extract_parts,
+    is_excluded,
+)
 from cds_ils.importer.providers.cds.models.standard import model
 
 
@@ -96,7 +101,7 @@ def publication_additional(self, key, value):
             _urls.append(
                 {
                     "value": f"{host}/legacy/{related_recid}",
-                    "description": "is chapter of"
+                    "description": "is chapter of",
                 }
             )
         if not empty and i < len(_publication_info):
@@ -115,7 +120,7 @@ def subject_classification(self, key, value):
     prev_subjects = self.get("subjects", [])
     _subject_classification = {
         "value": clean_val("c", value, str, req=True),
-        "scheme": "ICS"
+        "scheme": "ICS",
     }
     if _subject_classification not in prev_subjects:
         return _subject_classification

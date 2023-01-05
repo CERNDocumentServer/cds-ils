@@ -20,8 +20,10 @@ from invenio_pidstore.errors import PIDAlreadyExists
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.constants import CDS_ILS_FALLBACK_CREATION_DATE
-from cds_ils.migrator.utils import get_legacy_pid_type_by_provider, \
-    model_provider_by_rectype
+from cds_ils.migrator.utils import (
+    get_legacy_pid_type_by_provider,
+    model_provider_by_rectype,
+)
 from cds_ils.minters import legacy_recid_minter
 
 
@@ -33,18 +35,19 @@ class CDSRecordDumpLoader(object):
     """
 
     @classmethod
-    def create(cls, dump, rectype, legacy_id, mint_legacy_pid=True,
-               log_extra={}):
+    def create(cls, dump, rectype, legacy_id, mint_legacy_pid=True, log_extra={}):
         """Create record based on dump."""
         return cls.create_record(
-            dump, rectype, legacy_id=legacy_id,
-            mint_legacy_pid=mint_legacy_pid, log_extra=log_extra
+            dump,
+            rectype,
+            legacy_id=legacy_id,
+            mint_legacy_pid=mint_legacy_pid,
+            log_extra=log_extra,
         )
 
     @classmethod
     def create_record(
-        cls, dump, rectype, legacy_id,
-        mint_legacy_pid=True, log_extra={}
+        cls, dump, rectype, legacy_id, mint_legacy_pid=True, log_extra={}
     ):
         """Create a new record from dump."""
         records_logger = logging.getLogger(f"{rectype}s_logger")
@@ -63,15 +66,12 @@ class CDSRecordDumpLoader(object):
                 dump["pid"] = provider.pid.pid_value
                 if mint_legacy_pid:
                     legacy_pid_type = get_legacy_pid_type_by_provider(provider)
-                    legacy_recid_minter(
-                       legacy_id, legacy_pid_type, record_uuid
-                    )
+                    legacy_recid_minter(legacy_id, legacy_pid_type, record_uuid)
                 record = model.create(dump, record_uuid)
-                if isinstance(record, document_class) \
-                        or isinstance(record, series_class):
-                    created_date = dump.get(
-                        "_created", CDS_ILS_FALLBACK_CREATION_DATE
-                    )
+                if isinstance(record, document_class) or isinstance(
+                    record, series_class
+                ):
+                    created_date = dump.get("_created", CDS_ILS_FALLBACK_CREATION_DATE)
                     record.model.created = parser.parse(created_date)
                 record.commit()
             db.session.commit()
@@ -89,16 +89,12 @@ class CDSRecordDumpLoader(object):
             db.session.rollback()
             raise e
         except PIDAlreadyExists as e:
-            allow_updates = current_app.config.get(
-                "CDS_ILS_MIGRATION_ALLOW_UPDATES"
-            )
+            allow_updates = current_app.config.get("CDS_ILS_MIGRATION_ALLOW_UPDATES")
             if not allow_updates:
                 raise e
             if legacy_pid_type:
                 # update record if already exists with legacy_recid
-                record = get_record_by_legacy_recid(
-                    model, legacy_pid_type, legacy_id
-                )
+                record = get_record_by_legacy_recid(model, legacy_pid_type, legacy_id)
                 # When updating we don't want to change the pid
                 if "pid" in dump:
                     del dump["pid"]

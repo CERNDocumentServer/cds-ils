@@ -11,12 +11,23 @@ from __future__ import absolute_import
 import pytest
 from dojson.errors import IgnoreKey
 
-from cds_ils.importer.errors import ManualImportRequired, \
-    MissingRequiredField, UnexpectedValue
-from cds_ils.importer.providers.cds.helpers.decorators import \
-    filter_list_values, out_strip, replace_in_result
-from cds_ils.importer.providers.cds.helpers.parsers import clean_email, \
-    clean_str, clean_val, get_week_start, related_url
+from cds_ils.importer.errors import (
+    ManualImportRequired,
+    MissingRequiredField,
+    UnexpectedValue,
+)
+from cds_ils.importer.providers.cds.helpers.decorators import (
+    filter_list_values,
+    out_strip,
+    replace_in_result,
+)
+from cds_ils.importer.providers.cds.helpers.parsers import (
+    clean_email,
+    clean_str,
+    clean_val,
+    get_week_start,
+    related_url,
+)
 
 
 def test_rel_url():
@@ -72,9 +83,7 @@ def test_clean_val(subfield, value, var_type, req, default, manual, output):
     """Test if clean value works properly"""
 
     assert (
-        clean_val(
-            subfield, value, var_type, req=req, default=default, manual=manual
-        )
+        clean_val(subfield, value, var_type, req=req, default=default, manual=manual)
         == output
     )
 

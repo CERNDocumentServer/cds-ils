@@ -21,9 +21,12 @@ from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import MultipartMigrationError
 from cds_ils.migrator.relations.api import create_parent_child_relation
-from cds_ils.migrator.series.api import clean_document_json_for_multipart, \
-    exclude_multipart_fields, get_multipart_by_multipart_id, \
-    replace_fields_in_volume
+from cds_ils.migrator.series.api import (
+    clean_document_json_for_multipart,
+    exclude_multipart_fields,
+    get_multipart_by_multipart_id,
+    replace_fields_in_volume,
+)
 
 
 def import_multivolume(json_record):
@@ -37,11 +40,12 @@ def import_multivolume(json_record):
     # build multipart dict - leave the legacy_recid attached
     multipart_json = clean_document_json_for_multipart(
         json_record,
-        include_keys=["legacy_recid",
-                      "alternative_titles",
-                      "publication_year",
-                      "identifiers"
-                      ]
+        include_keys=[
+            "legacy_recid",
+            "alternative_titles",
+            "publication_year",
+            "identifiers",
+        ],
     )
 
     # prepare json for each volume
@@ -135,7 +139,11 @@ def import_multipart(json_record):
     # split json for multipart (series rectype) and
     # document (common data for all volumes, to be stored on document rectype)
     multipart_json = clean_document_json_for_multipart(
-        json_record, include_keys=["publication_year", ])
+        json_record,
+        include_keys=[
+            "publication_year",
+        ],
+    )
     publisher = json_record.get("imprint", {}).get("publisher")
     if publisher:
         multipart_json["publisher"] = publisher
@@ -172,9 +180,7 @@ def import_multipart(json_record):
         return multipart_record
     except PIDDoesNotExistError as e:
         document_record = import_record(
-            document_json,
-            rectype="document",
-            legacy_id=document_json["legacy_recid"]
+            document_json, rectype="document", legacy_id=document_json["legacy_recid"]
         )
         document_indexer.index(document_record)
 

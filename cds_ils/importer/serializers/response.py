@@ -24,12 +24,11 @@ def importer_task_responsify(schema_class, mimetype):
         """Generate the response object."""
         if isinstance(data, ImporterImportLog):
 
-            response_data = schema_class(record_offset=record_offset)\
-                .dump(data)
+            response_data = schema_class(record_offset=record_offset).dump(data)
 
             response = current_app.response_class(
-                json.dumps(response_data),
-                mimetype=mimetype)
+                json.dumps(response_data), mimetype=mimetype
+            )
             response.status_code = code
 
             if headers is not None:
@@ -37,6 +36,7 @@ def importer_task_responsify(schema_class, mimetype):
             return response
         else:
             abort(400)
+
     return view
 
 
@@ -59,11 +59,12 @@ def importer_task_log_responsify(schema_class, mimetype):
             abort(400)
 
         response = current_app.response_class(
-            json.dumps(response_data),
-            mimetype=mimetype)
+            json.dumps(response_data), mimetype=mimetype
+        )
         response.status_code = code
 
         if headers is not None:
             response.headers.extend(headers)
         return response
+
     return view

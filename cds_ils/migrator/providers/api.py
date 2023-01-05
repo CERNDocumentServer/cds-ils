@@ -24,8 +24,7 @@ import click
 from invenio_app_ils.providers.proxies import current_ils_prov
 from invenio_db import db
 
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
 from cds_ils.migrator.errors import ProviderError
 from cds_ils.migrator.utils import bulk_index_records
@@ -52,17 +51,18 @@ VOCABULARIES_FIELDS = {
 def get_provider_by_legacy_id(legacy_id, provider_type, grand_total=None):
     """Search for provider by legacy id."""
     # Check for Wiley vendor to split it depending on the currency
-    if provider_type == 'VENDOR' and legacy_id == ORIGINAL_WILEY_ID:
+    if provider_type == "VENDOR" and legacy_id == ORIGINAL_WILEY_ID:
         if grand_total and grand_total["currency"]:
-            legacy_id = WILEY_MAPPER.get(grand_total["currency"],
-                                         DEFAULT_WILEY)
+            legacy_id = WILEY_MAPPER.get(grand_total["currency"], DEFAULT_WILEY)
         else:
             legacy_id = DEFAULT_WILEY
 
     if provider_type:
-        search = current_ils_prov.provider_search_cls().filter(
-            "term", legacy_ids=legacy_id
-        ).filter("term", type=provider_type)
+        search = (
+            current_ils_prov.provider_search_cls()
+            .filter("term", legacy_ids=legacy_id)
+            .filter("term", type=provider_type)
+        )
     else:
         search = current_ils_prov.provider_search_cls().filter(
             "term", legacy_ids=legacy_id
@@ -75,9 +75,7 @@ def get_provider_by_legacy_id(legacy_id, provider_type, grand_total=None):
         )
 
     raise ProviderError(
-        "Found {0} providers with legacy_id {1}".format(
-            len(result.hits), legacy_id
-        )
+        "Found {0} providers with legacy_id {1}".format(len(result.hits), legacy_id)
     )
 
 

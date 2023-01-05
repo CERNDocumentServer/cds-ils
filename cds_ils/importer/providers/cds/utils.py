@@ -15,9 +15,7 @@ def add_title_from_conference_info(json_data):
         json_data["document_type"] in ["PROCEEDINGS", "SERIAL_ISSUE"]
         and "title" not in json_data
     ):
-        conference_title = json_data["_migration"].get(
-            "conference_title", None
-        )
+        conference_title = json_data["_migration"].get("conference_title", None)
         if conference_title:
             json_data["title"] = conference_title
 

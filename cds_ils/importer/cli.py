@@ -11,10 +11,8 @@ import click
 from flask.cli import with_appcontext
 
 from cds_ils.importer.api import import_from_xml
-from cds_ils.importer.models import ImporterAgent, ImporterImportLog, \
-    ImporterMode
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.models import ImporterAgent, ImporterImportLog, ImporterMode
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 
 
 @click.group()
@@ -25,8 +23,7 @@ def importer():
 
 
 @importer.command()
-@click.argument("sources", type=click.Path(exists=True, resolve_path=True),
-                nargs=-1)
+@click.argument("sources", type=click.Path(exists=True, resolve_path=True), nargs=-1)
 @click.option(
     "--provider",
     "-p",

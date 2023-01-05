@@ -2,8 +2,13 @@ import pytest
 from cds_dojson.matcher import matcher
 from dojson.contrib import marc21 as default
 
-from cds_ils.importer.providers.cds.models import document, journal, \
-    multipart, serial, standard
+from cds_ils.importer.providers.cds.models import (
+    document,
+    journal,
+    multipart,
+    serial,
+    standard,
+)
 
 
 def test_marc21_matcher_books():
@@ -49,12 +54,8 @@ def test_marc21_matcher_books():
         assert document.model == matcher(book_blob3, models_entrypoint)
     assert standard.model == matcher(standard_blob1, models_entrypoint)
     assert serial.model == matcher(serial_blob1, serial_models_entrypoint)
-    assert multipart.model == matcher(
-        multipart_blob1, multipart_models_entrypoint
-    )
-    assert multipart.model == matcher(
-        multipart_blob2, multipart_models_entrypoint
-    )
+    assert multipart.model == matcher(multipart_blob1, multipart_models_entrypoint)
+    assert multipart.model == matcher(multipart_blob2, multipart_models_entrypoint)
     assert journal.model == matcher(journal_blob, journal_models_entrypoint)
     # make sure that it won't match with any CDS record
     assert default.model == matcher(cds_blob2, models_entrypoint)

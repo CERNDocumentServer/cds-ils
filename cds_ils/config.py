@@ -19,38 +19,50 @@ from datetime import timedelta
 
 from celery.schedules import crontab
 from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
-from invenio_app_ils.circulation.config import \
-    ILS_CIRCULATION_RECORDS_REST_ENDPOINTS
-from invenio_app_ils.circulation.transitions.transitions import \
-    ILSItemOnLoanToItemOnLoan, ILSToItemOnLoan
-from invenio_app_ils.circulation.utils import circulation_can_be_requested, \
-    circulation_is_loan_duration_valid, circulation_loan_will_expire_days
-from invenio_app_ils.config import \
-    CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
+from invenio_app_ils.circulation.config import ILS_CIRCULATION_RECORDS_REST_ENDPOINTS
+from invenio_app_ils.circulation.transitions.transitions import (
+    ILSItemOnLoanToItemOnLoan,
+    ILSToItemOnLoan,
+)
+from invenio_app_ils.circulation.utils import (
+    circulation_can_be_requested,
+    circulation_is_loan_duration_valid,
+    circulation_loan_will_expire_days,
+)
+from invenio_app_ils.config import CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
 from invenio_app_ils.eitems.api import EITEM_PID_TYPE
-from invenio_app_ils.ill.api import can_item_circulate, \
-    circulation_default_extension_duration, \
-    circulation_default_loan_duration
+from invenio_app_ils.ill.api import (
+    can_item_circulate,
+    circulation_default_extension_duration,
+    circulation_default_loan_duration,
+)
 from invenio_app_ils.literature.api import LITERATURE_PID_TYPE
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE
-from invenio_app_ils.permissions import authenticated_user_permission, \
-    backoffice_permission, loan_extend_circulation_permission, \
-    patron_owner_permission
+from invenio_app_ils.permissions import (
+    authenticated_user_permission,
+    backoffice_permission,
+    loan_extend_circulation_permission,
+    patron_owner_permission,
+)
 from invenio_app_ils.series.api import SERIES_PID_TYPE
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
-from invenio_circulation.transitions.transitions import CreatedToPending, \
-    ItemOnLoanToItemReturned, ToCancelled
+from invenio_circulation.transitions.transitions import (
+    CreatedToPending,
+    ItemOnLoanToItemReturned,
+    ToCancelled,
+)
 from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
 from invenio_records_rest.utils import deny_all
 from marshmallow.fields import Bool, List
 
 from .circulation.utils import circulation_cds_extension_max_count
-from .document_requests.notifications.filters import \
-    document_requests_notifications_filter
+from .document_requests.notifications.filters import (
+    document_requests_notifications_filter,
+)
 from .ill.notifications.filters import ill_notifications_filter
 from .literature.covers import build_cover_urls
 from .patrons.api import AnonymousPatron, Patron
@@ -186,9 +198,7 @@ CELERY_BEAT_SCHEDULE = {
 # Database
 ###############################################################################
 #: Database URI including user and password
-SQLALCHEMY_DATABASE_URI = (
-    "postgresql+psycopg2://invenio:invenio@localhost/invenio"
-)
+SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://invenio:invenio@localhost/invenio"
 
 ###############################################################################
 # Flask configuration
@@ -261,27 +271,20 @@ _OAUTH_REMOTE_APP_COMMON = dict(
     ),
     access_token_url=os.environ.get(
         "OAUTH_CERN_OPENID_ACCESS_TOKEN_URL",
-        "https://keycloak-qa.cern.ch/auth/realms/cern/"
-        "protocol/openid-connect/token",
+        "https://keycloak-qa.cern.ch/auth/realms/cern/" "protocol/openid-connect/token",
     ),
     authorize_url=os.environ.get(
         "OAUTH_CERN_OPENID_AUTHORIZE_URL",
-        "https://keycloak-qa.cern.ch/auth/realms/cern/"
-        "protocol/openid-connect/auth",
+        "https://keycloak-qa.cern.ch/auth/realms/cern/" "protocol/openid-connect/auth",
     ),
 )
 OAUTHCLIENT_CERN_OPENID_USERINFO_URL = (
-    "https://keycloak-qa.cern.ch/auth/realms/cern/"
-    "protocol/openid-connect/userinfo"
+    "https://keycloak-qa.cern.ch/auth/realms/cern/" "protocol/openid-connect/userinfo"
 )
 OAUTHCLIENT_CERN_OPENID_ALLOWED_ROLES = ["cern-user", "librarian", "admin"]
 CERN_APP_OPENID_CREDENTIALS = dict(
-    consumer_key=os.environ.get(
-        "OAUTH_CERN_OPENID_CLIENT_ID", "localhost-cds-ils"
-    ),
-    consumer_secret=os.environ.get(
-        "OAUTH_CERN_OPENID_CLIENT_SECRET", "<change_me>"
-    ),
+    consumer_key=os.environ.get("OAUTH_CERN_OPENID_CLIENT_ID", "localhost-cds-ils"),
+    consumer_secret=os.environ.get("OAUTH_CERN_OPENID_CLIENT_SECRET", "<change_me>"),
 )
 USERPROFILES_EXTEND_SECURITY_FORMS = True
 ###############################################################################
@@ -291,17 +294,13 @@ OAUTH_REMOTE_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
 OAUTHCLIENT_REMOTE_APPS = dict(cern_openid=OAUTH_REMOTE_APP)
 ###############################################################################
 # REST
-logout_redirect_url = os.environ.get(
-    "INVENIO_SPA_HOST", "https://127.0.0.1:3000/"
-)
+logout_redirect_url = os.environ.get("INVENIO_SPA_HOST", "https://127.0.0.1:3000/")
 OAUTH_REMOTE_REST_APP = copy.deepcopy(cern_openid.REMOTE_REST_APP)
 OAUTH_REMOTE_REST_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
 OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
     "OAUTH_CERN_OPENID_LOGOUT_URL",
     "https://keycloak-qa.cern.ch/auth/realms/cern/"
-    "protocol/openid-connect/logout/?redirect_uri={}".format(
-        logout_redirect_url
-    ),
+    "protocol/openid-connect/logout/?redirect_uri={}".format(logout_redirect_url),
 )
 OAUTH_REMOTE_REST_APP["authorized_redirect_url"] = (
     os.environ.get("INVENIO_SPA_HOST", "https://127.0.0.1:3000") + "/login"
@@ -338,9 +337,7 @@ OAISERVER_ID_PREFIX = "oai:cds-ils:"
 ###############################################################################
 # Migrator configuration
 ###############################################################################
-MIGRATOR_RECORDS_DUMPLOADER_CLS = (
-    "cds_ils.migrator.records:CDSDocumentDumpLoader"
-)
+MIGRATOR_RECORDS_DUMPLOADER_CLS = "cds_ils.migrator.records:CDSDocumentDumpLoader"
 MIGRATOR_RECORDS_DUMP_CLS = "cds_ils.migrator.records:CDSRecordDump"
 
 ###############################################################################
@@ -372,12 +369,8 @@ JSONSCHEMAS_SCHEMAS = [
 ###############################################################################
 RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["record_class"] = Patron
 RECORDS_REST_ENDPOINTS[PATRON_PID_TYPE]["indexer_class"] = PatronIndexer
-RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE][
-    "create_permission_factory_imp"
-] = deny_all
-RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE][
-    "delete_permission_factory_imp"
-] = deny_all
+RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE]["create_permission_factory_imp"] = deny_all
+RECORDS_REST_ENDPOINTS[LOCATION_PID_TYPE]["delete_permission_factory_imp"] = deny_all
 # Override serializer for e-items that require authentication
 RECORDS_REST_ENDPOINTS[DOCUMENT_PID_TYPE]["record_serializers"] = {
     "application/json": "cds_ils.literature.serializers:json_v1_response"
@@ -394,8 +387,7 @@ RECORDS_REST_ENDPOINTS[EITEM_PID_TYPE]["search_serializers"] = {
     "text/csv": "cds_ils.eitems.serializers:csv_v1_search",
 }
 RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["record_serializers"] = {
-    "application/json": "invenio_app_ils.literature.serializers"
-                        ":json_v1_response"
+    "application/json": "invenio_app_ils.literature.serializers" ":json_v1_response"
 }
 RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.literature.serializers:json_v1_search",
@@ -408,9 +400,9 @@ RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.series.serializers:json_v1_search",
     "text/csv": "cds_ils.series.serializers:csv_v1_search",
 }
-ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE][
-    "search_serializers"
-]["text/csv"] = "cds_ils.circulation.serializers:csv_v1_search"
+ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE]["search_serializers"][
+    "text/csv"
+] = "cds_ils.circulation.serializers:csv_v1_search"
 
 ###############################################################################
 # ILS overridden
@@ -432,9 +424,7 @@ ILS_CIRCULATION_LOAN_REQUEST_DURATION_DAYS = 120
 ILS_RECORDS_METADATA_NAMESPACES = {
     "document": {
         "unit": {"@context": "https://cern.ch/unit/terms"},
-        "standard_review": {
-            "@context": "https://cern.ch/standard_review/terms"
-        },
+        "standard_review": {"@context": "https://cern.ch/standard_review/terms"},
     }
 }
 
@@ -728,6 +718,4 @@ CDS_ILS_MIGRATION_ALLOW_UPDATES = False
 CDS_ILS_MIGRATION_FILES_DIR = "/eos/media/cds/test/books/migration/"
 
 ILS_ILL_NOTIFICATIONS_FILTER = ill_notifications_filter
-ILS_NOTIFICATIONS_FILTER_DOCUMENT_REQUEST = (
-    document_requests_notifications_filter
-)
+ILS_NOTIFICATIONS_FILTER_DOCUMENT_REQUEST = document_requests_notifications_filter

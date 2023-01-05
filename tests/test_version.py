@@ -11,4 +11,5 @@
 def test_version():
     """Test version import."""
     from cds_ils import __version__
+
     assert __version__

@@ -20,12 +20,14 @@ from invenio_app_ils.vocabularies.api import VOCABULARY_TYPE_LICENSE
 from invenio_db import db
 from invenio_jsonschemas import current_jsonschemas
 
-from cds_ils.importer.documents.api import fuzzy_search_document, \
-    search_document_by_title_authors, search_documents_by_doi, \
-    search_documents_by_isbn
+from cds_ils.importer.documents.api import (
+    fuzzy_search_document,
+    search_document_by_title_authors,
+    search_documents_by_doi,
+    search_documents_by_isbn,
+)
 from cds_ils.importer.errors import SimilarityMatchUnavailable
-from cds_ils.importer.vocabularies_validator import \
-    validator as vocabulary_validator
+from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 
 VOCABULARIES_FIELDS = {
     "alternative_identifiers": {
@@ -188,8 +190,7 @@ class DocumentImporter(object):
 
     def _update_field_alternative_identifiers(self, matched_document):
         """Update alternative identifiers of a given document."""
-        existing_identifiers = matched_document.get(
-            "alternative_identifiers", [])
+        existing_identifiers = matched_document.get("alternative_identifiers", [])
         new_identifiers = [
             elem
             for elem in self.json_data.get("alternative_identifiers", [])
@@ -203,9 +204,7 @@ class DocumentImporter(object):
         for field in self.update_document_fields:
             if not self.json_data.get(field):
                 continue
-            update_field_method = getattr(
-                self, "_update_field_{}".format(field), None
-            )
+            update_field_method = getattr(self, "_update_field_{}".format(field), None)
             if update_field_method:
                 matched_document[field] = update_field_method(matched_document)
             else:
@@ -226,27 +225,27 @@ class DocumentImporter(object):
         """Validate identifiers between matches."""
         current_provider = self.metadata_provider.upper()
 
-        import_doc_provider_ids = self.json_data.get(
-            'alternative_identifiers', [])
+        import_doc_provider_ids = self.json_data.get("alternative_identifiers", [])
 
-        doc_alternative_ids = existing_document.get(
-            'alternative_identifiers', [])
+        doc_alternative_ids = existing_document.get("alternative_identifiers", [])
 
         import_provider_ids = [
-            entry for entry in import_doc_provider_ids
+            entry
+            for entry in import_doc_provider_ids
             if entry.get("scheme") == current_provider
         ]
 
         doc_provider_ids = [
-            entry for entry in doc_alternative_ids
+            entry
+            for entry in doc_alternative_ids
             if entry.get("scheme") == current_provider
         ]
 
-        both_have_current_provider_ids = \
-            doc_provider_ids and import_provider_ids
+        both_have_current_provider_ids = doc_provider_ids and import_provider_ids
 
-        matching_provider_ids = [entry for entry in import_doc_provider_ids
-                                 if entry in doc_alternative_ids]
+        matching_provider_ids = [
+            entry for entry in import_doc_provider_ids if entry in doc_alternative_ids
+        ]
         if both_have_current_provider_ids and not matching_provider_ids:
             # found provider ID match
             return False
@@ -257,7 +256,7 @@ class DocumentImporter(object):
     def _validate_volumes(self, existing_document):
         """Validate serial volumes match."""
         import_doc_serials = self.json_data.get("_serial", [])
-        existing_doc_serials = existing_document.relations.get('serial', [])
+        existing_doc_serials = existing_document.relations.get("serial", [])
 
         if not (import_doc_serials or existing_doc_serials):
             return True
@@ -283,17 +282,18 @@ class DocumentImporter(object):
         """Find matching isbns for importing document."""
         import_doc_identifiers = self.json_data.get("identifiers", [])
         import_isbns = [
-            entry["value"] for entry in import_doc_identifiers
+            entry["value"]
+            for entry in import_doc_identifiers
             if entry.get("scheme") == "ISBN"
         ]
         existing_doc_identifiers = existing_document.get("identifiers", [])
         existing_isbns = [
-            entry["value"] for entry in existing_doc_identifiers
+            entry["value"]
+            for entry in existing_doc_identifiers
             if entry.get("scheme") == "ISBN"
         ]
 
-        matching_isbns = [isbn for isbn in import_isbns
-                          if isbn in existing_isbns]
+        matching_isbns = [isbn for isbn in import_isbns if isbn in existing_isbns]
         return matching_isbns
 
     def validate_found_matches(self, not_validated_matches):
@@ -304,37 +304,40 @@ class DocumentImporter(object):
 
         document_class = current_app_ils.document_record_cls
         import_doc_title = self.json_data.get("title")
-        import_doc_edition = self.json_data.get('edition')
-        import_doc_publication_year = \
-            self.json_data.get('publication_year')
+        import_doc_edition = self.json_data.get("edition")
+        import_doc_publication_year = self.json_data.get("publication_year")
 
         for pid_value in not_validated_matches:
             document = document_class.get_record_by_pid(pid_value)
-            document_title = document['title']
-            document_edition = document.get('edition')
-            doc_pub_year = document.get('publication_year')
+            document_title = document["title"]
+            document_edition = document.get("edition")
+            doc_pub_year = document.get("publication_year")
 
             if self._matching_isbn(document):
                 matches.append(pid_value)
             else:
                 both_editions = document_edition and import_doc_edition
-                editions_not_equal = both_editions and \
-                    document_edition != import_doc_edition
+                editions_not_equal = (
+                    both_editions and document_edition != import_doc_edition
+                )
 
-                pub_year_not_equal = doc_pub_year !=\
-                    import_doc_publication_year
-                titles_not_equal = document_title.lower() != \
-                    import_doc_title.lower()
+                pub_year_not_equal = doc_pub_year != import_doc_publication_year
+                titles_not_equal = document_title.lower() != import_doc_title.lower()
 
-                provider_identifiers_not_equal = \
+                provider_identifiers_not_equal = (
                     not self._validate_provider_identifiers(document)
+                )
                 invalid_serial_volumes = not self._validate_volumes(document)
 
-                if any([titles_not_equal,
+                if any(
+                    [
+                        titles_not_equal,
                         editions_not_equal,
                         pub_year_not_equal,
                         provider_identifiers_not_equal,
-                        invalid_serial_volumes]):
+                        invalid_serial_volumes,
+                    ]
+                ):
                     partial_matches.append(pid_value)
                 else:
                     matches.append(pid_value)
@@ -380,8 +383,7 @@ class DocumentImporter(object):
         if title:
             # check by title and authors, exact matching
             authors = [
-                author["full_name"]
-                for author in self.json_data.get("authors", [])
+                author["full_name"] for author in self.json_data.get("authors", [])
             ]
             subtitle = None
             subtitle_obj = [
@@ -392,9 +394,7 @@ class DocumentImporter(object):
             if subtitle_obj:
                 subtitle = subtitle_obj[0]["value"]
 
-            search = search_document_by_title_authors(
-                title, authors, subtitle=subtitle
-            )
+            search = search_document_by_title_authors(title, authors, subtitle=subtitle)
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
 
@@ -407,9 +407,7 @@ class DocumentImporter(object):
 
         if is_part_of_serial or not title:
             return []
-        authors = [
-            author["full_name"] for author in self.json_data.get("authors", [])
-        ]
+        authors = [author["full_name"] for author in self.json_data.get("authors", [])]
         try:
             fuzzy_results = fuzzy_search_document(title, authors).scan()
         except TransportError:
@@ -420,7 +418,7 @@ class DocumentImporter(object):
         """Preview document import JSON."""
         document_cls = current_app_ils.document_record_cls
         doc = document_cls(self._before_create())
-        doc['pid'] = "preview"
+        doc["pid"] = "preview"
         doc["$schema"] = current_jsonschemas.path_to_url(document_cls._schema)
         doc.validate()
         return doc
@@ -430,9 +428,7 @@ class DocumentImporter(object):
         for field in self.update_document_fields:
             if not self.json_data.get(field):
                 continue
-            update_field_method = getattr(
-                self, "_update_field_{}".format(field), None
-            )
+            update_field_method = getattr(self, "_update_field_{}".format(field), None)
             if update_field_method:
                 matched_document[field] = update_field_method(matched_document)
             else:

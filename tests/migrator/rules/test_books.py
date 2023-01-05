@@ -26,12 +26,14 @@ import pytest
 from cds_dojson.marc21.utils import create_record
 from dojson.errors import MissingRule
 
-from cds_ils.importer.errors import ManualImportRequired, \
-    MissingRequiredField, UnexpectedValue
+from cds_ils.importer.errors import (
+    ManualImportRequired,
+    MissingRequiredField,
+    UnexpectedValue,
+)
 from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.importer.providers.cds.models.document import model
-from cds_ils.importer.providers.cds.rules.values_mapping import MATERIALS, \
-    mapping
+from cds_ils.importer.providers.cds.rules.values_mapping import MATERIALS, mapping
 from cds_ils.importer.providers.cds.utils import add_title_from_conference_info
 
 marcxml = (
@@ -43,8 +45,7 @@ marcxml = (
 def check_transformation(marcxml_body, json_body):
     """Check transformation."""
     blob = create_record(marcxml.format(marcxml_body))
-    model._default_fields = {
-        "_migration": {**get_helper_dict(record_type="document")}}
+    model._default_fields = {"_migration": {**get_helper_dict(record_type="document")}}
 
     record = model.do(blob, ignore_missing=False)
 
@@ -226,8 +227,8 @@ def test_created(app):
                 "_created": "2017-01-01",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    'eitems_internal_notes': 'SPR201701',
-                }
+                    "eitems_internal_notes": "SPR201701",
+                },
             },
         )
         check_transformation(
@@ -247,12 +248,9 @@ def test_created(app):
                 "_created": "2017-01-01",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    'eitems_internal_notes': 'SPR201701; SPR2018; IEEE201901',
+                    "eitems_internal_notes": "SPR201701; SPR2018; IEEE201901",
                 },
-                'internal_notes': [
-                    {'value': 'SPR2018'},
-                    {'value': 'IEEE201901'}
-                ],
+                "internal_notes": [{"value": "SPR2018"}, {"value": "IEEE201901"}],
             },
         )
         check_transformation(
@@ -292,8 +290,8 @@ def test_created(app):
                 "_created": "2017-01-01",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    'eitems_internal_notes': 'SPR201701',
-                }
+                    "eitems_internal_notes": "SPR201701",
+                },
             },
         )
         check_transformation(
@@ -305,9 +303,7 @@ def test_created(app):
             """,
             {
                 "_created": datetime.date.today().isoformat(),
-                "created_by": {
-                    "type": "user"
-                }
+                "created_by": {"type": "user"},
             },
         )
         # test earliest date
@@ -334,8 +330,8 @@ def test_created(app):
                 "_created": "2017-01-01",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    'eitems_internal_notes': 'SPR201701',
-                }
+                    "eitems_internal_notes": "SPR201701",
+                },
             },
         )
 
@@ -443,8 +439,7 @@ def test_tags(app):
                 <subfield code="b">PAULISCIENTIFICBOOK</subfield>
             </datafield>
             """,
-            {
-            },
+            {},
         )
 
 
@@ -461,10 +456,13 @@ def test_serial(app):
                 "_migration": {
                     **get_helper_dict(record_type="document"),
                     "has_serial": True,
-                    "serials": [{"title": "DESIGN REPORT",
-                                 "volume": None,
-                                 "issn": None,
-                                 }],
+                    "serials": [
+                        {
+                            "title": "DESIGN REPORT",
+                            "volume": None,
+                            "issn": None,
+                        }
+                    ],
                 },
             },
         )
@@ -546,7 +544,7 @@ def test_document_type(app):
                     **get_helper_dict(record_type="document"),
                     "tags": [],
                 },
-                "document_type": "BOOK"
+                "document_type": "BOOK",
             },
         )
 
@@ -673,7 +671,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560",
-                                "description": "ebook"
+                                "description": "ebook",
                             },
                         }
                     ],
@@ -695,7 +693,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar",
-                                "description": "ebook"
+                                "description": "ebook",
                             },
                         }
                     ],
@@ -719,7 +717,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://www.worldscientific.com/toc/rast/10",
-                                "description": "ebook"
+                                "description": "ebook",
                             },
                             "open_access": False,
                         }
@@ -750,7 +748,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560",
-                                         "description": "ebook"
+                                "description": "ebook",
                             },
                         },
                     ],
@@ -758,7 +756,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar",
-                                "description": "ebook"
+                                "description": "ebook",
                             },
                         },
                     ],
@@ -780,7 +778,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://learning.oreilly.com/library/view/-/9781119745228/?ar",
-                                "description": "ebook"
+                                "description": "ebook",
                             },
                         },
                     ],
@@ -802,7 +800,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://external.com",
-                                "description": "ebook"
+                                "description": "ebook",
                             },
                             "open_access": False,
                         },
@@ -819,9 +817,7 @@ def test_urls(app):
             </datafield>
             """,
             {
-                "urls": [
-                    {"value": "google.com", "description": "description"}
-                ],
+                "urls": [{"value": "google.com", "description": "description"}],
             },
         )
 
@@ -876,15 +872,19 @@ def test_authors(app):
                         "type": "PERSON",
                         "alternative_names": ["Neubert, Matthias"],
                     },
-                    {"full_name": "Glashow, Sheldon Lee",
-                     "roles": ["EDITOR"],
-                     "type": "PERSON",
-                     },
-                    {"full_name": "Van Dam, Hendrik", "roles": ["EDITOR"],
-                     "type": "PERSON",
-                     "identifiers": [
-                         {"scheme": "ORCID", "value":
-                             "ORCID:0000-0003-1346-5133"}]},
+                    {
+                        "full_name": "Glashow, Sheldon Lee",
+                        "roles": ["EDITOR"],
+                        "type": "PERSON",
+                    },
+                    {
+                        "full_name": "Van Dam, Hendrik",
+                        "roles": ["EDITOR"],
+                        "type": "PERSON",
+                        "identifiers": [
+                            {"scheme": "ORCID", "value": "ORCID:0000-0003-1346-5133"}
+                        ],
+                    },
                     {
                         "full_name": "Seyfert, Paul",
                         "roles": ["AUTHOR"],
@@ -939,10 +939,11 @@ def test_authors(app):
                         "roles": ["EDITOR"],
                         "type": "PERSON",
                     },
-                    {"full_name": "Glashow, Sheldon Lee",
-                     "roles": ["EDITOR"],
-                     "type": "PERSON",
-                     },
+                    {
+                        "full_name": "Glashow, Sheldon Lee",
+                        "roles": ["EDITOR"],
+                        "type": "PERSON",
+                    },
                 ],
                 "other_authors": True,
             },
@@ -958,15 +959,17 @@ def test_authors(app):
                 <subfield code="e">et al.</subfield>
             </datafield>
             """,
-            {'authors': [
-                {'full_name': 'Langrognat, B',
-                 'roles': ['AUTHOR'],
-                 'type': 'PERSON'},
-                {'full_name': 'Sauniere, J',
-                 'roles': ['AUTHOR'],
-                 'type': 'PERSON'}],
-                'other_authors': True,
-            }
+            {
+                "authors": [
+                    {
+                        "full_name": "Langrognat, B",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                    {"full_name": "Sauniere, J", "roles": ["AUTHOR"], "type": "PERSON"},
+                ],
+                "other_authors": True,
+            },
         )
 
 
@@ -1079,9 +1082,7 @@ def test_publication_info(app):
             """,
             {
                 "document_type": "PROCEEDINGS",
-                "publication_info": [
-                    {"note": "1692 numebrs text etc Random text"}
-                ]
+                "publication_info": [{"note": "1692 numebrs text etc Random text"}],
             },
         )
         check_transformation(
@@ -1221,7 +1222,6 @@ def test_extensions(app):
             """,
             {
                 "extensions": {
-
                     "standard_review_applicability": ["NO_LONGER_APPLICABLE"],
                     "standard_review_standard_validity": "withdrawn",
                     "standard_review_checkdate": "2019-08-01",
@@ -1489,9 +1489,7 @@ def test_isbns(app):
                 <subfield code="u">electronic version</subfield>
             </datafield>
             """,
-            {
-
-            },
+            {},
         )
         check_transformation(
             """
@@ -1607,9 +1605,7 @@ def test_report_numbers(app):
             </datafield>
             """,
             {
-                "identifiers": [
-                    {"value": "hep-th/9509119", "scheme": "REPORT_NUMBER"}
-                ],
+                "identifiers": [{"value": "hep-th/9509119", "scheme": "REPORT_NUMBER"}],
             },
         )
         check_transformation(
@@ -1748,16 +1744,16 @@ def test_dois(app):
                 ],
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    'eitems_has_external': True,
-                    'eitems_external': [
+                    "eitems_has_external": True,
+                    "eitems_external": [
                         {
-                            'url': {
-                                'description': 'ebook',
-                                'value': 'http://dx.doi.org/10.1007/978-1-4613-0247-6'
+                            "url": {
+                                "description": "ebook",
+                                "value": "http://dx.doi.org/10.1007/978-1-4613-0247-6",
                             },
                             "open_access": False,
                         }
-                    ]
+                    ],
                 },
             },
         )
@@ -1778,18 +1774,18 @@ def test_dois(app):
                     }
                 ],
                 "_migration": {
-                    **get_helper_dict(record_type='document'),
-                    'eitems_has_external': True,
-                    'eitems_external': [
+                    **get_helper_dict(record_type="document"),
+                    "eitems_has_external": True,
+                    "eitems_external": [
                         {
                             "url": {
-                                'description': 'ebook',
-                                'value': 'http://dx.doi.org/10.3390/books978-3-03943-243-1'
+                                "description": "ebook",
+                                "value": "http://dx.doi.org/10.3390/books978-3-03943-243-1",
                             },
                             "open_access": True,
                         }
-                    ]
-                }
+                    ],
+                },
             },
         )
 
@@ -1915,33 +1911,32 @@ def test_alternative_identifiers(app):
                     },
                 ],
                 "_migration": {
-                    **get_helper_dict(record_type='document'),
+                    **get_helper_dict(record_type="document"),
                     "eitems_has_external": True,
-                    "eitems_external":
-                        [
-                            {
-                                "url": {
-                                    'description': "e-book",
-                                    'value': 'http://dx.doi.org/10.1007/s00269-016-0862-1'
-                                },
-                                "open_access": False,
+                    "eitems_external": [
+                        {
+                            "url": {
+                                "description": "e-book",
+                                "value": "http://dx.doi.org/10.1007/s00269-016-0862-1",
                             },
-                            {
-                                "url": {
-                                    'description': "e-book",
-                                    'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'
-                                },
-                                "open_access": False,
+                            "open_access": False,
+                        },
+                        {
+                            "url": {
+                                "description": "e-book",
+                                "value": "http://dx.doi.org/10.1103/PhysRevLett.121.052004",
                             },
-                            {
-                                "url": {
-                                    'description': 'ebook',
-                                    'value': 'http://dx.doi.org/10.1103/PhysRevLett.121.052004'
-                                },
-                                "open_access": False,
-                            }
-                        ]
-                }
+                            "open_access": False,
+                        },
+                        {
+                            "url": {
+                                "description": "ebook",
+                                "value": "http://dx.doi.org/10.1103/PhysRevLett.121.052004",
+                            },
+                            "open_access": False,
+                        },
+                    ],
+                },
             },
         )
         check_transformation(
@@ -2026,10 +2021,7 @@ def test_arxiv_eprints(app):
             """,
             {
                 "alternative_identifiers": [
-                    {
-                        "value": "arXiv:1209.5665",
-                        "scheme": "ARXIV"
-                    }
+                    {"value": "arXiv:1209.5665", "scheme": "ARXIV"}
                 ],
             },
         )
@@ -2536,7 +2528,7 @@ def test_conference_info(app):
                         "value": "SNGHEGE2004",
                         "type": "ALTERNATIVE_TITLE",
                     }
-                ]
+                ],
             },
         )
         check_transformation(
@@ -2582,7 +2574,7 @@ def test_conference_info(app):
                         "country": "ITA",
                         "acronym": "SNGHEGE2004",
                     }
-                ]
+                ],
             },
         )
         with pytest.raises(UnexpectedValue):
@@ -2682,9 +2674,9 @@ def test_conference_info(app):
                     </datafield>
                     """,
                     {
-                        "conference_info": [{
-                            "contact": "arantza.de.oyanguren.campos@cern.ch"
-                        }]
+                        "conference_info": [
+                            {"contact": "arantza.de.oyanguren.campos@cern.ch"}
+                        ]
                     },
                 )
 
@@ -2966,9 +2958,7 @@ def test_book_series(app):
             {
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    "serials": [
-                        {"title": "Minutes", "issn": None, "volume": None}
-                    ],
+                    "serials": [{"title": "Minutes", "issn": None, "volume": None}],
                     "has_serial": True,
                 }
             },
@@ -3111,9 +3101,7 @@ def test_541(app):
                     "creation_date": "2019-01-21",
                     "_collections": ["BOOKSHOP"],
                     "number_of_pages": 401,
-                    "subject_classification": [
-                        {"value": "519.226", "schema": "UDC"}
-                    ],
+                    "subject_classification": [{"value": "519.226", "schema": "UDC"}],
                     "languages": ["ENG"],
                     "title": "Bayesian networks in fault diagnosis",
                     "alternative_titles": [
@@ -3141,9 +3129,7 @@ def test_541(app):
                     "external_system_identifiers": [
                         {"value": "90.20.00.192.6", "schema": "SCEM"}
                     ],
-                    "$schema": {
-                        "$ref": "records/books/book/book-v.0.0.1.json"
-                    },
+                    "$schema": {"$ref": "records/books/book/book-v.0.0.1.json"},
                     "document_type": "BOOK",
                     "imprints": [
                         {
@@ -3378,109 +3364,122 @@ def test_record(app):
                 "_created": "2021-01-04",
                 "_migration": {
                     **get_helper_dict(record_type="document"),
-                    'eitems_has_external': True,
-                    'eitems_internal_notes': 'SPR202101',
-                    'eitems_external': [
+                    "eitems_has_external": True,
+                    "eitems_internal_notes": "SPR202101",
+                    "eitems_external": [
                         {
-                            'url': {
-                                'description': 'ebook',
-                                'value': 'http://dx.doi.org/10.1007/978-981-15-9034-4'
+                            "url": {
+                                "description": "ebook",
+                                "value": "http://dx.doi.org/10.1007/978-981-15-9034-4",
                             },
                             "open_access": False,
                         }
                     ],
-                    'has_serial': True,
-                    'serials': [
+                    "has_serial": True,
+                    "serials": [
                         {
-                            'issn': '1867-8440',
-                            'title': 'Nonlinear physical science',
-                            'volume': None
+                            "issn": "1867-8440",
+                            "title": "Nonlinear physical science",
+                            "volume": None,
                         }
                     ],
                 },
                 "abstract": "This book demonstrates how mathematical methods "
-                            "and techniques can be used in synergy and create "
-                            "a new way of looking at complex systems. It "
-                            "becomes clear nowadays that the standard "
-                            "(graph-based) network approach, in which "
-                            "observable events and transportation hubs are "
-                            "represented by nodes and relations between them "
-                            "are represented by edges, fails to describe the "
-                            "important properties of complex systems, capture "
-                            "the dependence between their scales, and "
-                            "anticipate their future developments. Therefore, "
-                            "authors in this book discuss the new generalized "
-                            "theories capable to describe a complex nexus of "
-                            "dependences in multi-level complex systems and to"
-                            " effectively engineer their important functions. "
-                            "The collection of works devoted to the memory of "
-                            "Professor Valentin Afraimovich introduces new "
-                            "concepts, methods, and applications in nonlinear "
-                            "dynamical systems covering physical problems and "
-                            "mathematical modelling relevant to molecular "
-                            "biology, genetics, neurosciences, artificial "
-                            "intelligence as well as classic problems in "
-                            "physics, machine learning, brain and urban "
-                            "dynamics. The book can be read by mathematicians,"
-                            " physicists, complex systems scientists, IT "
-                            "specialists, civil engineers, data scientists, "
-                            "urban planners, and even musicians (with some "
-                            "mathematical background). .",
+                "and techniques can be used in synergy and create "
+                "a new way of looking at complex systems. It "
+                "becomes clear nowadays that the standard "
+                "(graph-based) network approach, in which "
+                "observable events and transportation hubs are "
+                "represented by nodes and relations between them "
+                "are represented by edges, fails to describe the "
+                "important properties of complex systems, capture "
+                "the dependence between their scales, and "
+                "anticipate their future developments. Therefore, "
+                "authors in this book discuss the new generalized "
+                "theories capable to describe a complex nexus of "
+                "dependences in multi-level complex systems and to"
+                " effectively engineer their important functions. "
+                "The collection of works devoted to the memory of "
+                "Professor Valentin Afraimovich introduces new "
+                "concepts, methods, and applications in nonlinear "
+                "dynamical systems covering physical problems and "
+                "mathematical modelling relevant to molecular "
+                "biology, genetics, neurosciences, artificial "
+                "intelligence as well as classic problems in "
+                "physics, machine learning, brain and urban "
+                "dynamics. The book can be read by mathematicians,"
+                " physicists, complex systems scientists, IT "
+                "specialists, civil engineers, data scientists, "
+                "urban planners, and even musicians (with some "
+                "mathematical background). .",
                 "alternative_titles": [
                     {
                         "type": "SUBTITLE",
-                        "value": "in memory of professor Valentin Afraimovich"
+                        "value": "in memory of professor Valentin Afraimovich",
                     }
                 ],
-                "authors": [{"full_name": "Volchenkov, Dimitri",
-                             "roles": ["EDITOR"], "type": "PERSON"}],
+                "authors": [
+                    {
+                        "full_name": "Volchenkov, Dimitri",
+                        "roles": ["EDITOR"],
+                        "type": "PERSON",
+                    }
+                ],
                 "created_by": {"type": "batchuploader"},
                 "document_type": "BOOK",
-                "identifiers": [{"material": "DIGITAL",
-                                 "scheme": "ISBN",
-                                 "value": "9789811590344"},
-                                {"material": "PRINT_VERSION",
-                                 "scheme": "ISBN",
-                                 "value": "9789811590337"},
-                                {"material": "PRINT_VERSION",
-                                 "scheme": "ISBN",
-                                 "value": "9789811590351"},
-                                {"material": "PRINT_VERSION",
-                                 "scheme": "ISBN",
-                                 "value": "9789811590368"},
-                                {"material": "DIGITAL",
-                                 "scheme": "DOI",
-                                 "value": "10.1007/978-981-15-9034-4"}],
+                "identifiers": [
+                    {"material": "DIGITAL", "scheme": "ISBN", "value": "9789811590344"},
+                    {
+                        "material": "PRINT_VERSION",
+                        "scheme": "ISBN",
+                        "value": "9789811590337",
+                    },
+                    {
+                        "material": "PRINT_VERSION",
+                        "scheme": "ISBN",
+                        "value": "9789811590351",
+                    },
+                    {
+                        "material": "PRINT_VERSION",
+                        "scheme": "ISBN",
+                        "value": "9789811590368",
+                    },
+                    {
+                        "material": "DIGITAL",
+                        "scheme": "DOI",
+                        "value": "10.1007/978-981-15-9034-4",
+                    },
+                ],
                 "internal_notes": [{"value": "Physics and astronomy"}],
-                "keywords": [{"source": "SPR",
-                              "value": "Vibration"},
-                             {"source": "SPR",
-                              "value": "Dynamical systems"},
-                             {"source": "SPR",
-                              "value": "Vibration, Dynamical Systems, Control"}],
+                "keywords": [
+                    {"source": "SPR", "value": "Vibration"},
+                    {"source": "SPR", "value": "Dynamical systems"},
+                    {"source": "SPR", "value": "Vibration, Dynamical Systems, Control"},
+                ],
                 "languages": ["ENG"],
                 "source": "SPR",
-                "subjects": [{"scheme": "LOC",
-                              "value": "QA313"},
-                             {"scheme": "DEWEY",
-                              "value": "515.39"},
-                             {"scheme": "DEWEY",
-                              "value": "515.48"}],
-                "table_of_content": ['Professor Valentin Afraimovich',
-                                     'The need for more integration between '
-                                     'machine learning and neuroscience. '
-                                     'Quasiperiodic Route to Transient Chaos '
-                                     'in Vibroimpact System',
-                                     'Modeling Ensembles of Nonlinear Dynamic '
-                                     'Systems in Ultrawideb and Active '
-                                     'Wireless Direct Chaotic Networks',
-                                     'Verification of Biomedical Processes '
-                                     'with Anomalous Diffusion, Transport'
-                                     ' and Interaction of Species',
-                                     'Chaos-based communication using '
-                                     'isochronal synchronization: '
-                                     'considerations about the '
-                                     'synchronization manifold.'],
+                "subjects": [
+                    {"scheme": "LOC", "value": "QA313"},
+                    {"scheme": "DEWEY", "value": "515.39"},
+                    {"scheme": "DEWEY", "value": "515.48"},
+                ],
+                "table_of_content": [
+                    "Professor Valentin Afraimovich",
+                    "The need for more integration between "
+                    "machine learning and neuroscience. "
+                    "Quasiperiodic Route to Transient Chaos "
+                    "in Vibroimpact System",
+                    "Modeling Ensembles of Nonlinear Dynamic "
+                    "Systems in Ultrawideb and Active "
+                    "Wireless Direct Chaotic Networks",
+                    "Verification of Biomedical Processes "
+                    "with Anomalous Diffusion, Transport"
+                    " and Interaction of Species",
+                    "Chaos-based communication using "
+                    "isochronal synchronization: "
+                    "considerations about the "
+                    "synchronization manifold.",
+                ],
                 "title": "Nonlinear dynamics, chaos, and complexity",
             },
         )
@@ -3593,7 +3592,7 @@ def test_medium(app):
                         {
                             "barcode": "CM-B00048083",
                             "medium": "CDROM",
-                        }
+                        },
                     ],
                     "has_medium": True,
                 },

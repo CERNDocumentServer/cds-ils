@@ -15,17 +15,17 @@ import click
 from celery import shared_task
 from invenio_db import db
 
-from cds_ils.migrator.documents.xml_document_loader import \
-    CDSDocumentDumpLoader
-from cds_ils.migrator.handlers import default_error_handler, \
-    xml_record_exception_handlers
+from cds_ils.migrator.documents.xml_document_loader import CDSDocumentDumpLoader
+from cds_ils.migrator.handlers import (
+    default_error_handler,
+    xml_record_exception_handlers,
+)
 from cds_ils.migrator.json_record_loader import CDSRecordDumpLoader
 from cds_ils.migrator.xml_to_json_dump import CDSRecordDump
 
 
 def import_documents_from_dump(
-    sources, source_type, eager, include, rectype="document",
-    raise_exceptions=False
+    sources, source_type, eager, include, rectype="document", raise_exceptions=False
 ):
     """Load records."""
     include = include if include is None else include.split(",")
@@ -39,38 +39,30 @@ def import_documents_from_dump(
         data = json.load(source)
         with click.progressbar(data) as records:
             for dump_record in records:
-                click.echo(
-                    'Processing document "{}"...'.format(dump_record["recid"])
-                )
+                click.echo('Processing document "{}"...'.format(dump_record["recid"]))
                 if include is None or str(dump_record["recid"]) in include:
                     try:
-                        import_document_from_dump(
-                            dump_record, source_type, eager=eager
-                        )
+                        import_document_from_dump(dump_record, source_type, eager=eager)
                     except Exception as exc:
-                        handler = xml_record_exception_handlers.get(
-                            exc.__class__
-                        )
+                        handler = xml_record_exception_handlers.get(exc.__class__)
                         if handler:
                             handler(
-                                exc,
-                                legacy_id=dump_record["recid"],
-                                rectype=rectype
+                                exc, legacy_id=dump_record["recid"], rectype=rectype
                             )
                         else:
                             default_error_handler(
-                                exc, rectype=rectype,
+                                exc,
+                                rectype=rectype,
                                 raise_exceptions=raise_exceptions,
                                 legacy_id=dump_record["recid"],
                             )
 
 
-def import_record(dump, rectype, legacy_id,
-                  mint_legacy_pid=True, log_extra={}):
+def import_record(dump, rectype, legacy_id, mint_legacy_pid=True, log_extra={}):
     """Import record in database."""
-    record = CDSRecordDumpLoader.create(dump, rectype, legacy_id,
-                                        mint_legacy_pid=mint_legacy_pid,
-                                        log_extra=log_extra)
+    record = CDSRecordDumpLoader.create(
+        dump, rectype, legacy_id, mint_legacy_pid=mint_legacy_pid, log_extra=log_extra
+    )
     return record
 
 
@@ -165,14 +157,10 @@ def items_migration_report(
                 migration_status = "EXTRA"
             else:
                 if status == "SUCCESS":
-                    documents_with_migrated_items_list.append(
-                        document_legacy_recid
-                    )
+                    documents_with_migrated_items_list.append(document_legacy_recid)
                     migration_status = "OK"
                 elif status == "WARNING":
-                    documents_with_migrated_items_list.append(
-                        document_legacy_recid
-                    )
+                    documents_with_migrated_items_list.append(document_legacy_recid)
                     migration_status = "PARTIAL"
                 else:
                     migration_status = "NOT_MIGRATED"
@@ -183,9 +171,7 @@ def items_migration_report(
             set(documents_with_migrated_items_list)
         )
         documents_with_missing_items = [
-            doc
-            for doc in recid_list
-            if doc not in documents_with_migrated_items_list
+            doc for doc in recid_list if doc not in documents_with_migrated_items_list
         ]
         with open("/tmp/documents_with_missing_items.json", "w") as outfile:
             json.dump(documents_with_missing_items, outfile)
