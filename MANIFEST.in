@@ -16,6 +16,7 @@
 
 include .dockerignore
 include .editorconfig
+include .git-blame-ignore-revs
 include *.rst
 include *.sh
 include *.txt
@@ -30,7 +31,6 @@ include scripts/server
 include scripts/setup
 include scripts/update
 include scripts/ldap_sync
-include scripts/life_data_setup
 include tests
 recursive-include .github/workflows *.yml
 recursive-include cds_ils *.gitkeep
