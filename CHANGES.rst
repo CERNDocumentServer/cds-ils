@@ -1,5 +1,5 @@
 ..
-    Copyright (C) 2019-2022 CERN.
+    Copyright (C) 2019-2023 CERN.
 
     CDS-ILS is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
@@ -7,13 +7,21 @@
 Changes
 =======
 
+Version 1.2.46 (released 2023-01-06)
+
+- importer: add a default language for imported book missing the language.
+
+Version 1.2.45 (released 2022-11-11)
+
+- importer: fix normalized title to ignore only last 'series'
+
 Version 1.2.44 (released 2022-10-24)
 
-- change eitems source vocabulary size (INC3273709)
+- change eitems source vocabulary size
 
 Version 1.2.41 (released 2022-10-07)
 
-- Change location link and display text (RQF2137656)
+- Change location link and display text
 
 Version 1.2.40 (released 2022-10-06)
 
