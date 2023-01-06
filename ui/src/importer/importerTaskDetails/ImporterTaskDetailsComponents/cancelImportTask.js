@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Confirm, Message } from 'semantic-ui-react';
-import { importerApi } from '../../../api/importer';
-import { withCancel } from '@inveniosoftware/react-invenio-app-ils';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Button, Confirm, Message } from "semantic-ui-react";
+import { importerApi } from "../../../api/importer";
+import { withCancel } from "@inveniosoftware/react-invenio-app-ils";
 
 export class CancelImportTask extends Component {
   constructor(props) {
@@ -19,9 +19,7 @@ export class CancelImportTask extends Component {
     const { logId } = this.props;
     try {
       this.setState({ cancelLoading: true });
-      const cancellableImportCancelAction = withCancel(
-        importerApi.cancel(logId)
-      );
+      const cancellableImportCancelAction = withCancel(importerApi.cancel(logId));
       await cancellableImportCancelAction.promise;
       this.setState({
         cancelLoading: false,
@@ -47,35 +45,23 @@ export class CancelImportTask extends Component {
   };
 
   render() {
-    const {
-      modalOpen,
-      cancelLoading,
-      cancelFailed,
-      taskCancelled,
-    } = this.state;
+    const { modalOpen, cancelLoading, cancelFailed, taskCancelled } = this.state;
     return (
       <>
         {cancelFailed && (
           <Message negative>
             <Message.Header>Import cancel action failed.</Message.Header>
             <p>
-              Try again later. If the problem persists, contact the technical
-              support.
+              Try again later. If the problem persists, contact the technical support.
             </p>
           </Message>
         )}
         {taskCancelled && (
           <Message positive>
-            <Message.Header>
-              The import was cancelled successfully
-            </Message.Header>
+            <Message.Header>The import was cancelled successfully</Message.Header>
           </Message>
         )}
-        <Button
-          color="red"
-          content="Cancel import"
-          onClick={this.handleOpenModal}
-        />{' '}
+        <Button color="red" content="Cancel import" onClick={this.handleOpenModal} />{" "}
         <Confirm
           open={modalOpen}
           onCancel={this.handleCloseModal}

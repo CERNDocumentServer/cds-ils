@@ -3,36 +3,36 @@ import {
   withCancel,
   Pagination,
   toShortDateTime,
-} from '@inveniosoftware/react-invenio-app-ils';
-import _isEmpty from 'lodash/isEmpty';
-import { DateTime } from 'luxon';
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Icon, Label, Loader, Popup } from 'semantic-ui-react';
-import { importerApi } from '../api/importer';
-import { BackOfficeRouteGenerators } from '../overridden/routes/BackofficeUrls';
+} from "@inveniosoftware/react-invenio-app-ils";
+import _isEmpty from "lodash/isEmpty";
+import { DateTime } from "luxon";
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { Button, Icon, Label, Loader, Popup } from "semantic-ui-react";
+import { importerApi } from "../api/importer";
+import { BackOfficeRouteGenerators } from "../overridden/routes/BackofficeUrls";
 
-export const modeFormatter = mode => {
+export const modeFormatter = (mode) => {
   switch (mode) {
-    case 'IMPORT':
+    case "IMPORT":
       return (
         <Label color="blue" basic>
           Import
         </Label>
       );
-    case 'DELETE':
+    case "DELETE":
       return (
         <Label color="red" basic>
           Delete
         </Label>
       );
-    case 'PREVIEW_IMPORT':
+    case "PREVIEW_IMPORT":
       return (
         <Label color="teal" basic>
           Preview (import)
         </Label>
       );
-    case 'PREVIEW_DELETE':
+    case "PREVIEW_DELETE":
       return (
         <Label color="teal" basic>
           Preview (delete)
@@ -54,43 +54,43 @@ export class ImporterList extends Component {
     };
     this.pageSize = 15;
     this.columns = [
-      { title: 'ID', field: 'id', formatter: this.idFormatter },
-      { title: 'Status', field: 'status', formatter: this.stateFormatter },
-      { title: 'Date', field: 'start_time', formatter: this.datetimeFormatter },
+      { title: "ID", field: "id", formatter: this.idFormatter },
+      { title: "Status", field: "status", formatter: this.stateFormatter },
+      { title: "Date", field: "start_time", formatter: this.datetimeFormatter },
       {
-        title: 'Duration',
-        field: 'end_time',
+        title: "Duration",
+        field: "end_time",
         formatter: this.durationFormatter,
       },
       {
-        title: 'Records in file',
-        field: 'entries_count',
+        title: "Records in file",
+        field: "entries_count",
         formatter: this.optionalFormatter,
       },
-      { title: 'Provider', field: 'provider', formatter: this.labelFormatter },
+      { title: "Provider", field: "provider", formatter: this.labelFormatter },
       {
-        title: 'Mode',
-        field: 'mode',
+        title: "Mode",
+        field: "mode",
         formatter: ({ col, row }) => modeFormatter(row[col.field]),
       },
       {
-        title: 'Original Filename',
-        field: 'original_filename',
+        title: "Original Filename",
+        field: "original_filename",
         formatter: this.trimFormatter,
       },
       {
-        title: 'Source type',
-        field: 'source_type',
+        title: "Source type",
+        field: "source_type",
         formatter: this.labelFormatter,
       },
       {
-        title: 'Strict JSON rules',
-        field: 'ignore_missing_rules',
+        title: "Strict JSON rules",
+        field: "ignore_missing_rules",
         formatter: this.ignoreMissingFormatter,
       },
       {
-        title: '',
-        field: 'id',
+        title: "",
+        field: "id",
         formatter: this.viewFormatter,
       },
     ];
@@ -104,31 +104,23 @@ export class ImporterList extends Component {
     this.cancellableFetchStats && this.cancellableFetchStats.cancel();
   }
 
-  emptyMessage = 'No past import tasks.';
+  emptyMessage = "No past import tasks.";
 
   idFormatter = ({ col, row }) => {
     const id = row[col.field];
-    return (
-      <Link to={BackOfficeRouteGenerators.importerDetailsFor(id)}>{id}</Link>
-    );
+    return <Link to={BackOfficeRouteGenerators.importerDetailsFor(id)}>{id}</Link>;
   };
 
   stateFormatter = ({ col, row }) => {
     switch (row[col.field]) {
-      case 'RUNNING':
-        return (
-          <Icon name="circle notch" loading aria-label="Import in progress" />
-        );
-      case 'SUCCEEDED':
-        return (
-          <Icon name="check circle" color="green" aria-label="Completed" />
-        );
-      case 'CANCELLED':
+      case "RUNNING":
+        return <Icon name="circle notch" loading aria-label="Import in progress" />;
+      case "SUCCEEDED":
+        return <Icon name="check circle" color="green" aria-label="Completed" />;
+      case "CANCELLED":
         return <Icon name="times circle" color="yellow" aria-label="Failed" />;
-      case 'FAILED':
-        return (
-          <Icon name="exclamation circle" color="red" aria-label="Failed" />
-        );
+      case "FAILED":
+        return <Icon name="exclamation circle" color="red" aria-label="Failed" />;
       default:
         return null;
     }
@@ -141,27 +133,24 @@ export class ImporterList extends Component {
   durationFormatter = ({ col, row }) => {
     const endTime = row[col.field];
     if (endTime) {
-      const t0 = DateTime.fromISO(row['start_time']);
+      const t0 = DateTime.fromISO(row["start_time"]);
       const t1 = DateTime.fromISO(row[col.field]);
       const duration = t0
         .until(t1)
         .toDuration()
-        .shiftTo('hours', 'minutes', 'seconds');
+        .shiftTo("hours", "minutes", "seconds");
       const parts = [];
       if (duration.hours > 0) {
-        parts.push(duration.hours, `hour${duration.hours !== 1 ? 's' : ''}`);
+        parts.push(duration.hours, `hour${duration.hours !== 1 ? "s" : ""}`);
       }
       if (duration.hours > 0 || duration.minutes > 0) {
-        parts.push(
-          duration.minutes,
-          `minute${duration.minutes !== 1 ? 's' : ''}`
-        );
+        parts.push(duration.minutes, `minute${duration.minutes !== 1 ? "s" : ""}`);
       }
       const seconds = Math.round(duration.seconds);
-      parts.push(seconds, `second${seconds !== 1 ? 's' : ''}`);
-      return parts.join(' ');
+      parts.push(seconds, `second${seconds !== 1 ? "s" : ""}`);
+      return parts.join(" ");
     } else {
-      return 'Ongoing';
+      return "Ongoing";
     }
   };
 
@@ -178,7 +167,7 @@ export class ImporterList extends Component {
 
   optionalFormatter = ({ col, row }) => {
     const value = row[col.field];
-    return value != null ? value : '';
+    return value != null ? value : "";
   };
 
   trimFormatter = ({ col, row }) => {
@@ -187,12 +176,10 @@ export class ImporterList extends Component {
       <Popup
         content={value}
         mouseEnterDelay={100}
-        trigger={
-          <p>{value.length > 18 ? value.substring(0, 15) + '...' : value}</p>
-        }
+        trigger={<p>{value.length > 18 ? value.substring(0, 15) + "..." : value}</p>}
       />
     ) : (
-      ''
+      ""
     );
   };
 
@@ -215,13 +202,13 @@ export class ImporterList extends Component {
       const response = await this.cancellableFetchStats.promise;
       this.setState({ data: response.data, isLoading: false });
     } catch (error) {
-      if (error !== 'UNMOUNTED') {
+      if (error !== "UNMOUNTED") {
         this.setState({ error: error, isLoading: false });
       }
     }
   };
 
-  onPageChange = page => {
+  onPageChange = (page) => {
     this.setState({ activePage: page });
   };
 

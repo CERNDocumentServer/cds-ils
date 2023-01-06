@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@craco/craco": "^5.9.0",
+    "@inveniosoftware/eslint-config-invenio": "^1.0.11",
     "@semantic-ui-react/craco-less": "^1.2.1",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.11.0",
@@ -51,18 +52,10 @@
     "start": "HOST=127.0.0.1 HTTPS=true craco start",
     "build": "craco build",
     "test": "craco test",
-    "lint": "eslint src/",
     "eject": "craco eject",
-    "https_start": "HTTPS=true craco start"
-  },
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "node": true
-    },
-    "plugins": [
-      "react"
-    ]
+    "https_start": "HTTPS=true craco start",
+    "lint": "eslint src/ --ext .js --max-warnings=0",
+    "format": "prettier --write \"src/**/*.js\""
   },
   "browserslist": {
     "production": [

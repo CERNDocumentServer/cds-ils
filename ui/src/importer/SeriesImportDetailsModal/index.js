@@ -1,15 +1,15 @@
-import { connect } from 'react-redux';
-import { openJsonModal } from '../JsonViewModal/actions';
-import { seriesDetailsModalClose, openSeriesDetailsModal } from './actions';
-import SeriesDetailsModalComponent from './SeriesImportDetailsModal';
+import { connect } from "react-redux";
+import { openJsonModal } from "../JsonViewModal/actions";
+import { seriesDetailsModalClose, openSeriesDetailsModal } from "./actions";
+import SeriesDetailsModalComponent from "./SeriesImportDetailsModal";
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   modalClose: () => dispatch(seriesDetailsModalClose()),
-  modalOpen: seriesReport => dispatch(openSeriesDetailsModal(seriesReport)),
+  modalOpen: (seriesReport) => dispatch(openSeriesDetailsModal(seriesReport)),
   jsonModalOpen: (title, json) => dispatch(openJsonModal(title, json)),
 });
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     seriesReport: state.seriesDetailsModal.seriesReport,
     open: state.seriesDetailsModal.open,

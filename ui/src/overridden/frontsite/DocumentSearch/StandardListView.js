@@ -1,10 +1,10 @@
-import React from 'react';
-import { Label } from 'semantic-ui-react';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Label } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 export const StandardListView = ({ metadata, ...props }) => {
-  const renderLabels = numbers => {
-    return numbers.map(number => (
+  const renderLabels = (numbers) => {
+    return numbers.map((number) => (
       <Label
         className="standard-number-list-view"
         color="grey"
@@ -20,8 +20,8 @@ export const StandardListView = ({ metadata, ...props }) => {
 
   const standardNumbers = metadata.identifiers
     ? metadata.identifiers
-        .filter(sn => sn.scheme === 'STANDARD_NUMBER')
-        .map(a => a.value)
+        .filter((sn) => sn.scheme === "STANDARD_NUMBER")
+        .map((a) => a.value)
     : null;
 
   return standardNumbers ? <div>{renderLabels(standardNumbers)}</div> : null;

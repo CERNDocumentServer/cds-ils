@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Modal } from 'semantic-ui-react';
-import ReactJson from 'react-json-view';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Button, Modal } from "semantic-ui-react";
+import ReactJson from "react-json-view";
 
 export default class JsonViewModal extends Component {
   render() {

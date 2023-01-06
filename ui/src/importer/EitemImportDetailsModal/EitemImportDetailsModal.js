@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import _isEmpty from 'lodash/isEmpty';
-import { Link } from 'react-router-dom';
-import { Button, Header, List, Modal } from 'semantic-ui-react';
-import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import _isEmpty from "lodash/isEmpty";
+import { Link } from "react-router-dom";
+import { Button, Header, List, Modal } from "semantic-ui-react";
+import { BackOfficeRoutes } from "@inveniosoftware/react-invenio-app-ils";
 
 export default class EitemImportDetails extends Component {
   render() {
@@ -17,11 +17,9 @@ export default class EitemImportDetails extends Component {
               <>
                 <Header>Duplicated e-items found</Header>
                 <List>
-                  {eitemReport.duplicates.map(pid => (
+                  {eitemReport.duplicates.map((pid) => (
                     <List.Item key={pid}>
-                      <Link to={BackOfficeRoutes.eitemDetailsFor(pid)}>
-                        {pid}
-                      </Link>
+                      <Link to={BackOfficeRoutes.eitemDetailsFor(pid)}>{pid}</Link>
                     </List.Item>
                   ))}
                 </List>
@@ -32,7 +30,7 @@ export default class EitemImportDetails extends Component {
                 <Header>EItems deleted or replaced</Header>
                 <List>
                   {eitemReport.deleted_eitems.map(
-                    eitem => `(replaced: ${eitem.pid})`
+                    (eitem) => `(replaced: ${eitem.pid})`
                   )}
                 </List>
               </>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Container, Grid, Header } from 'semantic-ui-react';
+import React from "react";
+import { Container, Grid, Header } from "semantic-ui-react";
 
 export const Slogan = ({ ...props }) => {
   return (

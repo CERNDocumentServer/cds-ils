@@ -1,12 +1,9 @@
-import {
-  InfoPopup,
-  SeparatedList,
-} from '@inveniosoftware/react-invenio-app-ils';
-import capitalize from 'lodash/capitalize';
-import _isEmpty from 'lodash/isEmpty';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Divider, Table, Loader } from 'semantic-ui-react';
+import { InfoPopup, SeparatedList } from "@inveniosoftware/react-invenio-app-ils";
+import capitalize from "lodash/capitalize";
+import _isEmpty from "lodash/isEmpty";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import { Divider, Table, Loader } from "semantic-ui-react";
 
 // component not to be used in search pages
 // might trigger a lot of requests
@@ -88,7 +85,7 @@ export const IdentifierRows = ({
   }
 
   return Object.entries(idsByScheme).map(([scheme, ids]) => {
-    const values = ids.map(id => (
+    const values = ids.map((id) => (
       <>
         {id.urlPath ? (
           <a href={id.urlPath} target="_blank" rel="noreferrer noopener">
@@ -100,7 +97,7 @@ export const IdentifierRows = ({
 
         {id.material && (
           <>
-            {' '}
+            {" "}
             <InfoPopup message="Material for this identifier">
               ({capitalize(id.material)})
             </InfoPopup>
@@ -127,7 +124,7 @@ const createValueObject = (vocabularyIdentifiers, value, scheme, material) => {
   if (noVocabulariesIdentifiers) return defaultValue;
 
   const matchingVocabularyIdentifier = vocabularyIdentifiers.find(
-    identifier => identifier.value === scheme
+    (identifier) => identifier.value === scheme
   );
 
   const notValidForUrl =
@@ -135,10 +132,7 @@ const createValueObject = (vocabularyIdentifiers, value, scheme, material) => {
 
   if (notValidForUrl) return defaultValue;
 
-  const urlPath = matchingVocabularyIdentifier.url_path.replace(
-    '{identifier}',
-    value
-  );
+  const urlPath = matchingVocabularyIdentifier.url_path.replace("{identifier}", value);
 
   return { value, material, urlPath };
 };

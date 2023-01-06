@@ -1,13 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Label, Icon } from 'semantic-ui-react';
+import React from "react";
+import PropTypes from "prop-types";
+import { Label, Icon } from "semantic-ui-react";
 
 export class ImporterFilenameLabel extends React.Component {
-  filenameLabel = filename => {
+  filenameLabel = (filename) => {
     return (
       <>
-        {' '}
-        <Icon name="file" /> <Label basic>{filename}</Label>{' '}
+        {" "}
+        <Icon name="file" /> <Label basic>{filename}</Label>{" "}
       </>
     );
   };
@@ -15,7 +15,7 @@ export class ImporterFilenameLabel extends React.Component {
   render() {
     const { data } = this.props;
 
-    if (!data) return this.filenameLabel('Missing filename');
+    if (!data) return this.filenameLabel("Missing filename");
 
     return this.filenameLabel(data.original_filename);
   }

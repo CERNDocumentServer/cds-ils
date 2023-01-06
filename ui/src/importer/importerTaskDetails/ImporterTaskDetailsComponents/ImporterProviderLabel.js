@@ -1,13 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Label, Icon } from 'semantic-ui-react';
+import React from "react";
+import PropTypes from "prop-types";
+import { Label, Icon } from "semantic-ui-react";
 
 export class ImporterProviderLabel extends React.Component {
-  providerLabel = provider => {
+  providerLabel = (provider) => {
     return (
       <>
-        {' '}
-        <Icon name="building" /> <Label basic>{provider}</Label>{' '}
+        {" "}
+        <Icon name="building" /> <Label basic>{provider}</Label>{" "}
       </>
     );
   };
@@ -15,7 +15,7 @@ export class ImporterProviderLabel extends React.Component {
   render() {
     const { data } = this.props;
 
-    if (!data) return this.providerLabel('Missing provider');
+    if (!data) return this.providerLabel("Missing provider");
 
     return this.providerLabel(data.provider);
   }

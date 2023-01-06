@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Button, Grid, Icon } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import { CdsBackOfficeRoutes } from '../../../overridden/routes/BackofficeUrls';
-import { ImportedSearch } from './ImportedSearch';
-import { CancelImportTask } from './cancelImportTask';
+import React from "react";
+import PropTypes from "prop-types";
+import { Button, Grid, Icon } from "semantic-ui-react";
+import { Link } from "react-router-dom";
+import { CdsBackOfficeRoutes } from "../../../overridden/routes/BackofficeUrls";
+import { ImportedSearch } from "./ImportedSearch";
+import { CancelImportTask } from "./cancelImportTask";
 
 export class ImporterReportHeader extends React.Component {
   render() {
@@ -25,10 +25,9 @@ export class ImporterReportHeader extends React.Component {
           />
           {isImporting && (
             <>
-              <CancelImportTask logId={taskId} />{' '}
-              <Icon loading name="circle notch" />
-              This may take a while. You may leave the page, the process will
-              continue in background.
+              <CancelImportTask logId={taskId} /> <Icon loading name="circle notch" />
+              This may take a while. You may leave the page, the process will continue
+              in background.
             </>
           )}
         </Grid.Column>

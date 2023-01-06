@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Container,
   Header,
@@ -11,22 +11,22 @@ import {
   Message,
   Divider,
   Table,
-} from 'semantic-ui-react';
-import { invenioConfig, history } from '@inveniosoftware/react-invenio-app-ils';
-import { ImporterList } from './ImporterList';
-import { BackOfficeRouteGenerators } from '../overridden/routes/BackofficeUrls';
-import _isEmpty from 'lodash/isEmpty';
-import _get from 'lodash/get';
-import { importerApi } from '../api/importer';
+} from "semantic-ui-react";
+import { invenioConfig, history } from "@inveniosoftware/react-invenio-app-ils";
+import { ImporterList } from "./ImporterList";
+import { BackOfficeRouteGenerators } from "../overridden/routes/BackofficeUrls";
+import _isEmpty from "lodash/isEmpty";
+import _get from "lodash/get";
+import { importerApi } from "../api/importer";
 
 export class Importer extends Component {
   constructor(props) {
     super(props);
     this.filesRef = React.createRef();
     this.state = {
-      provider: '',
+      provider: "",
       ignoreMissingRules: false,
-      mode: '',
+      mode: "",
       file: null,
       openModal: false,
       providerMissing: false,
@@ -53,7 +53,7 @@ export class Importer extends Component {
   handleModalOpen = () => this.setState({ openModal: true });
   handleModalClose = () => this.setState({ openModal: false });
 
-  postData = async formData => {
+  postData = async (formData) => {
     try {
       const response = await importerApi.createTask(formData);
 
@@ -67,22 +67,22 @@ export class Importer extends Component {
     }
   };
 
-  handleSubmit = action => {
+  handleSubmit = (action) => {
     const { provider, mode, file, ignoreMissingRules } = this.state;
     this.setState({ submitIsLoading: true });
     let importMode = mode;
-    if (action === 'PREVIEW' && mode === 'IMPORT') {
-      importMode = 'PREVIEW_IMPORT';
-    } else if (action === 'PREVIEW' && mode === 'DELETE') {
-      importMode = 'PREVIEW_DELETE';
+    if (action === "PREVIEW" && mode === "IMPORT") {
+      importMode = "PREVIEW_IMPORT";
+    } else if (action === "PREVIEW" && mode === "DELETE") {
+      importMode = "PREVIEW_DELETE";
     }
 
     if (!_isEmpty(provider) && !_isEmpty(mode) && file) {
       const formData = new FormData();
-      formData.append('provider', provider);
-      formData.append('mode', importMode);
-      formData.append('file', file);
-      formData.append('ignore_missing_rules', ignoreMissingRules);
+      formData.append("provider", provider);
+      formData.append("mode", importMode);
+      formData.append("file", file);
+      formData.append("ignore_missing_rules", ignoreMissingRules);
       this.postData(formData);
     } else {
       if (_isEmpty(provider)) {
@@ -99,15 +99,15 @@ export class Importer extends Component {
     }
   };
 
-  onFileChange = event => {
+  onFileChange = (event) => {
     const file = this.filesRef.current.files[0];
     this.setState({
       file: file,
     });
   };
 
-  renderErrorMessage = error => {
-    const message = _get(error, 'response.data.message');
+  renderErrorMessage = (error) => {
+    const message = _get(error, "response.data.message");
     return (
       <Message negative>
         <Message.Header>Something went wrong</Message.Header>
@@ -140,7 +140,7 @@ export class Importer extends Component {
             action="DELETE"
             onClick={() => {
               this.handleModalClose();
-              this.handleSubmit('DELETE');
+              this.handleSubmit("DELETE");
             }}
           >
             <Icon name="checkmark" /> Yes
@@ -171,9 +171,7 @@ export class Importer extends Component {
       >
         <Modal.Header>Confirm import parameters</Modal.Header>
         <Modal.Content>
-          <Header as="h4">
-            You are about to import records, using parameters:
-          </Header>
+          <Header as="h4">You are about to import records, using parameters:</Header>
           <Table>
             <Table.Body>
               <Table.Row>
@@ -211,7 +209,7 @@ export class Importer extends Component {
             disabled={!mode || !provider || !file}
             loading={submitIsLoading}
             onClick={() => {
-              this.handleSubmit('IMPORT');
+              this.handleSubmit("IMPORT");
             }}
           >
             Confirm
@@ -246,7 +244,7 @@ export class Importer extends Component {
               options={invenioConfig.IMPORTER.providers}
               onChange={this.handleChange}
               required
-              error={providerMissing ? 'Please enter a provider' : null}
+              error={providerMissing ? "Please enter a provider" : null}
             />
             <Form.Select
               placeholder="Select a mode ..."
@@ -258,7 +256,7 @@ export class Importer extends Component {
               options={invenioConfig.IMPORTER.modes}
               onChange={this.handleChange}
               required
-              error={modeMissing ? 'Please enter a mode' : null}
+              error={modeMissing ? "Please enter a mode" : null}
             />
           </Form.Group>
           <Form.Group widths="equal">
@@ -274,7 +272,7 @@ export class Importer extends Component {
                 icon="file"
                 content="Choose File"
                 labelPosition="left"
-                onClick={e => {
+                onClick={(e) => {
                   e.preventDefault();
                   this.filesRef.current.click();
                 }}
@@ -288,7 +286,7 @@ export class Importer extends Component {
                 onChange={this.onFileChange}
               />
               <Label basic prompt={fileMissing} pointing="left">
-                {file ? file.name : 'No file selected.'}
+                {file ? file.name : "No file selected."}
               </Label>
             </Form.Field>
           </Form.Group>
@@ -296,10 +294,10 @@ export class Importer extends Component {
         <>
           <Button
             primary
-            onClick={() => this.handleSubmit('PREVIEW')}
+            onClick={() => this.handleSubmit("PREVIEW")}
             content="Preview"
           />
-          {mode === 'DELETE' ? (
+          {mode === "DELETE" ? (
             this.renderModal()
           ) : (
             <>
@@ -326,9 +324,7 @@ export class Importer extends Component {
         <Container>
           <Header as="h3">Import from a file</Header>
           <p>
-            {!_isEmpty(error)
-              ? 'Fill in the form below to import literature.'
-              : null}
+            {!_isEmpty(error) ? "Fill in the form below to import literature." : null}
           </p>
           {!_isEmpty(error) ? this.renderErrorMessage(error) : null}
           {this.renderForm()}

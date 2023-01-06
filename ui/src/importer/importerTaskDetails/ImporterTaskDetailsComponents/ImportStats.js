@@ -1,12 +1,8 @@
-import React from 'react';
-import { Statistic } from 'semantic-ui-react';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Statistic } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
-export const RenderStatistics = ({
-  statistics,
-  selectedResult,
-  applyFilter,
-}) => {
+export const RenderStatistics = ({ statistics, selectedResult, applyFilter }) => {
   return (
     <Statistic.Group widths="seven" size="small">
       {Object.keys(statistics).map(function(statisticKey, index) {
@@ -14,8 +10,8 @@ export const RenderStatistics = ({
           <Statistic
             className={
               selectedResult === statisticKey
-                ? 'import-statistic statistic-selected'
-                : 'import-statistic'
+                ? "import-statistic statistic-selected"
+                : "import-statistic"
             }
             key={statisticKey}
             onClick={() => applyFilter(statisticKey)}

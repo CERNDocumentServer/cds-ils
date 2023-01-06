@@ -2,19 +2,19 @@ import {
   FrontSiteRoutes,
   getStaticPageByName,
   Media,
-} from '@inveniosoftware/react-invenio-app-ils';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Dropdown, Menu } from 'semantic-ui-react';
+} from "@inveniosoftware/react-invenio-app-ils";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Dropdown, Menu } from "semantic-ui-react";
 
 const DropdownItems = () => {
   return (
     <>
-      <Dropdown.Item as={Link} to={getStaticPageByName('faq').route}>
+      <Dropdown.Item as={Link} to={getStaticPageByName("faq").route}>
         Frequently asked questions (F.A.Q.)
       </Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item as={Link} to={getStaticPageByName('search-guide').route}>
+      <Dropdown.Item as={Link} to={getStaticPageByName("search-guide").route}>
         Search guide
       </Dropdown.Item>
       <Dropdown.Divider />
@@ -22,7 +22,7 @@ const DropdownItems = () => {
         Request new document (loan or purchase)
       </Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item as={Link} to={getStaticPageByName('contact').route}>
+      <Dropdown.Item as={Link} to={getStaticPageByName("contact").route}>
         Ask a librarian
       </Dropdown.Item>
       <Dropdown.Divider />

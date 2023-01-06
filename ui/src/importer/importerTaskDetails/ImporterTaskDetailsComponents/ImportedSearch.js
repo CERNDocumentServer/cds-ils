@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Search, Button, Icon } from 'semantic-ui-react';
-import _debounce from 'lodash/debounce';
+import React from "react";
+import PropTypes from "prop-types";
+import { Search, Button, Icon } from "semantic-ui-react";
+import _debounce from "lodash/debounce";
 
 export class ImportedSearch extends React.Component {
   constructor(props) {
@@ -17,8 +17,8 @@ export class ImportedSearch extends React.Component {
 
   clearText = () => {
     const { onSearchChange } = this.props;
-    this.searchBar.current.state.value = '';
-    onSearchChange('');
+    this.searchBar.current.state.value = "";
+    onSearchChange("");
   };
 
   render() {
@@ -26,19 +26,12 @@ export class ImportedSearch extends React.Component {
       <>
         <Search
           className="clean-search"
-          onSearchChange={_debounce(
-            this.handleSearchChange,
-            this.debounceDelay
-          )}
+          onSearchChange={_debounce(this.handleSearchChange, this.debounceDelay)}
           open={false}
           ref={this.searchBar}
           size="large"
         />
-        <Button
-          className="center-search-bar-button"
-          icon
-          onClick={this.clearText}
-        >
+        <Button className="center-search-bar-button" icon onClick={this.clearText}>
           <Icon name="times" />
         </Button>
       </>

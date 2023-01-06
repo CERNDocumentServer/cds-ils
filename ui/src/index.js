@@ -1,18 +1,18 @@
-import 'react-app-polyfill/ie11';
-import 'react-app-polyfill/stable';
+import "react-app-polyfill/ie11";
+import "react-app-polyfill/stable";
 import {
   history,
   InvenioILSApp,
   IEFallback,
-} from '@inveniosoftware/react-invenio-app-ils';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { OverridableContext } from 'react-overridable';
-import { Router } from 'react-router-dom';
-import 'semantic-ui-less/semantic.less';
-import { initialiseReducers } from './reducers';
-import { config } from './config';
-import { overriddenCmps } from './overridableMapping';
+} from "@inveniosoftware/react-invenio-app-ils";
+import React from "react";
+import ReactDOM from "react-dom";
+import { OverridableContext } from "react-overridable";
+import { Router } from "react-router-dom";
+import "semantic-ui-less/semantic.less";
+import { initialiseReducers } from "./reducers";
+import { config } from "./config";
+import { overriddenCmps } from "./overridableMapping";
 
 // Checks if browser is IE (unsupported)
 const isIE = !!document.documentMode;
@@ -25,7 +25,7 @@ if (!isIE) {
         <InvenioILSApp config={config} />
       </OverridableContext.Provider>
     </Router>,
-    document.getElementById('app')
+    document.getElementById("app")
   );
 } else {
   IEFallback();

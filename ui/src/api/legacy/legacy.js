@@ -1,8 +1,8 @@
-import { http } from '@inveniosoftware/react-invenio-app-ils';
+import { http } from "@inveniosoftware/react-invenio-app-ils";
 
-const legacyRecordURL = '/legacy/';
+const legacyRecordURL = "/legacy/";
 
-const get = async legacyRecId => {
+const get = async (legacyRecId) => {
   const response = await http.get(`${legacyRecordURL}${legacyRecId}`);
   return response;
 };

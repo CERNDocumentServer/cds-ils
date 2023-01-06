@@ -1,5 +1,5 @@
-import { BackOfficeBase } from '@inveniosoftware/react-invenio-app-ils';
-import { generatePath } from 'react-router-dom';
+import { BackOfficeBase } from "@inveniosoftware/react-invenio-app-ils";
+import { generatePath } from "react-router-dom";
 
 export const CdsBackOfficeRoutes = {
   importerCreate: `${BackOfficeBase}/importer`,
@@ -7,7 +7,7 @@ export const CdsBackOfficeRoutes = {
 };
 
 export const BackOfficeRouteGenerators = {
-  importerDetailsFor: taskId =>
+  importerDetailsFor: (taskId) =>
     generatePath(CdsBackOfficeRoutes.importerDetails, {
       taskId: taskId,
     }),

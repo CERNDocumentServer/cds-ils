@@ -1,10 +1,10 @@
-import { vocabularyApi } from '@inveniosoftware/react-invenio-app-ils';
+import { vocabularyApi } from "@inveniosoftware/react-invenio-app-ils";
 
-export const IS_LOADING = 'fetchIdentifiers/IS_LOADING';
-export const SUCCESS = 'fetchIdentifiers/SUCCESS';
-export const HAS_ERROR = 'fetchIdentifiers/HAS_ERROR';
+export const IS_LOADING = "fetchIdentifiers/IS_LOADING";
+export const SUCCESS = "fetchIdentifiers/SUCCESS";
+export const HAS_ERROR = "fetchIdentifiers/HAS_ERROR";
 
-const createQueryPromise = type => {
+const createQueryPromise = (type) => {
   const query = vocabularyApi
     .query()
     .withType(type)
@@ -13,7 +13,7 @@ const createQueryPromise = type => {
   return vocabularyApi.list(query);
 };
 
-const serializer = hit => ({
+const serializer = (hit) => ({
   value: hit.metadata.key,
   text: hit.metadata.text,
   url_path: hit.metadata?.data?.url_path,
@@ -22,10 +22,10 @@ const serializer = hit => ({
 const query = async () => {
   const {
     data: { hits: identifierQuery },
-  } = await createQueryPromise('identifier_scheme');
+  } = await createQueryPromise("identifier_scheme");
   const {
     data: { hits: alternativeIdentifierQuery },
-  } = await createQueryPromise('alternative_identifier_scheme');
+  } = await createQueryPromise("alternative_identifier_scheme");
 
   const combinedHits = identifierQuery.concat(alternativeIdentifierQuery);
 
@@ -36,7 +36,7 @@ const identifierCache = () => {
   let value = null;
 
   return {
-    set: valueToSet => (value = valueToSet),
+    set: (valueToSet) => (value = valueToSet),
     get: () => value,
   };
 };
@@ -44,7 +44,7 @@ const identifierCache = () => {
 const cache = identifierCache();
 
 export const fetchVocabularyIdentifiers = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch({ type: IS_LOADING });
 
     const fetchedVocabularyIdentifiers = cache.get();

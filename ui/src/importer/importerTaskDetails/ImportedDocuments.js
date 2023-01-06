@@ -1,68 +1,68 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Message, Segment, Grid } from 'semantic-ui-react';
-import _isEmpty from 'lodash/isEmpty';
-import _isNull from 'lodash/isNull';
-import { RenderStatistics } from './ImporterTaskDetailsComponents/ImportStats';
-import { ImportedTable } from './ImporterTaskDetailsComponents/ImportedTable';
-import { ImporterReportHeader } from './ImporterTaskDetailsComponents/ImporterReportHeader';
-import { HttpError } from '@inveniosoftware/react-invenio-app-ils';
-import { ImporterReportStatusLabel } from './ImporterTaskDetailsComponents/ImporterReportStatusLabel';
-import { ImporterReportMode } from './ImporterTaskDetailsComponents/ImporterReportMode';
-import { ImporterProviderLabel } from './ImporterTaskDetailsComponents/ImporterProviderLabel';
-import { ImporterFilenameLabel } from './ImporterTaskDetailsComponents/ImporterFilenameLabel';
-import { ImporterDateLabel } from './ImporterTaskDetailsComponents/ImporterDateLabel';
+import React from "react";
+import PropTypes from "prop-types";
+import { Message, Segment, Grid } from "semantic-ui-react";
+import _isEmpty from "lodash/isEmpty";
+import _isNull from "lodash/isNull";
+import { RenderStatistics } from "./ImporterTaskDetailsComponents/ImportStats";
+import { ImportedTable } from "./ImporterTaskDetailsComponents/ImportedTable";
+import { ImporterReportHeader } from "./ImporterTaskDetailsComponents/ImporterReportHeader";
+import { HttpError } from "@inveniosoftware/react-invenio-app-ils";
+import { ImporterReportStatusLabel } from "./ImporterTaskDetailsComponents/ImporterReportStatusLabel";
+import { ImporterReportMode } from "./ImporterTaskDetailsComponents/ImporterReportMode";
+import { ImporterProviderLabel } from "./ImporterTaskDetailsComponents/ImporterProviderLabel";
+import { ImporterFilenameLabel } from "./ImporterTaskDetailsComponents/ImporterFilenameLabel";
+import { ImporterDateLabel } from "./ImporterTaskDetailsComponents/ImporterDateLabel";
 
 export class ImportedDocuments extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedResult: 'records',
-      searchText: '',
+      selectedResult: "records",
+      searchText: "",
       activePage: 1,
     };
 
     this.lastIndex = 0;
     this.statistics = {
       records: {
-        text: 'Records',
-        value: '',
-        filterFunction: record => record,
+        text: "Records",
+        value: "",
+        filterFunction: (record) => record,
       },
       records_created: {
-        text: 'Created',
+        text: "Created",
         value: 0,
-        filterFunction: record => record.action === 'create',
+        filterFunction: (record) => record.action === "create",
       },
       records_deleted: {
-        text: 'Deleted',
+        text: "Deleted",
         value: 0,
-        filterFunction: record => record.action === 'delete',
+        filterFunction: (record) => record.action === "delete",
       },
       records_updated: {
-        text: 'Updated',
+        text: "Updated",
         value: 0,
-        filterFunction: record => record.action === 'update',
+        filterFunction: (record) => record.action === "update",
       },
       records_with_errors: {
-        text: 'with Errors',
+        text: "with Errors",
         value: 0,
-        filterFunction: record => _isNull(record.action),
+        filterFunction: (record) => _isNull(record.action),
       },
       records_with_item: {
-        text: 'with E-Item',
+        text: "with E-Item",
         value: 0,
-        filterFunction: record => !_isEmpty(record.eitem),
+        filterFunction: (record) => !_isEmpty(record.eitem),
       },
       records_with_serials: {
-        text: 'with Serials',
+        text: "with Serials",
         value: 0,
-        filterFunction: record => !_isEmpty(record.series),
+        filterFunction: (record) => !_isEmpty(record.series),
       },
       records_with_partial_matches: {
-        text: 'Partial matches',
+        text: "Partial matches",
         value: 0,
-        filterFunction: record => !_isEmpty(record.partial_matches),
+        filterFunction: (record) => !_isEmpty(record.partial_matches),
       },
     };
   }
@@ -73,17 +73,17 @@ export class ImportedDocuments extends React.Component {
 
     stats.records.value = `${data.loaded_entries}/${data.entries_count}`;
 
-    data.mode.includes('DELETE')
+    data.mode.includes("DELETE")
       ? delete stats.records_created
       : delete stats.records_deleted;
 
     for (const statisticKey in stats) {
       const filterFunc = stats[statisticKey].filterFunction;
 
-      const isFullRecords = statisticKey === 'records';
+      const isFullRecords = statisticKey === "records";
       if (isFullRecords) continue;
 
-      stats[statisticKey].value += newRecords.filter(record =>
+      stats[statisticKey].value += newRecords.filter((record) =>
         filterFunc(record)
       ).length;
     }
@@ -93,30 +93,30 @@ export class ImportedDocuments extends React.Component {
     return stats;
   };
 
-  applyFilter = key => {
+  applyFilter = (key) => {
     this.setState({
       selectedResult: key,
       activePage: 1,
     });
   };
 
-  onSearchChange = text => {
+  onSearchChange = (text) => {
     this.setState({
       searchText: text,
       activePage: 1,
     });
   };
 
-  setActivePage = page => {
+  setActivePage = (page) => {
     this.setState({
       activePage: page,
     });
   };
 
-  filterBySearchText = record => {
+  filterBySearchText = (record) => {
     const { searchText } = this.state;
 
-    if (searchText === '') {
+    if (searchText === "") {
       return true;
     }
 
@@ -126,13 +126,13 @@ export class ImportedDocuments extends React.Component {
       record.output_pid?.toLowerCase().includes(lowerSearchText) ||
       record.document?.title.toLowerCase().includes(lowerSearchText) ||
       record.eitem?.output_pid?.toLowerCase().includes(lowerSearchText) ||
-      record.series?.filter(serie =>
+      record.series?.filter((serie) =>
         serie.output_pid?.toLowerCase().includes(lowerSearchText)
       ).length > 0
     );
   };
 
-  filteredRecords = data => {
+  filteredRecords = (data) => {
     const { selectedResult } = this.state;
     const selectedFilterFunc = this.statistics[selectedResult].filterFunction;
 
@@ -141,8 +141,8 @@ export class ImportedDocuments extends React.Component {
     const records = data.records;
 
     const filteredRecords = records
-      .filter(record => selectedFilterFunc(record))
-      .filter(record => this.filterBySearchText(record));
+      .filter((record) => selectedFilterFunc(record))
+      .filter((record) => this.filterBySearchText(record));
 
     return filteredRecords;
   };
@@ -152,10 +152,9 @@ export class ImportedDocuments extends React.Component {
     const { selectedResult, activePage } = this.state;
     const dataAvailable = !_isEmpty(data);
 
-    const errorWhileFetching = !_isEmpty(data) && data?.status === 'FAILED';
+    const errorWhileFetching = !_isEmpty(data) && data?.status === "FAILED";
     const entriesReady =
-      (data?.loaded_entries || data?.loaded_entries === 0) &&
-      data?.entries_count;
+      (data?.loaded_entries || data?.loaded_entries === 0) && data?.entries_count;
 
     if (error) {
       const {
@@ -200,10 +199,7 @@ export class ImportedDocuments extends React.Component {
                   <ImporterReportMode data={data} />
                 </Grid.Column>
                 <Grid.Column width={3}>
-                  <ImporterReportStatusLabel
-                    data={data}
-                    isLoading={isLoading}
-                  />
+                  <ImporterReportStatusLabel data={data} isLoading={isLoading} />
                 </Grid.Column>
                 <Grid.Column width={2}>
                   <ImporterProviderLabel data={data} />
