@@ -1,14 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Divider, Table } from 'semantic-ui-react';
-import _isEmpty from 'lodash/isEmpty';
+import React from "react";
+import PropTypes from "prop-types";
+import { Divider, Table } from "semantic-ui-react";
+import _isEmpty from "lodash/isEmpty";
 
 export const DocumentConference = ({ conference }) => {
   return (
     <>
       <Divider horizontal>Conference information</Divider>
-      {_isEmpty(conference) && 'No conference information.'}
-      {conference.map(conf => (
+      {_isEmpty(conference) && "No conference information."}
+      {conference.map((conf) => (
         <>
           <Table definition key={conf}>
             <Table.Body>
@@ -30,7 +30,7 @@ export const DocumentConference = ({ conference }) => {
                   {conf.identifiers &&
                     conf.identifiers.map(
                       ({ scheme, value }) =>
-                        `${scheme === 'CERN' ? '' : `(${scheme})`} ${value}`
+                        `${scheme === "CERN" ? "" : `(${scheme})`} ${value}`
                     )}
                 </Table.Cell>
               </Table.Row>

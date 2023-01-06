@@ -1,9 +1,9 @@
-import _get from 'lodash/get';
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { Button, Header, Modal, Table } from 'semantic-ui-react';
-import { BackOfficeRoutes } from '@inveniosoftware/react-invenio-app-ils';
+import _get from "lodash/get";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
+import { Button, Header, Modal, Table } from "semantic-ui-react";
+import { BackOfficeRoutes } from "@inveniosoftware/react-invenio-app-ils";
 
 export default class SeriesImportDetails extends Component {
   render() {
@@ -15,29 +15,23 @@ export default class SeriesImportDetails extends Component {
           <Modal.Description>
             <Header>Duplicated series found</Header>
             <Table styled fluid striped celled structured>
-              {seriesReport.map(series => {
+              {seriesReport.map((series) => {
                 return (
                   <Table.Row key={series.output_pid}>
                     <Table.Cell>
                       {series.series_json.title}
                       <Button
                         onClick={() =>
-                          openJsonModal(
-                            'Series JSON',
-                            _get(series, 'series_json', {})
-                          )
+                          openJsonModal("Series JSON", _get(series, "series_json", {}))
                         }
                       />
                     </Table.Cell>
-                    {series.duplicates.map(pid => (
+                    {series.duplicates.map((pid) => (
                       <>
-                        <Link
-                          key={pid}
-                          to={BackOfficeRoutes.seriesDetailsFor(pid)}
-                        >
+                        <Link key={pid} to={BackOfficeRoutes.seriesDetailsFor(pid)}>
                           {pid}
                         </Link>
-                        {', '}
+                        {", "}
                       </>
                     ))}
                   </Table.Row>

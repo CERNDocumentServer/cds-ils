@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Pagination, Table } from 'semantic-ui-react';
-import { EitemImportDetailsModal } from '../../EitemImportDetailsModal';
-import { SeriesImportDetailsModal } from '../../SeriesImportDetailsModal';
-import { JsonViewModal } from '../../JsonViewModal';
-import { ImportedDocumentReport } from './ImportedDocumentReport';
+import React from "react";
+import PropTypes from "prop-types";
+import { Pagination, Table } from "semantic-ui-react";
+import { EitemImportDetailsModal } from "../../EitemImportDetailsModal";
+import { SeriesImportDetailsModal } from "../../SeriesImportDetailsModal";
+import { JsonViewModal } from "../../JsonViewModal";
+import { ImportedDocumentReport } from "./ImportedDocumentReport";
 
 export class ImportedTable extends React.Component {
   constructor(props) {

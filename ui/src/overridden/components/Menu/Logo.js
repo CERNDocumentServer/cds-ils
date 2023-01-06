@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 export const Logo = ({ ...props }) => {
   return (
@@ -10,14 +10,14 @@ export const Logo = ({ ...props }) => {
         </Link>
       </h2>
       <div className="sublogo">
-        A{' '}
+        A{" "}
         <a
           href="https://cds-blog.web.cern.ch/about/"
           target="_blank"
           rel="noopener noreferrer"
         >
           CDS
-        </a>{' '}
+        </a>{" "}
         website
       </div>
     </>
@@ -33,14 +33,14 @@ export const LogoMobile = ({ ...props }) => {
         </Link>
       </h3>
       <div className="sublogo">
-        A{' '}
+        A{" "}
         <a
           href="https://cds-blog.web.cern.ch/about/"
           target="_blank"
           rel="noopener noreferrer"
         >
           CDS
-        </a>{' '}
+        </a>{" "}
         website
       </div>
     </>

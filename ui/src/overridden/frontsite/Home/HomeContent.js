@@ -3,14 +3,13 @@ import {
   DocumentCardGroup,
   FrontSiteRoutes,
   Headline,
-} from '@inveniosoftware/react-invenio-app-ils';
-import React from 'react';
-import { parametrize } from 'react-overridable';
-import { Container } from 'semantic-ui-react';
+} from "@inveniosoftware/react-invenio-app-ils";
+import React from "react";
+import { parametrize } from "react-overridable";
+import { Container } from "semantic-ui-react";
 
 export const HomeHeadline = parametrize(Headline, {
-  backgroundImageURL:
-    process.env.PUBLIC_URL + '/images/home-headline-background.jpg',
+  backgroundImageURL: process.env.PUBLIC_URL + "/images/home-headline-background.jpg",
 });
 
 export const HomeContent = () => {
@@ -29,12 +28,12 @@ export const HomeContent = () => {
               fetchDataMethod={documentApi.list}
               fetchDataQuery={documentApi
                 .query()
-                .withDocumentType('BOOK')
-                .sortBy('-created')
+                .withDocumentType("BOOK")
+                .sortBy("-created")
                 .withSize(5)
                 .qs()}
               viewAllUrl={FrontSiteRoutes.documentsListWithQuery(
-                '&sort=created&order=desc'
+                "&sort=created&order=desc"
               )}
             />
           </Container>
@@ -51,13 +50,13 @@ export const HomeContent = () => {
           fetchDataMethod={documentApi.list}
           fetchDataQuery={documentApi
             .query()
-            .withDocumentType('BOOK')
+            .withDocumentType("BOOK")
             .withEitems()
-            .sortBy('-created')
+            .sortBy("-created")
             .withSize(5)
             .qs()}
           viewAllUrl={FrontSiteRoutes.documentsListWithQuery(
-            '&f=doctype%3ABOOK&f=medium%3AE-BOOK&sort=created&order=desc'
+            "&f=doctype%3ABOOK&f=medium%3AE-BOOK&sort=created&order=desc"
           )}
         />
       </Container>
@@ -72,12 +71,12 @@ export const HomeContent = () => {
           fetchDataMethod={documentApi.list}
           fetchDataQuery={documentApi
             .query()
-            .withDocumentType('BOOK')
-            .sortBy('-mostloaned')
+            .withDocumentType("BOOK")
+            .sortBy("-mostloaned")
             .withSize(5)
             .qs()}
           viewAllUrl={FrontSiteRoutes.documentsListWithQuery(
-            '&sort=mostloaned&order=desc'
+            "&sort=mostloaned&order=desc"
           )}
         />
       </Container>

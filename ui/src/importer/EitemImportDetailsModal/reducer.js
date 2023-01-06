@@ -1,4 +1,4 @@
-import { EITEM_DETAILS_MODAL_OPEN, EITEM_DETAILS_MODAL_CLOSE } from './actions';
+import { EITEM_DETAILS_MODAL_OPEN, EITEM_DETAILS_MODAL_CLOSE } from "./actions";
 
 export const initialState = {
   open: false,

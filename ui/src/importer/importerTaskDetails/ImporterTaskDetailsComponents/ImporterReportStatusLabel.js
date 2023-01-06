@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Icon, Label } from 'semantic-ui-react';
+import React from "react";
+import PropTypes from "prop-types";
+import { Icon, Label } from "semantic-ui-react";
 
 export class ImporterReportStatusLabel extends React.Component {
   constructor(props) {
@@ -19,11 +19,11 @@ export class ImporterReportStatusLabel extends React.Component {
     };
   }
 
-  relevantLabel = status => {
+  relevantLabel = (status) => {
     return (
       <>
-        {' '}
-        <Icon name="upload" /> {this.labels[status]}{' '}
+        {" "}
+        <Icon name="upload" /> {this.labels[status]}{" "}
       </>
     );
   };
@@ -31,9 +31,9 @@ export class ImporterReportStatusLabel extends React.Component {
   render() {
     const { data, isLoading } = this.props;
 
-    if (!data) return this.relevantLabel('LOADING');
+    if (!data) return this.relevantLabel("LOADING");
 
-    if (isLoading) return this.relevantLabel('IMPORTING');
+    if (isLoading) return this.relevantLabel("IMPORTING");
 
     return this.relevantLabel(data.status);
   }

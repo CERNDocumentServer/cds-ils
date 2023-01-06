@@ -1,4 +1,4 @@
-const FrontSiteBase = '/';
+const FrontSiteBase = "/";
 
 const FrontSiteRoutesList = {
   legacyRecordDetails: `${FrontSiteBase}legacy/:legacyRecId`,

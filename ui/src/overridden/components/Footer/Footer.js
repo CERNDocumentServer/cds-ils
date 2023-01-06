@@ -1,13 +1,13 @@
 import {
   FrontSiteRoutes,
   getStaticPageByName,
-} from '@inveniosoftware/react-invenio-app-ils';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Container, Grid, Header, Image, List } from 'semantic-ui-react';
+} from "@inveniosoftware/react-invenio-app-ils";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Container, Grid, Header, Image, List } from "semantic-ui-react";
 
 export const Footer = ({ ...props }) => {
-  const cernLogo = process.env.PUBLIC_URL + '/images/cern-logo-white-150.png';
+  const cernLogo = process.env.PUBLIC_URL + "/images/cern-logo-white-150.png";
   return (
     <footer>
       <Container fluid className="footer-upper">
@@ -17,15 +17,15 @@ export const Footer = ({ ...props }) => {
               <Header as="h4" content="About" />
               <List relaxed>
                 <List.Item>
-                  <Link to={getStaticPageByName('about').route}>About</Link>
+                  <Link to={getStaticPageByName("about").route}>About</Link>
                 </List.Item>
                 <List.Item>
-                  <Link to={getStaticPageByName('terms').route}>
+                  <Link to={getStaticPageByName("terms").route}>
                     Terms and Conditions
                   </Link>
                 </List.Item>
                 <List.Item>
-                  <Link to={getStaticPageByName('privacy-policy').route}>
+                  <Link to={getStaticPageByName("privacy-policy").route}>
                     Privacy Policy
                   </Link>
                 </List.Item>
@@ -35,15 +35,13 @@ export const Footer = ({ ...props }) => {
               <Header as="h4" content="Need help?" />
               <List relaxed>
                 <List.Item>
-                  <Link to={getStaticPageByName('contact').route}>
-                    Contact us
-                  </Link>
+                  <Link to={getStaticPageByName("contact").route}>Contact us</Link>
                 </List.Item>
                 <List.Item>
-                  <Link to={getStaticPageByName('faq').route}>F.A.Q.</Link>
+                  <Link to={getStaticPageByName("faq").route}>F.A.Q.</Link>
                 </List.Item>
                 <List.Item>
-                  <Link to={getStaticPageByName('search-guide').route}>
+                  <Link to={getStaticPageByName("search-guide").route}>
                     Search guide
                   </Link>
                 </List.Item>
@@ -70,7 +68,7 @@ export const Footer = ({ ...props }) => {
                   </a>
                 </List.Item>
                 <List.Item>
-                  Location:{' '}
+                  Location:{" "}
                   <a
                     href="https://maps.cern.ch/?n=['3/1-011','3/1-015']"
                     target="_blank"
@@ -89,14 +87,14 @@ export const Footer = ({ ...props }) => {
               <List relaxed>
                 <List.Item>
                   <p>
-                    This website is part of the{' '}
+                    This website is part of the{" "}
                     <a
                       href="https://cds-blog.web.cern.ch/about/"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       CDS
-                    </a>{' '}
+                    </a>{" "}
                     service
                   </p>
                 </List.Item>
@@ -120,7 +118,7 @@ export const Footer = ({ ...props }) => {
           <Header as="h4" textAlign="center">
             <Header.Content>CERN Library Catalogue</Header.Content>
             <Header.Subheader>
-              Powered by{' '}
+              Powered by{" "}
               <a
                 href="https://inveniosoftware.org"
                 target="_blank"

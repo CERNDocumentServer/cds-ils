@@ -1,5 +1,5 @@
-import _isEmpty from 'lodash/isEmpty';
-import PropTypes from 'prop-types';
+import _isEmpty from "lodash/isEmpty";
+import PropTypes from "prop-types";
 
 export const LiteratureKeyword = ({ keywords }) => {
   // hides the keyword sources
@@ -7,8 +7,8 @@ export const LiteratureKeyword = ({ keywords }) => {
 
   if (keywordsIsEmpty) return null;
 
-  const keywordValues = keywords.map(keyword => keyword?.value);
-  return keywordValues.join(';  ');
+  const keywordValues = keywords.map((keyword) => keyword?.value);
+  return keywordValues.join(";  ");
 };
 
 LiteratureKeyword.propTypes = {

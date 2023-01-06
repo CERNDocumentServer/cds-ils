@@ -1,7 +1,4 @@
-import {
-  SERIES_DETAILS_MODAL_CLOSE,
-  SERIES_DETAILS_MODAL_OPEN,
-} from './actions';
+import { SERIES_DETAILS_MODAL_CLOSE, SERIES_DETAILS_MODAL_OPEN } from "./actions";
 
 export const initialState = {
   open: false,

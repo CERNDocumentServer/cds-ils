@@ -1,11 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { ImportedDocuments } from './ImportedDocuments';
-import {
-  invenioConfig,
-  withCancel,
-} from '@inveniosoftware/react-invenio-app-ils';
-import { importerApi } from '../../api/importer';
+import React from "react";
+import PropTypes from "prop-types";
+import { ImportedDocuments } from "./ImportedDocuments";
+import { invenioConfig, withCancel } from "@inveniosoftware/react-invenio-app-ils";
+import { importerApi } from "../../api/importer";
 
 export class ImporterTaskDetails extends React.Component {
   constructor(props) {
@@ -34,8 +31,7 @@ export class ImporterTaskDetails extends React.Component {
 
   componentWillUnmount = () => {
     this.intervalId && clearInterval(this.intervalId);
-    this.cancellableTaskDetailsFetch &&
-      this.cancellableTaskDetailsFetch.cancel();
+    this.cancellableTaskDetailsFetch && this.cancellableTaskDetailsFetch.cancel();
   };
 
   get taskId() {
@@ -48,7 +44,7 @@ export class ImporterTaskDetails extends React.Component {
     return taskId;
   }
 
-  checkForData = async taskId => {
+  checkForData = async (taskId) => {
     if (this.importCompleted) {
       this.intervalId && clearInterval(this.intervalId);
       return;
@@ -63,11 +59,11 @@ export class ImporterTaskDetails extends React.Component {
 
       const { data } = await this.cancellableTaskDetailsFetch.promise;
 
-      this.importCompleted = data.status !== 'RUNNING';
+      this.importCompleted = data.status !== "RUNNING";
       this.lastEntry = data.loaded_entries;
 
-      this.setState(state => ({
-        isLoading: data.status === 'RUNNING',
+      this.setState((state) => ({
+        isLoading: data.status === "RUNNING",
         data: {
           ...state.data,
           ...data,

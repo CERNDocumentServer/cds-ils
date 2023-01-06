@@ -1,12 +1,12 @@
-import { http } from '@inveniosoftware/react-invenio-app-ils';
+import { http } from "@inveniosoftware/react-invenio-app-ils";
 
-const importerURL = '/importer';
+const importerURL = "/importer";
 const headers = {
   headers: {
-    'Content-Type': 'multipart/form-data',
+    "Content-Type": "multipart/form-data",
   },
 };
-const createTask = async formData => {
+const createTask = async (formData) => {
   return await http.post(`${importerURL}`, formData, headers);
 };
 
@@ -18,7 +18,7 @@ const list = async () => {
   return await http.get(`${importerURL}`);
 };
 
-const cancel = async taskId => {
+const cancel = async (taskId) => {
   return await http.post(`${importerURL}/${taskId}/cancel`);
 };
 

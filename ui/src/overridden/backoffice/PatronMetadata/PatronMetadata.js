@@ -1,23 +1,23 @@
 import {
   MetadataTable,
   ScrollingMenuItem,
-} from '@inveniosoftware/react-invenio-app-ils';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Grid, Header, Segment } from 'semantic-ui-react';
-import { config } from '../../../config';
+} from "@inveniosoftware/react-invenio-app-ils";
+import PropTypes from "prop-types";
+import React from "react";
+import { Grid, Header, Segment } from "semantic-ui-react";
+import { config } from "../../../config";
 
 export const PatronMetadata = ({ patron, ...props }) => {
   const leftTable = [
-    { name: 'Name', value: patron.metadata.name },
-    { name: 'Email', value: patron.metadata.email },
-    { name: 'Mailbox', value: patron.metadata.mailbox },
+    { name: "Name", value: patron.metadata.name },
+    { name: "Email", value: patron.metadata.email },
+    { name: "Mailbox", value: patron.metadata.mailbox },
   ];
   const rightTable = [
-    { name: 'Person ID', value: patron.metadata.person_id },
-    { name: 'Department', value: patron.metadata.department },
+    { name: "Person ID", value: patron.metadata.person_id },
+    { name: "Department", value: patron.metadata.department },
     {
-      name: 'CERN Profile',
+      name: "CERN Profile",
       value: patron.metadata.person_id ? (
         <a
           target="_blank"
