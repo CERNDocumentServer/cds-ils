@@ -12,7 +12,7 @@ blinker==1.5
 cached-property==1.5.2
 cachelib==0.6.0
 cds-dojson==0.9.0
-celery==5.1.2
+celery==5.2.2
 certifi==2022.9.24
 cffi==1.15.1
 charset-normalizer==2.0.12
