@@ -9,7 +9,7 @@ if [ "$SENTRY_ENVIRONMENT" == "prod" ]
 then
   echo "ERROR: you tried to run setup script on production. ABORTING."
 else
-  invenio setup --skip-demo-data --verbose
+  invenio setup --verbose
   invenio fixtures pages
   cds-ils fixtures vocabularies
   cds-ils migration create-unknown-reference-records
