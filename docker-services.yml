@@ -5,7 +5,7 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 
-version: '2.3'
+version: "2.3"
 services:
   cache:
     image: redis:7
@@ -28,17 +28,16 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
-  es:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.1.1
-    restart: "always"
+  search:
+    # to use ES7: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1
+    image: opensearchproject/opensearch:2.5.0
     environment:
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - discovery.type=single-node
-      - cluster.routing.allocation.disk.threshold_enabled=true
-      - cluster.routing.allocation.disk.watermark.flood_stage=1gb
-      - cluster.routing.allocation.disk.watermark.low=100gb
-      - cluster.routing.allocation.disk.watermark.high=50gb
+      - compatibility.override_main_response_version=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
+      - "discovery.type=single-node"
     ulimits:
       memlock:
         soft: -1
