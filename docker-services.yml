@@ -37,7 +37,12 @@ services:
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
       - "DISABLE_INSTALL_DEMO_CONFIG=true"
       - "DISABLE_SECURITY_PLUGIN=true"
-      - "discovery.type=single-node"
+      - discovery.type=single-node
+      # Enable the following config for testing big datasets e.g 100k records
+      # - cluster.routing.allocation.disk.threshold_enabled=true
+      # - cluster.routing.allocation.disk.watermark.flood_stage=1gb
+      # - cluster.routing.allocation.disk.watermark.low=100gb
+      # - cluster.routing.allocation.disk.watermark.high=50gb
     ulimits:
       memlock:
         soft: -1
