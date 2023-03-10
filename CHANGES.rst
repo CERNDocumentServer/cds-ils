@@ -7,6 +7,11 @@
 Changes
 =======
 
+Version 1.2.47 (released 2023-03-10)
+
+- mappings: introduce Opensearch mappings for v1 and v2
+- bump invenio-app-ils in a Opensearch v2 compatible version
+
 Version 1.2.46 (released 2023-01-06)
 
 - importer: add a default language for imported book missing the language.
