@@ -19,6 +19,9 @@ function cleanup() {
 trap cleanup EXIT
 python -m check_manifest
 eval "$(docker-services-cli up --db ${DB:-postgresql} --search ${SEARCH:-elasticsearch} --cache ${CACHE:-redis} --env)"
+if [ "${SEARCH}" = "opensearch2" ]; then
+    curl -XPUT localhost:9200/_cluster/settings -H "Content-Type:application/json" -d "{\"persistent\": {\"compatibility\": {\"override_main_response_version\": \"true\"}}}"
+fi
 python -m pytest
 tests_exit_code=$?
 exit "$tests_exit_code"

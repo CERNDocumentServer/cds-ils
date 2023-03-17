@@ -130,3 +130,21 @@ In addition to the normal ``docker-compose.yml``, this one will start:
 - Flower (Celery monitoring) -- http://127.0.0.1:5555
 - Kibana (Elasticsearch inspection) -- http://127.0.0.1:5601
 - RabbitMQ (message queue) -- http://guest:guest@127.0.0.1:15672
+
+Installation errors
+-------------------
+
+On MacOS, if you have the error ``pg_config executable not found.``, then you need to install `postgresql` and symlink it:
+
+.. code-block:: console
+
+    $ brew install postgresql@13
+    $ export PATH=$PATH:/opt/homebrew/opt/postgresql\@13/bin
+
+
+On MacOS, if you have errors with ``cryptography`` and ``openssl``, make sure that you have OpenSSL v3:
+
+.. code-block:: console
+
+    $ brew install openssl@3
+    $ LDFLAGS="-L/opt/homebrew/Cellar/openssl@3/3.1.0/lib" CPPFLAGS="-I/opt/homebrew/Cellar/openssl@3/3.1.0/include" pip install "cryptography==38.0.3"

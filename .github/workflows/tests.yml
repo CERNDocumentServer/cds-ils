@@ -29,19 +29,12 @@ jobs:
       matrix:
         python-version: [3.6, 3.9]
         db-service: [postgresql12]
-        search-service: [elasticsearch7]
-        include:
-          - db-service: postgresql12
-            DB_EXTRAS: postgresql
-
-          - search-service: elasticsearch7
-            SEARCH_EXTRAS: elasticsearch7
+        search-service: [opensearch2]
 
     env:
       DB: ${{ matrix.db-service }}
       SEARCH: ${{ matrix.search-service }}
-      EXTRAS: tests,${{ matrix.DB_EXTRAS }},${{ matrix.SEARCH_EXTRAS }}
-      ELASTICSEARCH_VERSION: 7.1.1
+      EXTRAS: tests
     steps:
       - name: Install ldap dependencies
         run: |
