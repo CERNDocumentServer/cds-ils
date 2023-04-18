@@ -107,6 +107,9 @@ if ELASTICSEARCH_VERIFY_CERTS is not None:
 SEARCH_ELASTIC_HOSTS = [es_host_params]
 """Elasticsearch hosts configuration."""
 
+SEARCH_CLIENT_CONFIG = dict(timeout=30)  # Default is 10. Increased due random failures.
+"""Elasticsearch client configuration."""
+
 ###############################################################################
 # Rate limiting
 ###############################################################################
