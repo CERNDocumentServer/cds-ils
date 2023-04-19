@@ -1,6 +1,6 @@
 {
   "name": "cds-ils",
-  "version": "1.2.48",
+  "version": "1.2.49",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
     "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.74",
@@ -44,6 +44,7 @@
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-flowtype": "^4.0.0",
     "eslint-plugin-react": "^7.22.0",
     "prettier": "^1.19.1",
     "react-scripts": "^3.4.1"

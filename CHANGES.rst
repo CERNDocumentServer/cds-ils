@@ -7,6 +7,14 @@
 Changes
 =======
 
+Version 1.2.49 (released 2023-04-19)
+
+- search: increases ElasticSearch timeout
+
+Version 1.2.48 (released 2023-03-21)
+
+- global: fixes to support OpenSearch
+
 Version 1.2.47 (released 2023-03-10)
 
 - mappings: introduce Opensearch mappings for v1 and v2
