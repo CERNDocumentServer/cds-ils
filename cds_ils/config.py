@@ -268,6 +268,7 @@ SENTRY_DSN = None
 OAUTH_REMOTE_APP_NAME = "cern_openid"
 # common
 _OAUTH_REMOTE_APP_COMMON = dict(
+    request_token_params={"scope": "openid"},
     base_url=os.environ.get(
         "OAUTH_CERN_OPENID_BASE_URL",
         "https://keycloak-qa.cern.ch/auth/realms/cern",
