@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.50 (2023-05-04)
+
+- Fix wrong token scope for CERN SSO.
+
 Version 1.2.49 (released 2023-04-19)
 
 - search: increases ElasticSearch timeout
