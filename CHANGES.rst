@@ -6,6 +6,10 @@
 
 Changes
 =======
+Version 1.2.52 (released 2023-06-22)
+
+- global: bump react-invenio-app-ils
+- global: pin Flask-WTF<1.1.0
 
 Version 1.2.51 (released 2023-05-09)
 
