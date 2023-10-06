@@ -6,6 +6,10 @@
 
 Changes
 =======
+Version 1.2.53 (released 2023-10-06)
+
+- global: update library location in the footer
+
 Version 1.2.52 (released 2023-06-22)
 
 - global: bump react-invenio-app-ils
