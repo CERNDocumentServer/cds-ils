@@ -8,6 +8,14 @@ module.exports = {
     mode: 'file',
   },
   webpack: {
+    configure: webpackConfig => {
+      const scopePluginIndex = webpackConfig.resolve.plugins.findIndex(
+        ({ constructor }) => constructor && constructor.name === 'ModuleScopePlugin'  // Needed to skip the check of preventing from importing from outside of src/ and node_modules/ directory.
+      );
+
+      webpackConfig.resolve.plugins.splice(scopePluginIndex, 1);
+      return webpackConfig;
+    },
     alias: {
       // aliases for all peer dependencies to avoid double libraries
       '@babel/runtime': path.resolve('./node_modules/@babel/runtime'),

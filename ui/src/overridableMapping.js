@@ -23,6 +23,7 @@ import { StandardCardView } from "./overridden/frontsite/DocumentSearch/Standard
 import { LiteratureKeyword } from "./overridden/frontsite/Document/DocumentDetails/DocumentCirculation/LiteratureKeyword";
 import { Identifiers } from "./overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/Identifiers";
 import { DocumentConference } from "./overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/DocumentConference";
+import { DocumentItemsHeader } from "./overridden/frontsite/Document/DocumentDetails/DocumentItemsHeader";
 
 export const overriddenCmps = {
   "Backoffice.PatronDetails.Metadata": PatronMetadata,
@@ -48,4 +49,5 @@ export const overriddenCmps = {
   "LiteratureKeywords.layout": LiteratureKeyword,
   "DocumentMetadataTabs.Identifiers": Identifiers,
   "DocumentConference.layout": DocumentConference,
+  "DocumentDetails.DocumentItems.header": DocumentItemsHeader,
 };
