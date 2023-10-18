@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 export const RenderStatistics = ({ statistics, selectedResult, applyFilter }) => {
   return (
     <Statistic.Group widths="seven" size="small">
-      {Object.keys(statistics).map(function(statisticKey, index) {
+      {Object.keys(statistics).map(function (statisticKey, index) {
         return (
           <Statistic
             className={

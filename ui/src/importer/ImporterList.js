@@ -135,10 +135,7 @@ export class ImporterList extends Component {
     if (endTime) {
       const t0 = DateTime.fromISO(row["start_time"]);
       const t1 = DateTime.fromISO(row[col.field]);
-      const duration = t0
-        .until(t1)
-        .toDuration()
-        .shiftTo("hours", "minutes", "seconds");
+      const duration = t0.until(t1).toDuration().shiftTo("hours", "minutes", "seconds");
       const parts = [];
       if (duration.hours > 0) {
         parts.push(duration.hours, `hour${duration.hours !== 1 ? "s" : ""}`);

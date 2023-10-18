@@ -5,10 +5,7 @@ export const SUCCESS = "fetchIdentifiers/SUCCESS";
 export const HAS_ERROR = "fetchIdentifiers/HAS_ERROR";
 
 const createQueryPromise = (type) => {
-  const query = vocabularyApi
-    .query()
-    .withType(type)
-    .qs();
+  const query = vocabularyApi.query().withType(type).qs();
 
   return vocabularyApi.list(query);
 };
