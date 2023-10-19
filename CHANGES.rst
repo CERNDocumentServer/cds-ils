@@ -6,6 +6,11 @@
 
 Changes
 =======
+
+Version 1.2.54 (released 2023-10-19)
+
+- gloabl: add SNV message for standards
+
 Version 1.2.53 (released 2023-10-06)
 
 - global: update library location in the footer
