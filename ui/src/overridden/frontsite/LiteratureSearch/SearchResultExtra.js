@@ -3,6 +3,7 @@ import { Message, List } from "semantic-ui-react";
 import { FrontSiteRoutes } from "@inveniosoftware/react-invenio-app-ils";
 import { Link } from "react-router-dom";
 import Qs from "qs";
+import { snvLink } from "../utils";
 
 export const SearchResultExtra = () => {
   const onClickBookRequestLink = () => {
@@ -14,14 +15,6 @@ export const SearchResultExtra = () => {
     };
   };
 
-  const snvLink = (
-    <Link
-      href="https://sis.web.cern.ch/search-and-read/online-resources/snv-connect"
-      taget="_blank"
-    >
-      SNV-Connect
-    </Link>
-  );
   const requestFormLink = (
     <Link className="primary" to={onClickBookRequestLink()}>
       request form
