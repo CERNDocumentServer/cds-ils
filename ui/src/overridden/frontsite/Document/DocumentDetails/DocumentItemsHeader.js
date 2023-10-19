@@ -10,7 +10,8 @@ export const DocumentItemsHeader = ({ document }) => {
       <Message attached="top" className="warning center">
         <Message.Content>
           For standards, please directly search on {snvLink}. Please contact
-          library.desk@cern.ch in case you cannot find what you are looking for.
+          <a href="mailto:library.desk@cern.ch"> library.desk@cern.ch</a> in case you
+          cannot find what you are looking for.
         </Message.Content>
       </Message>
     </>
