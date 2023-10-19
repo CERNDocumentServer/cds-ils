@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.55 (released 2023-10-19)
+
+- gloabl: fix SNV link
+
 Version 1.2.54 (released 2023-10-19)
 
 - gloabl: add SNV message for standards

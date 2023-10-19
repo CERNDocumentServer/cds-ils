@@ -1,6 +1,6 @@
 {
   "name": "cds-ils",
-  "version": "1.2.54",
+  "version": "1.2.55",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
     "@inveniosoftware/react-invenio-app-ils": "^1.0.0-alpha.77",
@@ -47,7 +47,7 @@
     "test": "craco test",
     "eject": "craco eject",
     "https_start": "HTTPS=true craco start",
-    "lint": "eslint src/ --ext .js --max-warnings=0",
+    "lint": "eslint src/ --ext .js --max-warnings=0 --fix",
     "format": "prettier --write \"src/**/*.js\""
   },
   "browserslist": {
