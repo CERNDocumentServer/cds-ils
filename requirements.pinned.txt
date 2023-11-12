@@ -13,7 +13,7 @@ cached-property==1.5.2
 cachelib==0.6.0
 cds-dojson==0.9.0
 celery==5.1.2
-certifi==2022.9.24
+certifi==2022.12.7
 cffi==1.15.1
 charset-normalizer==2.0.12
 click==7.1.2
