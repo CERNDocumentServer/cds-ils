@@ -15,11 +15,7 @@ export const SearchResultExtra = () => {
     };
   };
 
-  const requestFormLink = (
-    <Link className="primary" to={onClickBookRequestLink()}>
-      request form
-    </Link>
-  );
+  const requestFormLink = <Link to={onClickBookRequestLink()}>request form</Link>;
   return (
     <Message.Content>
       <Message.Header>
