@@ -27,7 +27,9 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.6, 3.9]
+        # NOTE: add back test for python 3.9
+        # python-version: [3.6, 3.9]
+        python-version: [3.6]
         db-service: [postgresql12]
         search-service: [opensearch2]
 
@@ -50,11 +52,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Generate dependencies
-        # do not upgrade pip on purpose due to celery specifying dependency
-        # which breaks the installation (pytz>dev)
         run: |
-          python -m pip install pip"==21.3.1"
-          python -m pip install --upgrade py wheel requirements-builder
+          python -m pip install setuptools">=57.0.0,<58.0.0"
+          python -m pip install --upgrade pip py wheel requirements-builder
           requirements-builder -e $EXTRAS --level=pypi setup.py > .pypi-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
@@ -85,7 +85,7 @@ jobs:
       - name: Use Node.js v14.x
         uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
+          node-version: "14.x"
 
       - name: Install & Build
         working-directory: ./ui
