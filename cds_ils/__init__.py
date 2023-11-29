@@ -7,6 +7,6 @@
 
 """CDS-ILS."""
 
-__version__ = "1.2.55"
+__version__ = "1.2.56"
 
 __all__ = ("__version__",)
