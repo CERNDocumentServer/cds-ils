@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 1.2.56 (released 2023-11-29)
+
+- change headline image
+
 Version 1.2.55 (released 2023-10-19)
 
 - gloabl: fix SNV link
