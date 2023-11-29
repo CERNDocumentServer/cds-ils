@@ -7,13 +7,17 @@
 Changes
 =======
 
+Version 1.2.57 (released 2023-11-30)
+
+- assets: update homepage image
+
 Version 1.2.56 (released 2023-11-29)
 
 - change headline image
 
 Version 1.2.55 (released 2023-10-19)
 
-- gloabl: fix SNV link
+- global: fix SNV link
 
 Version 1.2.54 (released 2023-10-19)
 
