@@ -22,7 +22,7 @@ export const PatronMetadata = ({ patron, ...props }) => {
         <a
           target="_blank"
           rel="noopener noreferrer"
-          href={config.PATRONS.phonebookURLPrefix + patron.metadata.person_id}
+          href={config.PATRONS.phonebookURLPrefix + patron.metadata.email}
         >
           Phonebook
         </a>
