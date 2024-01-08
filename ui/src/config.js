@@ -59,6 +59,7 @@ export const config = {
   },
   CIRCULATION: {
     extensionsMaxCount: 10000, // should be infinite
+    requestStartOffset: 2,
     requestDuration: 120,
     loanWillExpireDays: 3,
   },
