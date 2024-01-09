@@ -24,6 +24,7 @@ import { LiteratureKeyword } from "./overridden/frontsite/Document/DocumentDetai
 import { Identifiers } from "./overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/Identifiers";
 import { DocumentConference } from "./overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/DocumentConference";
 import { DocumentItemsHeader } from "./overridden/frontsite/Document/DocumentDetails/DocumentItemsHeader";
+import { OpeningHoursDetails } from "./overridden/frontsite/OpeningHours/OpeningHoursDetails";
 
 export const overriddenCmps = {
   "Backoffice.PatronDetails.Metadata": PatronMetadata,
@@ -50,4 +51,5 @@ export const overriddenCmps = {
   "DocumentMetadataTabs.Identifiers": Identifiers,
   "DocumentConference.layout": DocumentConference,
   "DocumentDetails.DocumentItems.header": DocumentItemsHeader,
+  "OpeningHours.details": OpeningHoursDetails,
 };
