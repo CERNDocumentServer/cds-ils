@@ -11,7 +11,6 @@ import logging
 from copy import deepcopy
 
 import click
-from elasticsearch import VERSION as ES_VERSION
 from elasticsearch_dsl import Q
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
@@ -25,7 +24,6 @@ from cds_ils.migrator.errors import (
 )
 from cds_ils.migrator.utils import pick
 
-lt_es7 = ES_VERSION[0] < 7
 migrated_logger = logging.getLogger("migrated_documents")
 records_logger = logging.getLogger("records_errored")
 

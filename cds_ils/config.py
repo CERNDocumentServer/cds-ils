@@ -720,3 +720,4 @@ CDS_ILS_MIGRATION_FILES_DIR = "/eos/media/cds/test/books/migration/"
 
 ILS_ILL_NOTIFICATIONS_FILTER = ill_notifications_filter
 ILS_NOTIFICATIONS_FILTER_DOCUMENT_REQUEST = document_requests_notifications_filter
+SECURITY_PASSWORD_SINGLE_HASH = True

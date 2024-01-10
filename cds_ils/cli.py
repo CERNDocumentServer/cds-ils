@@ -369,8 +369,7 @@ def create_loan(user_email, is_past_loan):
         .hits
     )
 
-    lt_es7 = ES_VERSION[0] < 7
-    total = active_loan.total if lt_es7 else active_loan.total.value
+    total = active_loan.total.value
 
     if total > 0 and not is_past_loan:
         click.secho(
