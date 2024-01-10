@@ -170,8 +170,9 @@ class ImporterImportLog(db.Model):
 class ImportRecordLog(db.Model):
     """Entry log of one imported record."""
 
-    id = db.Column(db.Integer, primary_key=True)
     __tablename__ = "import_record_log"
+
+    id = db.Column(db.Integer, primary_key=True)
 
     import_id = db.Column(
         db.Integer, db.ForeignKey("importer_import_log.id", ondelete="CASCADE")
@@ -198,9 +199,6 @@ class ImportRecordLog(db.Model):
     partial_matches = db.Column(db.JSON, nullable=True)
     eitem = db.Column(db.JSON, nullable=True)
     series = db.Column(db.JSON, nullable=True)
-
-    # default ordering
-    __mapper_args__ = {"order_by": id}
 
     @classmethod
     def __create(cls, data):
