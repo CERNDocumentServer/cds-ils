@@ -57,5 +57,9 @@
   {
     "title": "Springer tracts in modern physics",
     "note": "Matches 2 series duplicated title"
+  },
+  {
+    "title": "   the gulf:         The making of An American    Sea Series   ",
+    "note": "Will match serid-imp-1 by normalized title"
   }
 ]

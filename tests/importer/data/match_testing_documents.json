@@ -68,5 +68,20 @@
         "value": "SPR321"
       }],
     "note": "MATCH BY TITLE but different provider IDs"
+  },
+    {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": {"type": "script", "value":  "test"},
+    "title": "Locking Up    Our Own: Crime and Punishment in Black      America",
+    "authors": [{ "full_name": "James Forman Jr." }],
+    "abstract": "This is an abstract",
+    "keywords": [
+      {
+        "source": "X",
+        "value": "Patata"
+      }],
+    "document_type": "BOOK",
+    "publication_year": "1950",
+    "note": "MATCH BY NORMALIZED TITLE"
   }
 ]

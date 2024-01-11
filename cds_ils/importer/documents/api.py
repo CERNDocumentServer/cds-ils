@@ -40,7 +40,7 @@ def search_document_by_title_authors(title, authors, subtitle=None):
     """Find document by title and authors."""
     document_search = current_app_ils.document_search_cls()
 
-    title = title.lower()
+    title = " ".join(title.lower().split()) # Normalized title search for documents
     if subtitle:
         search = (
             document_search.filter("term", title__normalized_keyword=title)

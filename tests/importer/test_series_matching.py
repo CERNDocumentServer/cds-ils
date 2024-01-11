@@ -82,3 +82,9 @@ def test_series_search_matching(importer_test_data):
     json_series = series_to_import[10]
     validated_matches = match(json_series)
     assert len(validated_matches) == 2
+
+    # test whitespace title
+    json_series = series_to_import[11]
+    validated_matches = match(json_series)
+    assert len(validated_matches) == 1
+    assert validated_matches[0] == "serid-imp-1"
