@@ -27,8 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # NOTE: add back test for python 3.9
-        python-version: [3.9, 3.10]
+        python-version: [3.9]
         db-service: [postgresql14]
         search-service: [opensearch2]
 
@@ -40,7 +39,7 @@ jobs:
       - name: Install ldap dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
+          sudo apt-get install libsasl2-dev libldap2-dev libssl-dev
 
       - name: Checkout
         uses: actions/checkout@v3
