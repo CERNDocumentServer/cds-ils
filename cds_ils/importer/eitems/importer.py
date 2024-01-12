@@ -350,7 +350,6 @@ class EItemImporter(object):
             )
 
             if self.action == "update":
-
                 self._build_eitem_json(self.eitem_json, pid)
                 self.output_pid = self.get_first_match(search)["pid"]
 

@@ -237,7 +237,6 @@ def validate_serial_records():
                 "(expected {})".format(serial["pid"], len(relations), len(recids))
             )
         for relation in relations:
-
             child = document_cls.get_record_by_pid(
                 relation["pid"], pid_type=relation["pid_type"]
             )

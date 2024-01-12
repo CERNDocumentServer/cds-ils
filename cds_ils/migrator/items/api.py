@@ -61,7 +61,6 @@ def set_document_pid(record):
 def import_items_from_json(dump_file, rectype="item"):
     """Load items from json file."""
     with click.progressbar(json.load(dump_file)) as bar:
-
         for record in bar:
             log_extra = dict(
                 document_legacy_recid=record["id_bibrec"],

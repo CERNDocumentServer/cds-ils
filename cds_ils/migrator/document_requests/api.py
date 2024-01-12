@@ -64,7 +64,6 @@ def import_document_requests_from_json(dump_file, rectype="document-request"):
     with click.progressbar(json.load(dump_file)) as input_data:
         ils_records = []
         for record in input_data:
-
             ils_record = import_record(
                 migrate_document_request(record),
                 rectype=rectype,

@@ -869,7 +869,6 @@ def conference_info(self, key, value):
 
     for v in force_list(value):
         if key == "111__":
-
             _conference_info.append(clean_conference_info_fields(v))
             _migration["conference_title"] = _conference_info[-1]["title"]
         else:

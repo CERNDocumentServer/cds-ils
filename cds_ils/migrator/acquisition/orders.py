@@ -283,7 +283,6 @@ def migrate_order(record):
     if grand_total:
         new_order.update(grand_total=grand_total)
     try:
-
         provider_type = "VENDOR"
 
         # due to migrating the article requests as orders
