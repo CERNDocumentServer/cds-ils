@@ -100,7 +100,6 @@ def get_ldap_users(log_func):
     log_func("ldap_users_fetched", dict(users_fetched=ldap_users_count))
 
     for ldap_user_data in ldap_users:
-
         ldap_user = serialize_ldap_user(ldap_user_data, log_func=log_func)
 
         if ldap_user and ldap_user["user_email"] not in ldap_users_emails:

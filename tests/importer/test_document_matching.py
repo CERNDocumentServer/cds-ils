@@ -68,7 +68,6 @@ def test_document_search_matching(importer_test_data):
 
 
 def test_fuzzy_matching(importer_test_data):
-
     data_to_update = load_json_from_datadir(
         "match_testing_documents.json", relpath="importer"
     )[3]

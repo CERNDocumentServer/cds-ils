@@ -243,7 +243,6 @@ class Importer(object):
                 not matched_document.has_references()
                 or document_has_only_serial_relations
             ):
-
                 # remove serial relations
                 rr = RecordRelationsParentChild()
                 serial_relations = matched_document.relations.get("serial", [])

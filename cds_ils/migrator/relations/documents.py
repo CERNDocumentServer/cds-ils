@@ -96,7 +96,6 @@ def migrate_document_siblings_relation(raise_exceptions=False):
     results = search.params(scroll="4h").scan()
 
     for document in results:
-
         current_document_record = document_class.get_record_by_pid(document.pid)
         relations = current_document_record["_migration"]["related"]
         for relation in relations:
