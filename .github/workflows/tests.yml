@@ -86,7 +86,7 @@ jobs:
 
       - name: Install & Build
         working-directory: ./ui
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Lint
         working-directory: ./ui
