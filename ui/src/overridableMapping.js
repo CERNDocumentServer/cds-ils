@@ -25,6 +25,7 @@ import { Identifiers } from "./overridden/frontsite/Document/DocumentDetails/Doc
 import { DocumentConference } from "./overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/DocumentConference";
 import { DocumentItemsHeader } from "./overridden/frontsite/Document/DocumentDetails/DocumentItemsHeader";
 import { OpeningHoursDetails } from "./overridden/frontsite/OpeningHours/OpeningHoursDetails";
+import { PaymentInformationGrid } from "./overridden/backoffice/PaymentInformation/PaymentInformation";
 
 export const overriddenCmps = {
   "Backoffice.PatronDetails.Metadata": PatronMetadata,
@@ -52,4 +53,5 @@ export const overriddenCmps = {
   "DocumentConference.layout": DocumentConference,
   "DocumentDetails.DocumentItems.header": DocumentItemsHeader,
   "OpeningHours.details": OpeningHoursDetails,
+  "Backoffice.PaymentInformation": PaymentInformationGrid,
 };
