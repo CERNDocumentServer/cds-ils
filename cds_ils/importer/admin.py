@@ -10,7 +10,7 @@ import json
 
 from flask import Blueprint, url_for
 from flask_admin.contrib.sqla import ModelView
-from flask_babelex import gettext as _
+from invenio_i18n import gettext as _
 from markupsafe import Markup
 
 from cds_ils.importer.models import ImporterImportLog, ImportRecordLog
