@@ -7,8 +7,8 @@
 
 """CDS-ILS Series Importer api."""
 
-from invenio_search.engine import dsl
 from invenio_app_ils.proxies import current_app_ils
+from invenio_search.engine import dsl
 
 
 def search_series_by_isbn(isbn):

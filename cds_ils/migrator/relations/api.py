@@ -10,7 +10,6 @@
 import logging
 
 import click
-from invenio_search.engine import dsl
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import (
@@ -21,6 +20,7 @@ from invenio_app_ils.records_relations.api import (
 from invenio_app_ils.records_relations.indexer import RecordRelationIndexer
 from invenio_app_ils.relations.api import EDITION_RELATION, SERIAL_RELATION, Relation
 from invenio_db import db
+from invenio_search.engine import dsl
 
 from cds_ils.literature.api import get_record_by_legacy_recid
 from cds_ils.migrator.default_records import MIGRATION_DESIGN_PID

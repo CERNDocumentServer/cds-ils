@@ -11,10 +11,10 @@ import logging
 from copy import deepcopy
 
 import click
-from invenio_search.engine import dsl
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.series.api import Series
+from invenio_search.engine import dsl
 
 from cds_ils.importer.providers.cds.cds import get_helper_dict
 from cds_ils.migrator.errors import (

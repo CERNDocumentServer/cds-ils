@@ -9,7 +9,6 @@
 import time
 
 import pkg_resources
-from invenio_search.engine import search
 from flask import current_app
 from invenio_app_ils.errors import RecordHasReferencesError
 from invenio_app_ils.proxies import current_app_ils
@@ -19,6 +18,7 @@ from invenio_db import db
 from invenio_indexer.api import RecordIndexer
 from invenio_pidstore.models import PersistentIdentifier
 from invenio_search import current_search
+from invenio_search.engine import search
 
 from cds_ils.importer.documents.importer import DocumentImporter
 from cds_ils.importer.eitems.importer import EItemImporter

@@ -17,7 +17,6 @@ from random import randint
 import arrow
 import click
 import pkg_resources
-from invenio_search.engine import dsl
 from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
@@ -38,6 +37,7 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
 from invenio_records import Record
 from invenio_search import current_search
+from invenio_search.engine import dsl
 from invenio_userprofiles import UserProfile
 
 from cds_ils.literature.tasks import pick_identifier_with_cover_task

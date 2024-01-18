@@ -9,8 +9,8 @@
 """CDS-ILS document migrator API."""
 
 import click
-from invenio_search.engine import dsl
 from invenio_app_ils.proxies import current_app_ils
+from invenio_search.engine import dsl
 
 from cds_ils.migrator.errors import DocumentMigrationError
 

@@ -12,12 +12,12 @@ import json
 import logging
 
 import click
-from invenio_search.engine import dsl
 from flask import current_app
 from invenio_app_ils.patrons.indexer import PatronIndexer
 from invenio_app_ils.patrons.search import PatronsSearch
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount
+from invenio_search.engine import dsl
 
 from cds_ils.migrator.errors import UserMigrationError
 from cds_ils.patrons.api import Patron

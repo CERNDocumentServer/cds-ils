@@ -12,9 +12,9 @@ import json
 import logging
 
 import click
-from invenio_search.engine import dsl
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
+from invenio_search.engine import dsl
 
 from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.api import import_record
