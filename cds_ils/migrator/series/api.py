@@ -11,7 +11,7 @@ import logging
 from copy import deepcopy
 
 import click
-from elasticsearch_dsl import Q
+from invenio_search.engine import dsl
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.series.api import Series
@@ -195,8 +195,8 @@ def get_serials_by_child_recid(recid):
     search = series_search.query(
         "bool",
         filter=[
-            Q("term", mode_of_issuance="SERIAL"),
-            Q("term", _migration__children=recid),
+            dsl.Q("term", mode_of_issuance="SERIAL"),
+            dsl.Q("term", _migration__children=recid),
         ],
     )
     for hit in search.params(scroll="1h").scan():
@@ -274,7 +274,7 @@ def search_series_with_relations():
     search = series_search.filter(
         "bool",
         filter=[
-            Q("term", _migration__has_related=True),
+            dsl.Q("term", _migration__has_related=True),
         ],
     )
     return search

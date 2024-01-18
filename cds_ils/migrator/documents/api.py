@@ -9,7 +9,7 @@
 """CDS-ILS document migrator API."""
 
 import click
-from elasticsearch_dsl import Q
+from invenio_search.engine import dsl
 from invenio_app_ils.proxies import current_app_ils
 
 from cds_ils.migrator.errors import DocumentMigrationError
@@ -49,7 +49,7 @@ def get_all_documents_with_files():
     search = document_search.filter(
         "bool",
         filter=[
-            Q("term", _migration__has_files=True),
+            dsl.Q("term", _migration__has_files=True),
         ],
     )
     return search
@@ -61,7 +61,7 @@ def get_documents_with_proxy_eitems():
     search = document_search.filter(
         "bool",
         filter=[
-            Q("term", _migration__eitems_has_proxy=True),
+            dsl.Q("term", _migration__eitems_has_proxy=True),
         ],
     )
     return search
@@ -73,7 +73,7 @@ def get_documents_with_ebl_eitems():
     search = document_search.filter(
         "bool",
         filter=[
-            Q("term", _migration__eitems_has_ebl=True),
+            dsl.Q("term", _migration__eitems_has_ebl=True),
         ],
     )
     return search
@@ -85,7 +85,7 @@ def get_documents_with_safari_eitems():
     search = document_search.filter(
         "bool",
         filter=[
-            Q("term", _migration__eitems_has_safari=True),
+            dsl.Q("term", _migration__eitems_has_safari=True),
         ],
     )
     return search
@@ -97,7 +97,7 @@ def get_documents_with_external_eitems():
     search = document_search.filter(
         "bool",
         filter=[
-            Q("term", _migration__eitems_has_external=True),
+            dsl.Q("term", _migration__eitems_has_external=True),
         ],
     )
     return search
@@ -109,7 +109,7 @@ def search_documents_with_siblings_relations():
     search = document_search.filter(
         "bool",
         filter=[
-            Q("term", _migration__has_related=True),
+            dsl.Q("term", _migration__has_related=True),
         ],
     )
     return search

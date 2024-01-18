@@ -12,7 +12,7 @@ import json
 import logging
 
 import click
-from elasticsearch_dsl import Q
+from invenio_search.engine import dsl
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 
@@ -103,7 +103,7 @@ def get_item_by_barcode(barcode, raise_exception=True):
     search = current_app_ils.item_search_cls().query(
         "bool",
         filter=[
-            Q("term", barcode=barcode),
+            dsl.Q("term", barcode=barcode),
         ],
     )
     result = search.execute()

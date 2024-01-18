@@ -12,7 +12,7 @@ import json
 import logging
 
 import click
-from elasticsearch_dsl import Q
+from invenio_search.engine import dsl
 from flask import current_app
 from invenio_app_ils.patrons.indexer import PatronIndexer
 from invenio_app_ils.patrons.search import PatronsSearch
@@ -74,7 +74,7 @@ def get_user_by_person_id(person_id):
     search = PatronsSearch().query(
         "bool",
         filter=[
-            Q("term", person_id=person_id),
+            dsl.Q("term", person_id=person_id),
         ],
     )
     results = search.execute()
@@ -95,7 +95,7 @@ def get_user_by_legacy_id(legacy_id):
     search = PatronsSearch().query(
         "bool",
         filter=[
-            Q("term", legacy_id=legacy_id),
+            dsl.Q("term", legacy_id=legacy_id),
         ],
     )
     results = search.execute()
