@@ -11,7 +11,7 @@
 import json
 
 import click
-from elasticsearch_dsl import Q
+from invenio_search.engine import dsl
 from invenio_app_ils.internal_locations.api import InternalLocation
 from invenio_app_ils.internal_locations.search import InternalLocationSearch
 from invenio_app_ils.proxies import current_app_ils
@@ -74,7 +74,7 @@ def import_internal_locations_from_json(
 def get_internal_location_by_legacy_recid(legacy_recid):
     """Search for internal location by legacy id."""
     search = InternalLocationSearch().query(
-        "bool", filter=[Q("term", legacy_ids=legacy_recid)]
+        "bool", filter=[dsl.Q("term", legacy_ids=legacy_recid)]
     )
     result = search.execute()
     hits_total = result.hits.total.value

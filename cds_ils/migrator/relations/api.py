@@ -10,7 +10,7 @@
 import logging
 
 import click
-from elasticsearch_dsl import Q
+from invenio_search.engine import dsl
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.records_relations.api import (
@@ -223,8 +223,8 @@ def link_documents_and_serials():
         series_search.filter(
             "bool",
             filter=[
-                Q("term", mode_of_issuance="MULTIPART_MONOGRAPH"),
-                Q("term", _migration__has_serial=True),
+                dsl.Q("term", mode_of_issuance="MULTIPART_MONOGRAPH"),
+                dsl.Q("term", _migration__has_serial=True),
             ],
         ),
     )

@@ -17,8 +17,7 @@ from random import randint
 import arrow
 import click
 import pkg_resources
-from elasticsearch import VERSION as ES_VERSION
-from elasticsearch_dsl import Q
+from invenio_search.engine import dsl
 from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
@@ -457,8 +456,8 @@ def clean_loans(user_email, given_date):
         .filter(
             "bool",
             filter=[
-                Q("term", patron_pid=patron_pid),
-                Q("term", _created=given_date),
+                dsl.Q("term", patron_pid=patron_pid),
+                dsl.Q("term", _created=given_date),
             ],
         )
         .scan()
@@ -477,8 +476,8 @@ def clean_loans(user_email, given_date):
         .filter(
             "bool",
             filter=[
-                Q("term", patron_pid=patron_pid),
-                Q("term", _created=given_date),
+                dsl.Q("term", patron_pid=patron_pid),
+                dsl.Q("term", _created=given_date),
             ],
         )
         .scan()

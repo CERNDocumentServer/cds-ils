@@ -12,7 +12,7 @@ from copy import deepcopy
 
 import click
 from dateutil import parser
-from elasticsearch import TransportError
+from invenio_search.engine import search
 from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
@@ -410,7 +410,7 @@ class DocumentImporter(object):
         authors = [author["full_name"] for author in self.json_data.get("authors", [])]
         try:
             fuzzy_results = fuzzy_search_document(title, authors).scan()
-        except TransportError:
+        except search.TransportError:
             raise SimilarityMatchUnavailable
         return fuzzy_results
 

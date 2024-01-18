@@ -6,8 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer module."""
-from elasticsearch_dsl import Q
-from elasticsearch_dsl.query import Match
+from invenio_search.engine import dsl
 from invenio_app_ils.proxies import current_app_ils
 
 
@@ -17,8 +16,8 @@ def search_documents_by_isbn(isbn):
     search = document_search.query(
         "bool",
         must=[
-            Q("term", identifiers__scheme="ISBN"),
-            Q("term", identifiers__value=isbn),
+            dsl.Q("term", identifiers__scheme="ISBN"),
+            dsl.Q("term", identifiers__value=isbn),
         ],
     )
     return search
@@ -30,8 +29,8 @@ def search_documents_by_doi(doi):
     search = document_search.query(
         "bool",
         must=[
-            Q("term", identifiers__scheme="DOI"),
-            Q("term", identifiers__value=doi),
+            dsl.Q("term", identifiers__scheme="DOI"),
+            dsl.Q("term", identifiers__value=doi),
         ],
     )
     return search
@@ -61,7 +60,7 @@ def fuzzy_search_document(title, authors):
     # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html
     document_search = current_app_ils.document_search_cls()
     search = document_search.query(
-        Match(
+        dsl.query.Match(
             title__keyword={
                 "fuzziness": "AUTO",
                 "fuzzy_transpositions": "true",
@@ -69,7 +68,7 @@ def fuzzy_search_document(title, authors):
             }
         )
     ).filter(
-        Match(
+        dsl.query.Match(
             authors__full_name={
                 "query": " ".join(authors),
                 "fuzziness": "AUTO",

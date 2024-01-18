@@ -9,7 +9,7 @@
 import time
 
 import pkg_resources
-from elasticsearch import TransportError
+from invenio_search.engine import search
 from flask import current_app
 from invenio_app_ils.errors import RecordHasReferencesError
 from invenio_app_ils.proxies import current_app_ils
@@ -162,7 +162,7 @@ class Importer(object):
                 for match in fuzzy_results
                 if match.pid != exact_match
             ]
-        except TransportError:
+        except search.TransportError:
             raise SimilarityMatchUnavailable
         return fuzzy_matches + amibiguous_matches
 

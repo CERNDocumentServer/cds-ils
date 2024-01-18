@@ -7,7 +7,7 @@
 
 """CDS-ILS Series Importer api."""
 
-from elasticsearch_dsl import Q
+from invenio_search.engine import dsl
 from invenio_app_ils.proxies import current_app_ils
 
 
@@ -17,8 +17,8 @@ def search_series_by_isbn(isbn):
     search = series_search.query(
         "bool",
         must=[
-            Q("term", identifiers__scheme="ISBN"),
-            Q("term", identifiers__value=isbn),
+            dsl.Q("term", identifiers__scheme="ISBN"),
+            dsl.Q("term", identifiers__value=isbn),
         ],
     )
     return search
@@ -30,8 +30,8 @@ def search_series_by_issn(issn):
     search = series_search.query(
         "bool",
         must=[
-            Q("term", identifiers__scheme="ISSN"),
-            Q("term", identifiers__value=issn),
+            dsl.Q("term", identifiers__scheme="ISSN"),
+            dsl.Q("term", identifiers__value=issn),
         ],
     )
     return search
