@@ -11,10 +11,10 @@
 import json
 
 import click
-from invenio_search.engine import dsl
 from invenio_app_ils.internal_locations.api import InternalLocation
 from invenio_app_ils.internal_locations.search import InternalLocationSearch
 from invenio_app_ils.proxies import current_app_ils
+from invenio_search.engine import dsl
 
 from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
 from cds_ils.migrator.api import import_record

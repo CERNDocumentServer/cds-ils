@@ -12,13 +12,13 @@ from copy import deepcopy
 
 import click
 from dateutil import parser
-from invenio_search.engine import search
 from invenio_app_ils.documents.api import DocumentIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_app_ils.vocabularies.api import VOCABULARY_TYPE_LICENSE
 from invenio_db import db
 from invenio_jsonschemas import current_jsonschemas
+from invenio_search.engine import search
 
 from cds_ils.importer.documents.api import (
     fuzzy_search_document,
