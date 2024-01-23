@@ -150,6 +150,43 @@ export const config = {
   },
   ILL_BORROWING_REQUESTS: {
     defaultType: "PHYSICAL_COPY",
+    fieldOverrides: {
+      due_date: "Returned Date",
+    },
+    search: {
+      sort: [
+        {
+          order: 1,
+          sortBy: "created",
+          sortOrder: "desc",
+          text: "Recently added",
+        },
+        {
+          order: 2,
+          sortBy: "bestmatch",
+          sortOrder: "asc",
+          text: "Most relevant",
+        },
+        {
+          order: 3,
+          sortBy: "request_date",
+          sortOrder: "desc",
+          text: "Request date",
+        },
+        {
+          order: 4,
+          sortBy: "expected_delivery_date",
+          sortOrder: "desc",
+          text: "Expected delivery date",
+        },
+        {
+          order: 5,
+          sortBy: "due_date",
+          sortOrder: "desc",
+          text: "Returned Date",
+        },
+      ],
+    },
   },
   PATRONS: {
     customFields: {
