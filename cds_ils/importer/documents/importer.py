@@ -199,6 +199,12 @@ class DocumentImporter(object):
 
         return existing_identifiers + new_identifiers
 
+    @staticmethod
+    def _normalize_title(title):
+        """Return a normalized title."""
+        t = " ".join(title.lower().split())
+        return t.strip()
+
     def update_document(self, matched_document):
         """Update document record."""
         for field in self.update_document_fields:
@@ -263,11 +269,13 @@ class DocumentImporter(object):
 
         for import_serial in import_doc_serials:
             import_volume = import_serial.get("volume")
-            import_serial_title = import_serial["title"].lower()
+            import_serial_title = self._normalize_title(import_serial["title"])
 
             for serial in existing_doc_serials:
                 existing_volume = serial.get("volume")
-                existing_title = serial["record_metadata"]["title"].lower()
+                existing_title = self._normalize_title(
+                    serial["record_metadata"]["title"]
+                )
 
                 same_serial = existing_title == import_serial_title
                 both_have_volumes = import_volume and existing_volume
@@ -322,7 +330,9 @@ class DocumentImporter(object):
                 )
 
                 pub_year_not_equal = doc_pub_year != import_doc_publication_year
-                titles_not_equal = document_title.lower() != import_doc_title.lower()
+                titles_not_equal = self._normalize_title(
+                    document_title
+                ) != self._normalize_title(import_doc_title)
 
                 provider_identifiers_not_equal = (
                     not self._validate_provider_identifiers(document)

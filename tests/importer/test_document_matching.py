@@ -78,6 +78,7 @@ def test_document_search_matching(importer_test_data):
     validated_matches, partial = document_importer.validate_found_matches(matches)
 
     assert validated_matches == "docid-4"
+    assert partial == ["docid-41"]
 
 
 def test_fuzzy_matching(importer_test_data):
