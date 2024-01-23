@@ -1,10 +1,6 @@
 export const config = {
   APP: {
     LOGO_SRC: null,
-    i18n: {
-      priceLocale: "fr-CH",
-    },
-    DEFAULT_CURRENCY: "CHF",
     STATIC_PAGES: [
       { name: "about", route: "/about", apiURL: "1" },
       { name: "terms", route: "/terms", apiURL: "2" },
