@@ -203,13 +203,17 @@ def special_serials(self, key, value):
             _migration["is_yellow_report"] = True
         result_a = mapping(SERIAL, value_a)
         if result_a:
-            _serials.append(
-                {
-                    "title": result_a,
-                    "volume": None,
-                    "issn": None,
-                }
-            ) if result_a not in _serials else None
+            (
+                _serials.append(
+                    {
+                        "title": result_a,
+                        "volume": None,
+                        "issn": None,
+                    }
+                )
+                if result_a not in _serials
+                else None
+            )
             _migration.update({"serials": _serials, "has_serial": True})
         if not result_a:
             self["document_type"] = document_type(self, key, value)

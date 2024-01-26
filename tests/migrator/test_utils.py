@@ -41,9 +41,11 @@ def test_extract_volume_number(value, expected, raise_exception):
 volume_info_params = [
     (
         "print version, paperback ({})".format(vol_str),
-        dict(volume=expected, description="print version, paperback")
-        if expected
-        else None,
+        (
+            dict(volume=expected, description="print version, paperback")
+            if expected
+            else None
+        ),
     )
     for vol_str, expected, raise_exception in volume_params
 ]
