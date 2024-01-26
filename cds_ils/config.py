@@ -420,8 +420,8 @@ ILS_CIRCULATION_NOTIFICATION_OVERDUE_REMINDER_INTERVAL = 7
 
 #: The maximum duration of a loan request
 ILS_CIRCULATION_LOAN_REQUEST_DURATION_DAYS = 120
-#: Loan Request Offset Value
-ILS_CIRCULATION_LOAD_REQUEST_OFFSET = 2
+#: The minimum number of days after which a loan can start from the date of request
+ILS_CIRCULATION_LOAN_REQUEST_OFFSET = 2
 
 # Namespaces for fields added to the metadata schema
 ILS_RECORDS_METADATA_NAMESPACES = {
