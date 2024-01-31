@@ -1,6 +1,6 @@
 import {
   FrontSiteRoutes,
-  NotFound,
+  HttpErrorPage,
   recordToPidType,
   withCancel,
 } from "@inveniosoftware/react-invenio-app-ils";
@@ -55,7 +55,7 @@ export class LegacyRecordCmp extends React.Component {
     } else if (record.id && recordToPidType(record) === "serid") {
       return <Redirect to={FrontSiteRoutes.seriesDetailsFor(record.id)} />;
     } else if (record.code === 404) {
-      return <NotFound />;
+      return <HttpErrorPage />;
     }
     return null;
   }

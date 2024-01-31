@@ -3,7 +3,7 @@ import { Importer } from "../../importer";
 import { ImporterTaskDetails } from "../../importer/importerTaskDetails";
 import { CdsBackOfficeRoutes } from "./BackofficeUrls";
 import { Switch, Route } from "react-router-dom";
-import { NotFound } from "@inveniosoftware/react-invenio-app-ils";
+import { HttpErrorPage } from "@inveniosoftware/react-invenio-app-ils";
 
 export const ImporterRoute = () => {
   return (
@@ -15,7 +15,7 @@ export const ImporterRoute = () => {
         component={ImporterTaskDetails}
       />
       <Route>
-        <NotFound />
+        <HttpErrorPage />
       </Route>
     </Switch>
   );
