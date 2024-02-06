@@ -8,19 +8,19 @@ export const OrderDetailsMiddleColumn = ({ line }) => {
   return (
     <>
       <Item.Description>
-        <label>Copies ordered: </label>
+        <label htmlFor="Copies ordered">Copies ordered: </label>
         {line.copies_ordered}
       </Item.Description>
       <Item.Description>
-        <label>Copies received: </label>
+        <label htmlFor="Copies received">Copies received: </label>
         {line.copies_received || "-"}
       </Item.Description>
       <Item.Description>
-        <label>Payment mode: </label>
+        <label htmlFor="Payment mode">Payment mode: </label>
         {line.payment_mode || "-"}
       </Item.Description>
       <Item.Description>
-        <label>TID ID: </label>
+        <label htmlFor="TID ID">TID ID: </label>
         {line.inter_departmental_transaction_id || "-"}{" "}
         <Popup
           content="Inter departmental transaction ID"
