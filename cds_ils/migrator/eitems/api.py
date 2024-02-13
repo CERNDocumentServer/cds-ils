@@ -235,9 +235,9 @@ def migrate_external_links(raise_exceptions=True):
             try:
                 eitem = create_eitem(
                     document["pid"],
-                    open_access=open_access
-                    if open_access
-                    else item.get("open_access", False),
+                    open_access=(
+                        open_access if open_access else item.get("open_access", False)
+                    ),
                 )
                 item["url"]["login_required"] = False
                 eitem["urls"] = [item["url"]]

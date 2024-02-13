@@ -25,9 +25,11 @@ def replace_in_result(phrase, replace_with, key=None):
                         dict(
                             (
                                 k,
-                                v.replace(phrase, replace_with).strip()
-                                if k == key
-                                else v,
+                                (
+                                    v.replace(phrase, replace_with).strip()
+                                    if k == key
+                                    else v
+                                ),
                             )
                             for k, v in elem.items()
                         )

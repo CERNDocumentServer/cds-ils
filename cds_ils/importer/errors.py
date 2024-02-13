@@ -39,9 +39,9 @@ class ProviderNotAllowedDeletion(DoJSONException):
     def __init__(self, *args, **kwargs):
         """Exception custom initialisation."""
         self.provider = kwargs.pop("provider", None)
-        self.message = (
-            self.description
-        ) = "This provider {0} is not allowed to delete records".format(self.provider)
+        self.message = self.description = (
+            "This provider {0} is not allowed to delete records".format(self.provider)
+        )
         super().__init__(*args, **kwargs)
 
 
