@@ -7,6 +7,15 @@
 Changes
 =======
 
+Version 2.1.0 (released 2024-102-19)
+
+- installation: invenio-app-ils upgrade
+
+Version 2.0.0 (released 2024-102-16)
+
+- global: python version upgrade
+- global: invenio dependencies upgrade
+
 Version 1.2.57 (released 2023-11-30)
 
 - assets: update homepage image
