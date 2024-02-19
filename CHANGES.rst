@@ -7,7 +7,11 @@
 Changes
 =======
 
-Version 2.1.0 (released 2024-102-19)
+Version 2.2.0 (released 2024-02-19)
+
+- installation: invenio-app-ils upgrade
+
+Version 2.1.0 (released 2024-02-19)
 
 - installation: invenio-app-ils upgrade
 
