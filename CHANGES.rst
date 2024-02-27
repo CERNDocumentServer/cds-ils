@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 2.4.0 (released 2024-02-27)
+
+- installation: invenio-app-ils upgrade (fix facets boolean)
+
 Version 2.3.0 (released 2024-02-21)
 
 - installation: invenio-app-ils upgrade (fix facets range)
