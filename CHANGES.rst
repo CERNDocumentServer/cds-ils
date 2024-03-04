@@ -7,6 +7,13 @@
 Changes
 =======
 
+Version 2.5.0 (released 2024-03-04)
+
+- installation: upgrade invenio-app-ils, react-invenio-app-ils
+- ui: add custom, CERN specific names to form fields
+- frontsite: update opening hours page
+- config: set loan request to start in 2 days
+
 Version 2.4.0 (released 2024-02-27)
 
 - installation: invenio-app-ils upgrade (fix facets boolean)
