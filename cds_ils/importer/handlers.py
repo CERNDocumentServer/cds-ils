@@ -87,9 +87,8 @@ def importer_exception_handler(
     exc, log_id, record_recid, json_data=None, *args, **kwargs
 ):
     """Handle importer exception."""
-    report = {"raw_json": json_data}
-    if hasattr(exc, "record_id"):
-        report["output_pid"] = exc.record_id
+    output_pid = getattr(exc, "record_id", None)
+    report = {"raw_json": json_data, "output_pid": output_pid}
     ImportRecordLog.create_failure(
         log_id, record_recid, str(exc.description), report=report
     )
