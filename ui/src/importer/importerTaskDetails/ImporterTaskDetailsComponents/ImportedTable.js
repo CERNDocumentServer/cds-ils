@@ -35,7 +35,7 @@ export class ImportedTable extends React.Component {
                 Action
               </Table.HeaderCell>
               <Table.HeaderCell collapsing rowSpan="3">
-                Output document
+                Related document
               </Table.HeaderCell>
               <Table.HeaderCell collapsing colSpan="4">
                 Dependent records
