@@ -148,7 +148,7 @@ def location():
         )
     location = {
         "pid": RecordIdProviderV2.create().pid.pid_value,
-        "name": "CERN Central Library",
+        "name": "CERN Library",
         "address": "Rue de Meyrin",
         "email": "library.desk@cern.ch",
         "opening_weekdays": opening_weekdays,
