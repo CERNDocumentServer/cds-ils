@@ -7,6 +7,7 @@
 
 """CDS-ILS Series Importer."""
 
+import re
 import uuid
 from copy import deepcopy
 
@@ -57,6 +58,8 @@ VOCABULARIES_FIELDS = {
     # all language fields already validated in the rules with pycountry
 }
 
+IGNORE_SUFFIXES = [" series", " ser", " Series", " Ser"]
+
 
 class SeriesImporter(object):
     """Series importer class."""
@@ -80,6 +83,10 @@ class SeriesImporter(object):
     def _before_create(self, json_series):
         """Perform before create metadata modification."""
         series = deepcopy(json_series)
+        # Remove `Series` or `Ser` from the end while preserving the capitalization
+        for substring in IGNORE_SUFFIXES:
+            if re.search(substring + "$", series["title"]):
+                series["title"] = rreplace(series["title"], substring, "")
 
         if "volume" in series:
             del series["volume"]
@@ -107,11 +114,13 @@ class SeriesImporter(object):
     def _normalize_title(title):
         """Return a normalized title."""
         t = " ".join(title.lower().split())
-        # remove `series` only at the end of the title
+        # remove `series` or `ser` at the end of the title
         # `International Series of Numerical Mathematics series`
+        # or `International   series of Numerical mathematics   ser`
         # will become
         # `international series of numerical mathematics`
-        t = rreplace(t, " series", "")
+        for substring in IGNORE_SUFFIXES:
+            t = rreplace(t, substring, "")
         return t.strip()
 
     def update_series(self, matched_series, json_series):
@@ -222,7 +231,7 @@ class SeriesImporter(object):
         def filter_non_serials(match):
             """Drops periodicals and multipart monographs."""
             _series = all_series[match]
-            # drop multipart monographs
+            # Drop multipart monographs and periodicals
             is_serial = _series["mode_of_issuance"] == "SERIAL"
             is_type_serial = _series.get("series_type") == "SERIAL"
             return is_serial and is_type_serial

@@ -88,3 +88,9 @@ def test_series_search_matching(importer_test_data):
     validated_matches = match(json_series)
     assert len(validated_matches) == 1
     assert validated_matches[0] == "serid-imp-1"
+
+    # test `ser` suffix and different capitalization in title
+    json_series = series_to_import[12]
+    validated_matches = match(json_series)
+    assert len(validated_matches) == 1
+    assert validated_matches[0] == "serid-imp-1"
