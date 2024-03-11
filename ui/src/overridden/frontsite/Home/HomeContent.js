@@ -1,16 +1,85 @@
 import {
   documentApi,
   DocumentCardGroup,
+  SeriesCardGroup,
   FrontSiteRoutes,
   Headline,
+  seriesApi,
 } from "@inveniosoftware/react-invenio-app-ils";
 import React from "react";
 import { parametrize } from "react-overridable";
-import { Container } from "semantic-ui-react";
+import {
+  Button,
+  Container,
+  Divider,
+  Grid,
+  Message,
+  Header,
+  Icon,
+  List,
+} from "semantic-ui-react";
+import { Link as ScrollLink } from "react-scroll";
+import { snvLink } from "../utils";
 
 export const HomeHeadline = parametrize(Headline, {
   backgroundImageURL: process.env.PUBLIC_URL + "/images/home-headline-background.jpg",
 });
+
+export const HomeButtons = () => {
+  return (
+    <Container className="container-extra">
+      <Divider />
+      <Grid>
+        <Grid.Column width={16} textAlign="center">
+          <Button
+            className="headline-quick-access"
+            as={ScrollLink}
+            to="recent-books"
+            offset={-100}
+            smooth
+            primary
+          >
+            <Icon name="book" />
+            Recent books
+          </Button>
+          <Button
+            className="headline-quick-access"
+            as={ScrollLink}
+            to="recent-journals"
+            offset={-100}
+            smooth
+            primary
+          >
+            <Icon name="file alternate" />
+            Recent journals
+          </Button>
+          <Button
+            className="headline-quick-access"
+            as={ScrollLink}
+            to="most-loaned"
+            offset={-100}
+            smooth
+            primary
+          >
+            <Icon name="star" />
+            Most loaned
+          </Button>
+          <Button
+            className="headline-quick-access"
+            as={ScrollLink}
+            to="standards"
+            offset={-100}
+            smooth
+            primary
+          >
+            <Icon name="chart pie" />
+            Standards
+          </Button>
+        </Grid.Column>
+      </Grid>
+    </Container>
+  );
+};
 
 export const HomeContent = () => {
   return (
@@ -23,7 +92,7 @@ export const HomeContent = () => {
             id="recent-books"
           >
             <DocumentCardGroup
-              title="Most recent books"
+              title="Recent books and e-books"
               headerClass="section-header highlight"
               fetchDataMethod={documentApi.list}
               fetchDataQuery={documentApi
@@ -42,21 +111,20 @@ export const HomeContent = () => {
       <Container
         textAlign="center"
         className="fs-landing-page-section"
-        id="recent-ebooks"
+        id="recent-journals"
       >
-        <DocumentCardGroup
-          title="Most recent e-books"
+        <SeriesCardGroup
+          title="Recent journals and e-journals"
           headerClass="section-header highlight"
-          fetchDataMethod={documentApi.list}
-          fetchDataQuery={documentApi
+          fetchDataMethod={seriesApi.list}
+          fetchDataQuery={seriesApi
             .query()
-            .withDocumentType("BOOK")
-            .withEitems()
+            .withSeriesType("PERIODICAL")
             .sortBy("-created")
             .withSize(5)
             .qs()}
           viewAllUrl={FrontSiteRoutes.documentsListWithQuery(
-            "&f=doctype%3ABOOK&f=medium%3AE-BOOK&sort=created&order=desc"
+            "&f=doctype%3APERIODICAL&sort=created&order=desc"
           )}
         />
       </Container>
@@ -79,6 +147,23 @@ export const HomeContent = () => {
             "&sort=mostloaned&order=desc"
           )}
         />
+      </Container>
+      <Container textAlign="center" className="fs-landing-page-section" id="standards">
+        <Header as="h2" className="section-header highlight">
+          Current and historical standards
+        </Header>
+        <Message info icon style={{ justifyContent: "center" }}>
+          <Icon name="info circle" />
+          <List className="mt-5">
+            <Message.Header>
+              CERN readers have access to {snvLink} and can search directly!
+            </Message.Header>
+            <Message.Content>
+              CERN readers can access the standards online and download them on their
+              computers as PDF files.
+            </Message.Content>
+          </List>
+        </Message>
       </Container>
     </Container>
   );
