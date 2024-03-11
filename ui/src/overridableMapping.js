@@ -13,7 +13,11 @@ import { DocumentRequestFormFields } from "./overridden/frontsite/DocumentReques
 import { DocumentRequestFormHeader } from "./overridden/frontsite/DocumentRequest/DocumentRequestFormHeader";
 import { NotAvailable } from "./overridden/frontsite/Document/DocumentDetails/DocumentCirculation/NotAvailable";
 import { StandardNumber } from "./overridden/frontsite/Document/DocumentDetails/DocumentPanel/StandardNumber";
-import { HomeContent, HomeHeadline } from "./overridden/frontsite/Home/HomeContent";
+import {
+  HomeContent,
+  HomeHeadline,
+  HomeButtons,
+} from "./overridden/frontsite/Home/HomeContent";
 import { LegacyRecordRoute } from "./overridden/frontsite/Routes/LegacyRoute";
 import { Slogan } from "./overridden/frontsite/Home/Slogan";
 import { SideBarMenuItem } from "./overridden/backoffice/Sidebar/SideBarMenuItem";
@@ -33,6 +37,7 @@ export const overriddenCmps = {
   "Backoffice.PatronDetails.Metadata.ActionMenuItem": PatronMetadataActionMenuItem,
   "Home.Headline": HomeHeadline,
   "Home.Headline.slogan": Slogan,
+  "Home.Headline.extra": HomeButtons,
   "Home.content": HomeContent,
   "ILSFooter": Footer,
   "ILSMenu.Logo": Logo,
