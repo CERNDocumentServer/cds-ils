@@ -28,5 +28,20 @@
     "type": "tag",
     "key": "THESIS",
     "text": "Thesis"
+  },
+  {
+    "type": "tag",
+    "key": "YELLOW_REPORT",
+    "text": "Yellow Report"
+  },
+  {
+    "type": "tag",
+    "key": "WOMEN_IN_TECHNOLOGY",
+    "text": "Women in Technology"
+  },
+  {
+    "type": "tag",
+    "key": "DIVERSITY_AND_INCLUSION",
+    "text": "Diversity and Inclusion"
   }
 ]
