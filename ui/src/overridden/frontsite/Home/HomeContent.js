@@ -28,54 +28,52 @@ export const HomeButtons = () => {
     <Container className="container-extra">
       <Divider />
       <Grid>
-        <Grid.Row>
-          <Grid.Column width={16} textAlign="center">
-            <Button
-              className="headline-quick-access"
-              as={ScrollLink}
-              to="recent-books-ebooks"
-              offset={-100}
-              smooth
-              primary
-            >
-              Recent books/e-books
-            </Button>
-            <Button
-              className="headline-quick-access"
-              as={ScrollLink}
-              to="recent-journals-ejournals"
-              offset={-100}
-              smooth
-              primary
-            >
-              Recent journals/e-journals
-            </Button>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column width={16} textAlign="center">
-            <Button
-              className="headline-quick-access"
-              as={ScrollLink}
-              to="most-loaned"
-              offset={-100}
-              smooth
-              primary
-            >
-              Most loaned books
-            </Button>
-            <Button
-              className="headline-quick-access"
-              as={ScrollLink}
-              to="standards"
-              offset={-100}
-              smooth
-              primary
-            >
-              Current and historical standards
-            </Button>
-          </Grid.Column>
-        </Grid.Row>
+        <Grid.Column width={16} textAlign="center">
+          <Button
+            className="headline-quick-access"
+            as={ScrollLink}
+            to="recent-books"
+            offset={-100}
+            smooth
+            primary
+          >
+            <Icon name="book" />
+            Recent books
+          </Button>
+          <Button
+            className="headline-quick-access"
+            as={ScrollLink}
+            to="recent-journals"
+            offset={-100}
+            smooth
+            primary
+          >
+            <Icon name="file alternate" />
+            Recent journals
+          </Button>
+          <Button
+            className="headline-quick-access"
+            as={ScrollLink}
+            to="most-loaned"
+            offset={-100}
+            smooth
+            primary
+          >
+            <Icon name="star" />
+            Most loaned
+          </Button>
+          <Button
+            className="headline-quick-access"
+            as={ScrollLink}
+            to="standards"
+            offset={-100}
+            smooth
+            primary
+          >
+            <Icon name="chart pie" />
+            Standards
+          </Button>
+        </Grid.Column>
       </Grid>
     </Container>
   );
@@ -89,10 +87,10 @@ export const HomeContent = () => {
           <Container
             textAlign="center"
             className="fs-landing-page-section no-background"
-            id="recent-books-ebooks"
+            id="recent-books"
           >
             <DocumentCardGroup
-              title="Most recent books and e-books"
+              title="Recent books and e-books"
               headerClass="section-header highlight"
               fetchDataMethod={documentApi.list}
               fetchDataQuery={documentApi
@@ -111,10 +109,10 @@ export const HomeContent = () => {
       <Container
         textAlign="center"
         className="fs-landing-page-section"
-        id="recent-journals-ejournals"
+        id="recent-journals"
       >
         <DocumentCardGroup
-          title="Most recent journals and e-journals"
+          title="Recent journals and e-journals"
           headerClass="section-header highlight"
           fetchDataMethod={documentApi.list}
           fetchDataQuery="publication_info:*&sort=-created&size=5"
