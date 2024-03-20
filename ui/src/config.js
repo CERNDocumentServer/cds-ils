@@ -147,7 +147,7 @@ export const config = {
   ILL_BORROWING_REQUESTS: {
     defaultType: "PHYSICAL_COPY",
     fieldOverrides: {
-      due_date: "Returned Date",
+      due_date: "Returned date",
     },
     search: {
       sort: [
@@ -179,7 +179,7 @@ export const config = {
           order: 5,
           sortBy: "due_date",
           sortOrder: "desc",
-          text: "Returned Date",
+          text: "Returned date",
         },
       ],
     },
