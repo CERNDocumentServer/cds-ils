@@ -535,7 +535,9 @@ def isbns(self, key, value):
     for v in force_list(value):
         subfield_u = clean_val("u", v, str)
         isbn = {
-            "value": clean_val("a", v, str) or clean_val("z", v, str),
+            "value": clean_val("a", v, str)
+            or clean_val("z", v, str)
+            or clean_val("q", v, str),
             "scheme": "ISBN",
         }
         if not isbn["value"]:

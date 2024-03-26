@@ -88,12 +88,13 @@ def title(self, key, value):
 def eitem(self, key, value):
     """Translate included eitems."""
     _eitem = self.get("_eitem", {})
+    _eitem_type = _eitem.get("_type", "e-book")
 
     urls = []
     for v in force_list(value):
         urls.append(
             {
-                "description": "e-book",
+                "description": _eitem_type,
                 "value": clean_val("u", v, str),
             }
         )
@@ -122,6 +123,14 @@ def identifiers(self, key, value):
             "scheme": "ISBN",
             "value": clean_val("z", value, str, req=True),
             "material": "PRINT_VERSION",
+        }
+        if isbn not in _identifiers:
+            _identifiers.append(isbn)
+    if "q" in value and self.get("_eitem", {}).get("_type", None) == "audiobook":
+        isbn = {
+            "scheme": "ISBN",
+            "value": clean_val("q", value, str, req=True),
+            "material": "AUDIOBOOK",
         }
         if isbn not in _identifiers:
             _identifiers.append(isbn)

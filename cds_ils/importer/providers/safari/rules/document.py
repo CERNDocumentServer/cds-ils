@@ -122,12 +122,13 @@ def alternative_titles_doc(self, key, value):
 def eitem(self, key, value):
     """Translate included eitems."""
     _eitem = self.get("_eitem", {})
+    _eitem_type = _eitem.get("_type", "e-book")
 
     urls = []
     for v in force_list(value):
         urls.append(
             {
-                "description": "e-book",
+                "description": _eitem_type,
                 "value": clean_val("u", v, str),
             }
         )
