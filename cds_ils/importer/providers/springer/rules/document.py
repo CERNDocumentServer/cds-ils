@@ -112,12 +112,13 @@ def imprint(self, key, value):
 def eitem(self, key, value):
     """Translate included eitems."""
     _eitem = self.get("_eitem", {})
+    _eitem_type = _eitem.get("_type", "e-book")
 
     urls = []
     for v in force_list(value):
         urls.append(
             {
-                "description": "e-book",
+                "description": _eitem_type,
                 "value": clean_val("u", v, str),
             }
         )
@@ -148,10 +149,14 @@ def identifiers(self, key, value):
     """Translate identifiers."""
     _isbns = self.get("identifiers", [])
     for v in force_list(value):
-        material = clean_val("u", v, str)
         sub_a = clean_val("a", v, str)
+        sub_q = clean_val("q", v, str)
         if sub_a:
             isbn = {"value": sub_a, "scheme": "ISBN", "material": "DIGITAL"}
+            if isbn not in _isbns:
+                _isbns.append(isbn)
+        if sub_q and self.get("_eitem", {}).get("_type", None) == "audiobook":
+            isbn = {"value": sub_q, "scheme": "ISBN", "material": "AUDIOBOOK"}
             if isbn not in _isbns:
                 _isbns.append(isbn)
     return _isbns

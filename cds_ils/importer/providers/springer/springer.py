@@ -30,8 +30,10 @@ class SpringerDocument(Base):
         init_fields=None,
     ):
         """Overwrite the do method."""
-        init_fields = deepcopy(self._default_fields)
-        return super().do(blob, ignore_missing, exception_handlers, init_fields)
+        fields = deepcopy(self._default_fields)
+        if init_fields:
+            fields.update(init_fields)
+        return super().do(blob, ignore_missing, exception_handlers, fields)
 
 
 model = SpringerDocument(
