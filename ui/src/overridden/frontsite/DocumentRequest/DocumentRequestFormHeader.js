@@ -6,10 +6,10 @@ import { Link } from "react-router-dom";
 export const DocumentRequestFormHeader = () => {
   return (
     <>
-      <Header as="h1">Request new document</Header>
+      <Header as="h1">Request document</Header>
       <p>
-        Fill in the form below to request to loan, purchase or suggest a new document
-        (book, article, standard, etc.) to the Library.
+        Fill in the form below to request to loan, purchase or suggest a document (book,
+        article, standard, etc.) to the Library.
       </p>
       <p>
         We will do our best to give you access to e-books, but please note that not all

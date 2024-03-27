@@ -19,7 +19,7 @@ const DropdownItems = () => {
       </Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item as={Link} to={FrontSiteRoutes.documentRequestForm}>
-        Request new document (loan or purchase)
+        Request document (loan or purchase)
       </Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item as={Link} to={getStaticPageByName("contact").route}>
