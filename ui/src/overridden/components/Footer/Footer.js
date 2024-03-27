@@ -47,7 +47,7 @@ export const Footer = ({ ...props }) => {
                 </List.Item>
                 <List.Item>
                   <Link to={FrontSiteRoutes.documentRequestForm}>
-                    Request new document (loan or purchase)
+                    Request document (loan or purchase)
                   </Link>
                 </List.Item>
               </List>
