@@ -1,8 +1,10 @@
 import {
   documentApi,
   DocumentCardGroup,
+  SeriesCardGroup,
   FrontSiteRoutes,
   Headline,
+  seriesApi,
 } from "@inveniosoftware/react-invenio-app-ils";
 import React from "react";
 import { parametrize } from "react-overridable";
@@ -111,13 +113,18 @@ export const HomeContent = () => {
         className="fs-landing-page-section"
         id="recent-journals"
       >
-        <DocumentCardGroup
+        <SeriesCardGroup
           title="Recent journals and e-journals"
           headerClass="section-header highlight"
-          fetchDataMethod={documentApi.list}
-          fetchDataQuery="publication_info:*&sort=-created&size=5"
+          fetchDataMethod={seriesApi.list}
+          fetchDataQuery={seriesApi
+            .query()
+            .withSeriesType("PERIODICAL")
+            .sortBy("-created")
+            .withSize(5)
+            .qs()}
           viewAllUrl={FrontSiteRoutes.documentsListWithQuery(
-            "publication_info:*&sort=created&order=desc"
+            "&f=doctype%3APERIODICAL&sort=created&order=desc"
           )}
         />
       </Container>
