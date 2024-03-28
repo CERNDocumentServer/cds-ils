@@ -1,6 +1,8 @@
 export const config = {
   APP: {
     LOGO_SRC: null,
+    HOME_SEARCH_BAR_PLACEHOLDER:
+      "Search for books, e-books, series, journals and standards.",
     STATIC_PAGES: [
       { name: "about", route: "/about", apiURL: "1" },
       { name: "terms", route: "/terms", apiURL: "2" },

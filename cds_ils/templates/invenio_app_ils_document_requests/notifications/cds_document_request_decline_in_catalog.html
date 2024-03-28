@@ -8,7 +8,7 @@ Dear {{ patron.name }},
 your request for "{{ request.title }}" has been declined because the item that you are looking for is already in the Library catalogue:
 <{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=request.document_pid) }}>
 
-You can either place a request to loan it or read the ebook.
+You can either place a request to loan it or read the e-book.
 
 Please let us know if does not suit your needs.
 {% endblock %}
@@ -20,7 +20,7 @@ Dear {{ patron.name }}, <br/><br/>
 your request for "{{ request.title }}" has been declined because the item that you are looking for is already in the Library catalogue: <br/>
 <a href="{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=request.document_pid) }}">{{ spa_routes.HOST }}{{ spa_routes.PATHS['literature']|format(pid=request.document_pid) }}</a> <br/><br/>
 
-You can either place a request to loan it or read the ebook. <br/><br/>
+You can either place a request to loan it or read the e-book. <br/><br/>
 
 Please let us know if does not suit your needs.<br/>
 {% endblock %}
