@@ -244,4 +244,26 @@ export const config = {
     ],
     fetchTaskStatusIntervalSecs: 5000,
   },
+  ACQ_ORDERS: {
+    editorSchema: {
+      definitions: {
+        "order-line": {
+          properties: {
+            inter_departmental_transaction_id: {
+              title: "ID of inter-departmental transaction (TID)",
+              type: "string",
+            },
+          },
+        },
+        "payment": {
+          properties: {
+            internal_purchase_requisition_id: {
+              title: "Internal purchase requisition ID (DAI)",
+              type: "string",
+            },
+          },
+        },
+      },
+    },
+  },
 };
