@@ -1,6 +1,7 @@
 import {
   PaymentInformation,
   formatPrice,
+  invenioConfig,
 } from "@inveniosoftware/react-invenio-app-ils";
 import React from "react";
 import { Icon, Popup } from "semantic-ui-react";
@@ -14,7 +15,9 @@ function leftPaymentInfoTable(order, type = "acquisition-order") {
   }
   return [
     {
-      name: `Total (${order.grand_total_main_currency.currency})`,
+      name: order.grand_total_main_currency?.currency
+        ? `Total (${order.grand_total_main_currency.currency})`
+        : `Total (${invenioConfig.APP.DEFAULT_CURRENCY})`,
       value: formatPrice(order.grand_total_main_currency) || "-",
     },
     {
@@ -24,7 +27,7 @@ function leftPaymentInfoTable(order, type = "acquisition-order") {
           : "Total",
       value: formatPrice(order.grand_total) || "-",
     },
-    { name: "Payment Mode", value: payment.mode },
+    { name: "Payment Mode", value: payment.mode || "-" },
     {
       name: (
         <>
