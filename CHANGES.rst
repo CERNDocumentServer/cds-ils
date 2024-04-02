@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 2.7.0 (released 2024-04-02)
+
+- installation: upgrade react-invenio-app-ils
+
 Version 2.6.1 (released 2024-04-02)
 
  - overridden: Handled cases where payment information is missing
