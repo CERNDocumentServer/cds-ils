@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 2.6.0 (released 2024-04-02)
+
+- installation: upgrade react-invenio-app-ils
+
 Version 2.5.0 (released 2024-03-04)
 
 - installation: upgrade invenio-app-ils, react-invenio-app-ils
