@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
+<record xmlns="http://www.loc.gov/MARC21/slim">
+    <leader>00000nim a22000007i 4500</leader>
+    <controlfield tag="001">on1417409648</controlfield>
+    <controlfield tag="003">OCoLC</controlfield>
+    <controlfield tag="005">20240125213018.0</controlfield>
+    <controlfield tag="006">m     o  h        </controlfield>
+    <controlfield tag="007">sz zunnnnnuneu</controlfield>
+    <controlfield tag="007">cr nnannnuuuuu</controlfield>
+    <controlfield tag="008">240117s2024    xx nnnn o      z  n eng d</controlfield>
+    <datafield tag="040" ind1=" " ind2=" ">
+      <subfield code="a">ORMDA</subfield>
+      <subfield code="b">eng</subfield>
+      <subfield code="e">rda</subfield>
+      <subfield code="e">pn</subfield>
+      <subfield code="c">ORMDA</subfield>
+      <subfield code="d">OCLCO</subfield>
+    </datafield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">9781663731913</subfield>
+      <subfield code="q">(electronic audio bk.)</subfield>
+    </datafield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">1663731918</subfield>
+      <subfield code="q">(electronic audio bk.)</subfield>
+    </datafield>
+    <datafield tag="035" ind1=" " ind2=" ">
+      <subfield code="a">(OCoLC)1417409648</subfield>
+    </datafield>
+    <datafield tag="037" ind1=" " ind2=" ">
+      <subfield code="a">9781663731913</subfield>
+      <subfield code="b">O'Reilly Media</subfield>
+    </datafield>
+    <datafield tag="050" ind1=" " ind2="4">
+      <subfield code="a">BF575.A6</subfield>
+    </datafield>
+    <datafield tag="082" ind1="0" ind2="4">
+      <subfield code="a">152.4/6</subfield>
+      <subfield code="2">23/eng/20240117</subfield>
+    </datafield>
+    <datafield tag="049" ind1=" " ind2=" ">
+      <subfield code="a">MAIN</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="0">
+      <subfield code="a">Managing your anxiety /</subfield>
+      <subfield code="c">Harvard Business Review.</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+      <subfield code="a">[First edition].</subfield>
+    </datafield>
+    <datafield tag="264" ind1=" " ind2="1">
+      <subfield code="a">[Place of publication not identified] :</subfield>
+      <subfield code="b">Ascent Audio,</subfield>
+      <subfield code="c">2024.</subfield>
+    </datafield>
+    <datafield tag="300" ind1=" " ind2=" ">
+      <subfield code="a">1 online resource (1 sound file (1 hr., 27 min.))</subfield>
+    </datafield>
+    <datafield tag="306" ind1=" " ind2=" ">
+      <subfield code="a">012700</subfield>
+    </datafield>
+    <datafield tag="336" ind1=" " ind2=" ">
+      <subfield code="a">spoken word</subfield>
+      <subfield code="b">spw</subfield>
+      <subfield code="2">rdacontent</subfield>
+    </datafield>
+    <datafield tag="337" ind1=" " ind2=" ">
+      <subfield code="a">computer</subfield>
+      <subfield code="b">c</subfield>
+      <subfield code="2">rdamedia</subfield>
+    </datafield>
+    <datafield tag="338" ind1=" " ind2=" ">
+      <subfield code="a">online resource</subfield>
+      <subfield code="b">cr</subfield>
+      <subfield code="2">rdacarrier</subfield>
+    </datafield>
+    <datafield tag="344" ind1=" " ind2=" ">
+      <subfield code="a">digital</subfield>
+      <subfield code="2">rdatr</subfield>
+    </datafield>
+    <datafield tag="347" ind1=" " ind2=" ">
+      <subfield code="a">audio file</subfield>
+      <subfield code="2">rdaft</subfield>
+    </datafield>
+    <datafield tag="511" ind1="0" ind2=" ">
+      <subfield code="a">Read by Steve Marvel, Teri Schnaubelt.</subfield>
+    </datafield>
+    <datafield tag="520" ind1=" " ind2=" ">
+      <subfield code="a">Make anxiety work for you. Work is stressful: We race to meet deadlines. We extend ourselves to return favors for colleagues. We set ambitious goals for ourselves and our teams. We measure ourselves against metrics, our competitors, and sometimes, our colleagues. Some of us even go beyond tangible metrics to internalize stress and fear of missing the mark-ruminating over presentations that didn't go according to plan, imagining worst-case scenarios, or standing frozen, paralyzed by perfectionism. But hypervigilance, worry, and catastrophizing don't have to hold you back at work. When channeled thoughtfully, anxiety can motivate us to be more resourceful, productive, and creative. It can break down barriers and create new bonds with our colleagues. Managing Your Anxiety will help you distinguish stress from anxiety, learn what anxiety looks like for you, understand it, and respond to it with self-compassion at work. With the latest psychological research and practical advice from leading experts, you'll learn how to recognize how your anxiety manifests itself; manage it in small, day-to-day moments and in more challenging times; experiment and find a mindfulness practice that works for you; and build a support infrastructure to help you manage your anxiety over the long term.</subfield>
+    </datafield>
+    <datafield tag="588" ind1=" " ind2=" ">
+      <subfield code="a">Online resource; title from title details screen (O'Reilly, viewed January 17, 2024).</subfield>
+    </datafield>
+    <datafield tag="590" ind1=" " ind2=" ">
+      <subfield code="a">O'Reilly</subfield>
+      <subfield code="b">O'Reilly Online Learning Platform: Academic Edition (SAML SSO Access)</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Anxiety.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Job stress.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Self-care, Health.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="6">
+      <subfield code="a">Autothérapie.</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Audiobooks.</subfield>
+      <subfield code="2">lcgft</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Livres audio.</subfield>
+      <subfield code="2">rvmgf</subfield>
+    </datafield>
+    <datafield tag="700" ind1="1" ind2=" ">
+      <subfield code="a">Marvel, Steve,</subfield>
+      <subfield code="e">narrator.</subfield>
+    </datafield>
+    <datafield tag="700" ind1="1" ind2=" ">
+      <subfield code="a">Schnaubelt, Teri,</subfield>
+      <subfield code="e">narrator.</subfield>
+    </datafield>
+    <datafield tag="710" ind1="2" ind2=" ">
+      <subfield code="a">Harvard Business Review Press,</subfield>
+      <subfield code="e">issuing body.</subfield>
+    </datafield>
+    <datafield tag="856" ind1="4" ind2="0">
+      <subfield code="u">https://learning.oreilly.com/library/view/-/9781663731913/?ar</subfield>
+    </datafield>
+    <datafield tag="994" ind1=" " ind2=" ">
+      <subfield code="a">92</subfield>
+      <subfield code="b">CHCER</subfield>
+    </datafield>
+  </record>
+</collection>

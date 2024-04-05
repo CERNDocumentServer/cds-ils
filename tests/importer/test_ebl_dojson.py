@@ -39,7 +39,7 @@ def test_ebl_transformation(app):
                             "value": "https://ebookcentral.proquest.com/lib/"
                             "cern/detail.action?docID=263817",
                         }
-                    ]
+                    ],
                 },
                 "_serial": [{"title": "Condensed Matter Physics series"}],
                 "provider_recid": "EBC263817",
