@@ -13,8 +13,17 @@ marcxml = (
 def check_transformation(marcxml_body, json_body):
     """Check transformation."""
     blob = create_record(marcxml.format(marcxml_body))
+    if "im" in blob.get("leader", []):
+        eitem_type = "audiobook"
+    else:
+        eitem_type = "e-book"
+
     record = {}
-    record.update(**model.do(blob, ignore_missing=True))
+    record.update(
+        **model.do(
+            blob, ignore_missing=True, init_fields={"_eitem": {"_type": eitem_type}}
+        )
+    )
 
     expected = {}
     expected.update(**json_body)
@@ -34,13 +43,14 @@ def test_safari_transformation(app):
             {
                 "document_type": "BOOK",
                 "_eitem": {
+                    "_type": "e-book",
                     "urls": [
                         {
                             "description": "e-book",
                             "value": "https://learning.oreilly.com"
                             "/library/view/-/9780814415467/?ar",
                         },
-                    ]
+                    ],
                 },
                 "_serial": [
                     {
@@ -215,12 +225,13 @@ def test_safari_additional(app):
                     {"source": "SAFARI", "value": "Gestion d'entreprise"},
                 ],
                 "_eitem": {
+                    "_type": "e-book",
                     "urls": [
                         {
                             "description": "e-book",
                             "value": "https://learning.oreilly.com/library/view/-/9781663718914/?ar",  # noqa
                         }
-                    ]
+                    ],
                 },
                 "table_of_content": [
                     "Getting Started:",
@@ -371,12 +382,80 @@ def test_safari_additional2(app):
                     },
                 ],
                 "_eitem": {
+                    "_type": "e-book",
                     "urls": [
                         {
                             "description": "e-book",
                             "value": "https://learning.oreilly.com/library/view/-/9784873119144/?ar",
                         }
-                    ]
+                    ],
                 },
             },  # noqa
+        )
+
+
+def test_safari_audiobook(app):
+    """Test audiobook import."""
+    dirname = os.path.join(os.path.dirname(__file__), "data")
+    with open(os.path.join(dirname, "safari_audiobook.xml"), "r") as fp:
+        example = fp.read()
+    with app.app_context():
+        check_transformation(
+            example,
+            {
+                "_eitem": {
+                    "_type": "audiobook",
+                    "urls": [
+                        {
+                            "description": "audiobook",
+                            "value": "https://learning.oreilly.com/library/view/-/9781663731913/?ar",
+                        }
+                    ],
+                },
+                "abstract": "Make anxiety work for you. Work is stressful: We race to meet deadlines. We extend ourselves to return favors for colleagues. We set ambitious goals for ourselves and our teams. We measure ourselves against metrics, our competitors, and sometimes, our colleagues. Some of us even go beyond tangible metrics to internalize stress and fear of missing the mark-ruminating over presentations that didn't go according to plan, imagining worst-case scenarios, or standing frozen, paralyzed by perfectionism. But hypervigilance, worry, and catastrophizing don't have to hold you back at work. When channeled thoughtfully, anxiety can motivate us to be more resourceful, productive, and creative. It can break down barriers and create new bonds with our colleagues. Managing Your Anxiety will help you distinguish stress from anxiety, learn what anxiety looks like for you, understand it, and respond to it with self-compassion at work. With the latest psychological research and practical advice from leading experts, you'll learn how to recognize how your anxiety manifests itself; manage it in small, day-to-day moments and in more challenging times; experiment and find a mindfulness practice that works for you; and build a support infrastructure to help you manage your anxiety over the long term.",
+                "agency_code": "OCoLC",
+                "alternative_identifiers": [
+                    {"scheme": "SAFARI", "value": "on1417409648"}
+                ],
+                "authors": [
+                    {
+                        "full_name": "Marvel, Steve",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                    {
+                        "full_name": "Schnaubelt, Teri",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                ],
+                "document_type": "BOOK",
+                "edition": "1st",
+                "identifiers": [
+                    {
+                        "material": "AUDIOBOOK",
+                        "scheme": "ISBN",
+                        "value": "9781663731913",
+                    },
+                    {"material": "AUDIOBOOK", "scheme": "ISBN", "value": "1663731918"},
+                ],
+                "imprint": {
+                    "place": "Place of publication not identified",
+                    "publisher": "Ascent Audio",
+                },
+                "keywords": [
+                    {"source": "SAFARI", "value": "Anxiety"},
+                    {"source": "SAFARI", "value": "Job stress"},
+                    {"source": "SAFARI", "value": "Self-care, Health"},
+                    {"source": "SAFARI", "value": "Autothérapie"},
+                ],
+                "languages": ["ENG"],
+                "provider_recid": "on1417409648",
+                "publication_year": "2024",
+                "subjects": [
+                    {"scheme": "LOC", "value": "BF575.A6"},
+                    {"scheme": "DEWEY", "value": "152.4/6"},
+                ],
+                "title": "Managing your anxiety",
+            },
         )

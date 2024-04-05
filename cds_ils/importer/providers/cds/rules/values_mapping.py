@@ -107,7 +107,10 @@ IDENTIFIERS_MEDIUM_TYPES = {
         "CDROM",
         "CD-ROM",
     ],
-    "AUDIOBOOK": ["AUDIOBOOK"],
+    "AUDIOBOOK": [
+        "AUDIOBOOK",
+        "ELECTRONIC AUDIO BK",
+    ],
     "AUDIO_CD": ["AUDIO CD"],
     "DISKETTE": ["DISKETTE"],
     "DVD": ["DVD"],

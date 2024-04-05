@@ -41,8 +41,10 @@ class SafariModel(Base):
         init_fields=None,
     ):
         """Overwrite the do method."""
-        init_fields = deepcopy(self._default_fields)
-        mapped = super().do(blob, ignore_missing, exception_handlers, init_fields)
+        fields = deepcopy(self._default_fields)
+        if init_fields:
+            fields.update(init_fields)
+        mapped = super().do(blob, ignore_missing, exception_handlers, fields)
         return self._add_missing_fields(mapped)
 
 
