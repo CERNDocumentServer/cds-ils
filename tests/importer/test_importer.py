@@ -42,6 +42,43 @@ def test_modify_documents(importer_test_data):
     assert updated_eitem["description"] == "Modified description"
 
 
+def test_import_audiobook_with_existing_ebook(importer_test_data):
+    document_cls = current_app_ils.document_record_cls
+    eitem_cls = current_app_ils.eitem_record_cls
+    eitem_search_cls = current_app_ils.eitem_search_cls
+
+    # Import an audiobook for a document with an existing ebook
+    json_data = load_json_from_datadir(
+        "documents_with_audiobook.json", relpath="importer"
+    )
+    importer = Importer(json_data[0], "safari")
+
+    report = importer.import_record()
+    assert report["action"] == "update"
+
+    updated_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
+    time.sleep(1)
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=updated_document["pid"]
+    )
+    results = search.execute()
+    assert results.hits.total.value == 2
+
+    created_eitem_pid = results.hits[1].pid
+    eitem = eitem_cls.get_record_by_pid(created_eitem_pid)
+
+    assert eitem["document_pid"] == updated_document["pid"]
+
+    assert "_eitem" not in updated_document
+    assert "agency_code" not in updated_document
+    assert "identifiers" in updated_document
+
+    for isbn in updated_document["identifiers"]:
+        assert isbn["material"] == "AUDIOBOOK"
+
+    assert eitem["created_by"] == {"type": "import", "value": "safari"}
+
+
 def test_import_documents(app, db):
     document_cls = current_app_ils.document_record_cls
     eitem_search_cls = current_app_ils.eitem_search_cls
