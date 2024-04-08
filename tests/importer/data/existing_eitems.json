@@ -146,5 +146,25 @@
         "login_required": false
       }
     ]
+  },
+  {
+    "pid": "eitemid-9",
+    "created_by": {"type": "user", "value":  "1"},
+    "document_pid": "docid-9",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
   }
 ]
