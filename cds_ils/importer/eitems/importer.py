@@ -203,6 +203,7 @@ class EItemImporter(object):
         eitem_json.update(
             dict(
                 document_pid=document_pid,
+                eitem_type=self.eitem_json.get("_type", "E-BOOK").upper(),
                 open_access=self.open_access,
                 identifiers=dois,
                 urls=self.eitem_json.get("urls", []),
