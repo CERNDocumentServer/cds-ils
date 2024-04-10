@@ -68,6 +68,7 @@ def test_import_audiobook_with_existing_ebook(importer_test_data):
     eitem = eitem_cls.get_record_by_pid(created_eitem_pid)
 
     assert eitem["document_pid"] == updated_document["pid"]
+    assert eitem["eitem_type"] == "AUDIOBOOK"
 
     assert "_eitem" not in updated_document
     assert "agency_code" not in updated_document
@@ -100,9 +101,13 @@ def test_import_documents(app, db):
     eitem = eitem_cls.get_record_by_pid(eitem_pid)
 
     assert eitem["document_pid"] == document["pid"]
+    assert eitem["eitem_type"] == "E-BOOK"
 
     assert "_eitem" not in document
     assert "agency_code" not in document
+
+    for urls in eitem["urls"]:
+        urls["description"] == "e-book"
 
     assert eitem["created_by"] == {"type": "import", "value": "springer"}
     assert document["created_by"] == {"type": "import", "value": "springer"}
@@ -211,10 +216,14 @@ def test_import_audiobook(app, db):
     eitem = eitem_cls.get_record_by_pid(eitem_pid)
 
     assert eitem["document_pid"] == created_document["pid"]
+    assert eitem["eitem_type"] == "AUDIOBOOK"
 
     assert "_eitem" not in created_document
     assert "agency_code" not in created_document
     assert "identifiers" in created_document
+
+    for urls in eitem["urls"]:
+        urls["description"] == "audiobook"
 
     for isbn in created_document["identifiers"]:
         assert isbn["material"] == "AUDIOBOOK"

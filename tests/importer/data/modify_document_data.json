@@ -14,6 +14,7 @@
                     {"scheme": "ISBN", "value": "0987654321"}],
     "_eitem": {
         "pid": "eitmid-1",
+        "eitem_type": "E-BOOK",
         "created_by": {"type": "script", "value":  "springer"},
         "internal_notes": "Modified",
         "description": "Modified description",
@@ -47,6 +48,7 @@
     "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }],
     "_eitem": {
         "pid": "eitmid-1",
+        "eitem_type": "E-BOOK",
         "created_by": {"type": "script", "value":  "springer"},
         "document_pid": "docid-1",
         "internal_notes": "Modified",
