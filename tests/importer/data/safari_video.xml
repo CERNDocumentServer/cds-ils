@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
+<record xmlns="http://www.loc.gov/MARC21/slim">
+    <leader>00000ngm a22000007i 4500</leader>
+    <controlfield tag="001">on1351466591</controlfield>
+    <controlfield tag="003">OCoLC</controlfield>
+    <controlfield tag="005">20221129213020.0</controlfield>
+    <controlfield tag="006">m     o  c        </controlfield>
+    <controlfield tag="007">vz czazuu</controlfield>
+    <controlfield tag="007">cr cnannnuuuuu</controlfield>
+    <controlfield tag="008">221122s2022    xx 215        o   vleng d</controlfield>
+    <datafield tag="040" ind1=" " ind2=" ">
+      <subfield code="a">ORMDA</subfield>
+      <subfield code="b">eng</subfield>
+      <subfield code="e">rda</subfield>
+      <subfield code="e">pn</subfield>
+      <subfield code="c">ORMDA</subfield>
+    </datafield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">9781804615362</subfield>
+      <subfield code="q">(electronic video)</subfield>
+    </datafield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">1804615366</subfield>
+      <subfield code="q">(electronic video)</subfield>
+    </datafield>
+    <datafield tag="035" ind1=" " ind2=" ">
+      <subfield code="a">(OCoLC)1351466591</subfield>
+    </datafield>
+    <datafield tag="037" ind1=" " ind2=" ">
+      <subfield code="a">9781804615362</subfield>
+      <subfield code="b">O'Reilly Media</subfield>
+    </datafield>
+    <datafield tag="050" ind1=" " ind2="4">
+      <subfield code="a">QA76.73.J39</subfield>
+    </datafield>
+    <datafield tag="082" ind1="0" ind2="4">
+      <subfield code="a">005.2/762</subfield>
+      <subfield code="2">23/eng/20221122</subfield>
+    </datafield>
+    <datafield tag="049" ind1=" " ind2=" ">
+      <subfield code="a">MAIN</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="0">
+      <subfield code="a">Quick JavaScript crash course :</subfield>
+      <subfield code="b">modern and advanced JavaScript.</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+      <subfield code="a">[First edition].</subfield>
+    </datafield>
+    <datafield tag="264" ind1=" " ind2="1">
+      <subfield code="a">[Place of publication not identified] :</subfield>
+      <subfield code="b">Packt Publishing,</subfield>
+      <subfield code="c">[2022]</subfield>
+    </datafield>
+     <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">ILS,CDS Else,Someone</subfield>
+    </datafield>
+    <datafield tag="300" ind1=" " ind2=" ">
+      <subfield code="a">1 online resource (1 video file (3 hr., 35 min.)) :</subfield>
+      <subfield code="b">sound, color.</subfield>
+    </datafield>
+    <datafield tag="306" ind1=" " ind2=" ">
+      <subfield code="a">033500</subfield>
+    </datafield>
+    <datafield tag="336" ind1=" " ind2=" ">
+      <subfield code="a">two-dimensional moving image</subfield>
+      <subfield code="b">tdi</subfield>
+      <subfield code="2">rdacontent</subfield>
+    </datafield>
+    <datafield tag="337" ind1=" " ind2=" ">
+      <subfield code="a">computer</subfield>
+      <subfield code="b">c</subfield>
+      <subfield code="2">rdamedia</subfield>
+    </datafield>
+    <datafield tag="338" ind1=" " ind2=" ">
+      <subfield code="a">online resource</subfield>
+      <subfield code="b">cr</subfield>
+      <subfield code="2">rdacarrier</subfield>
+    </datafield>
+    <datafield tag="344" ind1=" " ind2=" ">
+      <subfield code="a">digital</subfield>
+      <subfield code="2">rdatr</subfield>
+    </datafield>
+    <datafield tag="347" ind1=" " ind2=" ">
+      <subfield code="a">video file</subfield>
+      <subfield code="2">rdaft</subfield>
+    </datafield>
+    <datafield tag="380" ind1=" " ind2=" ">
+      <subfield code="a">Instructional films</subfield>
+      <subfield code="2">lcgft</subfield>
+    </datafield>
+    <datafield tag="511" ind1="0" ind2=" ">
+      <subfield code="a">Basics Strong, presenter.</subfield>
+    </datafield>
+    <datafield tag="500" ind1=" " ind2=" ">
+      <subfield code="a">Published in October 2022.</subfield>
+    </datafield>
+    <datafield tag="520" ind1=" " ind2=" ">
+      <subfield code="a">JavaScript is the base for many other languages; if you know JavaScript, you can work with a lot of other languages and dependent frameworks easily. This course is based on the newer features that were released with the ECMAScript specification 6 and above. So, we will only discuss things from ES6 and above. In the first section of this course, you will touch base on JavaScript history, and you will get in place all the required stuff that you should have in your machine for this course. In the second section of the course, you will focus on variables and scope, and you will see the newer patterns to work with variables. Following that, in the third section, we will discuss functions and arguments, which is a critical part of this course because JavaScript treats functions as a first-class citizens, so knowing what changes have been incorporated into them in newer versions is also very essential. In the fourth section, you will learn about operators and how to better use and code them. Then you will understand the new functionality of error handling; in an application where errors are not handled properly, the usability of such an application is nearly impossible. Then we have a section dedicated to async patterns and promises where you will see a few of the latest functions in comparison with similar older functions. By the end of the course, you will get to know the hacks and tricks to improve your coding skills. What You Will Learn Learn various JavaScript hacks Learn various JavaScript concepts Understand the spread operators in JavaScript Explore optional chaining operators Explain prototypal chains Understand error handling in JavaScript Audience This course can be taken by any advanced and intermediate JavaScript learners. This course expects you to have a clear understanding of the basics of JavaScript. About The Author Basics Strong: Basics Strong is a team of technocrats from IITs who focus on solving problems using technology. They work on mission-critical projects in AI, machine learning, and BlockChain as a domain and use Java, Python, JavaScript, and a lot of tools and technologies. They love to code and program. The team believes that a strong foundation in the basics of programming concepts can help you solve any technical problem and excel in your career. Therefore, they create courses that help you build your basics and come up with ways to make complicated concepts easy to learn. All their courses are carefully crafted to include hands-on examples and comprehensive working files for practical learning.</subfield>
+    </datafield>
+    <datafield tag="588" ind1=" " ind2=" ">
+      <subfield code="a">Online resource; title from title details screen (O'Reilly, viewed November 21, 2022).</subfield>
+    </datafield>
+    <datafield tag="590" ind1=" " ind2=" ">
+      <subfield code="a">O'Reilly</subfield>
+      <subfield code="b">O'Reilly Online Learning Platform: Academic Edition (SAML SSO Access)</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">JavaScript (Computer program language)</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Instructional films.</subfield>
+      <subfield code="2">lcgft</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Nonfiction films.</subfield>
+      <subfield code="2">lcgft</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Internet videos.</subfield>
+      <subfield code="2">lcgft</subfield>
+    </datafield>
+    <datafield tag="710" ind1="2" ind2=" ">
+      <subfield code="a">Basisc Strong (Firm),</subfield>
+      <subfield code="e">presenter.</subfield>
+    </datafield>
+    <datafield tag="710" ind1="2" ind2=" ">
+      <subfield code="a">Packt Publishing,</subfield>
+      <subfield code="e">publisher.</subfield>
+    </datafield>
+    <datafield tag="856" ind1="4" ind2="0">
+      <subfield code="u">https://learning.oreilly.com/library/view/-/9781804615362/?ar</subfield>
+    </datafield>
+    <datafield tag="994" ind1=" " ind2=" ">
+      <subfield code="a">92</subfield>
+      <subfield code="b">CHCER</subfield>
+    </datafield>
+  </record>
+</collection>

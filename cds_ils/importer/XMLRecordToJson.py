@@ -53,15 +53,20 @@ class XMLRecordToJson(object):
         else:
             is_deletable = False
 
+        init_fields = {}
         if "im" in marc_record.get("leader", []):
-            eitem_type = "audiobook"
+            init_fields.update({"_eitem": {"_type": "audiobook"}})
+        elif "gm" in marc_record.get("leader", []):
+            init_fields.update(
+                {"document_type": "MULTIMEDIA", "_eitem": {"_type": "video"}}
+            )
         else:
-            eitem_type = "e-book"
+            init_fields.update({"_eitem": {"_type": "e-book"}})
         # MARCXML -> JSON fields translation
         val = self.dojson_model.do(
             marc_record,
             exception_handlers=xml_import_handlers,
-            init_fields={"_eitem": {"_type": eitem_type}},
+            init_fields=init_fields,
         )
 
         if not self.ignore_missing:
