@@ -111,6 +111,7 @@ IDENTIFIERS_MEDIUM_TYPES = {
         "AUDIOBOOK",
         "ELECTRONIC AUDIO BK",
     ],
+    "VIDEO": ["VIDEO", "ELECTRONIC VIDEO"],
     "AUDIO_CD": ["AUDIO CD"],
     "DISKETTE": ["DISKETTE"],
     "DVD": ["DVD"],
