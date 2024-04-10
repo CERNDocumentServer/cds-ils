@@ -230,3 +230,44 @@ def test_import_audiobook(app, db):
 
     assert eitem["created_by"] == {"type": "import", "value": "safari"}
     assert created_document["created_by"] == {"type": "import", "value": "safari"}
+
+
+def test_import_video(app, db):
+    document_cls = current_app_ils.document_record_cls
+    eitem_search_cls = current_app_ils.eitem_search_cls
+    eitem_cls = current_app_ils.eitem_record_cls
+
+    json_data = load_json_from_datadir("documents_with_video.json", relpath="importer")
+    importer = Importer(json_data[0], "safari")
+
+    report = importer.import_record()
+    assert report["document_json"]
+    assert report["action"] == "create"
+
+    created_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
+    assert created_document["document_type"] == "MULTIMEDIA"
+    time.sleep(1)
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=created_document["pid"]
+    )
+    results = search.execute()
+    assert results.hits.total.value == 1
+
+    eitem_pid = results.hits[0].pid
+    eitem = eitem_cls.get_record_by_pid(eitem_pid)
+
+    assert eitem["document_pid"] == created_document["pid"]
+    assert eitem["eitem_type"] == "VIDEO"
+
+    assert "_eitem" not in created_document
+    assert "agency_code" not in created_document
+    assert "identifiers" in created_document
+
+    for urls in eitem["urls"]:
+        urls["description"] == "video"
+
+    for isbn in created_document["identifiers"]:
+        assert isbn["material"] == "VIDEO"
+
+    assert eitem["created_by"] == {"type": "import", "value": "safari"}
+    assert created_document["created_by"] == {"type": "import", "value": "safari"}

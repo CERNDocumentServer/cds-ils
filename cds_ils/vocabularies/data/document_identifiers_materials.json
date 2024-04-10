@@ -88,5 +88,10 @@
     "key": "VHS",
     "type": "doc_identifiers_materials",
     "text": "VHS"
+  },
+  {
+    "key": "VIDEO",
+    "type": "doc_identifiers_materials",
+    "text": "Video"
   }
 ]

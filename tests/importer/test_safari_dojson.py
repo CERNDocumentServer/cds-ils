@@ -13,17 +13,18 @@ marcxml = (
 def check_transformation(marcxml_body, json_body):
     """Check transformation."""
     blob = create_record(marcxml.format(marcxml_body))
+    init_fields = {}
     if "im" in blob.get("leader", []):
-        eitem_type = "audiobook"
+        init_fields.update({"_eitem": {"_type": "audiobook"}})
+    elif "gm" in blob.get("leader", []):
+        init_fields.update(
+            {"document_type": "MULTIMEDIA", "_eitem": {"_type": "video"}}
+        )
     else:
-        eitem_type = "e-book"
+        init_fields.update({"_eitem": {"_type": "e-book"}})
 
     record = {}
-    record.update(
-        **model.do(
-            blob, ignore_missing=True, init_fields={"_eitem": {"_type": eitem_type}}
-        )
-    )
+    record.update(**model.do(blob, ignore_missing=True, init_fields=init_fields))
 
     expected = {}
     expected.update(**json_body)
@@ -457,5 +458,115 @@ def test_safari_audiobook(app):
                     {"scheme": "DEWEY", "value": "152.4/6"},
                 ],
                 "title": "Managing your anxiety",
+            },
+        )
+
+
+def test_safari_video(app):
+    """Test video import."""
+    dirname = os.path.join(os.path.dirname(__file__), "data")
+    with open(os.path.join(dirname, "safari_video.xml"), "r") as fp:
+        example = fp.read()
+    with app.app_context():
+        check_transformation(
+            example,
+            {
+                "_eitem": {
+                    "_type": "video",
+                    "urls": [
+                        {
+                            "description": "video",
+                            "value": "https://learning.oreilly.com/library/view/-/9781804615362/?ar",
+                        }
+                    ],
+                },
+                "abstract": "JavaScript is the base for many other languages; if you know "
+                "JavaScript, you can work with a lot of other languages and "
+                "dependent frameworks easily. This course is based on the newer "
+                "features that were released with the ECMAScript specification 6 "
+                "and above. So, we will only discuss things from ES6 and above. "
+                "In the first section of this course, you will touch base on "
+                "JavaScript history, and you will get in place all the required "
+                "stuff that you should have in your machine for this course. In "
+                "the second section of the course, you will focus on variables "
+                "and scope, and you will see the newer patterns to work with "
+                "variables. Following that, in the third section, we will discuss "
+                "functions and arguments, which is a critical part of this course "
+                "because JavaScript treats functions as a first-class citizens, "
+                "so knowing what changes have been incorporated into them in "
+                "newer versions is also very essential. In the fourth section, "
+                "you will learn about operators and how to better use and code "
+                "them. Then you will understand the new functionality of error "
+                "handling; in an application where errors are not handled "
+                "properly, the usability of such an application is nearly "
+                "impossible. Then we have a section dedicated to async patterns "
+                "and promises where you will see a few of the latest functions in "
+                "comparison with similar older functions. By the end of the "
+                "course, you will get to know the hacks and tricks to improve "
+                "your coding skills. What You Will Learn Learn various JavaScript "
+                "hacks Learn various JavaScript concepts Understand the spread "
+                "operators in JavaScript Explore optional chaining operators "
+                "Explain prototypal chains Understand error handling in "
+                "JavaScript Audience This course can be taken by any advanced and "
+                "intermediate JavaScript learners. This course expects you to "
+                "have a clear understanding of the basics of JavaScript. About "
+                "The Author Basics Strong: Basics Strong is a team of technocrats "
+                "from IITs who focus on solving problems using technology. They "
+                "work on mission-critical projects in AI, machine learning, and "
+                "BlockChain as a domain and use Java, Python, JavaScript, and a "
+                "lot of tools and technologies. They love to code and program. "
+                "The team believes that a strong foundation in the basics of "
+                "programming concepts can help you solve any technical problem "
+                "and excel in your career. Therefore, they create courses that "
+                "help you build your basics and come up with ways to make "
+                "complicated concepts easy to learn. All their courses are "
+                "carefully crafted to include hands-on examples and comprehensive "
+                "working files for practical learning.",
+                "agency_code": "OCoLC",
+                "alternative_identifiers": [
+                    {"scheme": "SAFARI", "value": "on1351466591"}
+                ],
+                "alternative_titles": [
+                    {"type": "SUBTITLE", "value": "modern and advanced JavaScript"}
+                ],
+                "authors": [
+                    {
+                        "full_name": "ILS,CDS Else,Someone",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    }
+                ],
+                "document_type": "MULTIMEDIA",
+                "edition": "1st",
+                "identifiers": [
+                    {
+                        "material": "VIDEO",
+                        "scheme": "ISBN",
+                        "value": "9781804615362",
+                    },
+                    {
+                        "material": "VIDEO",
+                        "scheme": "ISBN",
+                        "value": "1804615366",
+                    },
+                ],
+                "imprint": {
+                    "place": "Place of publication not identified",
+                    "publisher": "Packt Publishing",
+                },
+                "keywords": [
+                    {
+                        "source": "SAFARI",
+                        "value": "JavaScript (Computer program language",
+                    }
+                ],
+                "languages": ["ENG"],
+                "provider_recid": "on1351466591",
+                "publication_year": "2022",
+                "subjects": [
+                    {"scheme": "LOC", "value": "QA76.73.J39"},
+                    {"scheme": "DEWEY", "value": "005.2/762"},
+                ],
+                "title": "Quick JavaScript crash course",
             },
         )
