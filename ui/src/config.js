@@ -205,6 +205,88 @@ export const config = {
         "circulation_restriction",
         "medium",
       ],
+      properties: {
+        identifiers: {
+          items: {
+            properties: {
+              scheme: {
+                title: "Scheme name",
+                type: "string",
+              },
+              value: {
+                title: "Value",
+                type: "string",
+              },
+            },
+            required: ["scheme", "value"],
+            title: "Identifier",
+            type: "object",
+          },
+          title: "Identifiers",
+          type: "array",
+        },
+      },
+    },
+    editorUiSchema: {
+      "identifiers": {
+        "ui:options": {
+          orderable: false,
+        },
+        "items": {
+          "scheme": {
+            "ui:widget": "vocabulary",
+            "ui:options": {
+              vocabularyType: "item_identifier_scheme",
+            },
+          },
+          "custom:grid": [
+            {
+              scheme: 8,
+              value: 8,
+            },
+          ],
+        },
+      },
+      "custom:grid": [
+        {
+          barcode: 4,
+          medium: 4,
+          document_pid: 8,
+        },
+        {
+          status: 4,
+          circulation_restriction: 4,
+          number_of_pages: 2,
+          description: 6,
+        },
+        {
+          "custom:divider": 16,
+        },
+        {
+          isbns: 10,
+          internal_notes: 6,
+        },
+        {
+          "custom:divider": 16,
+        },
+        {
+          internal_location_pid: 8,
+          shelf: 8,
+        },
+        {
+          "custom:divider": 16,
+        },
+        {
+          acquisition_pid: 6,
+          price: 10,
+        },
+        {
+          "custom:divider": 16,
+        },
+        {
+          identifiers: 10,
+        },
+      ],
     },
     mediums: [
       {
