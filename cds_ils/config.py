@@ -539,6 +539,7 @@ ILS_VOCABULARIES = [
     "series_identifier_scheme",
     "series_url_access_restriction",
     "tag",
+    "item_identifier_scheme",
 ]
 
 ###############################################################################
