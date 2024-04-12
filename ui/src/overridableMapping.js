@@ -31,10 +31,8 @@ import { LiteratureKeyword } from "./overridden/frontsite/Document/DocumentDetai
 import { Identifiers } from "./overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/Identifiers";
 import { DocumentConference } from "./overridden/frontsite/Document/DocumentDetails/DocumentMetadataTabs/DocumentConference";
 import { DocumentItemsHeader } from "./overridden/frontsite/Document/DocumentDetails/DocumentItemsHeader";
-import {
-  DocumentItemTableHeader,
-  DocumentItemBodyTable,
-} from "./overridden/frontsite/Document/DocumentDetails/DocumentItemBody";
+import { DocumentItemBodyTable } from "./overridden/frontsite/Document/DocumentDetails/DocumentItemBody";
+import { DocumentCirculationExtras } from "./overridden/frontsite/Document/DocumentDetails/DocumentCirculationExtras";
 import { OpeningHoursDetails } from "./overridden/frontsite/OpeningHours/OpeningHoursDetails";
 import { PaymentInformationGrid } from "./overridden/backoffice/PaymentInformation/PaymentInformation";
 import { OrderDetailsLine } from "./overridden/backoffice/Acquisition/OrderDetails";
@@ -66,9 +64,9 @@ export const overriddenCmps = {
   "DocumentMetadataTabs.Identifiers": Identifiers,
   "DocumentConference.layout": DocumentConference,
   "DocumentDetails.DocumentItems.header": DocumentItemsHeader,
-  "DocumentDetails.DocumentItem.TableHeader": DocumentItemTableHeader,
   "DocumentDetails.DocumentItemTableBody": DocumentItemBodyTable,
   "OpeningHours.details": OpeningHoursDetails,
   "Backoffice.PaymentInformation": PaymentInformationGrid,
   "Acquisition.OrderLine": OrderDetailsLine,
+  "DocumentCirculation.Extras": DocumentCirculationExtras,
 };
