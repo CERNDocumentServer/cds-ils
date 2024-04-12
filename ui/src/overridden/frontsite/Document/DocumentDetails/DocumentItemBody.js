@@ -10,7 +10,7 @@ function renderCallNumber(item) {
     return "Call number: -";
   }
   const callNumber = identifiers.find(
-    (identifier) => identifier.scheme.toLowerCase() === "call number"
+    (identifier) => identifier.scheme === "CALL_NUMBER"
   );
   return "Call number: " + (callNumber ? callNumber.value : "-");
 }
