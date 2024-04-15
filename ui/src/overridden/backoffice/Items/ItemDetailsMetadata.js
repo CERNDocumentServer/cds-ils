@@ -1,7 +1,6 @@
 import { ItemMetadata } from "@inveniosoftware/react-invenio-app-ils";
 import React from "react";
 import { parametrize } from "react-overridable";
-import _get from "lodash/get";
 import _isEmpty from "lodash/isEmpty";
 import capitalize from "lodash/capitalize";
 import { List } from "semantic-ui-react";
