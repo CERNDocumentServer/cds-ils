@@ -1,6 +1,7 @@
 import React from "react";
 import { invenioConfig } from "@inveniosoftware/react-invenio-app-ils";
 import { Icon } from "semantic-ui-react";
+import _get from "lodash/get";
 
 export const snvLink = (
   <a
@@ -15,7 +16,7 @@ export const snvLink = (
 export const shelfLink = (shelfNumber, iframe = false) => {
   var shelfLink = `https://maps.web.cern.ch/?n=['SHELF ${shelfNumber}']`;
   if (iframe) {
-    shelfLink = `${shelfLink}&showMenu=false&widgets=&scale=125`;
+    shelfLink = `${shelfLink}&showMenu=false&widgets=&scale=200`;
   }
   return shelfLink;
 };

@@ -5,7 +5,7 @@ import { shelfLink } from "../../../utils";
 export class DocumentCirculationExtras extends React.Component {
   render() {
     return (
-      <span className="ml-5">
+      <div className="mt-15">
         <Header as="h4" content="Find it on shelf" />
         <Embed
           active
@@ -29,7 +29,7 @@ export class DocumentCirculationExtras extends React.Component {
         >
           Open MapCERN
         </Button>
-      </span>
+      </div>
     );
   }
 }
