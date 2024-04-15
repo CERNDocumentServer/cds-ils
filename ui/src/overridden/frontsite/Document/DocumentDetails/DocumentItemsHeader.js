@@ -1,7 +1,7 @@
 import React from "react";
 import { Divider, Message } from "semantic-ui-react";
 import PropTypes from "prop-types";
-import { snvLink } from "../../utils";
+import { snvLink } from "../../../utils";
 
 export const DocumentItemsHeader = ({ document }) => {
   return document.metadata.document_type === "STANDARD" ? (

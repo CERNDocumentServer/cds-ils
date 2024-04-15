@@ -1,4 +1,5 @@
 import React from "react";
+import { invenioConfig } from "@inveniosoftware/react-invenio-app-ils";
 import { Icon } from "semantic-ui-react";
 
 export const snvLink = (
@@ -31,3 +32,7 @@ export const shelfLinkComponent = (
     </a>
   );
 };
+
+export function getDisplayVal(configField, value) {
+  return _get(invenioConfig, configField).find((entry) => entry.value === value).text;
+}
