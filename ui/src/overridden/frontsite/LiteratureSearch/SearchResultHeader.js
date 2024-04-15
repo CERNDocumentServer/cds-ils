@@ -2,7 +2,7 @@ import React from "react";
 import { Message } from "semantic-ui-react";
 import { withState } from "react-searchkit";
 import PropTypes from "prop-types";
-import { snvLink } from "../utils";
+import { snvLink } from "../../utils";
 
 const SearchResultHeaderCmp = ({ currentQueryState }) => {
   const filters = currentQueryState.filters;

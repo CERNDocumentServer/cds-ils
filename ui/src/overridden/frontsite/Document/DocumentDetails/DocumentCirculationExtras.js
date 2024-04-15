@@ -1,6 +1,6 @@
 import React from "react";
 import { Embed, Header, Button } from "semantic-ui-react";
-import { shelfLink } from "../../utils";
+import { shelfLink } from "../../../utils";
 
 export class DocumentCirculationExtras extends React.Component {
   render() {

@@ -19,7 +19,7 @@ import {
   List,
 } from "semantic-ui-react";
 import { Link as ScrollLink } from "react-scroll";
-import { snvLink } from "../utils";
+import { snvLink } from "../../utils";
 
 export const HomeHeadline = parametrize(Headline, {
   backgroundImageURL: process.env.PUBLIC_URL + "/images/home-headline-background.jpg",

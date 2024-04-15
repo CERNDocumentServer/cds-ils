@@ -3,7 +3,7 @@ import { Message, List } from "semantic-ui-react";
 import { FrontSiteRoutes } from "@inveniosoftware/react-invenio-app-ils";
 import { Link } from "react-router-dom";
 import Qs from "qs";
-import { snvLink } from "../utils";
+import { snvLink } from "../../utils";
 
 export const SearchResultExtra = () => {
   const onClickBookRequestLink = () => {

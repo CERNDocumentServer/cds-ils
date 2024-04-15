@@ -2,7 +2,7 @@ import React from "react";
 import { DocumentItemBody, InfoPopup } from "@inveniosoftware/react-invenio-app-ils";
 import _get from "lodash/get";
 import { parametrize } from "react-overridable";
-import { shelfLink, shelfLinkComponent } from "../../utils";
+import { shelfLink, shelfLinkComponent } from "../../../utils";
 
 function renderCallNumber(item) {
   const identifiers = _get(item, "identifiers", []);
