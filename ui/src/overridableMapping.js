@@ -36,6 +36,7 @@ import { DocumentCirculationExtras } from "./overridden/frontsite/Document/Docum
 import { OpeningHoursDetails } from "./overridden/frontsite/OpeningHours/OpeningHoursDetails";
 import { PaymentInformationGrid } from "./overridden/backoffice/PaymentInformation/PaymentInformation";
 import { OrderDetailsLine } from "./overridden/backoffice/Acquisition/OrderDetails";
+import { ItemDetailsMetadata } from "./overridden/backoffice/Items/ItemDetailsMetadata";
 
 export const overriddenCmps = {
   "Backoffice.PatronDetails.Metadata": PatronMetadata,
@@ -69,4 +70,5 @@ export const overriddenCmps = {
   "Backoffice.PaymentInformation": PaymentInformationGrid,
   "Acquisition.OrderLine": OrderDetailsLine,
   "DocumentCirculation.Extras": DocumentCirculationExtras,
+  "ItemMetadata": ItemDetailsMetadata,
 };
