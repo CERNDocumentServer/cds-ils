@@ -616,7 +616,7 @@ def test_monograph_volume_migration_doi(app):
             <datafield tag="024" ind1="7" ind2=" ">
             <subfield code="2">DOI</subfield>
             <subfield code="a">10.1007/978-3-030-49613-5</subfield>
-            <subfield code="q">ebook (v.1)</subfield>
+            <subfield code="q">e-book (v.1)</subfield>
             </datafield>
             """,
             {
@@ -639,7 +639,7 @@ def test_monograph_volume_migration_doi(app):
                                     {
                                         "open_access": False,
                                         "url": {
-                                            "description": "ebook " "(v.1)",
+                                            "description": "e-book " "(v.1)",
                                             "value": "http://dx.doi.org/10.1007/978-3-030-49613-5",
                                         },
                                     }
