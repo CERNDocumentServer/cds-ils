@@ -660,7 +660,7 @@ def test_urls(app):
                 <subfield code="u">
                 https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560
                 </subfield>
-                <subfield code="y">ebook</subfield>
+                <subfield code="y">e-book</subfield>
             </datafield>
             """,
             {
@@ -671,7 +671,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560",
-                                "description": "ebook",
+                                "description": "e-book",
                             },
                         }
                     ],
@@ -682,7 +682,7 @@ def test_urls(app):
             """
             <datafield tag="856" ind1="4" ind2=" ">
                 <subfield code="u">https://learning.oreilly.com/library/view/-/9781118491300/?ar</subfield>
-                <subfield code="y">ebook</subfield>
+                <subfield code="y">e-book</subfield>
             </datafield>
             """,
             {
@@ -693,7 +693,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar",
-                                "description": "ebook",
+                                "description": "e-book",
                             },
                         }
                     ],
@@ -706,7 +706,7 @@ def test_urls(app):
                 <subfield code="u">
                 https://ezproxy.cern.ch/login?url=https://www.worldscientific.com/toc/rast/10
                 </subfield>
-                <subfield code="y">ebook</subfield>
+                <subfield code="y">e-book</subfield>
             </datafield>
             """,
             {
@@ -717,7 +717,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://www.worldscientific.com/toc/rast/10",
-                                "description": "ebook",
+                                "description": "e-book",
                             },
                             "open_access": False,
                         }
@@ -731,13 +731,13 @@ def test_urls(app):
                 <subfield code="u">
                 https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560
                 </subfield>
-                <subfield code="y">ebook</subfield>
+                <subfield code="y">e-book</subfield>
             </datafield>
             <datafield tag="856" ind1="4" ind2=" ">
                 <subfield code="u">
                 https://learning.oreilly.com/library/view/-/9781118491300/?ar
                 </subfield>
-                <subfield code="y">ebook</subfield>
+                <subfield code="y">e-book</subfield>
             </datafield>
             """,
             {
@@ -748,7 +748,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://cdsweb.cern.ch/auth.py?r=EBLIB_P_1139560",
-                                "description": "ebook",
+                                "description": "e-book",
                             },
                         },
                     ],
@@ -756,7 +756,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://learning.oreilly.com/library/view/-/9781118491300/?ar",
-                                "description": "ebook",
+                                "description": "e-book",
                             },
                         },
                     ],
@@ -768,7 +768,7 @@ def test_urls(app):
             """
             <datafield tag="856" ind1="4" ind2=" ">
                 <subfield code="u"> https://learning.oreilly.com/library/view/-/9781119745228/?ar </subfield>
-                <subfield code="y">ebook</subfield>
+                <subfield code="y">e-book</subfield>
             </datafield>
             """,
             {
@@ -778,7 +778,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://learning.oreilly.com/library/view/-/9781119745228/?ar",
-                                "description": "ebook",
+                                "description": "e-book",
                             },
                         },
                     ],
@@ -790,7 +790,7 @@ def test_urls(app):
             """
             <datafield tag="856" ind1="4" ind2=" ">
                 <subfield code="u"> https://external.com </subfield>
-                <subfield code="y">ebook</subfield>
+                <subfield code="y">e-book</subfield>
             </datafield>
             """,
             {
@@ -800,7 +800,7 @@ def test_urls(app):
                         {
                             "url": {
                                 "value": "https://external.com",
-                                "description": "ebook",
+                                "description": "e-book",
                             },
                             "open_access": False,
                         },
@@ -1730,7 +1730,7 @@ def test_dois(app):
             <datafield tag="024" ind1="7" ind2=" ">
                 <subfield code="2">DOI</subfield>
                 <subfield code="a">10.1007/978-1-4613-0247-6</subfield>
-                <subfield code="q">ebook</subfield>
+                <subfield code="q">e-book</subfield>
                 <subfield code="9">source</subfield>
             </datafield>
             """,
@@ -1748,7 +1748,7 @@ def test_dois(app):
                     "eitems_external": [
                         {
                             "url": {
-                                "description": "ebook",
+                                "description": "e-book",
                                 "value": "http://dx.doi.org/10.1007/978-1-4613-0247-6",
                             },
                             "open_access": False,
@@ -1762,7 +1762,7 @@ def test_dois(app):
             <datafield tag="024" ind1="7" ind2=" ">
                 <subfield code="2">DOI</subfield>
                 <subfield code="a">10.3390/books978-3-03943-243-1</subfield>
-                <subfield code="q">ebook (Open Access)</subfield>
+                <subfield code="q">e-book (Open Access)</subfield>
             </datafield>
             """,
             {
@@ -1779,7 +1779,7 @@ def test_dois(app):
                     "eitems_external": [
                         {
                             "url": {
-                                "description": "ebook",
+                                "description": "e-book",
                                 "value": "http://dx.doi.org/10.3390/books978-3-03943-243-1",
                             },
                             "open_access": True,
@@ -1894,7 +1894,7 @@ def test_alternative_identifiers(app):
                 <subfield code="2">DOI</subfield>
                 <subfield code="9">arXiv</subfield>
                 <subfield code="a">10.1103/PhysRevLett.121.052004</subfield>
-                <subfield code="q">ebook</subfield>
+                <subfield code="q">e-book</subfield>
             </datafield>
             """,
             {
@@ -1930,7 +1930,7 @@ def test_alternative_identifiers(app):
                         },
                         {
                             "url": {
-                                "description": "ebook",
+                                "description": "e-book",
                                 "value": "http://dx.doi.org/10.1103/PhysRevLett.121.052004",
                             },
                             "open_access": False,
@@ -3357,7 +3357,7 @@ def test_record(app):
             <datafield tag="024" ind1="7" ind2=" ">
                 <subfield code="2">DOI</subfield>
                 <subfield code="a">10.1007/978-981-15-9034-4</subfield>
-                <subfield code="q">ebook</subfield>
+                <subfield code="q">e-book</subfield>
             </datafield>
             """,
             {
@@ -3369,7 +3369,7 @@ def test_record(app):
                     "eitems_external": [
                         {
                             "url": {
-                                "description": "ebook",
+                                "description": "e-book",
                                 "value": "http://dx.doi.org/10.1007/978-981-15-9034-4",
                             },
                             "open_access": False,
