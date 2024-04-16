@@ -633,7 +633,12 @@ def dois(self, key, value):
     dois_url_prefix = current_app.config["CDS_ILS_DOI_URL_PREFIX"]
 
     def _clean_doi_access(subfield):
-        return subfield.lower().replace("(open access)", "").strip()
+        return (
+            subfield.lower()
+            .replace("(open access)", "")
+            .replace("ebook", "e-book")
+            .strip()
+        )
 
     def clean_material(subfield_q):
         return re.sub(r"\([^)]*\)", "", subfield_q).strip()

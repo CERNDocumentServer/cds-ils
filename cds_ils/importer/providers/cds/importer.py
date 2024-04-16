@@ -19,6 +19,9 @@ class CDSImporter(Importer):
     """CDS importer class."""
 
     UPDATE_DOCUMENT_FIELDS = ("identifiers", "tags")
+    # Mark all CDS elated E-Items as login required and not open access
+    EITEM_OPEN_ACCESS = False
+    EITEM_URLS_LOGIN_REQUIRED = True
 
     def _match_document(self):
         """CDS importer match document."""
