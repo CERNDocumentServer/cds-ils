@@ -193,7 +193,7 @@ class EItemImporter(object):
 
     def _build_eitem_json(self, eitem_json, document_pid, urls=None, description=None):
         """Provide initial metadata dictionary."""
-        self._apply_url_login(eitem_json)
+        self._apply_url_login(self.eitem_json)
         self._set_record_import_source(eitem_json)
         dois = [
             doi

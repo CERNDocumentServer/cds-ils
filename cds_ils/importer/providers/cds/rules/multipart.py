@@ -126,7 +126,12 @@ def dois(self, key, value):
     dois_url_prefix = current_app.config["CDS_ILS_DOI_URL_PREFIX"]
 
     def _clean_doi_access(subfield):
-        return subfield.lower().replace("(open access)", "").strip()
+        return (
+            subfield.lower()
+            .replace("(open access)", "")
+            .replace("ebook", "e-book")
+            .strip()
+        )
 
     def create_eitem(subfield_a, subfield_q, migration_dict):
         eitems_proxy = migration_dict["_migration"]["eitems_proxy"]

@@ -83,5 +83,10 @@
     "key": "WSC",
     "text": "World Scientific",
     "type": "eitem_sources"
+  },
+  {
+    "key": "CDS",
+    "text": "CDS",
+    "type": "eitem_sources"
   }
 ]
