@@ -7,14 +7,7 @@ export const ItemCirculationShelf = ({ metadata }) => {
   return (
     <Grid.Column width={6}>
       <>
-        <Embed
-          active
-          url={shelfLink(metadata.shelf, true)}
-          style={{
-            "padding-bottom": "30%",
-            "pointer-events": "none",
-          }}
-        />
+        <Embed active url={shelfLink(metadata.shelf, true)} />
         <Button
           as="a"
           smooth

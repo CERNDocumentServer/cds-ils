@@ -66,15 +66,7 @@ export class DocumentCirculationExtras extends React.Component {
     return (
       <>
         <Divider />
-        <Header as="h4" className="mt-15" content="Find it on shelf" />
-        <Embed
-          active
-          url={shelfLink(shelfNumber, true)}
-          style={{
-            "padding-bottom": "30%",
-            "pointer-events": "none",
-          }}
-        />
+        <Embed active url={shelfLink(shelfNumber, true)} />
         <Button
           as="a"
           smooth
@@ -84,7 +76,7 @@ export class DocumentCirculationExtras extends React.Component {
           color="blue"
           fluid
         >
-          Open MapCERN
+          Find it on shelf
         </Button>
       </>
     );
