@@ -204,7 +204,6 @@ export const config = {
       required: [
         "internal_location_pid",
         "barcode",
-        "shelf",
         "status",
         "document_pid",
         "circulation_restriction",
