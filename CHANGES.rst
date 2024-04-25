@@ -7,6 +7,15 @@
 Changes
 =======
 
+Version 2.8.0 (released 2024-04-25)
+
+- installation: upgrade invenio-app-ils
+- metadata: add new tags to the vocabularies
+- importer: fix case sensitivity
+- assets: modify homepage sections
+- assets: fix responsiveness issues
+- loan: adapt require before a certain date to weekends
+
 Version 2.7.0 (released 2024-04-02)
 
 - installation: upgrade react-invenio-app-ils
