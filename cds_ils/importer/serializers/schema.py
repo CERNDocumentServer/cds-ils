@@ -121,7 +121,7 @@ class ImporterTaskDetailLogV1(ImporterTaskLogV1):
         """Return correct record statuses."""
         children_entries_query = ImportRecordLog.query.filter_by(
             import_id=data.get("id")
-        )
+        ).order_by(ImportRecordLog.id.asc())
 
         first_entry = children_entries_query.first()
 
