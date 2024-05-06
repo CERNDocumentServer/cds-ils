@@ -7,6 +7,11 @@
 Changes
 =======
 
+Version 2.8.1 (released 2024-05-06)
+
+- importer: fix report display (missing records)
+- importer: change e-book import open access label
+
 Version 2.8.0 (released 2024-04-25)
 
 - installation: upgrade invenio-app-ils
