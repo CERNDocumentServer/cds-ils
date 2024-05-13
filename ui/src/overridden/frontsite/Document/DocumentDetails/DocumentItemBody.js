@@ -29,7 +29,7 @@ function renderShelflink(item) {
     : shelfLinkComponent(shelfLink(shelfNumber), shelfNumber);
   return (
     <InfoPopup message={renderCallNumber(item)}>
-      {itemShelf != undefined ? itemShelf : "-"}
+      {itemShelf !== undefined ? itemShelf : "-"}
     </InfoPopup>
   );
 }
