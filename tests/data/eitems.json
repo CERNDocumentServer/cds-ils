@@ -5,7 +5,8 @@
     "document_pid": "docid-2",
     "internal_notes": "An internal note",
     "description": "Description of the electronic item",
-    "open_access": true
+    "open_access": true,
+    "eitem_type": "E-BOOK"
   },
   {
     "pid": "eitemid-2",
@@ -14,6 +15,7 @@
     "internal_notes": "An internal note",
     "description": "Description of the electronic item",
     "open_access": false,
+    "eitem_type": "E-BOOK",
     "urls": [
       {
         "description": "Protected URL",
