@@ -15,6 +15,11 @@
     "type": "eitem_sources"
   },
   {
+    "key": "EBSCO",
+    "text": "Ebsco",
+    "type": "eitem_sources"
+  },
+  {
     "key": "ELS",
     "text": "Elsevier",
     "type": "eitem_sources"
