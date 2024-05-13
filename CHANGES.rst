@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 2.8.2 (released 2024-05-13)
+
+- eitems: add new provider (manual creation only)
+
 Version 2.8.1 (released 2024-05-06)
 
 - importer: fix report display (missing records)
