@@ -1,10 +1,11 @@
 import React from "react";
-import { Grid, Embed, Button, Icon } from "semantic-ui-react";
+import { Grid, Embed, Button, Icon, Message, List } from "semantic-ui-react";
 import PropTypes from "prop-types";
+import _isEmpty from "lodash/isEmpty";
 import { shelfLink } from "../../utils";
 
 export const ItemCirculationShelf = ({ metadata }) => {
-  return (
+  return !_isEmpty(metadata.shelf) ? (
     <Grid.Column width={6}>
       <>
         <Embed active url={shelfLink(metadata.shelf, true)} />
@@ -21,6 +22,15 @@ export const ItemCirculationShelf = ({ metadata }) => {
           SHELF {metadata.shelf}
         </Button>
       </>
+    </Grid.Column>
+  ) : (
+    <Grid.Column width={6}>
+      <Message warning icon style={{ justifyContent: "center" }}>
+        <Icon name="exclamation circle" />
+        <List className="mt-5">
+          <Message.Header>Shelf location missing!</Message.Header>
+        </List>
+      </Message>
     </Grid.Column>
   );
 };
