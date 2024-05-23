@@ -1,26 +1,20 @@
+import { isEmpty } from "lodash";
 import React from "react";
-import { Grid, Embed, Button, Icon } from "semantic-ui-react";
+import { Grid, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
-import { shelfLink } from "../../utils";
 
 export const ItemCirculationShelf = ({ metadata }) => {
+  let callNumber = {};
+  if (!isEmpty(metadata.identifiers)) {
+    callNumber = metadata.identifiers.find(
+      (identifier) => identifier.scheme === "CALL_NUMBER"
+    );
+  }
   return (
     <Grid.Column width={6}>
-      <>
-        <Embed active url={shelfLink(metadata.shelf, true)} />
-        <Button
-          as="a"
-          smooth
-          href={shelfLink(metadata.shelf)}
-          target="_blank"
-          rel="noreferrer"
-          color="blue"
-          fluid
-        >
-          <Icon name="map pin" />
-          SHELF {metadata.shelf}
-        </Button>
-      </>
+      <Icon name="map pin" />
+      Call number: {callNumber ? callNumber.value : "missing"} (SHELF:{" "}
+      {metadata.shelf ? metadata.shelf : "missing"})
     </Grid.Column>
   );
 };

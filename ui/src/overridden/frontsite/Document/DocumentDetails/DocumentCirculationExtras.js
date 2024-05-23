@@ -2,7 +2,7 @@ import React from "react";
 import _get from "lodash/get";
 import _isEmpty from "lodash/isEmpty";
 import { invenioConfig } from "@inveniosoftware/react-invenio-app-ils";
-import { Embed, Button, Divider } from "semantic-ui-react";
+import { Embed, Button, Divider, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import { shelfLink } from "../../../utils";
 
@@ -66,7 +66,7 @@ export class DocumentCirculationExtras extends React.Component {
     return (
       <>
         <Divider />
-        <Embed active url={shelfLink(shelfNumber, true)} />
+        <Embed className="cern-map" active url={shelfLink(shelfNumber, true)} />
         <Button
           as="a"
           smooth
@@ -75,7 +75,10 @@ export class DocumentCirculationExtras extends React.Component {
           rel="noreferrer"
           color="blue"
           fluid
+          icon
+          labelPosition="left"
         >
+          <Icon name="map pin" />
           Find it on shelf
         </Button>
       </>

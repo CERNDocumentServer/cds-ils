@@ -1,7 +1,6 @@
 import React from "react";
 import {
   DocumentItemBody,
-  InfoPopup,
   invenioConfig,
 } from "@inveniosoftware/react-invenio-app-ils";
 import _get from "lodash/get";
@@ -11,12 +10,15 @@ import { shelfLink, shelfLinkComponent } from "../../../utils";
 function renderCallNumber(item) {
   const identifiers = _get(item, "identifiers", []);
   if (identifiers === null) {
-    return "Call number: -";
+    return null;
   }
   const callNumber = identifiers.find(
     (identifier) => identifier.scheme === "CALL_NUMBER"
   );
-  return "Call number: " + (callNumber ? callNumber.value : "-");
+  if (callNumber) {
+    return `(${callNumber.value})`;
+  }
+  return null;
 }
 
 function renderShelflink(item) {
@@ -24,13 +26,20 @@ function renderShelflink(item) {
   const itemStatus = _get(item, "circulation.state");
 
   // If item is on loan, don't hyperlink the shelf
-  var itemShelf = invenioConfig.CIRCULATION.loanActiveStates.includes(itemStatus)
-    ? shelfNumber
-    : shelfLinkComponent(shelfLink(shelfNumber), shelfNumber);
+  const cannotCirculate =
+    invenioConfig.CIRCULATION.loanActiveStates.includes(itemStatus);
+  const itemOnShelf = ["CAN_CIRCULATE", "FOR_REFERENCE_ONLY"].includes(
+    _get(item, "status")
+  );
+
+  const itemShelf =
+    cannotCirculate && itemOnShelf
+      ? shelfNumber
+      : shelfLinkComponent(shelfLink(shelfNumber), shelfNumber);
   return (
-    <InfoPopup message={renderCallNumber(item)}>
-      {itemShelf !== undefined ? itemShelf : "-"}
-    </InfoPopup>
+    <>
+      {itemShelf} {renderCallNumber(item)}
+    </>
   );
 }
 
