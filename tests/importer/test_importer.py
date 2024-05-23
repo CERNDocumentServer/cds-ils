@@ -55,6 +55,7 @@ def test_import_audiobook_with_existing_ebook(importer_test_data):
 
     report = importer.import_record()
     assert report["action"] == "update"
+    assert report["eitem"]["action"] == "create"
 
     updated_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
     time.sleep(1)

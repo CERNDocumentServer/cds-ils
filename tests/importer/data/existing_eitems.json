@@ -157,9 +157,9 @@
   },
   {
     "pid": "eitemid-9",
-    "created_by": {"type": "user", "value":  "1"},
+    "created_by": {"type": "import", "value": "safari"},
     "document_pid": "docid-9",
-    "eitem_type": "AUDIOBOOK",
+    "eitem_type": "E-BOOK",
     "internal_notes": "An internal note",
     "description": "Description of the electronic item",
     "open_access": false,
