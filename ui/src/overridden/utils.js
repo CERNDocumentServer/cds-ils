@@ -21,11 +21,7 @@ export const shelfLink = (shelfNumber, iframe = false) => {
   return shelfLink;
 };
 
-export const shelfLinkComponent = (
-  shelfLink,
-  shelfNumber,
-  iconName = "map marker alternate"
-) => {
+export const shelfLinkComponent = (shelfLink, shelfNumber, iconName = "map pin") => {
   return (
     <a href={shelfLink} target="_blank" rel="noreferrer">
       <Icon name={iconName} />

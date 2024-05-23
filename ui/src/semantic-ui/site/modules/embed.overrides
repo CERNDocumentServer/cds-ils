@@ -1,7 +1,8 @@
 /*******************************
          Site Overrides
 *******************************/
-.ui.embed{
-    padding-bottom: 30%;
+.ui.embed.cern-map{
+    // controls the height of the iframe
+    padding-bottom: 45%;
     pointer-events: none;
 }
