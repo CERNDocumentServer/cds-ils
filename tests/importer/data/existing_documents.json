@@ -13,7 +13,7 @@
     "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }],
     "note": "MATCH BY ISBN"
   },
-    {
+  {
     "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
     "created_by": { "type": "script", "value": "test" },
     "pid": "docid-12",
@@ -90,7 +90,8 @@
       {
         "scheme": "SPR",
         "value": "SPR123"
-      }],
+      }
+    ],
     "note": "MATCH BY TITLE but different provider IDs"
   },
   {
@@ -107,14 +108,12 @@
     "publication_year": "1950",
     "note": "FUZZY MATCH"
   },
-    {
+  {
     "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
     "created_by": { "type": "import", "value": "ebl" },
     "pid": "docid-6",
     "title": "EBL DOCUMENT, low or equal priority eitems",
-    "authors": [
-      { "full_name": "Doe, John" }
-    ],
+    "authors": [{ "full_name": "Doe, John" }],
     "abstract": "This is a document volume v.1 part of a MULTIPART MONOGRAPH",
     "document_type": "BOOK",
     "publication_year": "1950"
@@ -124,9 +123,7 @@
     "created_by": { "type": "import", "value": "safari" },
     "pid": "docid-6A",
     "title": "TEST Safari low or equal priority eitems",
-    "authors": [
-      { "full_name": "Doe, John" }
-    ],
+    "authors": [{ "full_name": "Doe, John" }],
     "abstract": "This is a document volume v.1 part of a MULTIPART MONOGRAPH",
     "document_type": "BOOK",
     "publication_year": "1950"
@@ -136,21 +133,17 @@
     "created_by": { "type": "import", "value": "springer" },
     "pid": "docid-7",
     "title": "TEST Document, high priority eitems",
-    "authors": [
-      { "full_name": "Random, Jane" }
-    ],
+    "authors": [{ "full_name": "Random, Jane" }],
     "abstract": "This is a document volume v.1 part of a MULTIPART MONOGRAPH",
     "document_type": "BOOK",
     "publication_year": "1950"
   },
-    {
+  {
     "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
     "created_by": { "type": "user", "value": "1" },
     "pid": "docid-8",
     "title": "TEST Document, test priority added by user",
-    "authors": [
-      { "full_name": "Random, Joe" }
-    ],
+    "authors": [{ "full_name": "Random, Joe" }],
     "abstract": "This is a document volume v.1 part of a MULTIPART MONOGRAPH",
     "document_type": "BOOK",
     "publication_year": "1950"
@@ -175,7 +168,31 @@
     },
     "languages": ["ENG"],
     "publication_year": "2024",
-    "title": "Managing your anxiety",
-    "note": "ADD AUDIOBOOK TO DOC WITH AN EXISTING E-ITEM"
+    "title": "Managing your anxiety"
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "user", "value": "1" },
+    "pid": "docid-10",
+    "abstract": "This is an abstract that you understand.",
+    "authors": [
+      {
+        "full_name": "Bros, Warner",
+        "roles": ["AUTHOR"],
+        "type": "ORGANISATION"
+      }
+    ],
+    "document_type": "BOOK",
+    "alternative_identifiers": [
+      { "scheme": "SAFARI", "value": "on1417409123" }
+    ],
+    "imprint": {
+      "place": "Place of publication not known",
+      "publisher": "Descent Audio"
+    },
+    "languages": ["ENG"],
+    "publication_year": "2024",
+    "identifiers": [{ "scheme": "ISBN", "value": "9876543210" }],
+    "title": "Understanding abstracts"
   }
 ]

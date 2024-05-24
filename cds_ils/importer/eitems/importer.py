@@ -144,6 +144,9 @@ class EItemImporter(object):
         eitem_indexer = current_app_ils.eitem_indexer
 
         for eitem in self._get_other_eitems_of_document(matched_document):
+            # If eitem_type is different, then creation should happen
+            if eitem["eitem_type"] != self.eitem_json.get("_type", "E-BOOK").upper():
+                continue
             is_imported = self._is_imported(eitem)
 
             # replace conditions
@@ -169,12 +172,15 @@ class EItemImporter(object):
         if self.deleted_list:
             self.action = "replace"
 
-    def _should_import_eitem_by_priority(self, matched_document):
+    def _should_import_eitem_by_type_priority(self, matched_document):
         """Check if current eitem has priority lower than any existing."""
         existing_eitems = self._get_other_eitems_of_document(matched_document)
 
         comparison_list = []
         for eitem in existing_eitems:
+            # If eitem_type is different, then creation should happen regardless of priority
+            if eitem["eitem_type"] != self.eitem_json.get("_type", "E-BOOK").upper():
+                continue
             is_imported_or_created = (
                 self._is_imported(eitem)
                 or self._is_manually_created(eitem)
@@ -248,7 +254,7 @@ class EItemImporter(object):
         self.import_eitem_action(search)
 
         # determine currently imported eitem provider priority
-        should_eitem_be_imported = self._should_import_eitem_by_priority(
+        should_eitem_be_imported = self._should_import_eitem_by_type_priority(
             matched_document
         )
 
@@ -347,7 +353,7 @@ class EItemImporter(object):
             search = self.eitems_search(matched_document)
             self.import_eitem_action(search)
             # determine currently imported eitem provider priority
-            should_eitem_be_imported = self._should_import_eitem_by_priority(
+            should_eitem_be_imported = self._should_import_eitem_by_type_priority(
                 matched_document
             )
 

@@ -42,5 +42,51 @@
       { "scheme": "DEWEY", "value": "152.4/6" }
     ],
     "title": "Managing your anxiety"
+  },
+  {
+    "_eitem": {
+      "_type": "audiobook",
+      "urls": [
+        {
+          "description": "audiobook",
+          "value": "https://learning.oreilly.com/library/view/-/9781663731913/?ar"
+        }
+      ]
+    },
+    "abstract": "This is an abstract that you understand.",
+    "agency_code": "OCoLC",
+    "alternative_identifiers": [
+      { "scheme": "SAFARI", "value": "on1417409123" }
+    ],
+    "authors": [
+      {
+        "full_name": "Bros, Warner",
+        "roles": ["AUTHOR"],
+        "type": "ORGANISATION"
+      }
+    ],
+    "document_type": "BOOK",
+    "edition": "1st",
+    "identifiers": [
+      { "material": "AUDIOBOOK", "scheme": "ISBN", "value": "9781663731913" },
+      { "material": "AUDIOBOOK", "scheme": "ISBN", "value": "1663731918" }
+    ],
+    "imprint": {
+      "place": "Place of publication not known",
+      "publisher": "Descent Audio"
+    },
+    "keywords": [
+      { "source": "SAFARI", "value": "Abstracts" },
+      { "source": "SAFARI", "value": "Books" },
+      { "source": "SAFARI", "value": "Self-care, Health" }
+    ],
+    "languages": ["ENG"],
+    "provider_recid": "on1417409123",
+    "publication_year": "2024",
+    "subjects": [
+      { "scheme": "LOC", "value": "GF575.B6" },
+      { "scheme": "DEWEY", "value": "222.4/6" }
+    ],
+    "title": "Understanding abstracts"
   }
 ]

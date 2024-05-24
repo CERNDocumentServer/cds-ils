@@ -175,5 +175,26 @@
         "login_required": false
       }
     ]
+  },
+  {
+    "pid": "eitemid-10",
+    "created_by":  {"type": "import", "value": "springer"},
+    "document_pid": "docid-10",
+    "eitem_type": "E-BOOK",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
   }
 ]
