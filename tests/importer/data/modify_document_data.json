@@ -14,7 +14,7 @@
                     {"scheme": "ISBN", "value": "0987654321"}],
     "_eitem": {
         "pid": "eitmid-1",
-        "eitem_type": "E-BOOK",
+        "_type": "E-BOOK",
         "created_by": {"type": "script", "value":  "springer"},
         "internal_notes": "Modified",
         "description": "Modified description",
@@ -48,11 +48,44 @@
     "identifiers": [{ "scheme": "ISBN", "value": "0123456789" }],
     "_eitem": {
         "pid": "eitmid-1",
-        "eitem_type": "E-BOOK",
+        "_type": "E-BOOK",
         "created_by": {"type": "script", "value":  "springer"},
         "document_pid": "docid-1",
         "internal_notes": "Modified",
-        "description": "EITEM TO OVERWRITE",
+        "description": "E-BOOK TO OVERWRITE",
+        "open_access": false,
+        "urls": [
+            {
+              "description": "MODIFIED URL",
+              "value": "http://protected-cds-ils.ch/",
+              "login_required": true
+            },
+            {
+              "description": "Another open URL",
+              "value": "http://cds-ils.ch/",
+              "login_required": false
+            }
+        ]
+    }
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "agency_code": "OCoLC",
+    "created_by": {"type": "script", "value":  "test"},
+    "pid": "docid-10",
+    "title": "Understanding abstracts",
+    "document_type": "BOOK",
+    "authors": [{ "full_name": "Bros, Warner" }],
+    "abstracts": [{ "value": "This is an abstract that you understand." }],
+    "languages": ["ENG"],
+    "publication_year": "2020",
+    "identifiers": [{ "scheme": "ISBN", "value": "9876543210" }],
+    "_eitem": {
+        "_type": "AUDIOBOOK",
+        "created_by": {"type": "script", "value":  "safari"},
+        "document_pid": "docid-10",
+        "internal_notes": "Create from different provider",
+        "description": "AUDIOBOOK TO ADD",
         "open_access": false,
         "urls": [
             {
@@ -68,5 +101,4 @@
         ]
     }
   }
-
 ]

@@ -43,6 +43,7 @@ def test_modify_documents(importer_test_data):
 
 
 def test_import_audiobook_with_existing_ebook(importer_test_data):
+    # Test to check that a new eitem is created when there is an existing eitem but of different eitem_type
     document_cls = current_app_ils.document_record_cls
     eitem_cls = current_app_ils.eitem_record_cls
     eitem_search_cls = current_app_ils.eitem_search_cls
@@ -66,6 +67,46 @@ def test_import_audiobook_with_existing_ebook(importer_test_data):
     assert results.hits.total.value == 2
 
     created_eitem_pid = results.hits[1].pid
+    eitem = eitem_cls.get_record_by_pid(created_eitem_pid)
+
+    assert eitem["document_pid"] == updated_document["pid"]
+    assert eitem["eitem_type"] == "AUDIOBOOK"
+
+    assert "_eitem" not in updated_document
+    assert "agency_code" not in updated_document
+    assert "identifiers" in updated_document
+
+    for isbn in updated_document["identifiers"]:
+        assert isbn["material"] == "AUDIOBOOK"
+
+    assert eitem["created_by"] == {"type": "import", "value": "safari"}
+
+
+def test_import_update_existing_audiobook(importer_test_data):
+    # Test to check that the existing audiobook is updated having same provider
+    document_cls = current_app_ils.document_record_cls
+    eitem_cls = current_app_ils.eitem_record_cls
+    eitem_search_cls = current_app_ils.eitem_search_cls
+
+    # Import an audiobook for a document with an existing audiobook
+    json_data = load_json_from_datadir(
+        "documents_with_audiobook.json", relpath="importer"
+    )
+    importer = Importer(json_data[1], "safari")
+
+    report = importer.import_record()
+    assert report["action"] == "update"
+    assert report["eitem"]["action"] == "update"
+
+    updated_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
+    time.sleep(1)
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=updated_document["pid"]
+    )
+    results = search.execute()
+    assert results.hits.total.value == 1
+
+    created_eitem_pid = results.hits[0].pid
     eitem = eitem_cls.get_record_by_pid(created_eitem_pid)
 
     assert eitem["document_pid"] == updated_document["pid"]
@@ -139,6 +180,7 @@ def test_replace_eitems_by_provider_priority(importer_test_data):
     report = importer.import_record()
     assert report["document_json"]
     assert report["action"] == "update"
+    assert report["eitem"]["action"] == "replace"
 
     updated_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
     # wait for indexing
@@ -157,7 +199,56 @@ def test_replace_eitems_by_provider_priority(importer_test_data):
         "type": "import",
         "value": "springer",
     }
-    assert updated_eitem["description"] == "EITEM TO OVERWRITE"
+    assert updated_eitem["description"] == "E-BOOK TO OVERWRITE"
+
+
+def test_add_eitems_by_type(importer_test_data):
+    # Test to check that a new eitem is created when there is an existing eitem but with different eitem_type and different provider
+    document_cls = current_app_ils.document_record_cls
+    eitem_search_cls = current_app_ils.eitem_search_cls
+    eitem_cls = current_app_ils.eitem_record_cls
+
+    json_data = load_json_from_datadir("modify_document_data.json", relpath="importer")
+
+    document_before_update = document_cls.get_record_by_pid(json_data[2]["pid"])
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=document_before_update["pid"]
+    )
+    results = search.execute()
+    assert results.hits.total.value == 1
+
+    ProviderImporter = Importer
+    ProviderImporter.IS_PROVIDER_PRIORITY_SENSITIVE = True
+    importer = ProviderImporter(json_data[2], "safari")
+    report = importer.import_record()
+    assert report["document_json"]
+    assert report["action"] == "update"
+    assert report["eitem"]["action"] == "create"
+
+    updated_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
+    # wait for indexing
+    time.sleep(1)
+
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=updated_document["pid"]
+    )
+    results = search.execute()
+
+    # check if previous E-BOOK persisted, and added only AUDIOBOOK from this provider
+    assert results.hits.total.value == 2
+    ebook_pid = results.hits[0].pid
+    audiobook_pid = results.hits[1].pid
+    ebook = eitem_cls.get_record_by_pid(ebook_pid)
+    audiobook = eitem_cls.get_record_by_pid(audiobook_pid)
+    assert ebook["created_by"] == {
+        "type": "import",
+        "value": "springer",
+    }
+    assert audiobook["created_by"] == {
+        "type": "import",
+        "value": "safari",
+    }
+    assert audiobook["description"] == "AUDIOBOOK TO ADD"
 
 
 def test_add_document_to_serial(app, db):
