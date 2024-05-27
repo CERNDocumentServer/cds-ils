@@ -196,5 +196,26 @@
         "login_required": false
       }
     ]
+  },
+  {
+    "pid": "eitemid-11",
+    "created_by":  {"type": "import", "value": "safari"},
+    "document_pid": "docid-11",
+    "eitem_type": "AUDIOBOOK",
+    "internal_notes": "AUDIOBOOK TO MODIFY",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
   }
 ]

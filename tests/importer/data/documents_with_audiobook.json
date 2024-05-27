@@ -53,23 +53,16 @@
         }
       ]
     },
-    "abstract": "This is an abstract that you understand.",
+    "abstract": "Check if existing audiobook gets updated if providers are same",
     "agency_code": "OCoLC",
     "alternative_identifiers": [
       { "scheme": "SAFARI", "value": "on1417409123" }
     ],
-    "authors": [
-      {
-        "full_name": "Bros, Warner",
-        "roles": ["AUTHOR"],
-        "type": "ORGANISATION"
-      }
-    ],
+    "authors": [{ "full_name": "Doe, John" }],
     "document_type": "BOOK",
     "edition": "1st",
     "identifiers": [
-      { "material": "AUDIOBOOK", "scheme": "ISBN", "value": "9781663731913" },
-      { "material": "AUDIOBOOK", "scheme": "ISBN", "value": "1663731918" }
+      { "material": "AUDIOBOOK", "scheme": "ISBN", "value": "9999999999" }
     ],
     "imprint": {
       "place": "Place of publication not known",
@@ -77,8 +70,7 @@
     },
     "keywords": [
       { "source": "SAFARI", "value": "Abstracts" },
-      { "source": "SAFARI", "value": "Books" },
-      { "source": "SAFARI", "value": "Self-care, Health" }
+      { "source": "SAFARI", "value": "Books" }
     ],
     "languages": ["ENG"],
     "provider_recid": "on1417409123",
@@ -87,6 +79,6 @@
       { "scheme": "LOC", "value": "GF575.B6" },
       { "scheme": "DEWEY", "value": "222.4/6" }
     ],
-    "title": "Understanding abstracts"
+    "title": "New Book: Test Audiobook Updating"
   }
 ]

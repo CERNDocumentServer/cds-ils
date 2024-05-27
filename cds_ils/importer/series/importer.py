@@ -113,7 +113,7 @@ class SeriesImporter(object):
     @staticmethod
     def _normalize_title(title):
         """Return a normalized title."""
-        t = " ".join(title.lower().split())
+        t = " ".join((title or "").lower().split())
         # remove `series` or `ser` at the end of the title
         # `International Series of Numerical Mathematics series`
         # or `International   series of Numerical mathematics   ser`

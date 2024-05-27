@@ -202,7 +202,7 @@ class DocumentImporter(object):
     @staticmethod
     def _normalize_title(title):
         """Return a normalized title."""
-        t = " ".join(title.lower().split())
+        t = " ".join((title or "").lower().split())
         return t.strip()
 
     def update_document(self, matched_document):
