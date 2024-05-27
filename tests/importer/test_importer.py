@@ -100,14 +100,16 @@ def test_import_update_existing_audiobook(importer_test_data):
 
     updated_document = document_cls.get_record_by_pid(report["document_json"]["pid"])
     time.sleep(1)
-    search = eitem_search_cls().search_by_document_pid(
-        document_pid=updated_document["pid"]
+    search = (
+        eitem_search_cls()
+        .search_by_document_pid(document_pid=updated_document["pid"])
+        .filter("term", eitem_type="AUDIOBOOK")
     )
     results = search.execute()
     assert results.hits.total.value == 1
 
-    created_eitem_pid = results.hits[0].pid
-    eitem = eitem_cls.get_record_by_pid(created_eitem_pid)
+    updated_eitem_pid = results.hits[0].pid
+    eitem = eitem_cls.get_record_by_pid(updated_eitem_pid)
 
     assert eitem["document_pid"] == updated_document["pid"]
     assert eitem["eitem_type"] == "AUDIOBOOK"

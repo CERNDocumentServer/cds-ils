@@ -194,5 +194,20 @@
     "publication_year": "2024",
     "identifiers": [{ "scheme": "ISBN", "value": "9876543210" }],
     "title": "Understanding abstracts"
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "script", "value": "test" },
+    "pid": "docid-11",
+    "title": "New Book: Test Audiobook Updating",
+    "authors": [{ "full_name": "Frank Bidart" }],
+    "abstract": "This is an abstract",
+    "edition": "3",
+    "identifiers": [
+      { "material": "AUDIOBOOK", "scheme": "ISBN", "value": "9999999999" }
+    ],
+    "keywords": [{ "source": "X", "value": "Patata" }],
+    "document_type": "BOOK",
+    "publication_year": "1950"
   }
 ]
