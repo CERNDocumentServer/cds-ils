@@ -7,6 +7,23 @@
 Changes
 =======
 
+Version 2.8.3 (released 2024-05-28)
+
+- installation: upgrade invenio-app-ils (v3.0.0rc2)
+- installation: upgrade react-invenio-app-ils (v1.0.0-alpha.85)
+- document: CERN Maps integration improvements
+- setup: Pin flask-mail==0.9.1
+- importer: providers: Update ignored fields
+- tests: importer: Test cases for different types and provider priorities
+- importer: Create new audiobook for document with existing e-book
+- importer: ignore inspire hep oai links as identifiers
+- assets: fix eslinter
+- overridden: backoffice: Add Identifiers to ItemMetadata
+- overridden: frontsite: DocumentDetails: Integrate MapCERN
+- importer: Add video importing feature and tests
+- tests: importer: Add test for importing audiobook for existing document
+- importer: Add ability to import audiobooks
+
 Version 2.8.2 (released 2024-05-13)
 
 - eitems: add new provider (manual creation only)
