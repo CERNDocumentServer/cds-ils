@@ -38,12 +38,14 @@ from invenio_app_ils.ill.api import (
     circulation_default_extension_duration,
     circulation_default_loan_duration,
 )
+from invenio_app_ils.items.api import ITEM_PID_TYPE
 from invenio_app_ils.literature.api import LITERATURE_PID_TYPE
 from invenio_app_ils.locations.api import LOCATION_PID_TYPE
 from invenio_app_ils.patrons.api import PATRON_PID_TYPE
 from invenio_app_ils.permissions import (
     authenticated_user_permission,
     backoffice_permission,
+    loan_checkout_permission,
     loan_extend_circulation_permission,
     patron_owner_permission,
 )
@@ -401,9 +403,15 @@ RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.series.serializers:json_v1_search",
     "text/csv": "cds_ils.series.serializers:csv_v1_search",
 }
+RECORDS_REST_ENDPOINTS[ITEM_PID_TYPE][
+    "list_permission_factory_imp"
+] = authenticated_user_permission
 ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE]["search_serializers"][
     "text/csv"
 ] = "cds_ils.circulation.serializers:csv_v1_search"
+ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE][
+    "update_permission_factory_imp"
+] = loan_checkout_permission
 
 ###############################################################################
 # ILS overridden
@@ -575,7 +583,7 @@ CIRCULATION_LOAN_TRANSITIONS = {
             dest="ITEM_ON_LOAN",
             trigger="checkout",
             transition=ILSToItemOnLoan,
-            permission_factory=backoffice_permission,
+            permission_factory=loan_checkout_permission,
         ),
     ],
     "PENDING": [
@@ -725,3 +733,6 @@ CDS_ILS_MIGRATION_FILES_DIR = "/eos/media/cds/test/books/migration/"
 ILS_ILL_NOTIFICATIONS_FILTER = ill_notifications_filter
 ILS_NOTIFICATIONS_FILTER_DOCUMENT_REQUEST = document_requests_notifications_filter
 SECURITY_PASSWORD_SINGLE_HASH = True
+
+# Feature Toggles
+ILS_SELF_CHECKOUT_ENABLED = True

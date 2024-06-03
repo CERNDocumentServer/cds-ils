@@ -12,6 +12,7 @@ export const config = {
       { name: "privacy-policy", route: "/privacy-policy", apiURL: "6" },
     ],
     ENABLE_LOCAL_ACCOUNT_LOGIN: false,
+    ENABLE_SELF_CHECKOUT: true,
     OAUTH_PROVIDERS: {
       github: {
         enabled: false,
