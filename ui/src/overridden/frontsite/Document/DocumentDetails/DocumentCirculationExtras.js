@@ -58,7 +58,11 @@ export class DocumentCirculationExtras extends React.Component {
     }
 
     const shelfNumber = getLoanableItemShelf(onShelf);
-    if (shelfNumber === null || shelfNumber === undefined) {
+    if (
+      shelfNumber === null ||
+      shelfNumber === undefined ||
+      isNaN(parseInt(shelfNumber))
+    ) {
       // If no item can be loaned, don't display the cernmaps iframe
       return null;
     }
