@@ -33,7 +33,8 @@ def test_import_users(app, db, testdata, mocker):
     """Test import of users from LDAP."""
     ldap_users = [
         {
-            "displayName": [b"Ldap User"],
+            "givenName": [b"Ldap"],
+            "sn": [b"User"],
             "department": [b"Department"],
             "uidNumber": [b"111"],
             "mail": [b"ldap.user@cern.ch"],
@@ -72,7 +73,8 @@ def test_update_users(app, db, testdata, mocker):
     """Test update users with LDAP."""
     ldap_users = [
         {
-            "displayName": [b"New user"],
+            "givenName": [b"New"],
+            "sn": [b"user"],
             "department": [b"A department"],
             "uidNumber": [b"111"],
             "mail": [b"ldap.user111@cern.ch"],
@@ -81,7 +83,8 @@ def test_update_users(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"A new name"],
+            "givenName": [b"A new"],
+            "sn": [b"name"],
             "department": [b"A new department"],
             "uidNumber": [b"222"],
             "mail": [b"ldap.user222@cern.ch"],
@@ -90,7 +93,8 @@ def test_update_users(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"Nothing changed"],
+            "givenName": [b"Nothing"],
+            "sn": [b"changed"],
             "department": [b"Same department"],
             "uidNumber": [b"333"],
             "mail": [b"ldap.user333@cern.ch"],
@@ -99,7 +103,8 @@ def test_update_users(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"Name 1"],
+            "givenName": [b"Name"],
+            "sn": [b"1"],
             "department": [b"Department 1"],
             "uidNumber": [b"555"],
             "mail": [b"ldap.user555@cern.ch"],
@@ -108,7 +113,8 @@ def test_update_users(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"Name 2"],
+            "givenName": [b"Name"],
+            "sn": [b"2"],
             "department": [b"Department 2"],
             "uidNumber": [b"666"],
             "mail": [b"ldap.user555@cern.ch"],  # same email as 555
@@ -117,7 +123,8 @@ def test_update_users(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"Name"],
+            "givenName": [b"Name"],
+            "sn": [b"user"],
             "department": [b"Department"],
             "uidNumber": [b"777"],
             # missing email, should be skipped
@@ -126,7 +133,8 @@ def test_update_users(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"Name"],
+            "givenName": [b"Name"],
+            "sn": [b"user"],
             "department": [b"Department"],
             "uidNumber": [b"999"],
             # custom emails allowed
@@ -136,7 +144,8 @@ def test_update_users(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"Nothing changed"],
+            "givenName": [b"Nothing"],
+            "sn": [b"changed"],
             "department": [b"Same department"],
             "uidNumber": [b"333"],
             # same email as 333, different employee ID, should be skipped
@@ -146,7 +155,8 @@ def test_update_users(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"Name"],
+            "givenName": [b"Name"],
+            "sn": [b"user"],
             "department": [b"Department"],
             "uidNumber": [b"444"],
             # empty email should be skipped
@@ -175,7 +185,8 @@ def test_update_users(app, db, testdata, mocker):
         # create a user that does not exist anymore in LDAP, but will not
         # be deleted for safety
         COULD_BE_DELETED = {
-            "displayName": [b"old user left CERN"],
+            "givenName": [b"old user"],
+            "sn": [b"left CERN"],
             "department": [b"Department"],
             "uidNumber": [b"444"],
             "mail": [b"ldap.user444@cern.ch"],
@@ -190,7 +201,8 @@ def test_update_users(app, db, testdata, mocker):
 
     def _prepare_duplicate():
         duplicated = {
-            "displayName": [b"Name 2"],
+            "givenName": [b"Name"],
+            "sn": [b"2"],
             "department": [b"Department 2"],
             # same id as one of the previous, different emails
             # should be skipped
@@ -255,30 +267,32 @@ def test_update_users(app, db, testdata, mocker):
         assert patron_hit["mailbox"] == expected_mailbox
 
     check_existence(
-        "ldap.user111@cern.ch", "New user", "A department", "00111", "M12345"
+        "ldap.user111@cern.ch", "USER, New", "A department", "00111", "M12345"
     )
     check_existence(
         "ldap.user222@cern.ch",
-        "A new name",
+        "NAME, A new",
         "A new department",
         "00222",
         "M12345",
     )
     check_existence(
         "ldap.user333@cern.ch",
-        "Nothing changed",
+        "CHANGED, Nothing",
         "Same department",
         "00333",
         "M12345",
     )
     check_existence(
         "ldap.user444@cern.ch",
-        "old user left CERN",
+        "LEFT CERN, old user",
         "Department",
         "00444",
         "M12345",
     )
-    check_existence("ldap.user555@cern.ch", "Name 1", "Department 1", "00555", "M12345")
+    check_existence(
+        "ldap.user555@cern.ch", "1, Name", "Department 1", "00555", "M12345"
+    )
 
     # try ot import duplicated userUID
     with pytest.raises(IntegrityError):
@@ -318,7 +332,8 @@ def test_delete_user(app, db, testdata, mocker):
 
     ldap_users = [
         {
-            "displayName": [b"New user"],
+            "givenName": [b"New"],
+            "sn": [b"user"],
             "department": [b"A department"],
             "uidNumber": [b"111"],
             "mail": [b"ldap.user111@cern.ch"],
@@ -327,7 +342,8 @@ def test_delete_user(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"A new name"],
+            "givenName": [b"A new"],
+            "sn": [b"name"],
             "department": [b"A new department"],
             "uidNumber": [b"222"],
             "mail": [b"ldap.user222@cern.ch"],
@@ -336,7 +352,8 @@ def test_delete_user(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"old user left CERN"],
+            "givenName": [b"old user"],
+            "sn": [b"left CERN"],
             "department": [b"Department"],
             "uidNumber": [b"444"],
             "mail": [b"ldap.user444@cern.ch"],
@@ -349,6 +366,8 @@ def test_delete_user(app, db, testdata, mocker):
     new_ldap_response = [
         {
             "displayName": [b"New user"],
+            "givenName": [b"New"],
+            "sn": [b"user"],
             "department": [b"A department"],
             "uidNumber": [b"111"],
             "mail": [b"ldap.user111@cern.ch"],
@@ -398,6 +417,8 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
     ldap_users = [
         {
             "displayName": [b"New user"],
+            "givenName": [b"New"],
+            "sn": [b"user"],
             "department": [b"A department"],
             "uidNumber": [b"111"],
             "mail": [b"ldap.user111@cern.ch"],
@@ -406,7 +427,8 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"A new name"],
+            "givenName": [b"A new"],
+            "sn": [b"name"],
             "department": [b"A new department"],
             "uidNumber": [b"222"],
             "mail": [b"ldap.user222@cern.ch"],
@@ -415,7 +437,8 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"old user left CERN"],
+            "givenName": [b"old user"],
+            "sn": [b"left CERN"],
             "department": [b"Department"],
             "uidNumber": [b"444"],
             "mail": [b"ldap.user444@cern.ch"],
@@ -427,7 +450,8 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
 
     new_ldap_response = [
         {
-            "displayName": [b"New user"],
+            "givenName": [b"New"],
+            "sn": [b"user"],
             "department": [b"A department"],
             "uidNumber": [b"111"],
             "mail": [b"ldap.user111@cern.ch"],
@@ -485,7 +509,8 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
     # unmark one entry
     fixed_ldap_response = [
         {
-            "displayName": [b"New user"],
+            "givenName": [b"New"],
+            "sn": [b"user"],
             "department": [b"A department"],
             "uidNumber": [b"111"],
             "mail": [b"ldap.user111@cern.ch"],
@@ -494,7 +519,8 @@ def test_delete_user_with_counter(app, db, testdata, mocker):
             "postOfficeBox": [b"M12345"],
         },
         {
-            "displayName": [b"A new name"],
+            "givenName": [b"A new"],
+            "sn": [b"name"],
             "department": [b"A new department"],
             "uidNumber": [b"222"],
             "mail": [b"ldap.user222@cern.ch"],

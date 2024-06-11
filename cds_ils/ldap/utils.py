@@ -27,7 +27,8 @@ def serialize_ldap_user(ldap_user_data, log_func=None):
             decoded_data[key] = value[0].decode("utf8")
         serialized_data = dict(
             user_email=decoded_data["mail"].lower(),
-            user_profile_full_name=decoded_data["displayName"],
+            user_profile_first_name=decoded_data["givenName"],
+            user_profile_last_name=decoded_data["sn"].upper(),
             user_identity_id=decoded_data["uidNumber"],
             cern_account_type=decoded_data["cernAccountType"],
             remote_account_person_id=str(decoded_data["employeeID"]),
@@ -103,8 +104,10 @@ class InvenioUser:
 
     def _get_full_user_info(self):
         """Serialize data from user db models."""
+        last_name, first_name = self.user_profile.full_name.split(",")
         user_info = dict(
-            user_profile_full_name=self.user_profile.full_name,
+            user_profile_first_name=first_name.strip(),
+            user_profile_last_name=last_name.strip(),
             user_email=self.user.email,
             user_identity_id=self.user_identity.id,
             remote_account_id=self.remote_account.id,
@@ -120,7 +123,9 @@ class InvenioUser:
         ra.extra_data["department"] = ldap_user["remote_account_department"]
         ra.extra_data["mailbox"] = ldap_user["remote_account_mailbox"]
         self.user.email = ldap_user["user_email"]
-        self.user_profile.full_name = ldap_user["user_profile_full_name"]
+        self.user_profile.full_name = "{0}, {1}".format(
+            ldap_user["user_profile_last_name"], ldap_user["user_profile_first_name"]
+        )
 
     def mark_for_deletion(self):
         """Mark user for deletion."""

@@ -15,7 +15,8 @@ class LdapClient(object):
 
     Response example:
         [
-            {'displayName': [b'Joe Foe'],
+            {'givenName': [b'Joe'],
+             'sn': [b'FOE'],
              'department': [b'IT/CDA'],
              'uidNumber': [b'100000'],
              'mail': [b'joe.foe@cern.ch'],
@@ -32,7 +33,8 @@ class LdapClient(object):
 
     LDAP_USER_RESP_FIELDS = [
         "mail",
-        "displayName",
+        "givenName",
+        "sn",
         "department",
         "cernAccountType",
         "employeeID",
