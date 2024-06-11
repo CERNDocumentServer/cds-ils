@@ -193,17 +193,17 @@ def demo_patrons():
 
     # Create users
     run_command("users create patron1@test.ch -a --password=123456")  # ID 1
-    create_userprofile_for("patron1@test.ch", "patron1", "Yannic Vilma")
+    create_userprofile_for("patron1@test.ch", "patron1", "VILMA, Yannic")
     run_command("users create patron2@test.ch -a --password=123456")  # ID 2
-    create_userprofile_for("patron2@test.ch", "patron2", "Diana Adi")
+    create_userprofile_for("patron2@test.ch", "patron2", "ADI, Diana")
     run_command("users create admin@test.ch -a --password=123456")  # ID 3
-    create_userprofile_for("admin@test.ch", "admin", "Zeki Ryoichi")
+    create_userprofile_for("admin@test.ch", "admin", "RYOICHI, Zeki")
     run_command("users create librarian@test.ch -a --password=123456")  # ID 4
-    create_userprofile_for("librarian@test.ch", "librarian", "Hector Nabu")
+    create_userprofile_for("librarian@test.ch", "librarian", "NABU, Hector")
     run_command("users create patron3@test.ch -a --password=123456")  # ID 5
-    create_userprofile_for("patron3@test.ch", "patron3", "Medrod Tara")
+    create_userprofile_for("patron3@test.ch", "patron3", "TARA, Medrod")
     run_command("users create patron4@test.ch -a --password=123456")  # ID 6
-    create_userprofile_for("patron4@test.ch", "patron4", "Devi Cupid")
+    create_userprofile_for("patron4@test.ch", "patron4", "CUPID, Devi")
 
     # Assign roles
     run_command("roles add admin@test.ch admin")

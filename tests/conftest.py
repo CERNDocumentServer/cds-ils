@@ -121,7 +121,7 @@ def patrons(app, db):
         **dict(
             user_id=user_id,
             _displayname="id_" + str(user_id),
-            full_name="System User",
+            full_name="USER, System",
         )
     )
     db.session.add(profile)
@@ -147,7 +147,7 @@ def patrons(app, db):
         **dict(
             user_id=user2_id,
             _displayname="id_" + str(user2_id),
-            full_name="System User",
+            full_name="USER, System",
         )
     )
     db.session.add(profile)

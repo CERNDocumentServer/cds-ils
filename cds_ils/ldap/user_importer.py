@@ -21,7 +21,8 @@ class LdapUserImporter:
 
     Expected input format for ldap users:
         [
-            {'displayName': [b'Joe Foe'],
+            {'givenName': [b'Joe'],
+             'sn': [b'FOE'],
              'department': [b'IT/CDA'],
              'uidNumber': [b'100000'],
              'mail': [b'joe.foe@cern.ch'],
@@ -54,7 +55,9 @@ class LdapUserImporter:
 
     def create_invenio_user_profile(self, user_id, ldap_user):
         """Return new user profile."""
-        display_name = ldap_user["user_profile_full_name"]
+        display_name = "{0}, {1}".format(
+            ldap_user["user_profile_last_name"], ldap_user["user_profile_first_name"]
+        )
         return UserProfile(
             user_id=user_id,
             _displayname="id_{}".format(user_id),

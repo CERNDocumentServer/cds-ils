@@ -294,12 +294,14 @@ USERPROFILES_EXTEND_SECURITY_FORMS = True
 # non-REST
 OAUTH_REMOTE_APP = copy.deepcopy(cern_openid.REMOTE_APP)
 OAUTH_REMOTE_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
+OAUTH_REMOTE_APP["signup_handler"]["info"] = "cds_ils.oauth:account_info"
 OAUTHCLIENT_REMOTE_APPS = dict(cern_openid=OAUTH_REMOTE_APP)
 ###############################################################################
 # REST
 logout_redirect_url = os.environ.get("INVENIO_SPA_HOST", "https://127.0.0.1:3000/")
 OAUTH_REMOTE_REST_APP = copy.deepcopy(cern_openid.REMOTE_REST_APP)
 OAUTH_REMOTE_REST_APP["params"].update(_OAUTH_REMOTE_APP_COMMON)
+OAUTH_REMOTE_REST_APP["signup_handler"]["info"] = "cds_ils.oauth:account_info_rest"
 OAUTH_REMOTE_REST_APP["logout_url"] = os.environ.get(
     "OAUTH_CERN_OPENID_LOGOUT_URL",
     "https://keycloak-qa.cern.ch/auth/realms/cern/"
