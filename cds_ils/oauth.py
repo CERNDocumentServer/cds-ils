@@ -1,42 +1,13 @@
-from flask import session, current_app, flash, redirect, g
-from jwt import decode
+# Copyright (C) 2024 CERN.
+#
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
 
+"""CDS-ILS oauth overrides."""
+from flask import current_app, flash, g, redirect
+from invenio_oauthclient.contrib.cern_openid import get_resource
 from invenio_oauthclient.errors import OAuthCERNRejectedAccountError
 from invenio_oauthclient.handlers.rest import response_handler
-
-
-def get_dict_from_response(response):
-    """Prepare new mapping with 'Value's grouped by 'Type'."""
-    result = {}
-    if getattr(response, "_resp") and response._resp.code > 400:
-        return result
-
-    for key, value in response.data.items():
-        result.setdefault(key, value)
-    return result
-
-
-def get_resource(remote, token_response=None):
-    """Query CERN Resources to get user info and roles."""
-    cached_resource = session.pop("cern_resource", None)
-    if cached_resource:
-        return cached_resource
-
-    url = current_app.config.get("OAUTHCLIENT_CERN_OPENID_USERINFO_URL")
-    response = remote.get(url)
-    dict_response = get_dict_from_response(response)
-    if token_response:
-        decoding_params = dict(
-            options=dict(
-                verify_signature=False,
-                verify_aud=False,
-            ),
-            algorithms=["HS256", "RS256"],
-        )
-        token_data = decode(token_response["access_token"], **decoding_params)
-        dict_response.update(token_data)
-    session["cern_resource"] = dict_response
-    return dict_response
 
 
 def _account_info(remote, resp):
