@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 2.8.4 (released 2024-06-12)
+
+- overridden: hide map if wrong value is stored in shelf field
+
 Version 2.8.3 (released 2024-05-28)
 
 - installation: upgrade invenio-app-ils (v3.0.0rc2)
