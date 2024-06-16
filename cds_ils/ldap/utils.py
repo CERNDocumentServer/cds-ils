@@ -104,7 +104,13 @@ class InvenioUser:
 
     def _get_full_user_info(self):
         """Serialize data from user db models."""
-        last_name, first_name = self.user_profile.full_name.split(",")
+        # workaround for the first update to <SURNAME, given names> format
+        # without this the update comparison fails
+        if "," in self.user_profile.full_name:
+            last_name, first_name = self.user_profile.full_name.split(",")
+        else:
+            last_name = self.user_profile.full_name
+            first_name = ""
         user_info = dict(
             user_profile_first_name=first_name.strip(),
             user_profile_last_name=last_name.strip(),
