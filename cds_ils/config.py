@@ -31,7 +31,7 @@ from invenio_app_ils.circulation.utils import (
 )
 from invenio_app_ils.config import CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
 from invenio_app_ils.config import RECORDS_REST_ENDPOINTS, RECORDS_REST_FACETS
-from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
+from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
 from invenio_app_ils.eitems.api import EITEM_PID_TYPE
 from invenio_app_ils.ill.api import (
     can_item_circulate,
@@ -462,45 +462,48 @@ ILS_RECORDS_METADATA_NAMESPACES = {
 # Fields added to the metadata schema.
 ILS_RECORDS_METADATA_EXTENSIONS = {
     "document": {
-        "unit_accelerator": {
-            "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
-        },
-        "unit_experiment": {
-            "elasticsearch": "keyword",
-            "marshmallow": List(SanitizedUnicode()),
-        },
-        "unit_institution": {
-            "elasticsearch": "keyword",
-            "marshmallow": List(SanitizedUnicode()),
-        },
-        "unit_project": {
-            "elasticsearch": "keyword",
-            "marshmallow": List(SanitizedUnicode()),
-        },
-        "unit_study": {
-            "elasticsearch": "keyword",
-            "marshmallow": List(SanitizedUnicode()),
-        },
-        "standard_review_applicability": {
-            "elasticsearch": "keyword",
-            "marshmallow": List(SanitizedUnicode()),
-        },
-        "standard_review_standard_validity": {
-            "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
-        },
-        "standard_review_checkdate": {
-            "elasticsearch": "date",
-            "marshmallow": SanitizedUnicode(),
-        },
-        "standard_review_comment": {
-            "elasticsearch": "text",
-            "marshmallow": SanitizedUnicode(),
-        },
-        "standard_review_expert": {
-            "elasticsearch": "keyword",
-            "marshmallow": SanitizedUnicode(),
+        "schema": Document._schema,
+        "fields": {
+            "unit_accelerator": {
+                "elasticsearch": "keyword",
+                "marshmallow": SanitizedUnicode(),
+            },
+            "unit_experiment": {
+                "elasticsearch": "keyword",
+                "marshmallow": List(SanitizedUnicode()),
+            },
+            "unit_institution": {
+                "elasticsearch": "keyword",
+                "marshmallow": List(SanitizedUnicode()),
+            },
+            "unit_project": {
+                "elasticsearch": "keyword",
+                "marshmallow": List(SanitizedUnicode()),
+            },
+            "unit_study": {
+                "elasticsearch": "keyword",
+                "marshmallow": List(SanitizedUnicode()),
+            },
+            "standard_review_applicability": {
+                "elasticsearch": "keyword",
+                "marshmallow": List(SanitizedUnicode()),
+            },
+            "standard_review_standard_validity": {
+                "elasticsearch": "keyword",
+                "marshmallow": SanitizedUnicode(),
+            },
+            "standard_review_checkdate": {
+                "elasticsearch": "date",
+                "marshmallow": SanitizedUnicode(),
+            },
+            "standard_review_comment": {
+                "elasticsearch": "text",
+                "marshmallow": SanitizedUnicode(),
+            },
+            "standard_review_expert": {
+                "elasticsearch": "keyword",
+                "marshmallow": SanitizedUnicode(),
+            },
         },
     },
 }
