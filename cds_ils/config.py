@@ -30,7 +30,7 @@ from invenio_app_ils.circulation.utils import (
     circulation_loan_will_expire_days,
 )
 from invenio_app_ils.config import CELERY_BEAT_SCHEDULE as ILS_CELERY_BEAT_SCHEDULE
-from invenio_app_ils.config import RECORDS_REST_ENDPOINTS
+from invenio_app_ils.config import RECORDS_REST_ENDPOINTS, RECORDS_REST_FACETS
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
 from invenio_app_ils.eitems.api import EITEM_PID_TYPE
 from invenio_app_ils.ill.api import (
@@ -414,6 +414,11 @@ ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE]["search_serial
 ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE][
     "update_permission_factory_imp"
 ] = loan_checkout_permission
+
+# show more tags in the facets
+RECORDS_REST_FACETS["documents"]["aggs"]["tag"] = (
+    dict(terms=dict(field="tags", size=10))
+)
 
 ###############################################################################
 # ILS overridden
