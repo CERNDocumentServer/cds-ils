@@ -416,8 +416,8 @@ ILS_CIRCULATION_RECORDS_REST_ENDPOINTS[CIRCULATION_LOAN_PID_TYPE][
 ] = loan_checkout_permission
 
 # show more tags in the facets
-RECORDS_REST_FACETS["documents"]["aggs"]["tag"] = (
-    dict(terms=dict(field="tags", size=10))
+RECORDS_REST_FACETS["documents"]["aggs"]["tag"] = dict(
+    terms=dict(field="tags", size=10)
 )
 
 ###############################################################################
