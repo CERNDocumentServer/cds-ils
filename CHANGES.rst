@@ -7,6 +7,16 @@
 Changes
 =======
 
+Version 2.9.0 (released 2024-05-28)
+
+- global: add self-checkout
+- patrons: reformat full names
+- document: display call number in the backoffice
+
+Version 2.8.4 (released 2024-06-12)
+
+- overridden: hide map if wrong value is stored in shelf field
+
 Version 2.8.3 (released 2024-05-28)
 
 - installation: upgrade invenio-app-ils (v3.0.0rc2)
