@@ -59,7 +59,6 @@ from invenio_circulation.transitions.transitions import (
 from invenio_oauthclient.contrib import cern_openid
 from invenio_records_rest.schemas.fields import SanitizedUnicode
 from invenio_records_rest.utils import deny_all
-from invenio_search.engine import dsl
 from marshmallow.fields import Bool, List
 
 from .circulation.utils import circulation_cds_extension_max_count
@@ -86,9 +85,9 @@ def _parse_env_bool(var_name, default=None):
     return default
 
 
-def query_parser_and(qstr, extra_params):
+def query_params_modifier(extra_params):
+    """Modifier for parameters to dsl Query function."""
     extra_params["default_operator"] = "AND"
-    return dsl.Q("query_string", query=qstr, **extra_params)
 
 
 ###############################################################################
@@ -390,7 +389,7 @@ RECORDS_REST_ENDPOINTS[DOCUMENT_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.literature.serializers:json_v1_search",
     "text/csv": "cds_ils.literature.serializers:csv_v1_search",
 }
-RECORDS_REST_ENDPOINTS[DOCUMENT_PID_TYPE]["search_query_parser"] = query_parser_and
+RECORDS_REST_ENDPOINTS[DOCUMENT_PID_TYPE]["search_query_parser"] = query_params_modifier
 RECORDS_REST_ENDPOINTS[EITEM_PID_TYPE]["record_serializers"] = {
     "application/json": "cds_ils.eitems.serializers:json_v1_response"
 }
@@ -405,7 +404,9 @@ RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.literature.serializers:json_v1_search",
     "text/csv": "cds_ils.literature.serializers:csv_v1_search",
 }
-RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE]["search_query_parser"] = query_parser_and
+RECORDS_REST_ENDPOINTS[LITERATURE_PID_TYPE][
+    "search_query_parser"
+] = query_params_modifier
 RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["record_serializers"] = {
     "application/json": "cds_ils.series.serializers" ":json_v1_response"
 }
@@ -413,7 +414,7 @@ RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_serializers"] = {
     "application/json": "cds_ils.series.serializers:json_v1_search",
     "text/csv": "cds_ils.series.serializers:csv_v1_search",
 }
-# RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_query_parser"] = query_parser_and
+RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_query_parser"] = query_params_modifier
 RECORDS_REST_ENDPOINTS[ITEM_PID_TYPE][
     "list_permission_factory_imp"
 ] = authenticated_user_permission
