@@ -5,24 +5,9 @@ import {
 } from "@inveniosoftware/react-invenio-app-ils";
 import _get from "lodash/get";
 import { parametrize } from "react-overridable";
-import { shelfLink, shelfLinkComponent } from "../../../utils";
-
-function renderCallNumber(item) {
-  const identifiers = _get(item, "identifiers", []);
-  if (identifiers === null) {
-    return null;
-  }
-  const callNumber = identifiers.find(
-    (identifier) => identifier.scheme === "CALL_NUMBER"
-  );
-  if (callNumber) {
-    return `(${callNumber.value})`;
-  }
-  return null;
-}
+import { shelfLinkComponent } from "../../../utils";
 
 function renderShelflink(item) {
-  const shelfNumber = _get(item, "shelf");
   const itemStatus = _get(item, "circulation.state");
 
   // If item is on loan, don't hyperlink the shelf
@@ -33,14 +18,8 @@ function renderShelflink(item) {
   );
 
   const itemShelf =
-    cannotCirculate && itemOnShelf
-      ? shelfNumber
-      : shelfLinkComponent(shelfLink(shelfNumber), shelfNumber);
-  return (
-    <>
-      {itemShelf} {renderCallNumber(item)}
-    </>
-  );
+    cannotCirculate && itemOnShelf ? _get(item, "shelf") : shelfLinkComponent(item);
+  return itemShelf;
 }
 
 export const DocumentItemBodyTable = parametrize(DocumentItemBody, {

@@ -13,20 +13,46 @@ export const snvLink = (
   </a>
 );
 
-export const shelfLink = (shelfNumber, iframe = false) => {
+export function renderCallNumber(item) {
+  const identifiers = _get(item, "identifiers", []);
+  if (identifiers === null) {
+    return null;
+  }
+  const callNumber = identifiers.find(
+    (identifier) => identifier.scheme === "CALL_NUMBER"
+  );
+  if (callNumber) {
+    return `(${callNumber.value})`;
+  }
+  return null;
+}
+
+export const shelfLink = (shelfNumber, { popupContent = null, iframe = false }) => {
   var shelfLink = `https://maps.web.cern.ch/?n=['SHELF ${shelfNumber}']`;
+  if (popupContent !== null) {
+    shelfLink = `${shelfLink}&popupContent=${JSON.stringify(popupContent)}`;
+  }
   if (iframe) {
     shelfLink = `${shelfLink}&showMenu=false&widgets=&scale=200`;
   }
   return shelfLink;
 };
 
-export const shelfLinkComponent = (shelfLink, shelfNumber, iconName = "map pin") => {
+export const shelfLinkComponent = (item, iconName = "map pin") => {
+  const shelfNumber = _get(item, "shelf");
+  const callNumber = renderCallNumber(item);
+  const popupContent = { "Title": item.title, "Call number": callNumber };
+  const linkToShelf = shelfLink(shelfNumber, { popupContent: popupContent });
   return (
-    <a href={shelfLink} target="_blank" rel="noreferrer">
-      <Icon name={iconName} />
-      {shelfNumber}
-    </a>
+    <>
+      {shelfNumber && (
+        <a href={linkToShelf} target="_blank" rel="noreferrer">
+          <Icon name={iconName} />
+          {shelfNumber}
+        </a>
+      )}{" "}
+      {callNumber}
+    </>
   );
 };
 
