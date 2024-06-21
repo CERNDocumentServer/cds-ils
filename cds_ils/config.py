@@ -415,6 +415,9 @@ RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_serializers"] = {
     "text/csv": "cds_ils.series.serializers:csv_v1_search",
 }
 RECORDS_REST_ENDPOINTS[SERIES_PID_TYPE]["search_query_parser"] = query_params_modifier
+RECORDS_REST_ENDPOINTS[ITEM_PID_TYPE]["record_loaders"] = {
+    "application/json": "cds_ils.items.loaders:item_loader"
+}
 RECORDS_REST_ENDPOINTS[ITEM_PID_TYPE][
     "list_permission_factory_imp"
 ] = authenticated_user_permission
