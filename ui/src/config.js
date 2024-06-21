@@ -209,6 +209,7 @@ export const config = {
         "document_pid",
         "circulation_restriction",
         "medium",
+        "identifiers",
       ],
     },
     editorUiSchema: {
