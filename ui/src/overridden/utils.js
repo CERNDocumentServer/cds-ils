@@ -38,11 +38,15 @@ export const shelfLink = (shelfNumber, { popupContent = null, iframe = false }) 
   return shelfLink;
 };
 
-export const shelfLinkComponent = (item, iconName = "map pin") => {
-  const shelfNumber = _get(item, "shelf");
-  const callNumber = renderCallNumber(item);
-  const popupContent = { "Title": item.title, "Call number": callNumber };
-  const linkToShelf = shelfLink(shelfNumber, { popupContent: popupContent });
+export const shelfLinkComponent = (
+  shelfNumber,
+  title,
+  callNumber,
+  iconName = "map pin"
+) => {
+  const linkToShelf = shelfLink(shelfNumber, {
+    popupContent: { "Title": title, "Call number": callNumber },
+  });
   return (
     <>
       {shelfNumber && (

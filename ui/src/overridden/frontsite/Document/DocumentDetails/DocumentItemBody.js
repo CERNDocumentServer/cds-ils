@@ -5,9 +5,9 @@ import {
 } from "@inveniosoftware/react-invenio-app-ils";
 import _get from "lodash/get";
 import { parametrize } from "react-overridable";
-import { shelfLinkComponent } from "../../../utils";
+import { renderCallNumber, shelfLinkComponent } from "../../../utils";
 
-function renderShelflink(item) {
+function renderShelflink(item, documentDetails) {
   const itemStatus = _get(item, "circulation.state");
 
   // If item is on loan, don't hyperlink the shelf
@@ -17,8 +17,14 @@ function renderShelflink(item) {
     _get(item, "status")
   );
 
+  const shelfNumber = _get(item, "shelf");
+  const title = _get(documentDetails, "metadata.title");
+  const callNumber = renderCallNumber(item);
+
   const itemShelf =
-    cannotCirculate && itemOnShelf ? _get(item, "shelf") : shelfLinkComponent(item);
+    cannotCirculate && itemOnShelf
+      ? shelfNumber
+      : shelfLinkComponent(shelfNumber, title, callNumber);
   return itemShelf;
 }
 
