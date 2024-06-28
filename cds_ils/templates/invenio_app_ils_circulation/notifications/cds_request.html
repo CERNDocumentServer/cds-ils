@@ -12,7 +12,7 @@ You selected: {{ circulation_delivery_methods[loan.delivery.method] }}
 {% if loan.delivery.method == "PICKUP" -%}
 You will receive an email as soon as the book is ready for you to pick up at the Library desk.
 {% elif loan.delivery.method == "DELIVERY" -%}
-The book will be sent by internal mail to your office mailbox. Delivery estimate is 2-3 working days maximum.
+The book will be sent by internal mail to your office mailbox. Delivery estimate is 4-5 working days.
 {% endif -%}
 {% endblock %}
 
@@ -26,7 +26,7 @@ You selected: <b>{{ circulation_delivery_methods[loan.delivery.method] }}</b>
 {% if loan.delivery.method == "PICKUP" -%}
 You will receive an email as soon as the book is ready for you to pick up at the Library desk. <br/>
 {% elif loan.delivery.method == "DELIVERY" -%}
-The book will be sent by internal mail to your office mailbox. Delivery estimate is 2-3 working days maximum. <br/>
+The book will be sent by internal mail to your office mailbox. Delivery estimate is 4-5 working days.<br/>
 {% endif -%}
 {% endblock %}
 
