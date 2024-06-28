@@ -34,9 +34,13 @@ function getLoanableItem(locations) {
   });
 
   for (const item of allRelevantItems) {
-    const itemStatus = _get(item, "circulation.state");
-    // If item is not on loan, return item's shelf value
-    if (!invenioConfig.CIRCULATION.loanActiveStates.includes(itemStatus)) {
+    const circulationStatus = _get(item, "circulation.state");
+    const itemStatus = _get(item, "status");
+    // If item is not on loan and it can be circulated, return item's shelf value
+    if (
+      !invenioConfig.CIRCULATION.loanActiveStates.includes(circulationStatus) &&
+      invenioConfig.ITEMS.canCirculateStatuses.includes(itemStatus)
+    ) {
       return item;
     }
   }
