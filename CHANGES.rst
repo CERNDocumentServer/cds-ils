@@ -7,6 +7,12 @@
 Changes
 =======
 
+Version 3.0.0 (released 2024-07-02)
+
+- global: upgrade invenio-app-ils (upgrades underlying mappings)
+- config: change search query parser
+- validation: add mandatory call number for call numbers
+
 Version 2.9.0 (released 2024-05-28)
 
 - global: add self-checkout
