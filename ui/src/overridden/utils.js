@@ -1,5 +1,5 @@
 import React from "react";
-import { InfoPopup, invenioConfig } from "@inveniosoftware/react-invenio-app-ils";
+import { invenioConfig } from "@inveniosoftware/react-invenio-app-ils";
 import { Icon } from "semantic-ui-react";
 import _get from "lodash/get";
 
@@ -47,18 +47,11 @@ export const shelfLinkComponent = (
   const linkToShelf = shelfLink(shelfNumber, {
     popupContent: { "Title": title, "Call number": callNumber },
   });
-  return shelfNumber ? (
-    <>
-      <a href={linkToShelf} target="_blank" rel="noreferrer">
-        <Icon name={iconName} />
-        {shelfNumber}
-      </a>{" "}
-      {callNumber}
-    </>
-  ) : (
-    <InfoPopup message="Please request online or ask at the Library desk.">
-      {callNumber}
-    </InfoPopup>
+  return (
+    <a href={linkToShelf} target="_blank" rel="noreferrer">
+      <Icon name={iconName} />
+      {shelfNumber}
+    </a>
   );
 };
 
