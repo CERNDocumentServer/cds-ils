@@ -4,9 +4,8 @@
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
-"""CDS-ILS fields utilities."""
 
-from __future__ import absolute_import
+"""CDS-ILS fields utilities."""
 
 import pytest
 from dojson.errors import IgnoreKey

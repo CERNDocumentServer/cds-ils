@@ -18,8 +18,6 @@
 # 59 Temple Place, Suite 330, Boston, MA 02D111-1307, USA.
 """Book fields tests."""
 
-from __future__ import absolute_import, print_function, unicode_literals
-
 import datetime
 
 import pytest

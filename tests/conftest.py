@@ -6,7 +6,6 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Common pytest fixtures and plugins."""
-from __future__ import absolute_import, print_function
 
 import os
 
