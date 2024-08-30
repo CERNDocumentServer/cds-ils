@@ -88,6 +88,17 @@ def _parse_env_bool(var_name, default=None):
 def query_params_modifier(extra_params):
     """Modifier for parameters to dsl Query function."""
     extra_params["default_operator"] = "AND"
+    # The `AND` operator, by default, will return hits where the query tokens are all
+    # in the same field.
+    # To search in multiple fields, we can use the `cross_field` type. However,
+    # it works only if the `fields` field is added and with a `*`, example:
+    # "query_string": {
+    #   "query": "Schwartz,",
+    #   "type": "cross_fields",
+    #   "default_operator": "AND",
+    #   "fields": ["title", "authors.full_name", "*"]
+    # }
+    extra_params["type"] = "cross_field"
 
 
 ###############################################################################
