@@ -16,9 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02D111-1307, USA.
-"""Journal fields tests."""
 
-from __future__ import absolute_import, print_function, unicode_literals
+"""Journal fields tests."""
 
 import pytest
 from cds_dojson.marc21.utils import create_record

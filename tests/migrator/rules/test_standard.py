@@ -4,9 +4,8 @@
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
-"""Standard fields tests."""
 
-from __future__ import absolute_import, print_function, unicode_literals
+"""Standard fields tests."""
 
 from cds_dojson.marc21.utils import create_record
 from flask import current_app

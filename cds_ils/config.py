@@ -87,7 +87,24 @@ def _parse_env_bool(var_name, default=None):
 
 def query_params_modifier(extra_params):
     """Modifier for parameters to dsl Query function."""
+    # The `AND` operator, by default, will return hits where the query tokens are all
+    # in the same field. `cross_fields` must be applied to enable cross fields searches.
     extra_params["default_operator"] = "AND"
+    # The `cross_fields` search type requires all searchable fields to have the same
+    # analyzers. In the example below, `title` and `authors.full_name` must have the
+    # same analyzer defined in the mappings.
+    #
+    # "query_string": {
+    #   "query": "Theory Schwartz",
+    #   "type": "cross_fields",
+    #   "fields": ["title", "authors.full_name", "*"]
+    #   "analyzer": "custom_analyzer"
+    # }
+    #
+    # Explanation:
+    # "((+title:theory +authors.full_name:theory) |
+    #       (+authors.full_name:schwartz +title:schwartz))"
+    extra_params["type"] = "cross_fields"
 
 
 ###############################################################################
