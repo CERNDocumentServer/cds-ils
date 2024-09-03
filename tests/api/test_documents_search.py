@@ -6,13 +6,30 @@
 from flask import url_for
 
 
-def test_search_multiple_fields(app, client, testdata, json_headers):
+def test_search_multiple_fields_with_cross_fields(app, client, testdata, json_headers):
     """Test searching documents with keywords in multiple fields."""
     url = url_for("invenio_records_rest.docid_list")
     response = client.get(f"{url}?q=american%20caroline", headers=json_headers)
+
     assert response.status_code == 200
-    print(response.get_json())
-    # fix me: assert that in the response we should have at least one hit, and the
-    # document with the `docid-2`
-    # add a second test that should fail if `type: cross_field` is removed from the
-    # search config.
+    result = response.get_json()
+    assert result["hits"]["total"] == 2
+
+
+def _query_params_modifier(extra_params):
+    extra_params["default_operator"] = "AND"
+    extra_params["type"] = "cross_fields"
+
+
+def test_search_multiple_fields_with_and(app, client, testdata, json_headers):
+    """Test searching documents with keywords in multi fields with default_operator AND"""
+    app.config["RECORDS_REST_ENDPOINTS"]["docid"][
+        "search_query_parser"
+    ] = _query_params_modifier
+
+    url = url_for("invenio_records_rest.docid_list")
+    response = client.get(f"{url}?q=american%20caroline", headers=json_headers)
+
+    assert response.status_code == 200
+    result = response.get_json()
+    assert result["hits"]["total"] == 0
