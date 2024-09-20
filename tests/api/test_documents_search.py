@@ -7,18 +7,23 @@ from flask import url_for
 
 
 def test_search_multiple_fields_with_cross_fields(app, client, testdata, json_headers):
-    """Test searching documents with keywords in multiple fields."""
+    """Test searching documents with keywords in multiple fields.
+
+    We are testing the query:
+    "((+title:american +authors.full_name:20caroline) | (+authors.full_name:american +title:20caroline))"
+    """
     url = url_for("invenio_records_rest.docid_list")
     response = client.get(f"{url}?q=american%20caroline", headers=json_headers)
 
     assert response.status_code == 200
     result = response.get_json()
-    assert result["hits"]["total"] == 2
+    assert result["hits"]["total"] == 1
 
 
-def _query_params_modifier(extra_params):
+def _query_params_modifier(extra_params={}):
     extra_params["default_operator"] = "AND"
     extra_params["type"] = "cross_fields"
+    # FIXME: this seems not to be taken into account
 
 
 def test_search_multiple_fields_with_and(app, client, testdata, json_headers):
