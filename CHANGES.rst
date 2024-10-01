@@ -7,6 +7,12 @@
 Changes
 =======
 
+Version 3.1.0 (released 2024-10-01)
+
+- global: upgrade react-invenio-app-ils
+- global: add manual self-checkout
+- ui: display call number on blank shelf
+
 Version 3.0.0 (released 2024-07-02)
 
 - global: upgrade invenio-app-ils (upgrades underlying mappings)
