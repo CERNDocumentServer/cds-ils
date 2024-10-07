@@ -102,7 +102,7 @@ def query_params_modifier(extra_params):
     # Explanation:
     # "((+title:theory +authors.full_name:theory) | (+authors.full_name:schwartz +title:schwartz))"
     extra_params["type"] = "cross_fields"
-    extra_params["analyzer"] = "custom_analyzer"
+
 
 
 ###############################################################################
