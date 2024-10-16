@@ -11,7 +11,5 @@ then
 else
   invenio setup
   invenio fixtures pages
-  cds-ils fixtures vocabularies
-  cds-ils fixtures location
   cds-ils migration create-unknown-reference-records
 fi

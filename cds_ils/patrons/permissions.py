@@ -9,10 +9,7 @@
 
 from invenio_access import action_factory
 from invenio_access.permissions import Permission
-from invenio_app_ils.permissions import (
-    authenticated_user_permission,
-    backoffice_access_action,
-)
+from invenio_app_ils.permissions import backoffice_access_action
 from invenio_app_ils.permissions import (
     views_permissions_factory as ils_views_permissions_factory,
 )
@@ -38,6 +35,4 @@ def views_permissions_factory(action):
         return retrieve_patron_loans_permission()
     elif action == "document-importer":
         return document_importer_permission()
-    elif action == "circulation-loan-checkout":
-        return authenticated_user_permission()
     return ils_views_permissions_factory(action)
