@@ -1,11 +1,15 @@
 ..
-    Copyright (C) 2019-2023 CERN.
+    Copyright (C) 2019-2024 CERN.
 
     CDS-ILS is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+Version 3.2.0 (released 2024-10-22)
+
+- search: add cross_field search type to enable AND searches across multiple fields
 
 Version 3.1.0 (released 2024-10-01)
 
