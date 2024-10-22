@@ -75,8 +75,7 @@ jobs:
 
       - name: Install & Build
         working-directory: ./ui
-        # --legacy-peer-deps due to https://github.com/Semantic-Org/Semantic-UI-React/issues/4301#issuecomment-1021663941
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Lint
         working-directory: ./ui
