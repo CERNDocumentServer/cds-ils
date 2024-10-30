@@ -15,7 +15,7 @@ from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
 
 from cds_ils.importer import marc21
-from cds_ils.importer.errors import LossyConversion, RecordModelMissing
+from cds_ils.importer.errors import LossyConversion, UnrecognisedImportMediaType
 from cds_ils.importer.handlers import xml_import_handlers
 
 
@@ -54,14 +54,17 @@ class XMLRecordToJson(object):
             is_deletable = False
 
         init_fields = {}
-        if "im" in marc_record.get("leader", []):
+        leader_tag = marc_record.get("leader", [])
+        if "am" in leader_tag:
+            init_fields.update({"_eitem": {"_type": "e-book"}})
+        elif "im" in leader_tag or "jm" in leader_tag:
             init_fields.update({"_eitem": {"_type": "audiobook"}})
-        elif "gm" in marc_record.get("leader", []):
+        elif "gm" in leader_tag:
             init_fields.update(
                 {"document_type": "MULTIMEDIA", "_eitem": {"_type": "video"}}
             )
         else:
-            init_fields.update({"_eitem": {"_type": "e-book"}})
+            raise UnrecognisedImportMediaType(leader_tag)
         # MARCXML -> JSON fields translation
         val = self.dojson_model.do(
             marc_record,

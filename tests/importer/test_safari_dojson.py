@@ -1,7 +1,9 @@
 import os
 
+import pytest
 from cds_dojson.marc21.utils import create_record
 
+from cds_ils.importer.errors import UnrecognisedImportMediaType
 from cds_ils.importer.providers.safari.safari import model
 
 marcxml = (
@@ -14,14 +16,17 @@ def check_transformation(marcxml_body, json_body):
     """Check transformation."""
     blob = create_record(marcxml.format(marcxml_body))
     init_fields = {}
-    if "im" in blob.get("leader", []):
+    leader_tag = blob.get("leader", [])
+    if "am" in leader_tag:
+        init_fields.update({"_eitem": {"_type": "e-book"}})
+    elif "im" in leader_tag or "jm" in leader_tag:
         init_fields.update({"_eitem": {"_type": "audiobook"}})
-    elif "gm" in blob.get("leader", []):
+    elif "gm" in leader_tag:
         init_fields.update(
             {"document_type": "MULTIMEDIA", "_eitem": {"_type": "video"}}
         )
     else:
-        init_fields.update({"_eitem": {"_type": "e-book"}})
+        raise UnrecognisedImportMediaType(leader_tag)
 
     record = {}
     record.update(**model.do(blob, ignore_missing=True, init_fields=init_fields))
@@ -396,7 +401,9 @@ def test_safari_additional2(app):
 
 
 def test_safari_audiobook(app):
-    """Test audiobook import."""
+    """Test audiobook import.
+    Leader tag: <leader>00000nim a22000007i 4500</leader>
+    """
     dirname = os.path.join(os.path.dirname(__file__), "data")
     with open(os.path.join(dirname, "safari_audiobook.xml"), "r") as fp:
         example = fp.read()
@@ -460,6 +467,91 @@ def test_safari_audiobook(app):
                 "title": "Managing your anxiety",
             },
         )
+
+
+def test_safari_audiobook2(app):
+    """Test audiobook import.
+    Leader tag: <leader>00000njm a22000007i 4500</leader>
+    """
+    dirname = os.path.join(os.path.dirname(__file__), "data")
+    with open(os.path.join(dirname, "safari_audiobook2.xml"), "r") as fp:
+        example = fp.read()
+    with app.app_context():
+        check_transformation(
+            example,
+            {
+                "_eitem": {
+                    "_type": "audiobook",
+                    "urls": [
+                        {
+                            "description": "audiobook",
+                            "value": "https://learning.oreilly.com/library/view/-/9781663731913/?ar",
+                        }
+                    ],
+                },
+                "abstract": "Make anxiety work for you. Work is stressful: We race to meet deadlines. We extend ourselves to return favors for colleagues. We set ambitious goals for ourselves and our teams. We measure ourselves against metrics, our competitors, and sometimes, our colleagues. Some of us even go beyond tangible metrics to internalize stress and fear of missing the mark-ruminating over presentations that didn't go according to plan, imagining worst-case scenarios, or standing frozen, paralyzed by perfectionism. But hypervigilance, worry, and catastrophizing don't have to hold you back at work. When channeled thoughtfully, anxiety can motivate us to be more resourceful, productive, and creative. It can break down barriers and create new bonds with our colleagues. Managing Your Anxiety will help you distinguish stress from anxiety, learn what anxiety looks like for you, understand it, and respond to it with self-compassion at work. With the latest psychological research and practical advice from leading experts, you'll learn how to recognize how your anxiety manifests itself; manage it in small, day-to-day moments and in more challenging times; experiment and find a mindfulness practice that works for you; and build a support infrastructure to help you manage your anxiety over the long term.",
+                "agency_code": "OCoLC",
+                "alternative_identifiers": [
+                    {"scheme": "SAFARI", "value": "on1417409648"}
+                ],
+                "authors": [
+                    {
+                        "full_name": "Marvel, Steve",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                    {
+                        "full_name": "Schnaubelt, Teri",
+                        "roles": ["AUTHOR"],
+                        "type": "PERSON",
+                    },
+                ],
+                "document_type": "BOOK",
+                "edition": "1st",
+                "identifiers": [
+                    {
+                        "material": "AUDIOBOOK",
+                        "scheme": "ISBN",
+                        "value": "9781663731913",
+                    },
+                    {"material": "AUDIOBOOK", "scheme": "ISBN", "value": "1663731918"},
+                ],
+                "imprint": {
+                    "place": "Place of publication not identified",
+                    "publisher": "Ascent Audio",
+                },
+                "keywords": [
+                    {"source": "SAFARI", "value": "Anxiety"},
+                    {"source": "SAFARI", "value": "Job stress"},
+                    {"source": "SAFARI", "value": "Self-care, Health"},
+                    {"source": "SAFARI", "value": "Autothérapie"},
+                ],
+                "languages": ["ENG"],
+                "provider_recid": "on1417409648",
+                "publication_year": "2024",
+                "subjects": [
+                    {"scheme": "LOC", "value": "BF575.A6"},
+                    {"scheme": "DEWEY", "value": "152.4/6"},
+                ],
+                "title": "Managing your anxiety",
+            },
+        )
+
+
+def test_safari_record_broken_mediatype(app):
+    """Test broken mediatype "bla".
+    Leader tag: <marc:leader>01538nbla a2200397 a 4500</marc:leader>
+    """
+    dirname = os.path.join(os.path.dirname(__file__), "data")
+    with open(os.path.join(dirname, "safari_record_broken_mediatype.xml"), "r") as fp:
+        example = fp.read()
+
+    with app.app_context():
+        with pytest.raises(UnrecognisedImportMediaType):
+            check_transformation(
+                example,
+                {},
+            )
 
 
 def test_safari_video(app):
