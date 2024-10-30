@@ -81,6 +81,12 @@ class RecordModelMissing(CDSImporterException):
     message = "[Record did not match any available model]"
 
 
+class UnrecognisedImportMediaType(CDSImporterException):
+    """Unrecognised record media type exception."""
+
+    message = "Record media type is not recognised."
+
+
 class UnexpectedValue(CDSImporterException):
     """The corresponding value is unexpected."""
 
