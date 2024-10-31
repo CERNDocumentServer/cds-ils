@@ -532,6 +532,7 @@ ILS_NOTIFICATIONS_TEMPLATES_CIRCULATION = {
     "request_no_items": "cds_request_no_items.html",
     "checkin": "cds_checkin.html",
     "checkout": "cds_checkout.html",
+    "self_checkout": "cds_self_checkout.html",
     "extend": "cds_extend.html",
     "overdue_reminder": "cds_overdue_reminder.html",
     "expiring_reminder": "cds_will_expire_in_reminder.html",
@@ -625,6 +626,12 @@ CIRCULATION_LOAN_TRANSITIONS = {
             transition=ILSToItemOnLoan,
             permission_factory=loan_checkout_permission,
         ),
+        dict(
+            dest="ITEM_ON_LOAN",
+            trigger="self_checkout",
+            transition=ILSToItemOnLoan,
+            permission_factory=authenticated_user_permission,
+        ),
     ],
     "PENDING": [
         dict(
@@ -632,6 +639,12 @@ CIRCULATION_LOAN_TRANSITIONS = {
             trigger="checkout",
             transition=ILSToItemOnLoan,
             permission_factory=backoffice_permission,
+        ),
+        dict(
+            dest="ITEM_ON_LOAN",
+            trigger="self_checkout",
+            transition=ILSToItemOnLoan,
+            permission_factory=authenticated_user_permission,
         ),
         dict(
             dest="CANCELLED",
