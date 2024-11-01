@@ -120,7 +120,8 @@ class SeriesImporter(object):
         # will become
         # `international series of numerical mathematics`
         for substring in IGNORE_SUFFIXES:
-            t = rreplace(t, substring, "")
+            if re.search(substring + "$", t):
+                t = rreplace(t, substring, "")
         return t.strip()
 
     def update_series(self, matched_series, json_series):
