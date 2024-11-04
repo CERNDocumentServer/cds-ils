@@ -7,6 +7,12 @@
 Changes
 =======
 
+Version 3.3.0 (released 2024-11-04)
+
+- self-checkout: move permissions check to invenio-app-ils
+- importer: add `jm` as possible audiobook id
+- importer: `series` word is removed only when appearing at end of the title
+
 Version 3.2.0 (released 2024-10-22)
 
 - search: add cross_field search type to enable AND searches across multiple fields
