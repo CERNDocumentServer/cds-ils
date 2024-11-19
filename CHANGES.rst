@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 3.4.0 (released 2024-11-19)
+
+- self-checkout: integrate new dedicated endpoints
+
 Version 3.3.0 (released 2024-11-04)
 
 - self-checkout: move permissions check to invenio-app-ils
