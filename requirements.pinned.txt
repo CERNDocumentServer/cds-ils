@@ -11,7 +11,7 @@ billiard==4.2.1
 bleach==6.2.0
 blinker==1.9.0
 cachelib==0.9.0
-cds-dojson==0.9.0
+cds-dojson==0.13.0
 celery==5.3.6
 certifi==2024.8.30
 cffi==1.17.1

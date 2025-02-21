@@ -252,6 +252,7 @@ export const config = {
       { key: "springer", text: "Springer", value: "springer" },
       { key: "ebl", text: "EbookCentral (EBL)", value: "ebl" },
       { key: "safari", text: "O'reilly (Safari)", value: "safari" },
+      { key: "snv", text: "SNV Standards", value: "snv" },
     ],
     modes: [
       { key: "create", text: "Import", value: "IMPORT" },

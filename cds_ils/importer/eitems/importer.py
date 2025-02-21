@@ -225,8 +225,6 @@ class EItemImporter(object):
     def eitems_search(self, matched_document):
         """Search items for given document."""
         document_pid = matched_document["pid"]
-        print(self.eitem_json.get("_type", "E-BOOK").upper())
-
         # get eitems for current provider
         search = get_eitems_for_document_by_provider(
             document_pid, self.metadata_provider
@@ -237,7 +235,6 @@ class EItemImporter(object):
         """Determine import action."""
         # If found more than 0 then update for the same type & provider, if eitem with same type & provider isn't found then do create
         hits_count = search.count()
-        print(hits_count)
         if hits_count == 1:
             self.action = "update"
         elif hits_count == 0:

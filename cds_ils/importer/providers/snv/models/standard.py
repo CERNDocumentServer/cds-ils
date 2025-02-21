@@ -16,14 +16,14 @@ from cds_ils.importer.providers.cds.cds import model as base_model
 from cds_ils.importer.providers.cds.ignore_fields import CDS_IGNORE_FIELDS
 
 
-class CDSStandard(CdsIlsOverdo):
+class SNVStandard(CdsIlsOverdo):
     """CDS Standard Overdo model."""
 
-    __query__ = "003:SzGeCERN AND (690C_:STANDARD OR 980__:STANDARD)"
+    __query__ = "003:SNV AND (690C_:STANDARD OR 980__:STANDARD)"
 
-    __ignore_keys__ = CDS_IGNORE_FIELDS
+    __ignore_keys__ = CDS_IGNORE_FIELDS.union({"001"})
 
-    _default_fields = {"_migration": {**get_helper_dict(record_type="document")}}
+    _default_fields = {"_migration": {**get_helper_dict(record_type="document")}, "_eitem": {"_type": "e-book"}}
 
     rectype = "document"
 
@@ -39,6 +39,6 @@ class CDSStandard(CdsIlsOverdo):
         return super().do(blob, ignore_missing, exception_handlers, init_fields)
 
 
-model = CDSStandard(
+model = SNVStandard(
     bases=(base_model,), entry_point_group="cds_ils.importer.cds.document"
 )

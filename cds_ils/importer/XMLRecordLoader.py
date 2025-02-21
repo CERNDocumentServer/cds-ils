@@ -6,7 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS RecordDumpLoader module."""
-import pkg_resources
+import importlib_metadata
 
 from cds_ils.importer.errors import RecordNotDeletable, UnknownProvider
 from cds_ils.importer.models import ImporterMode
@@ -19,10 +19,13 @@ class XMLRecordDumpLoader(object):
     def get_importer_class(cls, provider):
         """Load importer for a given provider."""
         try:
-            return pkg_resources.load_entry_point(
-                "cds-ils", "cds_ils.importers", provider
-            )
-        except Exception:
+            entry_points = importlib_metadata.entry_points()
+
+            # Retrieve the specific entry point for 'console_scripts'
+            entry_point = \
+            entry_points.select(group="cds_ils.importers")[provider].load()
+            return entry_point
+        except Exception as e:
             raise UnknownProvider
 
     @classmethod

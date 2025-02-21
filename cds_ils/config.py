@@ -705,6 +705,10 @@ CDS_ILS_IMPORTER_PROVIDERS = {
         "priority": 1,
         "agency_code": "SzGeCERN",
     },
+    "snv": {
+        "priority": 3,
+        "agency_code": "SNV",
+    },
     "springer": {
         "priority": 2,
         "agency_code": "DE-He213",
@@ -789,3 +793,12 @@ SECURITY_PASSWORD_SINGLE_HASH = True
 
 # Feature Toggles
 ILS_SELF_CHECKOUT_ENABLED = True
+
+REST_CSRF_ENABLED = False
+
+###############################################################################
+# CORS
+###############################################################################
+REST_ENABLE_CORS = True
+CORS_SEND_WILDCARD = False
+CORS_SUPPORTS_CREDENTIALS = True
