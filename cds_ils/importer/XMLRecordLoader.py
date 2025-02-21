@@ -22,8 +22,9 @@ class XMLRecordDumpLoader(object):
             entry_points = importlib_metadata.entry_points()
 
             # Retrieve the specific entry point for 'console_scripts'
-            entry_point = \
-            entry_points.select(group="cds_ils.importers")[provider].load()
+            entry_point = entry_points.select(group="cds_ils.importers")[
+                provider
+            ].load()
             return entry_point
         except Exception as e:
             raise UnknownProvider

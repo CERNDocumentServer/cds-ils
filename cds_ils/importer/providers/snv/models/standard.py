@@ -23,7 +23,10 @@ class SNVStandard(CdsIlsOverdo):
 
     __ignore_keys__ = CDS_IGNORE_FIELDS.union({"001"})
 
-    _default_fields = {"_migration": {**get_helper_dict(record_type="document")}, "_eitem": {"_type": "e-book"}}
+    _default_fields = {
+        "_migration": {**get_helper_dict(record_type="document")},
+        "_eitem": {"_type": "e-book"},
+    }
 
     rectype = "document"
 

@@ -15,7 +15,6 @@ class SNVImporter(Importer):
     EITEM_OPEN_ACCESS = False
     EITEM_URLS_LOGIN_REQUIRED = False
 
-
     def _extract_eitems_json(self):
         """Extracts eitems json for given pre-processed JSON."""
         eitem = {}
