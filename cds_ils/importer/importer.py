@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 CERN.
+# Copyright (C) 2020-2025 CERN.
 #
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
@@ -8,7 +8,7 @@
 """CDS-ILS Importer module."""
 import time
 
-import pkg_resources
+import importlib_metadata
 from flask import current_app
 from invenio_app_ils.errors import RecordHasReferencesError
 from invenio_app_ils.proxies import current_app_ils
@@ -75,10 +75,10 @@ class Importer(object):
     def get_document_importer(self, provider, default=DocumentImporter):
         """Determine which document importer to use."""
         try:
-            return pkg_resources.load_entry_point(
-                "cds-ils", "cds_ils.document_importers", provider
-            )
-        except Exception:
+            entry_points = importlib_metadata.entry_points()
+            return entry_points.select(group="cds_ils.document_importers")[
+                provider].load()
+        except Exception as e:
             return default
 
     def _validate_provider(self):
@@ -235,13 +235,13 @@ class Importer(object):
             db.session.commit()
             current_search.flush_and_refresh(index="*")
             document_has_only_serial_relations = (
-                len(matched_document.relations.keys())
-                and "serial" in matched_document.relations.keys()
+                    len(matched_document.relations.keys())
+                    and "serial" in matched_document.relations.keys()
             )
 
             if (
-                not matched_document.has_references()
-                or document_has_only_serial_relations
+                    not matched_document.has_references()
+                    or document_has_only_serial_relations
             ):
                 # remove serial relations
                 rr = RecordRelationsParentChild()
@@ -275,12 +275,12 @@ class Importer(object):
         return self.report(partial_matches=partial_matches)
 
     def report(
-        self,
-        document=None,
-        action="none",
-        partial_matches=None,
-        eitem=None,
-        series=None,
+            self,
+            document=None,
+            action="none",
+            partial_matches=None,
+            eitem=None,
+            series=None,
     ):
         """Generate import report."""
         doc_json = {}

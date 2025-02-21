@@ -520,7 +520,6 @@ def urls(self, key, value):
     sub_y = clean_val("y", value, str, default="")
     # Value of the url
     sub_u = clean_val("u", value, str, req=True)
-
     return clean_url_provider(url_value=sub_u, url_description=sub_y, record_dict=self)
 
 
@@ -922,6 +921,7 @@ def imprint(self, key, value):
     """Translates imprints fields."""
     reprint = clean_val("g", value, str)
     date_value = clean_val("c", value, str, req=True)
+
     if reprint:
         reprint = reprint.lower().replace("repr.", "").strip()
     try:
@@ -942,7 +942,11 @@ def imprint(self, key, value):
             )
             pub_year = f"{start_date.date().year} - {end_date.date().year}"
         else:
-            raise UnexpectedValue(subfield="c")
+            if self["agency_code"] == "SNV":
+                pub_year = str(datetime.datetime.now().year)
+                cleaned_date = None
+            else:
+                raise UnexpectedValue(subfield="c")
     except Exception:
         raise UnexpectedValue(subfield="c")
     self["publication_year"] = pub_year

@@ -28,7 +28,7 @@ def importer():
     "--provider",
     "-p",
     required=True,
-    type=click.Choice(["springer", "cds", "ebl", "safari"]),
+    type=click.Choice(["springer", "cds", "ebl", "safari", "snv"]),
     help="Choose the provider",
 )
 @click.option(
