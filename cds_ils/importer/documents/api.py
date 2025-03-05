@@ -36,6 +36,19 @@ def search_documents_by_doi(doi):
     return search
 
 
+def search_documents_by_standard_number(standard_number):
+    """Find document by standard number."""
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.query(
+        "bool",
+        must=[
+            dsl.Q("term", identifiers__scheme="STANDARD_NUMBER"),
+            dsl.Q("term", identifiers__value=standard_number),
+        ],
+    )
+    return search
+
+
 def search_document_by_title_authors(title, authors, subtitle=None):
     """Find document by title and authors."""
     document_search = current_app_ils.document_search_cls()

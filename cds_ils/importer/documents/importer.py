@@ -22,6 +22,7 @@ from invenio_search.engine import search
 
 from cds_ils.importer.documents.api import (
     fuzzy_search_document,
+    search_documents_by_standard_number,
     search_document_by_title_authors,
     search_documents_by_doi,
     search_documents_by_isbn,
@@ -374,6 +375,13 @@ class DocumentImporter(object):
             if identifier["scheme"] == "DOI"
         ]
 
+        # TODO: match by standard number
+        standard_number_list = [
+            identifier["value"]
+            for identifier in self.json_data.get("identifiers", [])
+            if identifier["scheme"] == "STANDARD_NUMBER"
+        ]
+
         matches = []
 
         # check by isbn first
@@ -381,10 +389,16 @@ class DocumentImporter(object):
             search = search_documents_by_isbn(isbn)
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
-        # check by doi
 
+        # check by doi
         for doi in doi_list:
             search = search_documents_by_doi(doi)
+            results = search.scan()
+            matches += [x.pid for x in results if x.pid not in matches]
+
+        # check by standard number
+        for standard_number in standard_number_list:
+            search = search_documents_by_standard_number(standard_number)
             results = search.scan()
             matches += [x.pid for x in results if x.pid not in matches]
 
