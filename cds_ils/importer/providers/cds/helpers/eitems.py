@@ -61,7 +61,7 @@ def clean_url_provider(
     elif all([elem in url_value for elem in ["cds", ".cern.ch/record/", "/files"]]):
         eitems_files.append(eitem_dict)
         record_dict["_migration"]["eitems_has_files"] = True
-    elif url_description in ["ebook", "e-book", "e-proceedings"]:
+    elif url_description in ["ebook", "e-book", "e-proceedings", "e-standard"]:
         translate_open_access(eitem_dict, url_description)
         eitems_external.append(eitem_dict)
         record_dict["_migration"]["eitems_has_external"] = True
