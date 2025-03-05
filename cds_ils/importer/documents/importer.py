@@ -22,10 +22,10 @@ from invenio_search.engine import search
 
 from cds_ils.importer.documents.api import (
     fuzzy_search_document,
-    search_documents_by_standard_number,
     search_document_by_title_authors,
     search_documents_by_doi,
     search_documents_by_isbn,
+    search_documents_by_standard_number,
 )
 from cds_ils.importer.errors import SimilarityMatchUnavailable
 from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
