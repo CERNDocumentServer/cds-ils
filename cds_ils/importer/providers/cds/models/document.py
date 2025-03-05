@@ -21,7 +21,7 @@ class CDSDocument(CdsIlsOverdo):
     """Translation Index for CDS Books."""
 
     __query__ = (
-        "003:SzGeCERN 690C_:BOOK OR 690C_:CONFERENCE OR "
+        "003:SzGeCERN 690C_:BOOK OR 690C_:CONFERENCE OR 690C_:THESIS OR "
         '690C_:"YELLOW REPORT" OR '
         "980__:PROCEEDINGS OR "
         "(-980:STANDARD 980:BOOK) OR "
