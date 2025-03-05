@@ -209,5 +209,18 @@
     "keywords": [{ "source": "X", "value": "Patata" }],
     "document_type": "BOOK",
     "publication_year": "1950"
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "script", "value": "test" },
+    "pid": "docid-13",
+    "title": "Metallic materials — Determination of forming-limit curves for sheet and strip (ed. 2nd - 2021)",
+    "authors": [{ "full_name": "International Organization for Standardization. Geneva" }],
+    "abstract": "This is an abstract",
+    "identifiers": [{ "scheme": "STANDARD_NUMBER", "value": "ISO-12004-2" }],
+    "keywords": [{ "source": "X", "value": "Patata" }],
+    "document_type": "BOOK",
+    "publication_year": "1950",
+    "note": "MATCH BY STANDARD NUMBER"
   }
 ]
