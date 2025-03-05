@@ -943,7 +943,7 @@ def imprint(self, key, value):
             pub_year = f"{start_date.date().year} - {end_date.date().year}"
         else:
             if self["agency_code"] == "SNV":
-                pub_year = str(datetime.datetime.now().year)
+                pub_year = str(date_value)
                 cleaned_date = None
             else:
                 raise UnexpectedValue(subfield="c")
