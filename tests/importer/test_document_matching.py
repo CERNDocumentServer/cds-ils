@@ -80,6 +80,19 @@ def test_document_search_matching(importer_test_data):
     assert validated_matches == "docid-4"
     assert partial == ["docid-41"]
 
+    # test matching by standard number
+    document_importer = DocumentImporter(
+        data_to_update[6],
+        helper_metadata_fields,
+        metadata_provider,
+        update_document_fields,
+    )
+
+    matches = document_importer.search_for_matching_documents()
+    validated_matches, partial = document_importer.validate_found_matches(matches)
+
+    assert validated_matches == "docid-13"
+
 
 def test_fuzzy_matching(importer_test_data):
     data_to_update = load_json_from_datadir(
