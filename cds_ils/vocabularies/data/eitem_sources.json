@@ -93,5 +93,10 @@
     "key": "CDS",
     "text": "CDS",
     "type": "eitem_sources"
+  },
+  {
+    "key": "snv",
+    "text": "SNV",
+    "type": "eitem_sources"
   }
 ]
