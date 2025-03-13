@@ -889,12 +889,6 @@ def test_authors(app):
                         "type": "PERSON",
                         "affiliations": [{"name": "CERN"}],
                         "alternative_names": ["Hillman, Jonathan"],
-                        "identifiers": [
-                            {
-                                "scheme": "INSPIRE ID",
-                                "value": "INSPIRE-00341737",
-                            },
-                        ],
                     },
                     {
                         "full_name": "John Doe",
