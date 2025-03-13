@@ -51,7 +51,7 @@ def _get_correct_ils_contributor_role(subfield, role, raise_unexpected=False):
 
 def _extract_json_ils_ids(info, provenance="scheme"):
     """Extract author IDs from MARC tags."""
-    SOURCES = {
+    SOURCES_TO_DROP = {
         "AUTHOR|(INSPIRE)": "INSPIRE ID",
     }
     regex = re.compile(r"(AUTHOR\|\((INSPIRE)\))(.*)")
@@ -60,11 +60,14 @@ def _extract_json_ils_ids(info, provenance="scheme"):
     for author_id in author_ids:
         match = regex.match(author_id)
         if match:
-            ids.append({"value": match.group(3), provenance: SOURCES[match.group(1)]})
-    try:
-        ids.append({"value": info["inspireid"], provenance: "INSPIRE ID"})
-    except KeyError:
-        pass
+            continue
+            # DISABLE inspire id
+            # ids.append({"value": match.group(3),
+            #             provenance: SOURCES_TO_DROP[match.group(1)]})
+    # try:
+    #     ids.append({"value": info["inspireid"], provenance: "INSPIRE ID"})
+    # except KeyError:
+    #     pass
 
     author_orcid = info.get("k")
     if author_orcid:
