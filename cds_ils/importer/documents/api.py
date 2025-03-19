@@ -69,6 +69,13 @@ def search_document_by_title_authors(title, authors, subtitle=None):
     return search
 
 
+def search_documents_by_video_url(url):
+    """Find eitem by URL if it's a video."""
+    document_search = current_app_ils.document_search_cls()
+    search = document_search.filter("term", eitems__hits__urls__value=url)
+    return search
+
+
 def fuzzy_search_document(title, authors):
     """Search fuzzy matches of document and title."""
     # check the fuzzy search options under:

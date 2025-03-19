@@ -26,6 +26,7 @@ from cds_ils.importer.documents.api import (
     search_documents_by_doi,
     search_documents_by_isbn,
     search_documents_by_standard_number,
+    search_documents_by_video_url,
 )
 from cds_ils.importer.errors import SimilarityMatchUnavailable
 from cds_ils.importer.vocabularies_validator import validator as vocabulary_validator
@@ -287,23 +288,66 @@ class DocumentImporter(object):
 
         return True
 
-    def _matching_isbn(self, existing_document):
-        """Find matching isbns for importing document."""
+    def _matching_identifiers(self, existing_document):
+        """Find matching isbns, DOIs and standart numbers for importing document."""
         import_doc_identifiers = self.json_data.get("identifiers", [])
+        existing_doc_identifiers = existing_document.get("identifiers", [])
+
+        # check ISBNs
         import_isbns = [
             entry["value"]
             for entry in import_doc_identifiers
             if entry.get("scheme") == "ISBN"
         ]
-        existing_doc_identifiers = existing_document.get("identifiers", [])
         existing_isbns = [
             entry["value"]
             for entry in existing_doc_identifiers
             if entry.get("scheme") == "ISBN"
         ]
-
         matching_isbns = [isbn for isbn in import_isbns if isbn in existing_isbns]
-        return matching_isbns
+
+        # check DOIs
+        import_dois = [
+            entry["value"]
+            for entry in import_doc_identifiers
+            if entry.get("scheme") == "DOI"
+        ]
+        existing_dois = [
+            entry["value"]
+            for entry in existing_doc_identifiers
+            if entry.get("scheme") == "DOI"
+        ]
+        matching_dois = [doi for doi in import_dois if doi in existing_dois]
+
+        # check standard numbers
+        import_standard_num = [
+            entry["value"]
+            for entry in import_doc_identifiers
+            if entry.get("scheme") == "STANDARD_NUMBER"
+        ]
+        existing_standard_num = [
+            entry["value"]
+            for entry in existing_doc_identifiers
+            if entry.get("scheme") == "STANDARD_NUMBER"
+        ]
+        matching_standard_num = [
+            standard_num
+            for standard_num in import_standard_num
+            if standard_num in existing_standard_num
+        ]
+
+        return matching_isbns + matching_dois + matching_standard_num
+
+    def _matching_video_urls(self, import_eitem, document_eitem):
+        """Find matching URL of videos for importing document."""
+        import_urls = import_eitem.get("urls", [])
+        document_urls = document_eitem.get("urls", [])
+
+        import_url_values = [entry["value"] for entry in import_urls]
+        existing_url_value = [entry["value"] for entry in document_urls]
+        matching_urls = [url for url in import_url_values if url in existing_url_value]
+
+        return matching_urls
 
     def validate_found_matches(self, not_validated_matches):
         """Validate matched & parsed documents have same title/isbn pair."""
@@ -322,7 +366,18 @@ class DocumentImporter(object):
             document_edition = document.get("edition")
             doc_pub_year = document.get("publication_year")
 
-            if self._matching_isbn(document):
+            # match videos by URL
+            import_eitem = self.json_data.get("_eitem", {})
+            if import_eitem.get("_type") == "video":
+                eitem_search = current_app_ils.eitem_search_cls()
+                eitem_cls = current_app_ils.eitem_record_cls
+                document_eitems = eitem_search.search_by_document_pid(pid_value)
+                for hit in document_eitems:
+                    document_eitem = eitem_cls.get_record_by_pid(hit.pid)
+                    if self._matching_video_urls(import_eitem, document_eitem):
+                        matches.append(pid_value)
+
+            if self._matching_identifiers(document):
                 matches.append(pid_value)
             else:
                 both_editions = document_edition and import_doc_edition
@@ -352,6 +407,9 @@ class DocumentImporter(object):
                     partial_matches.append(pid_value)
                 else:
                     matches.append(pid_value)
+
+        # remove duplicates, but keep the original order
+        matches = sorted(set(matches), key=matches.index)
 
         if matches:
             match = matches[0]
@@ -383,6 +441,18 @@ class DocumentImporter(object):
         ]
 
         matches = []
+
+        # match videos by URL
+        import_eitem = self.json_data.get("_eitem", {})
+        if import_eitem.get("_type") == "video":
+            import_urls_list = [
+                entry["value"] for entry in import_eitem.get("urls", [])
+            ]
+
+            for url in import_urls_list:
+                search = search_documents_by_video_url(url)
+                results = search.scan()
+                matches += [x.pid for x in results if x.pid not in matches]
 
         # check by isbn first
         for isbn in isbn_list:
