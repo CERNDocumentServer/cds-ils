@@ -89,7 +89,6 @@ class CDSSerial(CdsIlsOverdo):
         "246__b",
         "246__i",
         "246__n",
-        "246__p",
         "250__a",
         "260__a",
         "260__b",
