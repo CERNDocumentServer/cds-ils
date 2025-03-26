@@ -13,7 +13,7 @@ from cds_ils.importer.errors import UnexpectedValue
 
 DOCUMENT_TYPE = {
     "PROCEEDINGS": ["PROCEEDINGS", "42", "43", "CONFERENCE"],
-    "BOOK": ["BOOK", "21"],
+    "BOOK": ["BOOK", "21", "THESIS"],
     "STANDARD": ["STANDARD"],
 }
 
