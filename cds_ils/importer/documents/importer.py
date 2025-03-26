@@ -289,7 +289,7 @@ class DocumentImporter(object):
         return True
 
     def _matching_identifiers(self, existing_document):
-        """Find matching isbns, DOIs and standart numbers for importing document."""
+        """Find matching isbns, DOIs and standard numbers for importing document."""
         import_doc_identifiers = self.json_data.get("identifiers", [])
         existing_doc_identifiers = existing_document.get("identifiers", [])
 

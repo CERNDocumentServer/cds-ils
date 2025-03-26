@@ -127,6 +127,7 @@
 </marc:datafield>
 <marc:datafield tag="650" ind1=" " ind2="6">
     <marc:subfield code="a">Gestion de projet.</marc:subfield>
+    <marc:subfield code="x">Projet projet.</marc:subfield>
 </marc:datafield>
 <marc:datafield tag="650" ind1=" " ind2="7">
     <marc:subfield code="a">Project other.</marc:subfield>
