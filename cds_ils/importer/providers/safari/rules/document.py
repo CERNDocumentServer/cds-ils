@@ -43,7 +43,7 @@ def agency_code(self, key, value):
     return value
 
 
-@model.over("authors", "(^100)|(^7001)")
+@model.over("authors", "(^100)|(^700)")
 @filter_list_values
 def authors(self, key, value):
     """Translates authors."""
@@ -333,13 +333,15 @@ def keywords(self, key, value):
     """Translate keywords."""
     _keywords = self.get("keywords", [])
 
-    keyword = {
-        "source": "SAFARI",
-        "value": clean_val("a", value, str, req=True).strip(
-            string.punctuation + string.whitespace
-        ),
-    }
+    for key in value.keys():
+        if key == "x" or key == "a":
+            keyword = {
+                "source": "SAFARI",
+                "value": clean_val(key, value, str, req=True).strip(
+                    string.punctuation + string.whitespace
+                ),
+            }
+            if keyword not in _keywords:
+                _keywords.append(keyword)
 
-    if keyword not in _keywords:
-        _keywords.append(keyword)
     return _keywords

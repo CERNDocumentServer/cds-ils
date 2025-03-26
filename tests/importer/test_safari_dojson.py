@@ -121,6 +121,7 @@ def test_safari_transformation(app):
                 "keywords": [
                     {"source": "SAFARI", "value": "Project management"},
                     {"source": "SAFARI", "value": "Gestion de projet"},
+                    {"source": "SAFARI", "value": "Projet projet"},
                     {"source": "SAFARI", "value": "Project other"},
                 ],
                 "number_of_pages": "399",

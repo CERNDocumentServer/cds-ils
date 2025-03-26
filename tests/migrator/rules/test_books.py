@@ -2751,6 +2751,7 @@ def test_alternative_titles(app):
                     part 4: guidance on the metrics
                 </subfield>
                 <subfield code="i">CERN</subfield>
+                <subfield code="p">Another subtitle</subfield>
             </datafield>
             <datafield tag="246" ind1=" " ind2=" ">
                 <subfield code="a">Water quality — sampling</subfield>
@@ -2767,6 +2768,10 @@ def test_alternative_titles(app):
                     },
                     {
                         "value": """part 4: guidance on the metrics""",
+                        "type": "SUBTITLE",
+                    },
+                    {
+                        "value": "Another subtitle",
                         "type": "SUBTITLE",
                     },
                     {
@@ -2791,6 +2796,7 @@ def test_alternative_titles(app):
                 <subfield code="b">
                     part 15: guidance on the preservation
                 </subfield>
+                <subfield code="p">Another subtitle</subfield>
             </datafield>
             """,
             {
@@ -2802,6 +2808,10 @@ def test_alternative_titles(app):
                     },
                     {
                         "value": """part 15: guidance on the preservation""",
+                        "type": "SUBTITLE",
+                    },
+                    {
+                        "value": "Another subtitle",
                         "type": "SUBTITLE",
                     },
                 ],
