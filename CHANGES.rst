@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 3.5.1 (released 2025-03-26)
+
+- importer: ignore supervisors field on cds sync
+
 Version 3.5.0 (released 2025-03-26)
 
 - importer: add snv provider
