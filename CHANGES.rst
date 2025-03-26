@@ -7,6 +7,13 @@
 Changes
 =======
 
+Version 3.5.0 (released 2025-03-26)
+
+- importer: add snv provider
+- importer: add matching by standard number
+- importer: allow thesis importation
+- importer: add matching by DOIs and URLs (videos only)
+
 Version 3.4.0 (released 2024-11-19)
 
 - self-checkout: integrate new dedicated endpoints
