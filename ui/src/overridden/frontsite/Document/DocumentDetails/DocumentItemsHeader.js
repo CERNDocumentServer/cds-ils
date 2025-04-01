@@ -9,9 +9,9 @@ export const DocumentItemsHeader = ({ document }) => {
       <Divider horizontal>Where to find</Divider>
       <Message attached="top" className="warning center">
         <Message.Content>
-          For standards, please directly search on {snvLink}. Please contact
-          <a href="mailto:library.desk@cern.ch"> library.desk@cern.ch</a> in case you
-          cannot find what you are looking for.
+          To access the standard, follow the link 'e-standard', use your Microsoft 365
+          account to log in, and search for the standard on the{" "}
+          {snvLink("SNV platform")}.
         </Message.Content>
       </Message>
     </>

@@ -10,7 +10,7 @@ const SearchResultHeaderCmp = ({ currentQueryState }) => {
   return filters.some((item) => item.includes("STANDARD")) ? (
     <Message attached="top" className="warning center">
       <Message.Content>
-        For standards, please directly search on {snvLink}.
+        For standards, please directly search on {snvLink()}.
       </Message.Content>
     </Message>
   ) : (
