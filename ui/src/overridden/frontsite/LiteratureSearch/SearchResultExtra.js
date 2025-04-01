@@ -22,7 +22,7 @@ export const SearchResultExtra = () => {
         Couldn't find the literature you were looking for?
       </Message.Header>
       <List className="mt-5">
-        <List.Item>For standards, please directly search on {snvLink}.</List.Item>
+        <List.Item>For standards, please directly search on {snvLink()}.</List.Item>
         <List.Item>
           Please fill in {requestFormLink} to request new additions or purchases to the
           catalogue. (Login required)

@@ -156,7 +156,7 @@ export const HomeContent = () => {
           <Icon name="info circle" />
           <List className="mt-5">
             <Message.Header>
-              CERN readers have access to {snvLink} and can search directly!
+              CERN readers have access to {snvLink()} and can search directly!
             </Message.Header>
             <Message.Content>
               CERN readers can access the standards online and download them on their
