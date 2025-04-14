@@ -1126,6 +1126,13 @@ def alternative_titles_doc(self, key, value):
                 "type": "SUBTITLE",
             }
         )
+    if "p" in value:
+        _alternative_titles.append(
+            {
+                "value": clean_val("p", value, str, req=True),
+                "type": "SUBTITLE",
+            }
+        )
     return _alternative_titles
 
 
