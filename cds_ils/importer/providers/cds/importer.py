@@ -18,18 +18,30 @@ from cds_ils.minters import legacy_recid_minter
 class CDSImporter(Importer):
     """CDS importer class."""
 
-    UPDATE_DOCUMENT_FIELDS = ("identifiers", "tags")
+    UPDATE_DOCUMENT_FIELDS = ("identifiers", "tags", "_rdm_pid")
     # Mark all CDS elated E-Items as login required and not open access
     EITEM_OPEN_ACCESS = False
     EITEM_URLS_LOGIN_REQUIRED = True
 
     def _match_document(self):
         """CDS importer match document."""
-        legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
         document_class = current_app_ils.document_record_cls
+        if "_rdm_pid" in self.json_data:
+            pid_value = self.json_data["_rdm_pid"]
+            external_pid_type = current_app.config["CDS_ILS_RECORD_CDS_RDM_PID_TYPE"]
+            try:
+                document = get_record_by_legacy_recid(
+                    document_class, external_pid_type, pid_value
+                )
+                return document["pid"], []
+            except (PIDDoesNotExistError, PersistentIdentifierError):
+                ## we pass to try to match by legacy recid
+                pass
+        pid_value = self.json_data["legacy_recid"]
+        external_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
         try:
             document = get_record_by_legacy_recid(
-                document_class, legacy_pid_type, self.json_data["legacy_recid"]
+                document_class, external_pid_type, pid_value
             )
         except (PIDDoesNotExistError, PersistentIdentifierError):
             return None, []
@@ -40,11 +52,23 @@ class CDSImporter(Importer):
         document_class = current_app_ils.document_record_cls
         summary = super().import_record()
         if summary["action"] == "create" and summary["output_pid"]:
-            legacy_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
             document = document_class.get_record_by_pid(summary["output_pid"])
             record_uuid = document.pid.object_uuid
 
-            legacy_recid_minter(document["legacy_recid"], legacy_pid_type, record_uuid)
+            if "_rdm_pid" in document:
+                external_pid_type = current_app.config[
+                    "CDS_ILS_RECORD_CDS_RDM_PID_TYPE"
+                ]
+                pid_value = document["_rdm_pid"]
+            else:
+                external_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
+                pid_value = document["legacy_recid"]
+
+            legacy_recid_minter(
+                pid_value,
+                external_pid_type,
+                record_uuid,
+            )
         return summary
 
     def _extract_eitems_json(self):

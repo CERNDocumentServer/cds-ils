@@ -1,0 +1,15 @@
+[{
+    "pid": "eitemid-1",
+    "created_by": {"type": "import", "value":  "cds"},
+    "document_pid": "docid-2",
+    "eitem_type": "E-BOOK",
+    "internal_notes": "An internal note",
+    "description": "Description of the electronic item",
+    "open_access": true,
+    "urls":[{
+            "value": "https://127.0.0.1/api/records/aey8d-bdw61/files/CERN-THESIS-2015-130.pdf",
+            "description": "e-book",
+            "login_required": true
+        }]
+  }
+]

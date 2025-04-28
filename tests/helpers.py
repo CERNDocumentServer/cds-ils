@@ -24,9 +24,12 @@ def load_json_from_datadir(filename, relpath=None):
         return json.load(fp)
 
 
-def mint_record_pid(pid_type, pid_field, record):
+def mint_record_pid(pid_type, pid_field, record, obj_uuid=None):
     """Mint the given PID for the given record."""
-    record_uuid = uuid.uuid4()
+    if obj_uuid:
+        record_uuid = obj_uuid
+    else:
+        record_uuid = uuid.uuid4()
     PersistentIdentifier.create(
         pid_type=pid_type,
         pid_value=record[pid_field],
@@ -38,11 +41,20 @@ def mint_record_pid(pid_type, pid_field, record):
     return record_uuid
 
 
-def _create_records(db, objs, cls, pid_type):
+def _create_records(db, objs, cls, pid_type, is_rdm=False):
     """Create records and index."""
     recs = []
     for obj in objs:
         record_uuid = mint_record_pid(pid_type, "pid", {"pid": obj["pid"]})
+
+        if "legacy_recid" in obj:
+            mint_record_pid(
+                "ldocid", "pid", {"pid": obj["legacy_recid"]}, obj_uuid=record_uuid
+            )
+        if is_rdm and "_rdm_pid" in obj:
+            mint_record_pid(
+                "cdspid", "pid", {"pid": obj["_rdm_pid"]}, obj_uuid=record_uuid
+            )
         record = cls.create(obj, record_uuid)
         recs.append(record)
         db.session.commit()

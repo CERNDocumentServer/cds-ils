@@ -1,0 +1,445 @@
+{
+  "id": "aey8d-bdw61",
+  "created": "2015-09-07T00:00:00+00:00",
+  "updated": "2025-04-22T16:25:57.794059+00:00",
+  "links": {
+    "self": "https://127.0.0.1/api/records/aey8d-bdw61",
+    "self_html": "https://127.0.0.1/records/aey8d-bdw61",
+    "preview_html": "https://127.0.0.1/records/aey8d-bdw61?preview=1",
+    "parent": "https://127.0.0.1/api/records/v2ha7-xyc73",
+    "parent_html": "https://127.0.0.1/records/v2ha7-xyc73",
+    "self_iiif_manifest": "https://127.0.0.1/api/iiif/record:aey8d-bdw61/manifest",
+    "self_iiif_sequence": "https://127.0.0.1/api/iiif/record:aey8d-bdw61/sequence/default",
+    "files": "https://127.0.0.1/api/records/aey8d-bdw61/files",
+    "media_files": "https://127.0.0.1/api/records/aey8d-bdw61/media-files",
+    "thumbnails": {
+      "10": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf/full/^10,/0/default.jpg",
+      "50": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf/full/^50,/0/default.jpg",
+      "100": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf/full/^100,/0/default.jpg",
+      "250": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf/full/^250,/0/default.jpg",
+      "750": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf/full/^750,/0/default.jpg",
+      "1200": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf/full/^1200,/0/default.jpg"
+    },
+    "archive": "https://127.0.0.1/api/records/aey8d-bdw61/files-archive",
+    "archive_media": "https://127.0.0.1/api/records/aey8d-bdw61/media-files-archive",
+    "latest": "https://127.0.0.1/api/records/aey8d-bdw61/versions/latest",
+    "latest_html": "https://127.0.0.1/records/aey8d-bdw61/latest",
+    "versions": "https://127.0.0.1/api/records/aey8d-bdw61/versions",
+    "draft": "https://127.0.0.1/api/records/aey8d-bdw61/draft",
+    "reserve_doi": "https://127.0.0.1/api/records/aey8d-bdw61/draft/pids/doi",
+    "access_links": "https://127.0.0.1/api/records/aey8d-bdw61/access/links",
+    "access_grants": "https://127.0.0.1/api/records/aey8d-bdw61/access/grants",
+    "access_users": "https://127.0.0.1/api/records/aey8d-bdw61/access/users",
+    "access_groups": "https://127.0.0.1/api/records/aey8d-bdw61/access/groups",
+    "access_request": "https://127.0.0.1/api/records/aey8d-bdw61/access/request",
+    "access": "https://127.0.0.1/api/records/aey8d-bdw61/access",
+    "communities": "https://127.0.0.1/api/records/aey8d-bdw61/communities",
+    "communities-suggestions": "https://127.0.0.1/api/records/aey8d-bdw61/communities-suggestions",
+    "requests": "https://127.0.0.1/api/records/aey8d-bdw61/requests"
+  },
+  "revision_id": 7,
+  "parent": {
+    "id": "v2ha7-xyc73",
+    "access": {
+      "grants": [],
+      "owned_by": {
+        "user": "-1"
+      },
+      "links": [],
+      "settings": {
+        "allow_user_requests": false,
+        "allow_guest_requests": false,
+        "accept_conditions_text": null,
+        "secret_link_expiration": 0
+      }
+    },
+    "communities": {
+      "ids": [
+        "c2c46ab3-5fb4-4d86-83c6-5d9dc8392d6f"
+      ],
+      "default": "c2c46ab3-5fb4-4d86-83c6-5d9dc8392d6f",
+      "entries": [
+        {
+          "id": "c2c46ab3-5fb4-4d86-83c6-5d9dc8392d6f",
+          "created": "2025-03-03T11:14:28.011210+00:00",
+          "updated": "2025-03-03T11:14:28.060069+00:00",
+          "links": {
+          },
+          "revision_id": 2,
+          "slug": "cern-si",
+          "metadata": {
+            "title": "CERN Scientific information"
+          },
+          "access": {
+            "visibility": "public",
+            "members_visibility": "public",
+            "member_policy": "open",
+            "record_submission_policy": "open",
+            "review_policy": "closed"
+          },
+          "custom_fields": {},
+          "is_verified": true,
+          "deletion_status": {
+            "is_deleted": false,
+            "status": "P"
+          },
+          "children": {
+            "allow": false
+          }
+        }
+      ]
+    },
+    "pids": {
+    },
+    "is_verified": false
+  },
+  "versions": {
+    "is_latest": true,
+    "is_latest_draft": true,
+    "index": 1
+  },
+  "is_published": true,
+  "is_draft": false,
+  "pids": {
+    "oai": {
+      "identifier": "oai:cds-rdm.com:aey8d-bdw61",
+      "provider": "oai"
+    }
+  },
+  "metadata": {
+    "additional_descriptions": [
+      {
+        "description": "ALEPH Theses",
+        "type": {
+          "id": "series-information",
+          "title": {
+            "de": "Informationen zur Reihe",
+            "en": "Series information",
+            "sv": "Information om serien"
+          }
+        }
+      },
+      {
+        "description": "245 p",
+        "type": {
+          "id": "physical-description",
+          "title": {
+            "en": "Physical description"
+          }
+        }
+      },
+      {
+        "description": "1. Chapter 1: ABC\n 2. Chapter 2: EFG",
+        "type": {
+          "id": "table-of-contents",
+          "title": {
+            "en": "Physical description"
+          }
+        }
+      },
+      {
+        "description": "Some other abstract",
+        "type": {
+          "id": "abstract",
+          "title": {
+            "en": "Abstract"
+          }
+        }
+      }
+    ],
+    "additional_titles": [
+      {
+        "title": "Construction of a central pre-sampler at ATLAS and study of ",
+        "type": {
+          "id": "translated-title",
+          "title": {
+            "de": "Übersetzter Titel",
+            "en": "Translated title",
+            "sv": "Översatt titel"
+          }
+        },
+        "lang": {
+          "id": "eng",
+          "title": {
+            "en": "English"
+          }
+        }
+      },
+      {
+        "title": "Construction of a central pre-sampler at {ATLAS} and study of ",
+        "type": {
+          "id": "alternative-title",
+          "title": {
+            "de": "Alternativer Titel",
+            "en": "Alternative title",
+            "sv": "Alternativ titel"
+          }
+        }
+      }
+    ],
+    "resource_type": {
+      "id": "publication-thesis",
+      "title": {
+        "de": "Abschlussarbeit",
+        "en": "Thesis",
+        "sv": "Avhandling"
+      }
+    },
+    "related_identifiers": [
+      {
+        "scheme": "issn",
+        "identifier": "0356-0961",
+        "relation_type": {
+          "id": "ispublishedin",
+          "title": {
+            "en": "Is published in"
+          }
+        }
+      }
+    ],
+    "copyright": "2025 © Author(s)",
+    "rights": [
+      {
+        "id": "cc-by-4.0",
+        "title": {
+          "en": "Creative Commons Attribution 4.0 International"
+        },
+        "description": {
+          "en": ""
+        },
+        "icon": "cc-by-idon",
+        "props": {
+          "url": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+          "scheme": "spdx"
+        }
+      }
+    ],
+    "creators": [
+      {
+        "person_or_org": {
+          "type": "personal",
+          "name": "Martin, Christopher Blake",
+          "given_name": "Christopher Blake",
+          "family_name": "Martin",
+          "identifiers": [
+            {
+              "identifier": "2085067",
+              "scheme": "lcds"
+            },
+            {
+              "identifier": "0000-0003-1754-9027",
+              "scheme": "orcid"
+            }
+          ]
+        },
+        "affiliations": [
+          {
+            "name": "Johns Hopkins U"
+          }
+        ]
+      }
+    ],
+    "title": "Discovery and Characterization of a Higgs boson using four-lepton events from the CMS experiment",
+    "publication_date": "2015-04-22",
+    "subjects": [
+      {
+        "subject": "HIGGS"
+      }
+    ],
+    "contributors": [
+      {
+        "person_or_org": {
+          "type": "personal",
+          "name": "Gritsan, Andrei",
+          "given_name": "Andrei",
+          "family_name": "Gritsan",
+          "identifiers": [
+            {
+              "identifier": "2069596",
+              "scheme": "lcds"
+            }
+          ]
+        },
+        "role": {
+          "id": "supervisor",
+          "title": {
+            "de": "SupervisorIn",
+            "en": "Supervisor",
+            "sv": "Handledare"
+          }
+        },
+        "affiliations": [
+          {
+            "name": "Johns Hopkins U"
+          }
+        ]
+      }
+    ],
+    "languages": [
+      {
+        "id": "eng",
+        "title": {
+          "en": "English"
+        }
+      }
+    ],
+    "identifiers": [
+      {
+        "identifier": "2050951",
+        "scheme": "lcds"
+      },
+      {
+        "identifier": "1393422",
+        "scheme": "inspire"
+      },
+      {
+        "identifier": "CERN-THESIS-2015-130",
+        "scheme": "cds_ref"
+      },
+      {
+        "identifier": "FERMILAB-THESIS-2015-22",
+        "scheme": "cds_ref"
+      },
+      {
+        "identifier": "CMS-TS-2015-021",
+        "scheme": "cds_ref"
+      },
+      {
+        "identifier": "CMS-TS-2015-021",
+        "scheme": "cds_ref"
+      },
+      {
+        "identifier": "https://url.example.com/test",
+        "scheme": "url"
+      }
+    ],
+    "description": "A new particle decaying to a pair of vector bosons was discovered in 2012 by the ATLAS and CMS experiments at the Large Hadron Collider. In the wake of this discovery a rush of measurements was made to characterize this particle. The four-lepton final state has been instrumental in both the discovery and characterization of this new particle. With only about 20 events seen in the resonance peak at 125GeV the CMS experiment has been able to make considerable progress in characterizing the Higgs-like boson using the wealth of information in this final state in concert with other decay modes. In addition to the search for this new boson we present three recent results in the study of the Higgs-like boson properties: studies of the production mode, total width, and spin-parity quantum numbers. First we present the search for this new resonance using the H to ZZ to 4l decay channel. Then we discuss the production mode measurement using this final state. Next, we present two results that provided breakthroughs in the study of the Higgs-like resonance. One is the measurement of the width from an interplay between the off-shell and on-shell production, setting a limit three orders of magnitude tighter than previous limits. The other is the tensor structure measurement of the bosons interactions with pairs of vector bosons, leading to constraints on its spin-parity properties, where only limited measurements had been done before. All of these results provide further confirmation that CMS has discovered a Higgs boson near 125GeV."
+  },
+  "custom_fields": {
+    "cern:experiments": [
+      {
+        "id": "CMS",
+        "title": {
+          "en": "CMS"
+        }
+      }
+    ],
+    "cern:departments": [
+      {
+        "id": "PH",
+        "title": {
+          "en": "PH"
+        }
+      }
+    ],
+    "cern:accelerators": [
+      {
+        "id": "CERN LHC",
+        "title": {
+          "en": "CERN LHC"
+        }
+      }
+    ],
+    "thesis:thesis": {
+      "university": "Johns Hopkins University",
+      "type": "PhD"
+    },
+    "imprint:imprint": {
+      "edition": "2"
+    },
+    "journal:journal": {
+      "title": "Nature",
+      "issue": "2025/1",
+      "volume": "1",
+      "pages": "10-12",
+      "issn": "1234-5667"
+    },
+    "meeting:meeting": {
+      "acronym": "CHEP",
+      "dates": "2025-01-01 - 2025-02-02",
+      "place": "Curacao",
+      "title": "CHEP",
+      "identifiers": [
+        {
+          "identifier": "1234",
+          "scheme": "inspire"
+        }
+      ]
+    }
+  },
+  "access": {
+    "record": "public",
+    "files": "public",
+    "embargo": {
+      "active": false,
+      "reason": null
+    },
+    "status": "open"
+  },
+  "files": {
+    "enabled": true,
+    "order": [],
+    "count": 1,
+    "total_bytes": 545177,
+    "entries": {
+      "CERN-THESIS-2015-130.pdf": {
+        "id": "7d870779-0bb1-4e1f-a44e-123c4851b2cd",
+        "checksum": "md5:f357df50269c8ab95cbe4f10dcce8bb4",
+        "ext": "pdf",
+        "size": 545177,
+        "mimetype": "application/pdf",
+        "storage_class": "L",
+        "key": "CERN-THESIS-2015-130.pdf",
+        "metadata": {
+        },
+        "access": {
+          "hidden": false
+        },
+        "links": {
+          "self": "https://127.0.0.1/api/records/aey8d-bdw61/files/CERN-THESIS-2015-130.pdf",
+          "content": "https://127.0.0.1/api/records/aey8d-bdw61/files/CERN-THESIS-2015-130.pdf/content",
+          "iiif_canvas": "https://127.0.0.1/api/iiif/record:aey8d-bdw61/canvas/CERN-THESIS-2015-130.pdf",
+          "iiif_base": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf",
+          "iiif_info": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf/info.json",
+          "iiif_api": "https://127.0.0.1/api/iiif/record:aey8d-bdw61:CERN-THESIS-2015-130.pdf/full/full/0/default.png"
+        }
+      }
+    }
+  },
+  "media_files": {
+    "enabled": false,
+    "order": [],
+    "count": 0,
+    "total_bytes": 0,
+    "entries": {
+    }
+  },
+  "status": "published",
+  "deletion_status": {
+    "is_deleted": false,
+    "status": "P"
+  },
+  "internal_notes": [
+    {
+      "user": "12344",
+      "note": "NOTE NOTE",
+      "timestamp": "2024-01-01"
+    }
+  ],
+  "stats": {
+    "this_version": {
+      "views": 0,
+      "unique_views": 0,
+      "downloads": 0,
+      "unique_downloads": 0,
+      "data_volume": 0.0
+    },
+    "all_versions": {
+      "views": 0,
+      "unique_views": 0,
+      "downloads": 0,
+      "unique_downloads": 0,
+      "data_volume": 0.0
+    }
+  }
+}
