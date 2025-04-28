@@ -153,6 +153,9 @@ class DocumentImporter(object):
 
         return document
 
+    def _after_update(self, updated_document):
+        pass
+
     def create_document(self):
         """Create a new record from dump."""
         cleaned_json = self._before_create()
@@ -224,6 +227,7 @@ class DocumentImporter(object):
                 matched_document.model.created = parser.parse(created_date)
             matched_document.commit()
             db.session.commit()
+            self._after_update(matched_document)
         except IlsValidationError as e:
             click.secho("Field: {}".format(e.errors[0].res["field"]), fg="red")
             click.secho(e.original_exception.message, fg="red")

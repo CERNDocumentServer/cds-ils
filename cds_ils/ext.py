@@ -8,8 +8,10 @@
 """CDS-ILS extension."""
 
 from flask import Blueprint
+from invenio_app_ils.ext import handle_rest_exceptions
 from invenio_indexer.signals import before_record_index
 from invenio_records.signals import after_record_insert, after_record_update
+from invenio_rest.errors import RESTException
 
 from cds_ils.literature.tasks import pick_identifier_with_cover
 
@@ -24,6 +26,7 @@ class CdsIls(object):
         self.register_signals(app)
         self.init_app(app)
         self.init_loan_indexer_hook(app)
+        app.errorhandler(RESTException)(handle_rest_exceptions)
 
     def init_app(self, app):
         """Initialize app."""

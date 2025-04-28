@@ -27,12 +27,12 @@ def clean_url_provider(
             is_open_access = "open access" in open_access_field.lower()
             item["open_access"] = is_open_access
 
+    is_rdm_record = "_rdm_pid" in record_dict
     eitems_ebl = record_dict["_migration"]["eitems_ebl"]
     eitems_safari = record_dict["_migration"]["eitems_safari"]
     eitems_external = record_dict["_migration"]["eitems_external"]
     eitems_proxy = record_dict["_migration"]["eitems_proxy"]
     eitems_files = record_dict["_migration"]["eitems_file_links"]
-
     eitem_dict = {"url": {"value": url_value}}
     if url_description:
         eitem_dict["url"]["description"] = url_description
@@ -61,6 +61,9 @@ def clean_url_provider(
     elif all([elem in url_value for elem in ["cds", ".cern.ch/record/", "/files"]]):
         eitems_files.append(eitem_dict)
         record_dict["_migration"]["eitems_has_files"] = True
+    elif is_rdm_record:
+        if eitems_files:
+            record_dict["_migration"]["eitems_has_files"] = True
     elif url_description in ["ebook", "e-book", "e-proceedings", "e-standard"]:
         translate_open_access(eitem_dict, url_description)
         eitems_external.append(eitem_dict)

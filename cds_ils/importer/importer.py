@@ -7,6 +7,7 @@
 
 """CDS-ILS Importer module."""
 import time
+from copy import deepcopy
 
 import importlib_metadata
 from flask import current_app
@@ -53,7 +54,7 @@ class Importer(object):
         self.json_data = json_data
         self.metadata_provider = metadata_provider
 
-        eitem_json_data = self._extract_eitems_json()
+        eitem_json_data = deepcopy(self.json_data["_eitem"])
         document_importer_class = self.get_document_importer(metadata_provider)
         self.document_importer = document_importer_class(
             json_data,
@@ -96,7 +97,7 @@ class Importer(object):
 
     def _extract_eitems_json(self):
         """Extracts eitems json for given pre-processed JSON."""
-        return self.json_data["_eitem"]
+        return deepcopy(self.json_data["_eitem"])
 
     def _match_document(self):
         """Search the catalogue for existing document."""
@@ -151,9 +152,7 @@ class Importer(object):
             pids_list = []
         # ambiguous = matching fails
         # (inconsistent identifiers/title pairs, duplicates etc)
-        amibiguous_matches = [
-            {"pid": match, "type": "ambiguous"} for match in pids_list
-        ]
+        ambiguous_matches = [{"pid": match, "type": "ambiguous"} for match in pids_list]
 
         # fuzzy = trying to match similar titles and authors to spot typos
         try:
@@ -165,7 +164,7 @@ class Importer(object):
             ]
         except search.TransportError:
             raise SimilarityMatchUnavailable
-        return fuzzy_matches + amibiguous_matches
+        return fuzzy_matches + ambiguous_matches
 
     def update_exact_match(self, exact_match):
         """Update exact importing record match."""
