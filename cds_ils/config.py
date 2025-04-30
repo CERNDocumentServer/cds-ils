@@ -704,6 +704,7 @@ CDS_ILS_IMPORTER_PROVIDERS = {
     "cds": {
         "priority": 1,
         "agency_code": "SzGeCERN",
+        "content_type": "application/vnd.inveniordm.v1+json",
     },
     "snv": {
         "priority": 3,

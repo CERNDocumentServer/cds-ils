@@ -6,7 +6,6 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer module."""
-import time
 
 import importlib_metadata
 
@@ -15,20 +14,26 @@ from cds_ils.importer.json.load import ILSLoader
 
 
 class JSONImporter:
+    """JSON Generic importer class."""
 
-    def get_transformer(self, provider):
+    def __init__(self, provider):
+        self.provider = provider
+        super().__init__()
+
+    def get_transformer(self):
         """Determine which document importer to use."""
         try:
             entry_points = importlib_metadata.entry_points()
             return entry_points.select(
                 group="cds_ils.importer.import_json_transformers"
-            )[provider].load()
+            )[self.provider].load()
         except Exception as e:
             raise ImporterException(description="Improper importer configuration.")
 
-    def run(self, provider, data):
-        transformer = self.get_transformer(provider)
+    def run(self, data, mode):
+        """Run import."""
+        transformer = self.get_transformer()
         ils_entry = transformer(data).transform()
-        loader = ILSLoader()
+        loader = ILSLoader(mode)
         report = loader.load(ils_entry)
         return report

@@ -15,7 +15,7 @@ def test_rdm_import(app):
     with open(os.path.join(dirname, "rdm_record.json"), "r") as fp:
         rdm_record = json.load(fp)
 
-    report = JSONImporter().run("cds", rdm_record)
+    report = JSONImporter("cds").run(rdm_record, mode="IMPORT")
 
     output_pid = report["output_pid"]
 
@@ -30,11 +30,13 @@ def test_rdm_import(app):
     matched_document = document_cls.get_record_by_pid(output_pid)
     assert "alternative_identifiers" in matched_document
     assert matched_document["alternative_identifiers"] == [
-        {"value": "aey8d-bdw61", "scheme": "CDS"}
+        {"value": "aey8d-bdw61", "scheme": "CDS"},
+        {"scheme": "INSPIRE", "value": "1393422"},
     ]
     assert matched_document["identifiers"] == [
         {"scheme": "REPORT_NUMBER", "value": "CERN-THESIS-2015-130"},
         {"value": "FERMILAB-THESIS-2015-22", "scheme": "REPORT_NUMBER"},
+        {"value": "CMS-TS-2015-021", "scheme": "REPORT_NUMBER"},
         {"value": "CMS-TS-2015-021", "scheme": "REPORT_NUMBER"},
     ]
     assert matched_document["document_type"] == "BOOK"
@@ -71,8 +73,9 @@ def test_rdm_record_update(app, importer_test_data):
         rdm_record = json.load(fp)
 
     rdm_record["id"] = "bs29k-ghp04"
+    rdm_record["parent"]["id"] = "bs29k-ghp04"
 
-    report = JSONImporter().run("cds", rdm_record)
+    report = JSONImporter("cds").run(rdm_record, mode="IMPORT")
 
     output_pid = report["output_pid"]
 
@@ -102,8 +105,9 @@ def test_rdm_record_update_legacy_record(app, importer_test_data):
         rdm_record = json.load(fp)
 
     rdm_record["id"] = "stgbc-hzj95"
+    rdm_record["parent"]["id"] = "stgbc-hzj95"
 
-    report = JSONImporter().run("cds", rdm_record)
+    report = JSONImporter("cds").run(rdm_record, mode="IMPORT")
 
     output_pid = report["output_pid"]
 

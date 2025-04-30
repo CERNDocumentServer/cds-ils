@@ -63,7 +63,6 @@ class CDSImporter(Importer):
             else:
                 external_pid_type = current_app.config["CDS_ILS_RECORD_LEGACY_PID_TYPE"]
                 pid_value = document["legacy_recid"]
-
             legacy_recid_minter(
                 pid_value,
                 external_pid_type,

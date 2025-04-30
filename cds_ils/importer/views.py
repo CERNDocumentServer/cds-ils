@@ -9,16 +9,18 @@
 
 import os
 
-from celery.result import AsyncResult
 from flask import Blueprint, abort, current_app, request
+
+from cds_ils.importer.json.views import JSONImporterListView
 from invenio_app_ils.permissions import need_permissions
+from invenio_app_ils.literature.serializers import json_v1_response
 from invenio_db import db
 from invenio_rest import ContentNegotiatedMethodView
-from sqlalchemy.orm.exc import NoResultFound, ObjectDeletedError
+from sqlalchemy.orm.exc import ObjectDeletedError
 
 from cds_ils.importer.api import allowed_files, rename_file
 from cds_ils.importer.loaders.jsonschemas.schema import ImporterImportSchemaV1
-from cds_ils.importer.models import ImporterImportLog, ImporterTaskStatus
+from cds_ils.importer.models import ImporterImportLog
 from cds_ils.importer.serializers import task_entry_response, task_log_response
 from cds_ils.importer.tasks import create_import_task
 
@@ -34,10 +36,24 @@ def create_importer_blueprint(app):
             "application/json": task_log_response,
         },
     )
+
+    json_list_view = JSONImporterListView.as_view(
+        JSONImporterListView.view_name,
+        serializers={
+            "application/vnd.inveniordm.v1+json": json_v1_response,
+        },
+    )
+
     blueprint.add_url_rule(
         "/importer",
         view_func=list_view,
         methods=["POST", "GET"],
+    )
+
+    blueprint.add_url_rule(
+        "/import",
+        view_func=json_list_view,
+        methods=["POST"],
     )
 
     details_view = ImporterDetailsView.as_view(
