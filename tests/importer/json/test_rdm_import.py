@@ -20,7 +20,7 @@ def test_rdm_transformation(app):
             ]
         },
         "_migration": {"eitems_external": None, "eitems_proxy": None},
-        "_rdm_pid": "aey8d-bdw61",
+        "_rdm_pid": "v2ha7-xyc73",
         "_serial": [
             {"title": "ALEPH Theses"},
             {
@@ -32,7 +32,7 @@ def test_rdm_transformation(app):
         "alternative_abstracts": ["Some other abstract"],
         "alternative_titles": [
             {
-                "language": {"id": "eng", "title": {"en": "English"}},
+                "language": "eng",
                 "type": "TRANSLATED_TITLE",
                 "value": "Construction of a central pre-sampler at "
                 "ATLAS and study of ",
@@ -56,13 +56,15 @@ def test_rdm_transformation(app):
                 "type": "PERSON",
             }
         ],
-        "conference_info": {
-            "acronym": "CHEP",
-            "datas": "2025-01-01 - 2025-02-02",
-            "identifiers": [{"scheme": "INSPIRE_CNUM", "value": "1234"}],
-            "place": "Curacao",
-            "title": "CHEP",
-        },
+        "conference_info": [
+            {
+                "acronym": "CHEP",
+                "dates": "2025-01-01 - 2025-02-02",
+                "identifiers": [{"scheme": "INSPIRE_CNUM", "value": "1234"}],
+                "place": "Curacao",
+                "title": "CHEP",
+            }
+        ],
         "copyrights": [{"statement": "2025 © Author(s)"}],
         "document_type": "BOOK",
         "edition": "2",
@@ -86,17 +88,19 @@ def test_rdm_transformation(app):
         "licenses": [{"license": {"id": "CC-BY-4.0"}}],
         "number_of_pages": "245 p",
         # "other_authors": None,
-        "publication_info": {
-            "artid": "10-12",
-            "journal_issue": "2025/1",
-            "journal_title": "Nature",
-            "journal_volume": "1",
-            "pages": "10-12",
-        },
+        "publication_info": [
+            {
+                "artid": "10-12",
+                "journal_issue": "2025/1",
+                "journal_title": "Nature",
+                "journal_volume": "1",
+                "pages": "10-12",
+            }
+        ],
         "publication_year": "2015",
         "source": "CDS",
         # "subjects": None, # todo when UDC introduced in CDS_RDM
-        "table_of_content": "1. Chapter 1: ABC\n 2. Chapter 2: EFG",
+        "table_of_content": ["1. Chapter 1: ABC\n 2. Chapter 2: EFG"],
         "tags": ["THESIS"],
         "title": "Discovery and Characterization of a Higgs boson using four-lepton events from the CMS experiment",
         "urls": [{"value": "https://url.example.com/test"}],

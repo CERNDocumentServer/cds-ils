@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS Importer Records utils."""
+from flask import current_app
 
 
 def add_title_from_conference_info(json_data):
@@ -22,15 +23,29 @@ def add_title_from_conference_info(json_data):
 
 def add_cds_url(json_data):
     """Add url pointing back to CDS."""
+    _urls = json_data.get("urls", [])
+
     if json_data.get("sync", False):
-        _urls = json_data.get("urls", [])
-        legacy_recid = json_data["legacy_recid"]
+        legacy_recid = json_data.get("legacy_recid")
+
+        if legacy_recid:
+            _urls.append(
+                {
+                    "value": f"https://cds.cern.ch/record/{legacy_recid}",
+                    "description": "See on CDS",
+                    "meta": "CDS",
+                }
+            )
+        del json_data["sync"]
+
+    rdm_pid = json_data.get("_rdm_pid")
+
+    if rdm_pid:
         _urls.append(
             {
-                "value": f"https://cds.cern.ch/record/{legacy_recid}",
+                "value": f"{current_app.config['CDS_ILS_CDS_RDM_URI']}/records/{rdm_pid}",
                 "description": "See on CDS",
                 "meta": "CDS",
             }
         )
-        json_data["urls"] = _urls
-        del json_data["sync"]
+    json_data["urls"] = _urls

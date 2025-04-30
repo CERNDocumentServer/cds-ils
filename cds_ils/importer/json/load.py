@@ -1,27 +1,34 @@
-import uuid
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2025 CERN.
+#
+# CDS-ILS is free software; you can redistribute it and/or modify it under
+# the terms of the MIT License; see LICENSE file for more details.
 
-import click
-from dateutil import parser
-from invenio_app_ils.documents.api import DocumentIdProvider
-from invenio_app_ils.errors import IlsValidationError
-from invenio_app_ils.proxies import current_app_ils
-from invenio_db import db
+"""CDS-IlS JSON Importer load module."""
 
-from cds_ils.importer.importer import Importer
-from cds_ils.importer.models import ImporterMode
-from cds_ils.importer.providers.cds.document_importer import CDSDocumentImporter
 from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
+from invenio_db import db
 
 
 class ILSLoader:
+    """Loader class for ETL pattern."""
 
-    def __init__(self, metadata_provider="cds"):
+    def __init__(self, mode, metadata_provider="cds"):
+        """Constructor."""
         self.metadata_provider = metadata_provider
         self.update_fields = None
+        self.mode = mode
         super().__init__()
 
     def load(self, entry):
-        report = XMLRecordDumpLoader.import_from_json(
-            entry, True, self.metadata_provider, ImporterMode.IMPORT.value
-        )
-        return report
+        """Load record based on JSON entry input."""
+        try:
+            report = XMLRecordDumpLoader.import_from_json(
+                entry, True, self.metadata_provider, self.mode
+            )
+            db.session.commit()
+            return report
+        except Exception as e:
+            db.session.rollback()
+            raise e
