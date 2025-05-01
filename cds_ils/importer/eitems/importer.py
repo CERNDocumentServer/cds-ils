@@ -226,9 +226,13 @@ class EItemImporter(object):
         """Search items for given document."""
         document_pid = matched_document["pid"]
         # get eitems for current provider
+        eitem_type = "E-BOOK"
+        if self.eitem_json:
+            # eitem is not always there, sometime we just create a doc
+            eitem_type = self.eitem_json.get("_type", "E-BOOK").upper()
         search = get_eitems_for_document_by_provider(
             document_pid, self.metadata_provider
-        ).filter("term", eitem_type=self.eitem_json.get("_type", "E-BOOK").upper())
+        ).filter("term", eitem_type=eitem_type)
         return search
 
     def import_eitem_action(self, search):

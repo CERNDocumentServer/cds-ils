@@ -13,7 +13,7 @@ from cds_ils.importer.errors import UnexpectedValue
 
 DOCUMENT_TYPE = {
     "PROCEEDINGS": ["PROCEEDINGS", "42", "43", "CONFERENCE"],
-    "BOOK": ["BOOK", "21", "THESIS"],
+    "BOOK": ["BOOK", "21", "THESIS", "14"],
     "STANDARD": ["STANDARD"],
 }
 
@@ -1593,6 +1593,7 @@ EXTERNAL_SYSTEM_IDENTIFIERS_TO_IGNORE = [
     "SPIRES",
     "INSPIRE-CNUM",
     "OCOLC",
+    "OSTI",
 ]
 
 

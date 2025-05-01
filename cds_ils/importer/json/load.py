@@ -7,8 +7,9 @@
 
 """CDS-IlS JSON Importer load module."""
 
-from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
 from invenio_db import db
+
+from cds_ils.importer.XMLRecordLoader import XMLRecordDumpLoader
 
 
 class ILSLoader:
