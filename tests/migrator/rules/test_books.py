@@ -2720,19 +2720,24 @@ def test_title(app):
                 ],
             },
         )
-        with pytest.raises(UnexpectedValue):
-            check_transformation(
-                """
-                <datafield tag="245" ind1=" " ind2=" ">
-                    <subfield code="a">Incoterms 2010</subfield>
-                    <subfield code="b">les règles de l'ICC</subfield>
-                </datafield>
-                <datafield tag="245" ind1=" " ind2=" ">
-                    <subfield code="a">With duplicate title</subfield>
-                </datafield>
-                """,
-                {},
-            )
+        check_transformation(
+            """
+            <datafield tag="245" ind1=" " ind2=" ">
+                <subfield code="a">Incoterms 2010</subfield>
+                <subfield code="b">les règles de l'ICC</subfield>
+            </datafield>
+            <datafield tag="245" ind1=" " ind2=" ">
+                <subfield code="a">With duplicate title</subfield>
+            </datafield>
+            """,
+            {
+                "alternative_titles": [
+                    {"type": "SUBTITLE", "value": "les règles de l'ICC"},
+                    {"type": "ALTERNATIVE_TITLE", "value": "With duplicate title"},
+                ],
+                "title": "With duplicate title",
+            },
+        )
 
 
 def test_alternative_titles(app):

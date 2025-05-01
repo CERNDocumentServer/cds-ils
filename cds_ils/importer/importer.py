@@ -54,7 +54,7 @@ class Importer(object):
         self.json_data = json_data
         self.metadata_provider = metadata_provider
 
-        eitem_json_data = deepcopy(self.json_data["_eitem"])
+        eitem_json_data = deepcopy(self.json_data.get("_eitem"))
         document_importer_class = self.get_document_importer(metadata_provider)
         self.document_importer = document_importer_class(
             json_data,

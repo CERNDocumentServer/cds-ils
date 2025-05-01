@@ -120,7 +120,7 @@ class SeriesImportError(CDSImporterException):
 class UnknownProvider(CDSImporterException):
     """Unknown provider exception."""
 
-    message = "Unknown record provider."
+    message = "Unknown record provider (Missing 003)."
 
 
 class InvalidProvider(CDSImporterException):

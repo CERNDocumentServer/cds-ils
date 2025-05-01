@@ -1159,7 +1159,11 @@ def number_of_pages(self, key, value):
 def title(self, key, value):
     """Translates title."""
     if "title" in self:
-        raise UnexpectedValue(field=key, message="Ambiguous title")
+        _alternative_titles = self.get("alternative_titles", [])
+        _alternative_titles.append(
+            {"value": clean_val("a", value, str), "type": "ALTERNATIVE_TITLE"}
+        )
+        self["alternative_titles"] = _alternative_titles
 
     if "b" in value:
         _alternative_titles = self.get("alternative_titles", [])

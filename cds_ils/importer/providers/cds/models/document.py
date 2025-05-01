@@ -21,7 +21,7 @@ class CDSDocument(CdsIlsOverdo):
     """Translation Index for CDS Books."""
 
     __query__ = (
-        "003:SzGeCERN 690C_:BOOK OR 690C_:CONFERENCE OR 690C_:THESIS OR "
+        "980__:THESIS OR 980__:Thesis OR 690C_:BOOK OR 690C_:CONFERENCE OR "
         '690C_:"YELLOW REPORT" OR '
         "980__:PROCEEDINGS OR "
         "(-980:STANDARD 980:BOOK) OR "
@@ -36,14 +36,29 @@ class CDSDocument(CdsIlsOverdo):
         "0247_9",
         "084__2",
         "084__a",
+        "100__m",
+        "100__t",
         "270__b",
         "540__u",
+        "594__a",
+        "693__b",
         "700__i",
-        "710__5",
         "700__m",
-        "100__m",
+        "700__t",
+        "701__0",
+        "701__9",
+        "701__e",
+        "701__i",
+        "701__j",
+        "701__u",
+        "710__5",
         "775__n",
         "775__p",
+        "960__a",
+        "960__b",
+        "999C6a",
+        "999C6t",
+        "999C6v",
     }
 
     __ignore_keys__ = CDS_IGNORE_FIELDS | __model_ignore_keys__

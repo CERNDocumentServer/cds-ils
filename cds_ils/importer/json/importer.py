@@ -17,6 +17,7 @@ class JSONImporter:
     """JSON Generic importer class."""
 
     def __init__(self, provider):
+        """Constructor."""
         self.provider = provider
         super().__init__()
 

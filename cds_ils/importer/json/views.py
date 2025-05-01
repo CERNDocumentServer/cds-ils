@@ -7,16 +7,17 @@
 
 """CDS-IlS JSON Importer views module."""
 from flask import abort, current_app, request
-from werkzeug.local import LocalProxy
+from invenio_app_ils.permissions import need_permissions
 from invenio_app_ils.proxies import current_app_ils
+from invenio_rest import ContentNegotiatedMethodView
+from werkzeug.local import LocalProxy
 
 from cds_ils.importer.json.importer import JSONImporter
-from invenio_app_ils.permissions import need_permissions
-from invenio_rest import ContentNegotiatedMethodView
 from cds_ils.importer.loaders.jsonschemas.schema import ImporterRDMImportSchemaV1
 
 
 def get_provider_by_content_type(content_type):
+    """Selects import provider based on content type."""
     providers = LocalProxy(lambda: current_app.config["CDS_ILS_IMPORTER_PROVIDERS"])
     for provider, config in providers.items():
         if config.get("content_type") == content_type:
