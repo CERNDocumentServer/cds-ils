@@ -171,10 +171,13 @@ class Importer(object):
         document_class = current_app_ils.document_record_cls
         matched_document = document_class.get_record_by_pid(exact_match)
 
-        self.document_importer.update_document(matched_document)
-        self.eitem_importer.update_eitems(matched_document)
+        eitem = None
 
-        eitem = self.eitem_importer.summary()
+        self.document_importer.update_document(matched_document)
+        if self.eitem_importer.eitem_json:
+            self.eitem_importer.update_eitems(matched_document)
+            eitem = self.eitem_importer.summary()
+
         series = self.series_importer.import_series(matched_document)
         return matched_document, eitem, series
 
