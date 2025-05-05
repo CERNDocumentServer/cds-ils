@@ -7,6 +7,12 @@
 Changes
 =======
 
+Version 3.6.0 (released 2025-05-05)
+
+- importer: add JSON importer and transformating from RDM
+- ui: update SNV login message
+- importer: ignore fields for safari provider
+
 Version 3.5.1 (released 2025-03-26)
 
 - importer: ignore supervisors field on cds sync
