@@ -24,13 +24,13 @@ class EItemImporter(object):
     """EItem importer class."""
 
     def __init__(
-        self,
-        json_metadata,
-        eitem_json_data,
-        metadata_provider,
-        provider_priority_sensitive,
-        open_access,
-        login_required,
+            self,
+            json_metadata,
+            eitem_json_data,
+            metadata_provider,
+            provider_priority_sensitive,
+            open_access,
+            login_required,
     ):
         """Constructor."""
         priority = current_app.config["CDS_ILS_IMPORTER_PROVIDERS"][metadata_provider][
@@ -58,8 +58,8 @@ class EItemImporter(object):
 
     def _is_migrated(self, record):
         return (
-            record["created_by"]["type"] == "script"
-            and record["created_by"]["value"] == "migration"
+                record["created_by"]["type"] == "script"
+                and record["created_by"]["value"] == "migration"
         )
 
     def _get_record_import_provider(self, record):
@@ -143,9 +143,13 @@ class EItemImporter(object):
     def _replace_lower_priority_eitems(self, matched_document):
         eitem_indexer = current_app_ils.eitem_indexer
 
+        if not self.eitem_json:
+            return
+
         for eitem in self._get_other_eitems_of_document(matched_document):
             # If eitem_type is different, then creation should happen
-            if eitem["eitem_type"] != self.eitem_json.get("_type", "E-BOOK").upper():
+            if eitem["eitem_type"] != self.eitem_json.get("_type",
+                                                          "E-BOOK").upper():
                 continue
             is_imported = self._is_imported(eitem)
 
@@ -177,14 +181,19 @@ class EItemImporter(object):
         existing_eitems = self._get_other_eitems_of_document(matched_document)
 
         comparison_list = []
+
+        if not self.eitem_json:
+            return
+
         for eitem in existing_eitems:
             # If eitem_type is different, then creation should happen regardless of priority
-            if eitem["eitem_type"] != self.eitem_json.get("_type", "E-BOOK").upper():
+            if eitem["eitem_type"] != self.eitem_json.get("_type",
+                                                          "E-BOOK").upper():
                 continue
             is_imported_or_created = (
-                self._is_imported(eitem)
-                or self._is_manually_created(eitem)
-                or self._is_migrated(eitem)
+                    self._is_imported(eitem)
+                    or self._is_manually_created(eitem)
+                    or self._is_migrated(eitem)
             )
             if not is_imported_or_created:
                 # skip until you find imported items to compare
@@ -391,9 +400,9 @@ class EItemImporter(object):
                 for hit in document_eitems:
                     eitem = eitem_cls.get_record_by_pid(hit.pid)
                     is_imported_or_created = (
-                        self._is_imported(eitem)
-                        or self._is_manually_created(eitem)
-                        or self._is_migrated(eitem)
+                            self._is_imported(eitem)
+                            or self._is_manually_created(eitem)
+                            or self._is_migrated(eitem)
                     )
                     if not is_imported_or_created:
                         continue
