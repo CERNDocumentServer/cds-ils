@@ -126,7 +126,7 @@ class Importer(object):
         series_class = current_app_ils.series_record_cls
         eitem_class = current_app_ils.eitem_record_cls
 
-        if eitem["output_pid"]:
+        if eitem and eitem["output_pid"]:
             eitem = eitem_class.get_record_by_pid(eitem["output_pid"])
             record_indexer.index(eitem)
             # wait for ES refresh
