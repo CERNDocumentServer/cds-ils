@@ -148,7 +148,7 @@ class ILSEntry:
             author = {
                 "full_name": entry["person_or_org"]["name"],
                 "type": author_type_map[entry["person_or_org"]["type"]],
-                "affiliations": affiliations(entry["affiliations"]),
+                "affiliations": affiliations(entry.get("affiliations", [])),
                 "identifiers": identifiers(
                     entry["person_or_org"].get("identifiers", [])
                 ),
