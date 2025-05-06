@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 3.6.1 (released 2025-05-06)
+
+- importer: bug fixes on assumption of eitem existence
+
 Version 3.6.0 (released 2025-05-05)
 
 - importer: add JSON importer and transformating from RDM
