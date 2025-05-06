@@ -154,7 +154,7 @@ class ILSEntry:
                 ),
             }
             if "role" in entry:
-                author.update({"role": author_role_map[entry["role"]]})
+                author.update({"role": author_role_map[entry["role"]["id"]]})
             author = {k: v for k, v in author.items() if v}
             authors.append(author)
         return authors
