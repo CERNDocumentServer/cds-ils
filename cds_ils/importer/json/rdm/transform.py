@@ -13,26 +13,8 @@ from ..errors import ImporterException
 
 author_type_map = {"personal": "PERSON", "organisational": "ORGANISATION"}
 author_role_map = {
-    "contactperson": "CONTACT_PERSON",
-    "datacollector": "DATA_COLLECTOR",
-    "datacurator": "DATA_CURATOR",
-    "datamanager": "DATA_MANAGER",
-    "distributor": "DISTRIBUTOR",
     "editor": "EDITOR",
-    "hostinginstitution": "HOSTING_INSTITUTION",
-    "other": "OTHER",
-    "producer": "PRODUCER",
-    "projectleader": "PROJECT_LEADER",
-    "projectmanager": "PROJECT_MANAGER",
-    "registrationagency": "REGISTRATION_AGENCY",
-    "registrationauthority": "REGISTRATION_AUTHORITY",
-    "relatedperson": "RELATED_PERSON",
-    "researcher": "RESEARCHER",
-    "researchgroup": "RESEARCH_GROUP",
-    "sponsor": "SPONSOR",
-    "rightsholder": "RIGHTS_HOLDER",
     "supervisor": "SUPERVISOR",
-    "workpackageleader": "WORK_PACKAGE_LEADER",
 }
 author_identifier_scheme_map = {"orcid": "ORCID"}
 identifier_schemes_map = {
@@ -77,7 +59,7 @@ class ILSEntry:
         for desc in additional_desc:
             if desc["type"]["id"] in ["abstract", "other", "methods", "technical-info"]:
                 abstracts.append(desc["description"])
-        return abstracts
+        return abstracts if abstracts else None
 
     def _alternative_identifiers(self):
         """Translate alternative identifiers."""
@@ -93,7 +75,7 @@ class ILSEntry:
                     ids.append(identifier)
                 except KeyError as e:
                     continue
-        return ids
+        return ids if ids else None
 
     def _alternative_titles(self):
         """Translate alternative titles."""
@@ -119,7 +101,7 @@ class ILSEntry:
             alt_title = {k: v for k, v in alt_title.items() if v}
             alt_titles.append(alt_title)
 
-        return alt_titles
+        return alt_titles if alt_titles else None
 
     def _authors(self):
         """Translate authors."""
@@ -141,7 +123,7 @@ class ILSEntry:
                 except KeyError as e:
                     # we map only orcid
                     continue
-            return ids
+            return ids if ids else None
 
         authors = []
         for entry in self.rdm_metadata["creators"]:
@@ -153,8 +135,10 @@ class ILSEntry:
                     entry["person_or_org"].get("identifiers", [])
                 ),
             }
-            if "role" in entry:
-                author.update({"roles": [author_role_map[entry["role"]["id"]]]})
+            role_id = entry.get("role", {}).get("id")
+            mapped_role = author_role_map.get(role_id)
+            if mapped_role:
+                author["roles"] = [mapped_role]
             author = {k: v for k, v in author.items() if v}
             authors.append(author)
         return authors
@@ -190,7 +174,7 @@ class ILSEntry:
         ils_conf = {k: v for k, v in _ils_conference.items() if v}
         if ils_conf:
             return [ils_conf]
-        return []
+        return None
 
     def _copyrights(self):
         """Translate copyrights."""
@@ -242,7 +226,7 @@ class ILSEntry:
             extensions["unit_project"].append(project)
         for study in self.rdm_entry["custom_fields"].get("cern:studies", []):
             extensions["unit_study"].append(study)
-        return extensions
+        return extensions if extensions else None
 
     def _identifiers(self):
         """Translate identifiers."""
@@ -262,7 +246,7 @@ class ILSEntry:
                     ids.append(identifier)
                 except KeyError as e:
                     continue
-        return ids
+        return ids if ids else None
 
     def _imprint(self):
         """Translate imprint."""
@@ -301,12 +285,12 @@ class ILSEntry:
     def _keywords(self):
         """Translate keywords."""
         rdm_keywords = self.rdm_metadata.get("subjects", [])
-        return [{"value": x["subject"]} for x in rdm_keywords]
+        return [{"value": x["subject"]} for x in rdm_keywords] if rdm_keywords else None
 
     def _languages(self):
         """Translate languages."""
         rdm_languages = self.rdm_metadata.get("languages", [])
-        return [x["id"] for x in rdm_languages]
+        return [x["id"] for x in rdm_languages] if rdm_languages else None
 
     def _licenses(self):
         """Translate licenses."""
@@ -387,7 +371,7 @@ class ILSEntry:
             tags.append(tag)
         except KeyError:
             pass
-        return tags
+        return tags if tags else None
 
     def _urls(self):
         """Translate urls."""
@@ -395,7 +379,7 @@ class ILSEntry:
         for _id in self.rdm_metadata.get("identifiers", []):
             if _id["scheme"] == "url":
                 urls.append({"value": _id["identifier"]})
-        return urls
+        return urls if urls else None
 
     def _legacy_recid(self):
         """Extract legacy recid if present."""
