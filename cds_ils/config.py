@@ -797,12 +797,3 @@ SECURITY_PASSWORD_SINGLE_HASH = True
 
 # Feature Toggles
 ILS_SELF_CHECKOUT_ENABLED = True
-
-REST_CSRF_ENABLED = False
-
-###############################################################################
-# CORS
-###############################################################################
-REST_ENABLE_CORS = True
-CORS_SEND_WILDCARD = False
-CORS_SUPPORTS_CREDENTIALS = True
