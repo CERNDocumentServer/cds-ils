@@ -340,7 +340,8 @@ class ILSEntry:
     def _publication_year(self):
         """Translate publication year."""
         pub_date = self.rdm_metadata["publication_date"]
-        return str(arrow.get(pub_date).year)
+        start_date = pub_date.split("/")[0]  # Take the first part if it's a range
+        return str(arrow.get(start_date).year)
 
     def _restrictions(self):
         """Translate restrictions."""
@@ -440,7 +441,7 @@ class ILSEntry:
                 urls.append(
                     {"value": file_data["links"]["self"], "description": "e-book"}
                 )
-        return {"urls": urls}
+        return {"urls": urls} if urls else None
 
     def _series(self):
         """Translate series information."""

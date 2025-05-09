@@ -18,7 +18,7 @@ from cds_ils.minters import legacy_recid_minter
 class CDSImporter(Importer):
     """CDS importer class."""
 
-    UPDATE_DOCUMENT_FIELDS = ("identifiers", "tags", "_rdm_pid")
+    UPDATE_DOCUMENT_FIELDS = ("title", "abstract", "authors", "keywords", "urls", "identifiers", "alternative_identifiers", "tags", "_rdm_pid")
     # Mark all CDS elated E-Items as login required and not open access
     EITEM_OPEN_ACCESS = False
     EITEM_URLS_LOGIN_REQUIRED = True
