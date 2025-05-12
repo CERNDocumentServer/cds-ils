@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 3.6.2 (released 2025-05-12)
+
+- importer: fix transformating rules
+
 Version 3.6.1 (released 2025-05-06)
 
 - importer: bug fixes on assumption of eitem existence
