@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 3.6.4 (released 2025-05-21)
+
+- importer: ignore some fields
+
 Version 3.6.3 (released 2025-05-21)
 
 - cds_importer: prevent updating urls on updates
