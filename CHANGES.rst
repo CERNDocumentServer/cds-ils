@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 3.6.3 (released 2025-05-21)
+
+- cds_importer: prevent updating urls on updates
+
 Version 3.6.2 (released 2025-05-12)
 
 - importer: fix transformating rules
