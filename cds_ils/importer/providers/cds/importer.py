@@ -23,7 +23,6 @@ class CDSImporter(Importer):
         "abstract",
         "authors",
         "keywords",
-        "urls",
         "identifiers",
         "alternative_identifiers",
         "tags",
