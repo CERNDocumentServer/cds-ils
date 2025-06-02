@@ -214,7 +214,7 @@ export const config = {
     },
     editorUiSchema: {
       shelf: {
-        "ui:widget": "vocabulary",
+        "ui:widget": "vocabularySearch",
         "ui:options": {
           size: 125, // Make sure to update size when adding new shelfs
           vocabularyType: "shelf_number",
