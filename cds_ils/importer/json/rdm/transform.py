@@ -295,7 +295,9 @@ class ILSEntry:
     def _licenses(self):
         """Translate licenses."""
         rdm_licenses = self.rdm_metadata.get("rights", [])
-        ils_licenses = [{"license": {"id": x["id"].upper()}} for x in rdm_licenses]
+        ils_licenses = [
+            {"license": {"id": x["id"].upper()}} for x in rdm_licenses if "id" in x
+        ]
         if ils_licenses:
             return ils_licenses
 
