@@ -11,7 +11,7 @@ import arrow
 
 from ..errors import ImporterException
 
-author_type_map = {"personal": "PERSON", "organisational": "ORGANISATION"}
+author_type_map = {"personal": "PERSON", "organizational": "ORGANISATION"}
 author_role_map = {
     "editor": "EDITOR",
     "supervisor": "SUPERVISOR",
