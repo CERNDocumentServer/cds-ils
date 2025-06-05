@@ -7,6 +7,11 @@
 Changes
 =======
 
+Version 3.7.0 (released 2025-06-05)
+
+- ui: turned shelf field into search in item form
+- importer: only add license if has id
+
 Version 3.6.4 (released 2025-05-21)
 
 - importer: ignore some fields
