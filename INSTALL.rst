@@ -51,6 +51,12 @@ If the setup scripts fails because of missing vocabularies:
     $ cd <your-virtualenv-path>/invenio-app-ils/invenio_app_ils
     $ invenio setup --verbose
 
+Install frontend packages:
+
+.. code-block:: console
+
+    $ cd ui
+    $ npm install
 
 Covers
 ------
@@ -65,13 +71,20 @@ and after the setup script:
 
 Running
 -------
-Start the webserver and the celery worker:
+Start the backend and the celery worker:
 
 .. code-block:: console
 
     $ ./scripts/server
 
-Start a Python shell:
+Start the frontend:
+
+.. code-block:: console
+
+    $ cd ui
+    $ npm start
+
+Optional - Start a Python shell:
 
 .. code-block:: console
 
