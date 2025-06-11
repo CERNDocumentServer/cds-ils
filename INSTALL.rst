@@ -71,7 +71,7 @@ and after the setup script:
 
 Running
 -------
-Start the backend and the celery worker:
+Start the backend:
 
 .. code-block:: console
 
@@ -83,6 +83,14 @@ Start the frontend:
 
     $ cd ui
     $ npm start
+
+
+Optional - Start the celery worker:
+
+.. code-block:: console
+
+    $ ./scripts/celery
+    
 
 Optional - Start a Python shell:
 
