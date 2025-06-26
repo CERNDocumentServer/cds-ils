@@ -85,7 +85,7 @@ Start the frontend:
     $ npm start
 
 
-Optional - Start the celery worker:
+Start the celery worker (for asynchrounous tasks handling):
 
 .. code-block:: console
 
