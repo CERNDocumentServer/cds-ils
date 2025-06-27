@@ -30,19 +30,14 @@ function renderShelflink(item, documentDetails) {
 
   if (_isEmpty(shelfNumber)) {
     // If shelfNumber is empty, show info popup regardless of availability
-    callNumber = (
+    return (
       <InfoPopup message="Please request online or ask at the Library desk.">
-        {" "}
         {callNumber}
       </InfoPopup>
     );
   }
 
-  return (
-    <>
-      {itemShelf} {callNumber}
-    </>
-  );
+  return itemShelf;
 }
 
 export const DocumentItemBodyTable = parametrize(DocumentItemBody, {
