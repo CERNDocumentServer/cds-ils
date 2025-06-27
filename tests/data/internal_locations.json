@@ -3,6 +3,7 @@
     "pid": "ilocid-1",
     "location_pid": "locid-1",
     "name": "Internal Library 1",
-    "legacy_ids": ["3"]
+    "legacy_ids": ["3"],
+    "accessible_by_patrons": true
   }
 ]
