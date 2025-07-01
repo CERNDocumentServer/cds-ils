@@ -217,5 +217,49 @@
         "login_required": false
       }
     ]
+  },
+  {
+    "pid": "eitemid-12",
+    "created_by":  {"type": "import", "value": "springer"},
+    "source": "springer",
+    "document_pid": "docid-13",
+    "eitem_type": "E-BOOK",
+    "internal_notes": "Unambiguous eitem with source field",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-13",
+    "created_by":  {"type": "user_id", "value": "1"},
+    "source": "springer",
+    "document_pid": "docid-13",
+    "eitem_type": "E-BOOK",
+    "internal_notes": "Ambiguous eitem with source field",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
   }
 ]

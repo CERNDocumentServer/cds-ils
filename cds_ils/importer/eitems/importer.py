@@ -47,6 +47,7 @@ class EItemImporter(object):
         self.output_pid = None
         self.action = None
         self.eitem_record = None
+        self.duplicate_list = []
         self.ambiguous_list = []
         self.deleted_list = []
 
@@ -124,6 +125,13 @@ class EItemImporter(object):
         db.session.commit()
         eitem_indexer.delete(existing_eitem)
         return existing_eitem
+
+    def _report_duplicate_records(self, multiple_results):
+        eitem_cls = current_app_ils.eitem_record_cls
+
+        for hit in multiple_results:
+            existing_eitem = eitem_cls.get_record_by_pid(hit["pid"])
+            self.duplicate_list.append(existing_eitem)
 
     def _report_ambiguous_records(self, multiple_results):
         eitem_cls = current_app_ils.eitem_record_cls
@@ -237,10 +245,17 @@ class EItemImporter(object):
         if self.eitem_json:
             # eitem is not always there, sometime we just create a doc
             eitem_type = self.eitem_json.get("_type", "E-BOOK").upper()
-        search = get_eitems_for_document_by_provider(
-            document_pid, self.metadata_provider
-        ).filter("term", eitem_type=eitem_type)
-        return search
+        exact_eitem_search, ambiguous_eitem_search = (
+            get_eitems_for_document_by_provider(document_pid, self.metadata_provider)
+        )
+
+        ambiguous_eitem_search = ambiguous_eitem_search.filter(
+            "term", eitem_type=eitem_type
+        )
+        self._report_ambiguous_records(ambiguous_eitem_search.scan())
+
+        exact_eitem_search = exact_eitem_search.filter("term", eitem_type=eitem_type)
+        return exact_eitem_search
 
     def import_eitem_action(self, search):
         """Determine import action."""
@@ -280,8 +295,8 @@ class EItemImporter(object):
             self.output_pid = existing_eitem["pid"]
         else:
             results = search.scan()
-            self._report_ambiguous_records(results)
-            # still creates an item, even ambiguous eitems found
+            self._report_duplicate_records(results)
+            # still creates an item, even duplicate eitems found
             # checks if there are higher priority eitems
             if should_eitem_be_imported:
                 self.eitem_record = self.create_eitem(matched_document)
@@ -350,7 +365,8 @@ class EItemImporter(object):
             "eitem": self.eitem_record,
             "json": self.eitem_json,
             "output_pid": self.output_pid,
-            "duplicates": self.ambiguous_list,
+            "ambiguous": self.ambiguous_list,
+            "duplicates": self.duplicate_list,
             "action": self.action,
             "deleted_eitems": self.deleted_list,
         }
@@ -374,8 +390,8 @@ class EItemImporter(object):
                 return self.summary()
             else:
                 results = search.scan()
-                self._report_ambiguous_records(results)
-                # still creates an item, even ambiguous eitems found
+                self._report_duplicate_records(results)
+                # still creates an item, even duplicate eitems found
                 # checks if there are higher priority eitems
                 if should_eitem_be_imported:
                     self.action = "create"

@@ -10,9 +10,17 @@ from invenio_app_ils.proxies import current_app_ils
 
 
 def get_eitems_for_document_by_provider(document_pid, provider):
-    """Find eitem by document pid and provider."""
+    """Find eitem by document pid and either provider or source."""
     eitem_search = current_app_ils.eitem_search_cls()
-    search = eitem_search.search_by_document_pid(document_pid=document_pid).filter(
-        "term", created_by__value=provider
+
+    creator_match = eitem_search.search_by_document_pid(
+        document_pid=document_pid
+    ).filter("term", created_by__value=provider)
+
+    source_match = (
+        eitem_search.search_by_document_pid(document_pid=document_pid)
+        .filter("term", source={"value": provider, "case_insensitive": True})
+        .exclude("term", created_by__value=provider)
     )
-    return search
+
+    return creator_match, source_match

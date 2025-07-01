@@ -365,3 +365,52 @@ def test_import_video(app, db):
 
     assert eitem["created_by"] == {"type": "import", "value": "safari"}
     assert created_document["created_by"] == {"type": "import", "value": "safari"}
+
+
+def test_report_ambiguous_eitems_by_source_field(importer_test_data):
+    """Test that eitems matched on source field are reported as ambiguous during import."""
+
+    document_cls = current_app_ils.document_record_cls
+    eitem_cls = current_app_ils.eitem_record_cls
+    eitem_search_cls = current_app_ils.eitem_search_cls
+
+    document_with_source_eitem = document_cls.get_record_by_pid("docid-13")
+
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=document_with_source_eitem["pid"]
+    )
+    results = search.execute()
+
+    existing_eitems = [hit for hit in results.hits]
+    source_eitem = None
+    for eitem_hit in existing_eitems:
+        eitem = eitem_cls.get_record_by_pid(eitem_hit.pid)
+        if eitem.get("source") == "springer":
+            source_eitem = eitem
+            break
+
+    assert (
+        source_eitem is not None
+    ), "Test eitem with source field not found in static data"
+    assert source_eitem["created_by"]["value"] == "springer"
+
+    current_search.flush_and_refresh(index="*")
+    time.sleep(1)
+
+    json_data = load_json_from_datadir(
+        "ambiguous_document_data.json", relpath="importer"
+    )[0]
+
+    importer = Importer(json_data, "springer")
+    report = importer.import_record()
+
+    assert report["action"] == "update"
+
+    eitem_report = report.get("eitem")
+    assert eitem_report["action"] == "update"
+
+    duplicates = eitem_report.get("duplicates")
+    assert len(duplicates) == 0
+
+    ambiguous_list = eitem_report.get("ambiguous")
+    assert len(ambiguous_list) == 1
