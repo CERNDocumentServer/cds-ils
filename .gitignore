@@ -61,7 +61,8 @@ target/
 # Vim swapfiles
 .*.sw?
 
-# vscode history
+# vscode files and history
+.vscode/
 **/.history
 
 .python-version
