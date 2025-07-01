@@ -14,10 +14,9 @@ from flask import current_app
 from invenio_app_ils.eitems.api import EItemIdProvider
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
+from invenio_app_ils.eitems.api import get_eitems_for_document_by_provider
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier
-
-from cds_ils.importer.eitems.api import get_eitems_for_document_by_provider
 
 
 class EItemImporter(object):
