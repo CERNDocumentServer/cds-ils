@@ -306,13 +306,10 @@ class EItemImporter(object):
     def delete_eitems(self, matched_document):
         """Deletes eitems for a given document."""
         eitem_cls = current_app_ils.eitem_record_cls
-        document_pid = matched_document["pid"]
         self.action = "delete"
 
         # get eitems for current provider
-        search = get_eitems_for_document_by_provider(
-            document_pid, self.metadata_provider
-        )
+        search = self.eitems_search(matched_document)
         results = search.scan()
 
         for record in results:
@@ -322,11 +319,8 @@ class EItemImporter(object):
     def preview_delete(self, matched_document):
         """Preview delete action on eitems for given document."""
         eitem_cls = current_app_ils.eitem_record_cls
-        document_pid = matched_document["pid"]
         self.action = "delete"
-        search = get_eitems_for_document_by_provider(
-            document_pid, self.metadata_provider
-        )
+        search = self.eitems_search(matched_document)
         results = search.scan()
         for record in results:
             existing_eitem = eitem_cls.get_record_by_pid(record["pid"])
