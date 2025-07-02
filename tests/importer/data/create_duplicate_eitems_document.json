@@ -1,0 +1,33 @@
+[
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "agency_code": "DE-He213",
+    "created_by": {"type": "import", "value": "springer"},
+    "pid": "docid-14",
+    "title": "Test Document with Multiple Springer EItems",
+    "document_type": "BOOK",
+    "authors": [{ "full_name": "Test Author" }],
+    "abstract": "This is a test document that should have multiple eitems from the same provider",
+    "edition": "1st",
+    "publication_year": "2024",
+    "identifiers": [{ "scheme": "ISBN", "value": "1234567890123" }],
+    "_eitem": {
+      "pid": "eitemid-duplicate-test",
+      "internal_notes": "This should create a duplicate when imported",
+      "description": "Test eitem that should trigger duplicate detection",
+      "open_access": false,
+        "urls": [
+            {
+              "description": "Protected URL",
+              "value": "http://protected-cds-ils.ch/",
+              "login_required": true
+            },
+            {
+              "description": "Another open URL",
+              "value": "http://cds-ils.ch/",
+              "login_required": false
+            }
+        ]
+    }
+  }
+]
