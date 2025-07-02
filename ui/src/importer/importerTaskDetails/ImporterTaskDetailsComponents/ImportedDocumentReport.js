@@ -125,7 +125,8 @@ class ImportedDocumentReportComponent extends Component {
               )}
 
               {(_get(documentReport, "eitem.deleted_eitems", []).length > 1 ||
-                !_isEmpty(_get(documentReport, "eitem.duplicates", []))) && (
+                !_isEmpty(_get(documentReport, "eitem.duplicates", [])) ||
+                !_isEmpty(_get(documentReport, "eitem.ambiguous", []))) && (
                 <Button
                   icon="exclamation"
                   floated="right"

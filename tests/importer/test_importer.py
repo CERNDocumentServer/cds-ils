@@ -401,7 +401,7 @@ def test_report_ambiguous_eitems_by_source_field_during_import(importer_test_dat
     ambiguous_list = eitem_report.get("ambiguous")
     assert len(ambiguous_list) == 1
     ambiguous_eitem = ambiguous_list[0]
-    assert ambiguous_eitem["pid"] == "eitemid-13"
+    assert ambiguous_eitem == "eitemid-13"
 
 
 def test_report_ambiguous_eitems_by_source_field_during_delete(importer_test_data):
@@ -438,4 +438,4 @@ def test_report_ambiguous_eitems_by_source_field_during_delete(importer_test_dat
     ambiguous_list = eitem_report.get("ambiguous")
     assert len(ambiguous_list) == 1
     ambiguous_eitem = ambiguous_list[0]
-    assert ambiguous_eitem["pid"] == "eitemid-13"
+    assert ambiguous_eitem == "eitemid-13"
