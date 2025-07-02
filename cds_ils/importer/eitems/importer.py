@@ -126,11 +126,8 @@ class EItemImporter(object):
         return existing_eitem
 
     def _report_duplicate_records(self, multiple_results):
-        eitem_cls = current_app_ils.eitem_record_cls
-
         for hit in multiple_results:
-            existing_eitem = eitem_cls.get_record_by_pid(hit["pid"])
-            self.duplicate_list.append(existing_eitem)
+            self.duplicate_list.append(hit["pid"])
 
     def _report_ambiguous_records(self, multiple_results):
         eitem_cls = current_app_ils.eitem_record_cls
