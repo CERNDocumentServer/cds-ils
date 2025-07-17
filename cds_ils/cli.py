@@ -32,7 +32,9 @@ from invenio_base.app import create_cli
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_circulation.proxies import current_circulation
 from invenio_db import db
-from invenio_pages import Page
+from invenio_pages.proxies import current_pages_service
+from invenio_pages.records.errors import PageNotFoundError
+from invenio_access.permissions import system_identity
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
 from invenio_records import Record
@@ -67,55 +69,77 @@ def pages():
             .decode("utf8")
         )
 
-    pages = [
-        Page(
-            url="/about",
-            title="About",
-            description="About",
-            content=page_data("about.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/terms",
-            title="Terms and Conditions",
-            description="Terms and Conditions",
-            content=page_data("terms.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/faq",
-            title="F.A.Q.",
-            description="F.A.Q.",
-            content=page_data("faq.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/contact",
-            title="Contact",
-            description="Contact",
-            content=page_data("contact.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/guide/search",
-            title="Search guide",
-            description="Search guide",
-            content=page_data("search_guide.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/privacy-policy",
-            title="Privacy Policy",
-            description="Privacy Policy",
-            content=page_data("privacy_policy.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
+    pages_data = [
+        {
+            "url": "/about",
+            "title": "About",
+            "description": "About",
+            "content": page_data("about.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/terms",
+            "title": "Terms and Conditions",
+            "description": "Terms and Conditions",
+            "content": page_data("terms.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/faq",
+            "title": "F.A.Q.",
+            "description": "F.A.Q.",
+            "content": page_data("faq.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/contact",
+            "title": "Contact",
+            "description": "Contact",
+            "content": page_data("contact.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/guide/search",
+            "title": "Search guide",
+            "description": "Search guide",
+            "content": page_data("search_guide.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/privacy-policy",
+            "title": "Privacy Policy",
+            "description": "Privacy Policy",
+            "content": page_data("privacy_policy.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
     ]
-    with db.session.begin_nested():
-        Page.query.delete()
-        db.session.add_all(pages)
-    db.session.commit()
-    click.echo("static pages created :)")
+
+
+
+    _supported_languages = current_app.config.get("I18N_LANGUAGES", [("en", "English")])
+
+    for entry in pages_data:
+        url = entry["url"]
+        for lang in _supported_languages:
+            lang_code = lang[0]
+            try:
+                current_pages_service.read_by_url(system_identity, url, lang_code)
+            except PageNotFoundError:
+                page_data = {
+                    "url": url,
+                    "title": entry.get("title", ""),
+                    "description": entry.get("description", ""),
+                    "lang": lang_code,
+                    "template_name": current_app.config["PAGES_DEFAULT_TEMPLATE"],
+                    "content": (
+                        page_data(entry["template"])
+                        if entry.get("template")
+                        else entry.get("content", "")
+                    ),
+                }
+                current_pages_service.create(system_identity, page_data)
+
+    click.echo("Static pages created :)")
 
 
 @fixtures.command()
