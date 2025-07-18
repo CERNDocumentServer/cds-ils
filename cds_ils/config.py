@@ -135,7 +135,7 @@ SEARCH_ELASTIC_HOSTS = [es_host_params]
 # Rate limiting
 ###############################################################################
 #: Storage for rate limiter.
-RATELIMIT_STORAGE_URL = "redis://localhost:6379/3"
+RATELIMIT_STORAGE_URI = "redis://localhost:6379/3"
 
 ###############################################################################
 # I18N
