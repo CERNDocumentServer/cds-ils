@@ -237,7 +237,7 @@ SECRET_KEY = "CHANGE_ME"
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100 MiB
 #: Sets cookie with the secure flag by default
 SESSION_COOKIE_SECURE = True
-APP_ALLOWED_HOSTS = ["127.0.0.1"]
+TRUSTED_HOSTS = ["127.0.0.1"]
 
 # if you need to render the Debugtoolbar, add 'unsafe-inline':
 #   "script-src": ["'self'", "'unsafe-inline'"],
