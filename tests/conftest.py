@@ -47,7 +47,7 @@ def create_app():
 def app_config(app_config):
     """Get app config."""
     tests_config = {
-        "APP_ALLOWED_HOSTS": "localhost",
+        "TRUSTED_HOSTS": "localhost",
         "CELERY_TASK_ALWAYS_EAGER": True,
         "MAIL_NOTIFY_SENDER": "sender@test.com",
         "ILS_MAIL_NOTIFY_MANAGEMENT_RECIPIENTS": ["internal@test.com"],
