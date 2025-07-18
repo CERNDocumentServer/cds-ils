@@ -56,7 +56,7 @@ Install frontend packages:
 .. code-block:: console
 
     $ cd ui
-    $ npm install
+    $ npm install --legacy-peer-deps
 
 Covers
 ------
@@ -90,7 +90,7 @@ Start the celery worker (for asynchrounous tasks handling):
 .. code-block:: console
 
     $ ./scripts/celery
-    
+
 
 Optional - Start a Python shell:
 
