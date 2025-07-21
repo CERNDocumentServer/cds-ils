@@ -16,7 +16,7 @@ from random import randint
 
 import arrow
 import click
-import pkg_resources
+import importlib
 from flask import current_app
 from flask.cli import with_appcontext
 from invenio_accounts.models import User
@@ -62,12 +62,9 @@ def covers():
 def pages():
     """Register CDS static pages."""
 
-    def page_data(page):
-        return (
-            pkg_resources.resource_stream("cds_ils", os.path.join("static_pages", page))
-            .read()
-            .decode("utf8")
-        )
+    def get_page_content(page):
+        with importlib.resources.files("cds_ils").joinpath("static_pages", page).open("r") as f:
+            return f.read().decode("utf8")
 
     pages_data = [
         {
@@ -114,8 +111,6 @@ def pages():
         },
     ]
 
-
-
     _supported_languages = current_app.config.get("I18N_LANGUAGES", [("en", "English")])
 
     for entry in pages_data:
@@ -132,14 +127,14 @@ def pages():
                     "lang": lang_code,
                     "template_name": current_app.config["PAGES_DEFAULT_TEMPLATE"],
                     "content": (
-                        page_data(entry["template"])
+                        get_page_content(entry["template"])
                         if entry.get("template")
                         else entry.get("content", "")
                     ),
                 }
                 current_pages_service.create(system_identity, page_data)
 
-    click.echo("Static pages created :)")
+    click.echo("CDS Static pages created :)")
 
 
 @fixtures.command()
