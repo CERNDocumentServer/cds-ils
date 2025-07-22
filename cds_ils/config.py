@@ -247,7 +247,7 @@ APP_DEFAULT_SECURE_HEADERS["content_security_policy"] = {
     "script-src": ["'self'"],
     "object-src": ["'self'"],
     "img-src": ["'self'"],
-    "style-src": ["'self'"],
+    "style-src": ["'self'", "'unsafe-inline'"],
     "font-src": [
         "'self'",
         "data:",
