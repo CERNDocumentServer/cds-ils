@@ -7,6 +7,7 @@
 
 """CLI for CDS-ILS."""
 
+import importlib
 import json
 import os
 import pathlib
@@ -16,9 +17,9 @@ from random import randint
 
 import arrow
 import click
-import importlib
 from flask import current_app
 from flask.cli import with_appcontext
+from invenio_access.permissions import system_identity
 from invenio_accounts.models import User
 from invenio_app_ils.circulation.search import get_active_loan_by_item_pid
 from invenio_app_ils.cli import minter
@@ -34,7 +35,6 @@ from invenio_circulation.proxies import current_circulation
 from invenio_db import db
 from invenio_pages.proxies import current_pages_service
 from invenio_pages.records.errors import PageNotFoundError
-from invenio_access.permissions import system_identity
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
 from invenio_records import Record
@@ -63,7 +63,9 @@ def pages():
     """Register CDS static pages."""
 
     def get_page_content(page):
-        with importlib.resources.files("cds_ils").joinpath("static_pages", page).open("r") as f:
+        with importlib.resources.files("cds_ils").joinpath("static_pages", page).open(
+            "r"
+        ) as f:
             return f.read().decode("utf8")
 
     pages_data = [
