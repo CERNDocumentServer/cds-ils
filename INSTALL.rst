@@ -4,6 +4,11 @@
     CDS-ILS is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
+Prerequisites
+============
+
+Please check the `prerequisites from Invenio ILS <https://invenioils.docs.cern.ch/install/#prerequisites>`_
+
 Installation
 ============
 
@@ -90,7 +95,7 @@ Start the celery worker (for asynchrounous tasks handling):
 .. code-block:: console
 
     $ ./scripts/celery
-    
+
 
 Optional - Start a Python shell:
 
