@@ -4,7 +4,7 @@
   "dependencies": {
     "@artsy/fresnel": "^1.3.1",
     "@babel/runtime": "^7.9.2",
-    "@inveniosoftware/react-invenio-app-ils": "^1.0.0",
+    "@inveniosoftware/react-invenio-app-ils": "^2.0.0",
     "@rjsf/core": "^2.5.0",
     "@rjsf/semantic-ui": "^2.5.0",
     "ajv": "^8.0.0",
