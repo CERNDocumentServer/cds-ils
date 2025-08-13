@@ -77,7 +77,7 @@ invenio-accounts==6.2.0
 invenio-admin==1.5.2
 invenio-administration==4.3.0
 invenio-app==2.3.0
-invenio-app-ils==5.0.0
+invenio-app-ils==5.0.1
 invenio-assets==4.2.0
 invenio-banners==5.2.0
 invenio-base==2.3.2
