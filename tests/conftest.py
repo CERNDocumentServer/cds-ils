@@ -15,6 +15,7 @@ from flask import Blueprint
 from invenio_access.models import ActionRoles
 from invenio_access.permissions import superuser_access
 from invenio_accounts.models import Role, User
+from invenio_accounts.profiles.dicts import UserProfileDict
 from invenio_app.factory import create_api
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE, Document
 from invenio_app_ils.eitems.api import EITEM_PID_TYPE, EItem
@@ -108,52 +109,48 @@ def patrons(app, db):
     db.session.execute(text("ALTER SEQUENCE IF EXISTS accounts_user_id_seq RESTART"))
     db.session.commit()
 
-    user = User(**dict(email="patron1@cern.ch", active=True))
-    db.session.add(user)
+    datastore = app.extensions["security"].datastore
+    user1_profile = UserProfileDict(
+        full_name="USER, System",
+    )
+
+    user1 = datastore.create_user(
+        email="patron1@cern.ch",
+        _displayname="patron1",
+        active=True,
+        user_profile=user1_profile,
+    )
     db.session.commit()
+    user1_id = user1.id
 
-    user_id = user.id
-
-    identity = UserIdentity(**dict(id="1", method="cern", id_user=user_id))
+    identity = UserIdentity(**dict(id="1", method="cern", id_user=user1_id))
     db.session.add(identity)
 
-    profile = UserProfile(
-        **dict(
-            user_id=user_id,
-            _displayname="id_" + str(user_id),
-            full_name="USER, System",
-        )
-    )
-    db.session.add(profile)
+    db.session.commit()
 
     client_id = app.config["CERN_APP_OPENID_CREDENTIALS"]["consumer_key"]
     remote_account = RemoteAccount(
         client_id=client_id,
         **dict(
-            user_id=user_id,
+            user_id=user1_id,
             extra_data=dict(person_id="1", department="Department", legacy_id="1"),
         )
     )
     db.session.add(remote_account)
     db.session.commit()
 
-    user2 = User(**dict(email="patron2@cern.ch", active=True))
-    db.session.add(user2)
-    db.session.commit()
-
-    user2_id = user2.id
-
-    profile = UserProfile(
-        **dict(
-            user_id=user2_id,
-            _displayname="id_" + str(user2_id),
-            full_name="USER, System",
-        )
+    user2_profile = UserProfileDict(
+        full_name="USER, System",
     )
-    db.session.add(profile)
+    user2 = datastore.create_user(
+        email="patron2@cern.ch",
+        _displayname="patron2",
+        active=True,
+        user_profile=user2_profile,
+    )
     db.session.commit()
 
-    return user, user2
+    return user1, user2
 
 
 @pytest.fixture()
