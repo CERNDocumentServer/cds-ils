@@ -33,6 +33,7 @@ from invenio_indexer.api import RecordIndexer
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_search import current_search
 from invenio_userprofiles.models import UserProfile
+from sqlalchemy import text
 
 from .helpers import _create_records, load_json_from_datadir
 
@@ -104,7 +105,7 @@ def admin(app, db):
 @pytest.fixture()
 def patrons(app, db):
     """Create a patron user."""
-    db.session.execute("ALTER SEQUENCE IF EXISTS accounts_user_id_seq RESTART")
+    db.session.execute(text("ALTER SEQUENCE IF EXISTS accounts_user_id_seq RESTART"))
     db.session.commit()
 
     user = User(**dict(email="patron1@cern.ch", active=True))
