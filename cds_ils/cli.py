@@ -21,6 +21,7 @@ from flask import current_app
 from flask.cli import with_appcontext
 from invenio_access.permissions import system_identity
 from invenio_accounts.models import User
+from invenio_accounts.profiles.dicts import UserProfileDict
 from invenio_app_ils.circulation.search import get_active_loan_by_item_pid
 from invenio_app_ils.cli import minter
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
@@ -40,7 +41,6 @@ from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
 from invenio_records import Record
 from invenio_search import current_search
 from invenio_search.engine import dsl
-from invenio_userprofiles import UserProfile
 
 from cds_ils.literature.tasks import pick_identifier_with_cover_task
 
@@ -185,10 +185,9 @@ def create_userprofile_for(email, username, full_name):
     """Create a fake user profile."""
     user = User.query.filter_by(email=email).one_or_none()
     if user:
-        profile = UserProfile(user_id=int(user.get_id()))
-        profile.username = username
-        profile.full_name = full_name
-        db.session.add(profile)
+        user.username = username
+        profile = UserProfileDict(full_name=full_name)
+        user.user_profile = profile
         db.session.commit()
         click.secho("User profile created for {}".format(email), fg="green")
     else:
