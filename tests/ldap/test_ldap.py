@@ -60,7 +60,7 @@ def test_import_users(app, db, testdata, mocker):
     user = User.query.filter(User.email == email).one()
     assert user
 
-    assert UserProfile.query.filter(UserProfile.user_id == user.id).one()
+    assert UserProfile.get_by_userid(user.id)
 
     uid_number = ldap_user["user_identity_id"]
     user_identity = UserIdentity.query.filter(UserIdentity.id == uid_number).one()
