@@ -116,10 +116,10 @@ def patrons(app, db):
 
     user1 = datastore.create_user(
         email="patron1@cern.ch",
-        _displayname="patron1",
         active=True,
         user_profile=user1_profile,
     )
+    user1.username = "patron1"
     db.session.commit()
     user1_id = user1.id
 
@@ -144,10 +144,10 @@ def patrons(app, db):
     )
     user2 = datastore.create_user(
         email="patron2@cern.ch",
-        _displayname="patron2",
         active=True,
         user_profile=user2_profile,
     )
+    user2.username = "patron2"
     db.session.commit()
 
     return user1, user2
