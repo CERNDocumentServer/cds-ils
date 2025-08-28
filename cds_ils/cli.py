@@ -7,6 +7,7 @@
 
 """CLI for CDS-ILS."""
 
+import importlib
 import json
 import os
 import pathlib
@@ -16,12 +17,12 @@ from random import randint
 
 import arrow
 import click
-import pkg_resources
 from flask import current_app
 from flask.cli import with_appcontext
+from invenio_access.permissions import system_identity
 from invenio_accounts.models import User
 from invenio_app_ils.circulation.search import get_active_loan_by_item_pid
-from invenio_app_ils.cli import minter
+from invenio_app_ils.cli import fixtures, minter
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
 from invenio_app_ils.indexer import wait_es_refresh
 from invenio_app_ils.items.api import ITEM_PID_TYPE
@@ -32,7 +33,9 @@ from invenio_base.app import create_cli
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_circulation.proxies import current_circulation
 from invenio_db import db
-from invenio_pages import Page
+from invenio_i18n.proxies import current_i18n
+from invenio_pages.proxies import current_pages_service
+from invenio_pages.records.errors import PageNotFoundError
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
 from invenio_records import Record
@@ -46,11 +49,6 @@ CURRENT_DIR = pathlib.Path(__file__).parent.absolute()
 
 
 @click.group()
-def fixtures():
-    """Create initial data and demo records."""
-
-
-@click.group()
 def covers():
     """Covers scripts group."""
 
@@ -60,62 +58,75 @@ def covers():
 def pages():
     """Register CDS static pages."""
 
-    def page_data(page):
-        return (
-            pkg_resources.resource_stream("cds_ils", os.path.join("static_pages", page))
-            .read()
-            .decode("utf8")
-        )
+    def get_page_content(page):
+        with importlib.resources.files("cds_ils").joinpath("static_pages", page).open(
+            "rb"
+        ) as f:
+            return f.read().decode("utf8")
 
-    pages = [
-        Page(
-            url="/about",
-            title="About",
-            description="About",
-            content=page_data("about.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/terms",
-            title="Terms and Conditions",
-            description="Terms and Conditions",
-            content=page_data("terms.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/faq",
-            title="F.A.Q.",
-            description="F.A.Q.",
-            content=page_data("faq.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/contact",
-            title="Contact",
-            description="Contact",
-            content=page_data("contact.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/guide/search",
-            title="Search guide",
-            description="Search guide",
-            content=page_data("search_guide.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/privacy-policy",
-            title="Privacy Policy",
-            description="Privacy Policy",
-            content=page_data("privacy_policy.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
+    pages_data = [
+        {
+            "url": "/about",
+            "title": "About",
+            "description": "About",
+            "template": "about.html",
+        },
+        {
+            "url": "/terms",
+            "title": "Terms and Conditions",
+            "description": "Terms and Conditions",
+            "template": "terms.html",
+        },
+        {
+            "url": "/faq",
+            "title": "F.A.Q.",
+            "description": "F.A.Q.",
+            "template": "faq.html",
+        },
+        {
+            "url": "/contact",
+            "title": "Contact",
+            "description": "Contact",
+            "template": "contact.html",
+        },
+        {
+            "url": "/guide/search",
+            "title": "Search guide",
+            "description": "Search guide",
+            "template": "search_guide.html",
+        },
+        {
+            "url": "/privacy-policy",
+            "title": "Privacy Policy",
+            "description": "Privacy Policy",
+            "template": "privacy_policy.html",
+        },
     ]
-    with db.session.begin_nested():
-        Page.query.delete()
-        db.session.add_all(pages)
-    db.session.commit()
-    click.echo("static pages created :)")
+
+    supported_languages = current_i18n.get_languages()
+
+    for entry in pages_data:
+        url = entry["url"]
+        for lang in supported_languages:
+            lang_code = lang[0]
+            try:
+                current_pages_service.read_by_url(system_identity, url, lang_code)
+            except PageNotFoundError:
+                page_data = {
+                    "url": url,
+                    "title": entry.get("title"),
+                    "description": entry.get("description"),
+                    "lang": lang_code,
+                    "template_name": current_app.config["PAGES_DEFAULT_TEMPLATE"],
+                    "content": (
+                        get_page_content(entry["template"])
+                        if entry.get("template")
+                        else entry.get("content")
+                    ),
+                }
+                current_pages_service.create(system_identity, page_data)
+
+    click.echo("CDS Static pages created :)")
 
 
 @fixtures.command()

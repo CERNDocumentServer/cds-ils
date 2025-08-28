@@ -61,7 +61,7 @@ Install frontend packages:
 .. code-block:: console
 
     $ cd ui
-    $ npm install
+    $ npm install --legacy-peer-deps
 
 Covers
 ------
