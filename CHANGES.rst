@@ -7,6 +7,17 @@
 Changes
 =======
 
+Version 4.0.0 (unreleased)
+
+- breaking changes: upgrade to flask 3
+- breaking changes: upgrade to sqlalchemy2
+- global: upgrade dependencies
+- pages: replace usage of `pkg_resources` with `importlib`
+- scripts: ensure server script uses new Flask flag to enable debug mode
+- admin: remove `invenio-admin` as it was replaced by `invenio-administration`
+- global: permit `unsafe-inline` for `style-src` in security headers
+- ui: upgrade dependencies in `package-lock.json`x to the latest supported minor versions
+
 Version 3.7.0 (released 2025-06-05)
 
 - ui: turned shelf field into search in item form
