@@ -97,7 +97,7 @@ class InvenioUser:
         """Constructor."""
         self.user_id = remote_account.user_id
         self.remote_account = remote_account
-        self.user_profile = UserProfile.query.filter_by(user_id=self.user_id).one()
+        self.user_profile = UserProfile.get_by_userid(self.user_id)
         self.user_identity = UserIdentity.query.filter_by(id_user=self.user_id).one()
         self.user = User.query.filter_by(id=self.user_id).one()
         self.data = self._get_full_user_info()

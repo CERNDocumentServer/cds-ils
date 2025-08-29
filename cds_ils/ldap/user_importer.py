@@ -9,6 +9,7 @@
 
 from flask import current_app
 from invenio_accounts.models import User
+from invenio_accounts.profiles.dicts import UserProfileDict
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 from invenio_userprofiles.models import UserProfile
@@ -41,27 +42,32 @@ class LdapUserImporter:
     def create_invenio_user(self, ldap_user):
         """Commit new user in db."""
         email = ldap_user["user_email"]
-        user = User(email=email, active=True)
+
+        full_name = f'{ldap_user["user_profile_last_name"]}, {ldap_user["user_profile_first_name"]}'
+
+        profile = UserProfileDict(
+            full_name=full_name,
+        )
+
+        user = User(
+            email=email,
+            active=True,
+            user_profile=profile,
+        )
         db.session.add(user)
         db.session.commit()
-        return user.id
+
+        user_id = user.id
+        user.username = "id_{}".format(user_id)
+        db.session.commit()
+
+        return user_id
 
     def create_invenio_user_identity(self, user_id, ldap_user):
         """Return new user identity entry."""
         uid_number = ldap_user["user_identity_id"]
         return UserIdentity(
             id=uid_number, method=OAUTH_REMOTE_APP_NAME, id_user=user_id
-        )
-
-    def create_invenio_user_profile(self, user_id, ldap_user):
-        """Return new user profile."""
-        display_name = "{0}, {1}".format(
-            ldap_user["user_profile_last_name"], ldap_user["user_profile_first_name"]
-        )
-        return UserProfile(
-            user_id=user_id,
-            _displayname="id_{}".format(user_id),
-            full_name=display_name,
         )
 
     def create_invenio_remote_account(self, user_id, ldap_user):
@@ -83,9 +89,6 @@ class LdapUserImporter:
 
         identity = self.create_invenio_user_identity(user_id, ldap_user)
         db.session.add(identity)
-
-        profile = self.create_invenio_user_profile(user_id, ldap_user)
-        db.session.add(profile)
 
         remote_account = self.create_invenio_remote_account(user_id, ldap_user)
         db.session.add(remote_account)

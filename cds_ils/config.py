@@ -135,7 +135,7 @@ SEARCH_ELASTIC_HOSTS = [es_host_params]
 # Rate limiting
 ###############################################################################
 #: Storage for rate limiter.
-RATELIMIT_STORAGE_URL = "redis://localhost:6379/3"
+RATELIMIT_STORAGE_URI = "redis://localhost:6379/3"
 
 ###############################################################################
 # I18N
@@ -237,7 +237,7 @@ SECRET_KEY = "CHANGE_ME"
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100 MiB
 #: Sets cookie with the secure flag by default
 SESSION_COOKIE_SECURE = True
-APP_ALLOWED_HOSTS = ["127.0.0.1"]
+TRUSTED_HOSTS = ["127.0.0.1"]
 
 # if you need to render the Debugtoolbar, add 'unsafe-inline':
 #   "script-src": ["'self'", "'unsafe-inline'"],
@@ -247,7 +247,7 @@ APP_DEFAULT_SECURE_HEADERS["content_security_policy"] = {
     "script-src": ["'self'"],
     "object-src": ["'self'"],
     "img-src": ["'self'"],
-    "style-src": ["'self'"],
+    "style-src": ["'self'", "'unsafe-inline'"],
     "font-src": [
         "'self'",
         "data:",

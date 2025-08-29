@@ -60,7 +60,7 @@ def test_import_users(app, db, testdata, mocker):
     user = User.query.filter(User.email == email).one()
     assert user
 
-    assert UserProfile.query.filter(UserProfile.user_id == user.id).one()
+    assert UserProfile.get_by_userid(user.id)
 
     uid_number = ldap_user["user_identity_id"]
     user_identity = UserIdentity.query.filter(UserIdentity.id == uid_number).one()
@@ -251,7 +251,7 @@ def test_update_users(app, db, testdata, mocker):
         """Assert exist in DB and ES."""
         # check if saved in DB
         user = User.query.filter_by(email=expected_email).one()
-        up = UserProfile.query.filter_by(user_id=user.id).one()
+        up = UserProfile.get_by_userid(user.id)
         assert up.full_name == expected_name
         ra = RemoteAccount.query.filter_by(user_id=user.id).one()
         assert ra.extra_data["department"] == expected_department

@@ -10,7 +10,7 @@ set -e
 
 script_path=$(dirname "$0")
 
-export FLASK_ENV=development
+export FLASK_DEBUG=1
 export SERVER_NAME=127.0.0.1:5000
 
 invenio run \

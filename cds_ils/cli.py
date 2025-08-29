@@ -7,6 +7,7 @@
 
 """CLI for CDS-ILS."""
 
+import importlib
 import json
 import os
 import pathlib
@@ -16,10 +17,11 @@ from random import randint
 
 import arrow
 import click
-import pkg_resources
 from flask import current_app
 from flask.cli import with_appcontext
+from invenio_access.permissions import system_identity
 from invenio_accounts.models import User
+from invenio_accounts.profiles.dicts import UserProfileDict
 from invenio_app_ils.circulation.search import get_active_loan_by_item_pid
 from invenio_app_ils.cli import minter
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
@@ -32,13 +34,13 @@ from invenio_base.app import create_cli
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_circulation.proxies import current_circulation
 from invenio_db import db
-from invenio_pages import Page
+from invenio_pages.proxies import current_pages_service
+from invenio_pages.records.errors import PageNotFoundError
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.providers.recordid_v2 import RecordIdProviderV2
 from invenio_records import Record
 from invenio_search import current_search
 from invenio_search.engine import dsl
-from invenio_userprofiles import UserProfile
 
 from cds_ils.literature.tasks import pick_identifier_with_cover_task
 
@@ -60,62 +62,81 @@ def covers():
 def pages():
     """Register CDS static pages."""
 
-    def page_data(page):
-        return (
-            pkg_resources.resource_stream("cds_ils", os.path.join("static_pages", page))
-            .read()
-            .decode("utf8")
-        )
+    def get_page_content(page):
+        with importlib.resources.files("cds_ils").joinpath("static_pages", page).open(
+            "r"
+        ) as f:
+            return f.read().decode("utf8")
 
-    pages = [
-        Page(
-            url="/about",
-            title="About",
-            description="About",
-            content=page_data("about.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/terms",
-            title="Terms and Conditions",
-            description="Terms and Conditions",
-            content=page_data("terms.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/faq",
-            title="F.A.Q.",
-            description="F.A.Q.",
-            content=page_data("faq.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/contact",
-            title="Contact",
-            description="Contact",
-            content=page_data("contact.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/guide/search",
-            title="Search guide",
-            description="Search guide",
-            content=page_data("search_guide.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
-        Page(
-            url="/privacy-policy",
-            title="Privacy Policy",
-            description="Privacy Policy",
-            content=page_data("privacy_policy.html"),
-            template_name="invenio_pages/dynamic.html",
-        ),
+    pages_data = [
+        {
+            "url": "/about",
+            "title": "About",
+            "description": "About",
+            "content": page_data("about.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/terms",
+            "title": "Terms and Conditions",
+            "description": "Terms and Conditions",
+            "content": page_data("terms.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/faq",
+            "title": "F.A.Q.",
+            "description": "F.A.Q.",
+            "content": page_data("faq.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/contact",
+            "title": "Contact",
+            "description": "Contact",
+            "content": page_data("contact.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/guide/search",
+            "title": "Search guide",
+            "description": "Search guide",
+            "content": page_data("search_guide.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
+        {
+            "url": "/privacy-policy",
+            "title": "Privacy Policy",
+            "description": "Privacy Policy",
+            "content": page_data("privacy_policy.html"),
+            "template": "invenio_pages/dynamic.html",
+        },
     ]
-    with db.session.begin_nested():
-        Page.query.delete()
-        db.session.add_all(pages)
-    db.session.commit()
-    click.echo("static pages created :)")
+
+    _supported_languages = current_app.config.get("I18N_LANGUAGES", [("en", "English")])
+
+    for entry in pages_data:
+        url = entry["url"]
+        for lang in _supported_languages:
+            lang_code = lang[0]
+            try:
+                current_pages_service.read_by_url(system_identity, url, lang_code)
+            except PageNotFoundError:
+                page_data = {
+                    "url": url,
+                    "title": entry.get("title", ""),
+                    "description": entry.get("description", ""),
+                    "lang": lang_code,
+                    "template_name": current_app.config["PAGES_DEFAULT_TEMPLATE"],
+                    "content": (
+                        get_page_content(entry["template"])
+                        if entry.get("template")
+                        else entry.get("content", "")
+                    ),
+                }
+                current_pages_service.create(system_identity, page_data)
+
+    click.echo("CDS Static pages created :)")
 
 
 @fixtures.command()
@@ -164,10 +185,9 @@ def create_userprofile_for(email, username, full_name):
     """Create a fake user profile."""
     user = User.query.filter_by(email=email).one_or_none()
     if user:
-        profile = UserProfile(user_id=int(user.get_id()))
-        profile.username = username
-        profile.full_name = full_name
-        db.session.add(profile)
+        user.username = username
+        profile = UserProfileDict(full_name=full_name)
+        user.user_profile = profile
         db.session.commit()
         click.secho("User profile created for {}".format(email), fg="green")
     else:
