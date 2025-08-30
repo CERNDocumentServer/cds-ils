@@ -1,0 +1,37 @@
+[
+    {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "script", "value": "test" },
+    "pid": "docid-13",
+    "title": "Metallic materials — Determination of forming-limit curves for sheet and strip (ed. 2nd - 2021)",
+    "authors": [{ "full_name": "International Organization for Standardization. Geneva" }],
+    "abstract": "This is an abstract",
+    "identifiers": [{ "scheme": "STANDARD_NUMBER", "value": "ISO-12004-2" }],
+    "keywords": [{ "source": "X", "value": "Patata" }],
+    "document_type": "BOOK",
+    "publication_year": "1950",
+    "agency_code": "DE-He213",
+    "_eitem": {
+        "pid": "eitemid-12",
+        "created_by":  {"type": "import", "value": "springer"},
+        "document_pid": "docid-13",
+        "eitem_type": "E-BOOK",
+        "internal_notes": "Ambiguous eitem with source field",
+        "description": "Description of the electronic item",
+        "open_access": false,
+        "source": "springer",
+        "urls": [
+        {
+            "description": "Protected URL",
+            "value": "http://protected-cds-ils.ch/",
+            "login_required": true
+        },
+        {
+            "description": "Another open URL",
+            "value": "http://cds-ils.ch/",
+            "login_required": false
+        }
+        ]
+    }
+  }
+]
