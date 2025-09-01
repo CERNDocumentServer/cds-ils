@@ -13,6 +13,18 @@ export default class EitemImportDetails extends Component {
         <Modal.Header>EItem - attention required</Modal.Header>
         <Modal.Content>
           <Modal.Description>
+            {!_isEmpty(eitemReport.ambiguous) && (
+              <>
+                <Header>Ambiguous e-items found</Header>
+                <List>
+                  {eitemReport.ambiguous.map((pid) => (
+                    <List.Item key={pid}>
+                      <Link to={BackOfficeRoutes.eitemDetailsFor(pid)}>{pid}</Link>
+                    </List.Item>
+                  ))}
+                </List>
+              </>
+            )}
             {!_isEmpty(eitemReport.duplicates) && (
               <>
                 <Header>Duplicated e-items found</Header>

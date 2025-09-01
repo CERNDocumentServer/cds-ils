@@ -124,29 +124,37 @@ class ImportedDocumentReportComponent extends Component {
                 </>
               )}
 
-              {(_get(documentReport, "eitem.deleted_eitems", []).length > 1 ||
-                !_isEmpty(_get(documentReport, "eitem.duplicates", []))) && (
-                <Button
-                  icon="exclamation"
-                  floated="right"
-                  size="mini"
-                  basic
-                  onClick={() => openEitemModal(documentReport.eitem)}
-                />
-              )}
-              <br />
-
-              {!_isEmpty(documentReport.eitem.json) &&
-                this.renderActionLabel(documentReport.eitem.action)}
-              <Button
-                icon="code"
-                floated="right"
-                size="mini"
-                basic
-                onClick={() =>
-                  openJsonModal("E-item JSON", _get(documentReport, "eitem.json", {}))
-                }
-              />
+              <div className="ui grid">
+                <div className="row" style={{ alignItems: "center" }}>
+                  <div className="eight wide column">
+                    {!_isEmpty(documentReport.eitem.json) &&
+                      this.renderActionLabel(documentReport.eitem.action)}
+                  </div>
+                  <div>
+                    {(_get(documentReport, "eitem.deleted_eitems", []).length > 1 ||
+                      !_isEmpty(_get(documentReport, "eitem.duplicates", [])) ||
+                      !_isEmpty(_get(documentReport, "eitem.ambiguous", []))) && (
+                      <Button
+                        icon="exclamation"
+                        size="mini"
+                        basic
+                        onClick={() => openEitemModal(documentReport.eitem)}
+                      />
+                    )}
+                    <Button
+                      icon="code"
+                      size="mini"
+                      basic
+                      onClick={() =>
+                        openJsonModal(
+                          "E-item JSON",
+                          _get(documentReport, "eitem.json", {})
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
             </>
           )}
         </Table.Cell>

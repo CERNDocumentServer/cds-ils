@@ -365,3 +365,118 @@ def test_import_video(app, db):
 
     assert eitem["created_by"] == {"type": "import", "value": "safari"}
     assert created_document["created_by"] == {"type": "import", "value": "safari"}
+
+
+def test_report_ambiguous_eitems_by_source_field_during_import(importer_test_data):
+    """Test that eitems matched on source field are reported as ambiguous during import."""
+
+    document_cls = current_app_ils.document_record_cls
+    eitem_cls = current_app_ils.eitem_record_cls
+    eitem_search_cls = current_app_ils.eitem_search_cls
+
+    document_with_source_eitem = document_cls.get_record_by_pid("docid-13")
+
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=document_with_source_eitem["pid"]
+    )
+    results = search.execute()
+
+    json_data = load_json_from_datadir(
+        "ambiguous_document_data.json", relpath="importer"
+    )[0]
+
+    importer = Importer(json_data, "springer")
+    report = importer.import_record()
+
+    assert report["action"] == "update"
+
+    eitem_report = report.get("eitem")
+    assert eitem_report["action"] == "update"
+    updated_eitem = eitem_report.get("json")
+    assert updated_eitem["pid"] == "eitemid-12"
+
+    duplicates = eitem_report.get("duplicates")
+    assert len(duplicates) == 0
+
+    ambiguous_list = eitem_report.get("ambiguous")
+    assert len(ambiguous_list) == 1
+    ambiguous_eitem = ambiguous_list[0]
+    assert ambiguous_eitem == "eitemid-13"
+
+
+def test_report_ambiguous_eitems_by_source_field_during_delete(importer_test_data):
+    """Test that eitems matched on source field are reported as ambiguous during import."""
+
+    document_cls = current_app_ils.document_record_cls
+    eitem_cls = current_app_ils.eitem_record_cls
+    eitem_search_cls = current_app_ils.eitem_search_cls
+
+    document_with_source_eitem = document_cls.get_record_by_pid("docid-13")
+
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=document_with_source_eitem["pid"]
+    )
+    results = search.execute()
+
+    json_data = load_json_from_datadir(
+        "ambiguous_document_data.json", relpath="importer"
+    )[0]
+
+    importer = Importer(json_data, "springer")
+    report = importer.preview_delete()
+
+    assert report["action"] == "delete"
+
+    eitem_report = report.get("eitem")
+    assert eitem_report["action"] == "delete"
+    updated_eitem = eitem_report.get("json")
+    assert updated_eitem["pid"] == "eitemid-12"
+
+    duplicates = eitem_report.get("duplicates")
+    assert len(duplicates) == 0
+
+    ambiguous_list = eitem_report.get("ambiguous")
+    assert len(ambiguous_list) == 1
+    ambiguous_eitem = ambiguous_list[0]
+    assert ambiguous_eitem == "eitemid-13"
+
+
+def test_duplicate_eitems_detection_during_import(importer_test_data):
+    """Test that duplicate eitems are properly detected in import preview."""
+    document_cls = current_app_ils.document_record_cls
+    eitem_cls = current_app_ils.eitem_record_cls
+    eitem_search_cls = current_app_ils.eitem_search_cls
+
+    json_data = load_json_from_datadir(
+        "create_duplicate_eitems_document.json", relpath="importer"
+    )
+
+    document_with_duplicates = document_cls.get_record_by_pid("docid-14")
+    search = eitem_search_cls().search_by_document_pid(
+        document_pid=document_with_duplicates["pid"]
+    )
+    results = search.execute()
+
+    existing_eitems = [eitem_cls.get_record_by_pid(hit.pid) for hit in results.hits]
+    springer_eitems = [
+        hit
+        for hit in existing_eitems
+        if hit.get("created_by").get("value") == "springer"
+    ]
+
+    assert (
+        len(springer_eitems) == 2
+    ), f"Expected 2 existing springer eitems, but found {len(springer_eitems)}"
+
+    importer = Importer(json_data[0], "springer")
+    report = importer.import_record()
+
+    eitem_report = report.get("eitem")
+    duplicates = eitem_report.get("duplicates")
+    assert (
+        len(duplicates) == 2
+    ), f"Expected 2 duplicates to be detected, but found {len(duplicates)}"
+
+    assert (
+        eitem_report.get("action") == "create"
+    ), f"Unexpected action: {eitem_report.get('action')}"
