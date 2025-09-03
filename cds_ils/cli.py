@@ -34,6 +34,7 @@ from invenio_base.app import create_cli
 from invenio_circulation.pidstore.pids import CIRCULATION_LOAN_PID_TYPE
 from invenio_circulation.proxies import current_circulation
 from invenio_db import db
+from invenio_i18n.proxies import current_i18n
 from invenio_pages.proxies import current_pages_service
 from invenio_pages.records.errors import PageNotFoundError
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
@@ -59,7 +60,7 @@ def pages():
 
     def get_page_content(page):
         with importlib.resources.files("cds_ils").joinpath("static_pages", page).open(
-            "r"
+            "rb"
         ) as f:
             return f.read().decode("utf8")
 
@@ -68,65 +69,59 @@ def pages():
             "url": "/about",
             "title": "About",
             "description": "About",
-            "content": page_data("about.html"),
-            "template": "invenio_pages/dynamic.html",
+            "template": "about.html",
         },
         {
             "url": "/terms",
             "title": "Terms and Conditions",
             "description": "Terms and Conditions",
-            "content": page_data("terms.html"),
-            "template": "invenio_pages/dynamic.html",
+            "template": "terms.html",
         },
         {
             "url": "/faq",
             "title": "F.A.Q.",
             "description": "F.A.Q.",
-            "content": page_data("faq.html"),
-            "template": "invenio_pages/dynamic.html",
+            "template": "faq.html",
         },
         {
             "url": "/contact",
             "title": "Contact",
             "description": "Contact",
-            "content": page_data("contact.html"),
-            "template": "invenio_pages/dynamic.html",
+            "template": "contact.html",
         },
         {
             "url": "/guide/search",
             "title": "Search guide",
             "description": "Search guide",
-            "content": page_data("search_guide.html"),
-            "template": "invenio_pages/dynamic.html",
+            "template": "search_guide.html",
         },
         {
             "url": "/privacy-policy",
             "title": "Privacy Policy",
             "description": "Privacy Policy",
-            "content": page_data("privacy_policy.html"),
-            "template": "invenio_pages/dynamic.html",
+            "template": "privacy_policy.html",
         },
     ]
 
-    _supported_languages = current_app.config.get("I18N_LANGUAGES", [("en", "English")])
+    supported_languages = current_i18n.get_languages()
 
     for entry in pages_data:
         url = entry["url"]
-        for lang in _supported_languages:
+        for lang in supported_languages:
             lang_code = lang[0]
             try:
                 current_pages_service.read_by_url(system_identity, url, lang_code)
             except PageNotFoundError:
                 page_data = {
                     "url": url,
-                    "title": entry.get("title", ""),
-                    "description": entry.get("description", ""),
+                    "title": entry.get("title"),
+                    "description": entry.get("description"),
                     "lang": lang_code,
                     "template_name": current_app.config["PAGES_DEFAULT_TEMPLATE"],
                     "content": (
                         get_page_content(entry["template"])
                         if entry.get("template")
-                        else entry.get("content", "")
+                        else entry.get("content")
                     ),
                 }
                 current_pages_service.create(system_identity, page_data)
