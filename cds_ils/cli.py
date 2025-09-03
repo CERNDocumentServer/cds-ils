@@ -23,7 +23,7 @@ from invenio_access.permissions import system_identity
 from invenio_accounts.models import User
 from invenio_accounts.profiles.dicts import UserProfileDict
 from invenio_app_ils.circulation.search import get_active_loan_by_item_pid
-from invenio_app_ils.cli import minter
+from invenio_app_ils.cli import fixtures, minter
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE
 from invenio_app_ils.indexer import wait_es_refresh
 from invenio_app_ils.items.api import ITEM_PID_TYPE
@@ -45,11 +45,6 @@ from invenio_search.engine import dsl
 from cds_ils.literature.tasks import pick_identifier_with_cover_task
 
 CURRENT_DIR = pathlib.Path(__file__).parent.absolute()
-
-
-@click.group()
-def fixtures():
-    """Create initial data and demo records."""
 
 
 @click.group()
