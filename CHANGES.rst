@@ -7,7 +7,7 @@
 Changes
 =======
 
-Version 4.0.0 (unreleased)
+Version 4.0.0 (released 2025-09-01)
 
 - breaking changes: upgrade to flask 3
 - breaking changes: upgrade to sqlalchemy2
