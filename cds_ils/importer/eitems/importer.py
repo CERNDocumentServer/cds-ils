@@ -11,13 +11,15 @@ import uuid
 
 import click
 from flask import current_app
-from invenio_app_ils.eitems.api import EItemIdProvider
+from invenio_app_ils.eitems.api import (
+    EItemIdProvider,
+    get_eitems_for_document_by_creator,
+    get_eitems_for_document_by_source,
+)
 from invenio_app_ils.errors import IlsValidationError
 from invenio_app_ils.proxies import current_app_ils
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier
-
-from cds_ils.importer.eitems.api import get_eitems_for_document_by_provider
 
 
 class EItemImporter(object):
@@ -47,6 +49,7 @@ class EItemImporter(object):
         self.output_pid = None
         self.action = None
         self.eitem_record = None
+        self.duplicate_list = []
         self.ambiguous_list = []
         self.deleted_list = []
 
@@ -125,12 +128,13 @@ class EItemImporter(object):
         eitem_indexer.delete(existing_eitem)
         return existing_eitem
 
-    def _report_ambiguous_records(self, multiple_results):
-        eitem_cls = current_app_ils.eitem_record_cls
-
+    def _report_duplicate_records(self, multiple_results):
         for hit in multiple_results:
-            existing_eitem = eitem_cls.get_record_by_pid(hit["pid"])
-            self.ambiguous_list.append(existing_eitem)
+            self.duplicate_list.append(hit["pid"])
+
+    def _report_ambiguous_records(self, multiple_results):
+        for hit in multiple_results:
+            self.ambiguous_list.append(hit["pid"])
 
     def _get_other_eitems_of_document(self, matched_document):
         eitem_search = current_app_ils.eitem_search_cls()
@@ -237,10 +241,25 @@ class EItemImporter(object):
         if self.eitem_json:
             # eitem is not always there, sometime we just create a doc
             eitem_type = self.eitem_json.get("_type", "E-BOOK").upper()
-        search = get_eitems_for_document_by_provider(
+        exact_eitem_search = get_eitems_for_document_by_creator(
             document_pid, self.metadata_provider
         ).filter("term", eitem_type=eitem_type)
-        return search
+
+        # Declare items that are matched by `source``, but not by `created_by`` as ambiguous
+        # They might have been created manually and the source field was filled in
+        exact_hits = exact_eitem_search.execute()
+        exact_hit_ids = [hit.meta.id for hit in exact_hits]
+        ambiguous_eitem_search = (
+            get_eitems_for_document_by_source(
+                document_pid, self.metadata_provider, case_insensitive=True
+            )
+            .exclude("ids", values=exact_hit_ids)
+            .filter("term", eitem_type=eitem_type)
+        )
+
+        self._report_ambiguous_records(ambiguous_eitem_search.scan())
+
+        return exact_eitem_search
 
     def import_eitem_action(self, search):
         """Determine import action."""
@@ -280,8 +299,8 @@ class EItemImporter(object):
             self.output_pid = existing_eitem["pid"]
         else:
             results = search.scan()
-            self._report_ambiguous_records(results)
-            # still creates an item, even ambiguous eitems found
+            self._report_duplicate_records(results)
+            # still creates an item, even duplicate eitems found
             # checks if there are higher priority eitems
             if should_eitem_be_imported:
                 self.eitem_record = self.create_eitem(matched_document)
@@ -291,13 +310,10 @@ class EItemImporter(object):
     def delete_eitems(self, matched_document):
         """Deletes eitems for a given document."""
         eitem_cls = current_app_ils.eitem_record_cls
-        document_pid = matched_document["pid"]
         self.action = "delete"
 
         # get eitems for current provider
-        search = get_eitems_for_document_by_provider(
-            document_pid, self.metadata_provider
-        )
+        search = self.eitems_search(matched_document)
         results = search.scan()
 
         for record in results:
@@ -307,11 +323,8 @@ class EItemImporter(object):
     def preview_delete(self, matched_document):
         """Preview delete action on eitems for given document."""
         eitem_cls = current_app_ils.eitem_record_cls
-        document_pid = matched_document["pid"]
         self.action = "delete"
-        search = get_eitems_for_document_by_provider(
-            document_pid, self.metadata_provider
-        )
+        search = self.eitems_search(matched_document)
         results = search.scan()
         for record in results:
             existing_eitem = eitem_cls.get_record_by_pid(record["pid"])
@@ -350,7 +363,8 @@ class EItemImporter(object):
             "eitem": self.eitem_record,
             "json": self.eitem_json,
             "output_pid": self.output_pid,
-            "duplicates": self.ambiguous_list,
+            "ambiguous": self.ambiguous_list,
+            "duplicates": self.duplicate_list,
             "action": self.action,
             "deleted_eitems": self.deleted_list,
         }
@@ -374,8 +388,8 @@ class EItemImporter(object):
                 return self.summary()
             else:
                 results = search.scan()
-                self._report_ambiguous_records(results)
-                # still creates an item, even ambiguous eitems found
+                self._report_duplicate_records(results)
+                # still creates an item, even duplicate eitems found
                 # checks if there are higher priority eitems
                 if should_eitem_be_imported:
                     self.action = "create"

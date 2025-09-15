@@ -222,5 +222,18 @@
     "document_type": "BOOK",
     "publication_year": "1950",
     "note": "MATCH BY STANDARD NUMBER"
+  },
+  {
+    "$schema": "https://127.0.0.1:5000/schemas/documents/document-v1.0.0.json",
+    "created_by": { "type": "import", "value": "springer" },
+    "pid": "docid-14",
+    "title": "Test Document with Multiple Springer EItems",
+    "document_type": "BOOK",
+    "authors": [{ "full_name": "Test Author" }],
+    "abstract": "This is a test document that should have multiple eitems from the same provider",
+    "edition": "1st",
+    "publication_year": "2024",
+    "identifiers": [{ "scheme": "ISBN", "value": "1234567890123" }],
+    "note": "DUPLICATE EITEMS TEST"
   }
 ]
