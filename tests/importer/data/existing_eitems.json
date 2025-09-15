@@ -217,5 +217,83 @@
         "login_required": false
       }
     ]
+  },
+  {
+    "pid": "eitemid-12",
+    "created_by":  {"type": "import", "value": "springer"},
+    "source": "springer",
+    "document_pid": "docid-13",
+    "eitem_type": "E-BOOK",
+    "internal_notes": "Unambiguous eitem with source field",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-13",
+    "created_by":  {"type": "user_id", "value": "1"},
+    "source": "springer",
+    "document_pid": "docid-13",
+    "eitem_type": "E-BOOK",
+    "internal_notes": "Ambiguous eitem with source field",
+    "description": "Description of the electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL",
+        "value": "http://protected-cds-ils.ch/",
+        "login_required": true
+      },
+      {
+        "description": "Another open URL",
+        "value": "http://cds-ils.ch/",
+        "login_required": false
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-14-dup1",
+    "created_by":  {"type": "import", "value": "springer"},
+    "source": "springer",
+    "document_pid": "docid-14",
+    "eitem_type": "E-BOOK",
+    "internal_notes": "First duplicate eitem from springer",
+    "description": "Description of the first duplicate electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL 1",
+        "value": "http://protected-cds-ils-1.ch/",
+        "login_required": true
+      }
+    ]
+  },
+  {
+    "pid": "eitemid-14-dup2",
+    "created_by":  {"type": "import", "value": "springer"},
+    "source": "springer", 
+    "document_pid": "docid-14",
+    "eitem_type": "E-BOOK",
+    "internal_notes": "Second duplicate eitem from springer",
+    "description": "Description of the second duplicate electronic item",
+    "open_access": false,
+    "urls": [
+      {
+        "description": "Protected URL 2",
+        "value": "http://protected-cds-ils-2.ch/",
+        "login_required": true
+      }
+    ]
   }
 ]
