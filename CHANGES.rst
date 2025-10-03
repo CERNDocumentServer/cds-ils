@@ -7,6 +7,15 @@
 Changes
 =======
 
+Version 5.0.0 (released 2025-10-03)
+
+- breaking change: global: upgrade invenio-app-ils
+- importer: add warning for ambiguous eitems during import
+- fixtures: pages: fix pages creation failing
+- fixtures: fix cds fixtures being overwritten by invenio-app-ils fixtures
+- docker: add `opensearch-dashboards` container
+- celery: start celery with `--beat` flag by default
+
 Version 4.0.0 (released 2025-09-01)
 
 - breaking changes: upgrade to flask 3
