@@ -12,7 +12,7 @@ services:
     restart: "always"
     read_only: true
     ports:
-      - "6379:6379"
+      - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:6379:6379"
   db:
     image: postgres:14
     restart: "always"
@@ -21,13 +21,13 @@ services:
       - "POSTGRES_PASSWORD=invenio"
       - "POSTGRES_DB=invenio"
     ports:
-      - "5432:5432"
+      - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:5432:5432"
   mq:
     image: rabbitmq:3-management
     restart: "always"
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:15672:15672"
+      - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:5672:5672"
   search:
     # to use ES7: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1
     image: opensearchproject/opensearch:2.11.1
@@ -48,19 +48,17 @@ services:
         hard: -1
     mem_limit: 1g
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:9200:9200"
+      - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:9300:9300"
   flower:
     image: mher/flower
     command: --broker=amqp://guest:guest@mq:5672/ --broker_api=http://guest:guest@mq:15672/api/
     ports:
-      - "5555:5555"
+      - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:5555:5555"
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:2.11.1
     ports:
-      - "5601:5601"
-    expose:
-      - "5601"
+      - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:5601:5601"
     environment:
       # settings only for development. DO NOT use in production!
       - 'OPENSEARCH_HOSTS=["http://search:9200"]'
