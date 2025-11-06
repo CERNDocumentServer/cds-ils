@@ -72,9 +72,9 @@ infinity==1.5
 intervals==0.9.2
 invenio-access==4.2.1
 invenio-accounts==6.2.1
-invenio-administration==4.3.0
+invenio-administration==4.3.1
 invenio-app==2.3.0
-invenio-app-ils==6.0.0
+invenio-app-ils==6.1.0
 invenio-assets==4.2.0
 invenio-banners==5.2.0
 invenio-base==2.3.2
