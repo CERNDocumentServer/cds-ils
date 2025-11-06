@@ -30,7 +30,7 @@ services:
       - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:5672:5672"
   search:
     # to use ES7: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1
-    image: opensearchproject/opensearch:2.11.1
+    image: opensearchproject/opensearch:3.2.0
     environment:
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -56,7 +56,7 @@ services:
     ports:
       - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:5555:5555"
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:2.11.1
+    image: opensearchproject/opensearch-dashboards:3.2.0
     ports:
       - "${DOCKER_SERVICES_IP_BIND:-127.0.0.1}:5601:5601"
     environment:
