@@ -7,6 +7,14 @@
 Changes
 =======
 
+Version 5.0.1 (released 2025-12-02)
+
+- tests: add missing rabbit mq service
+- global: upgrade dependencies
+- os: bump OpenSearch to v3.2.0
+- ui: update `react-invenio-app-ils` version
+- fix: bind `127.0.0.1` by default for Docker service ports
+
 Version 5.0.0 (released 2025-10-03)
 
 - breaking change: global: upgrade invenio-app-ils
