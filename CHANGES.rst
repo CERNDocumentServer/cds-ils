@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 5.0.2 (released 2025-12-11)
+- ui: upgrade dependencies
+- global: upgrade python dependencies
+
 Version 5.0.1 (released 2025-12-02)
 
 - tests: add missing rabbit mq service
