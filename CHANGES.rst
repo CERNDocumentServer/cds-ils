@@ -7,6 +7,9 @@
 Changes
 =======
 
+Version 6.0.0 (released 2026-02-04)
+- breaking change: global: upgrade invenio-app-ils
+
 Version 5.0.2 (released 2025-12-11)
 - ui: upgrade dependencies
 - global: upgrade python dependencies
