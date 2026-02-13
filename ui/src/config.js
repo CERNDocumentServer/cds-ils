@@ -201,7 +201,7 @@ export const config = {
     phonebookURLPrefix: "https://phonebook.cern.ch/search?q=",
   },
   ITEMS: {
-    identifiersToDisplayInFrontside: ["CALL_NUMBER"],
+    identifiersToDisplay: ["CALL_NUMBER"],
     editorSchema: {
       required: [
         "internal_location_pid",
