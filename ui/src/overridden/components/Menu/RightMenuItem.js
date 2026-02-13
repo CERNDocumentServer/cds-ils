@@ -23,14 +23,14 @@ const DropdownItems = () => {
       </Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item as={Link} to={getStaticPageByName("contact").route}>
-        Ask a librarian
+        Contact
       </Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item
         as="a"
         href="https://mattermost.web.cern.ch/sis-team/channels/library-requests"
       >
-        Contact
+        Ask a librarian
       </Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item as={Link} to={FrontSiteRoutes.openingHours}>
