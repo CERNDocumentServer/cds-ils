@@ -7,6 +7,9 @@
 Changes
 =======
 
+Version 6.1.0 (released 2026-02-13)
+- update ui dependencies
+
 Version 6.0.0 (released 2026-02-04)
 - breaking change: global: upgrade invenio-app-ils
 
