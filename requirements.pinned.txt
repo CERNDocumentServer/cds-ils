@@ -192,7 +192,7 @@ ua-parser==1.0.1
 ua-parser-builtins==0.18.0.post1
 uritemplate==4.2.0
 uritools==5.0.0
-urllib3==1.26.20
+urllib3==2.6.3
 validators==0.35.0
 vine==5.1.0
 Wand==0.6.13
