@@ -144,7 +144,7 @@ packaging==24.2
 parso==0.8.6
 passlib==1.7.4
 pexpect==4.9.0
-pillow==11.3.0
+pillow==12.1.1
 pluggy==1.6.0
 ply==3.11
 polib==1.2.0
