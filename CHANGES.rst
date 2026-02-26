@@ -7,6 +7,9 @@
 Changes
 =======
 
+Version 6.2.0 (released 2026-02-26)
+- global: update dependencies
+
 Version 6.1.0 (released 2026-02-13)
 - update ui dependencies
 
