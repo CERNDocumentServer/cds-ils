@@ -25,7 +25,6 @@ module.exports = {
       'less-loader': path.resolve('./node_modules/less-loader'),
       lodash: path.resolve('./node_modules/lodash'),
       luxon: path.resolve('./node_modules/luxon'),
-      path: path.resolve('./node_modules/path'),
       'prop-types': path.resolve('./node_modules/prop-types'),
       qs: path.resolve('./node_modules/qs'),
       react: path.resolve('./node_modules/react'),
@@ -42,8 +41,8 @@ module.exports = {
       'react-show-more': path.resolve('./node_modules/react-show-more'),
       'react-tagcloud': path.resolve('./node_modules/react-tagcloud'),
       redux: path.resolve('./node_modules/redux'),
-      'redux-devtools-extension': path.resolve(
-        './node_modules/redux-devtools-extension'
+      '@redux-devtools/extension': path.resolve(
+        './node_modules/@redux-devtools/extension'
       ),
       'redux-thunk': path.resolve('./node_modules/redux-thunk'),
       'semantic-ui-calendar-react': path.resolve(
@@ -51,7 +50,6 @@ module.exports = {
       ),
       'semantic-ui-less': path.resolve('./node_modules/semantic-ui-less'),
       'semantic-ui-react': path.resolve('./node_modules/semantic-ui-react'),
-      yup: path.resolve('./node_modules/yup'),
     },
   },
 };

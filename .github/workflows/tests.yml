@@ -68,14 +68,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js v14.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: "14.x"
+          node-version: "22.x"
 
       - name: Install & Build
         working-directory: ./ui
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Lint
         working-directory: ./ui
