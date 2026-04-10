@@ -43,5 +43,10 @@
     "type": "tag",
     "key": "DIVERSITY_AND_INCLUSION",
     "text": "Diversity and Inclusion"
+  },
+  {
+    "type": "tag",
+    "key": "DRO",
+    "text": "DRO"
   }
 ]
