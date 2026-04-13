@@ -72,7 +72,7 @@ invenio-access==5.1.0
 invenio-accounts==7.1.0
 invenio-administration==5.2.0
 invenio-app==3.0.0
-invenio-app-ils==7.3.0
+invenio-app-ils@git+https://github.com/inveniosoftware/invenio-app-ils@master
 invenio-assets==4.2.1
 invenio-banners==6.0.0
 invenio-base==2.4.0
@@ -199,7 +199,7 @@ vine==5.1.0
 Wand==0.6.13
 watchdog==6.0.0
 wcwidth==0.6.0
-webargs==5.5.3
+webargs==8.7.1
 webencodings==0.5.1
 Werkzeug==3.1.8
 wrapt==2.1.2
