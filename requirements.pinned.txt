@@ -142,7 +142,7 @@ ordered-set==4.1.0
 ordereddict==1.1
 packaging==24.2
 parso==0.8.6
-libpass==1.9.3
+passlib==1.7.4
 pexpect==4.9.0
 pillow==11.3.0
 pluggy==1.6.0
