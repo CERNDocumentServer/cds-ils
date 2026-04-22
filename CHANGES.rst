@@ -7,6 +7,13 @@
 Changes
 =======
 
+Version 6.3.0 (released 2026-04-22)
+- fix(ui): update about page
+- change(setup): bump invenio-app-ils
+- ci: ui: update tests pipeline to use new node version
+- ui: bump react-overridable and react-searchkit versions
+- ui: update all dependencies
+
 Version 6.2.0 (released 2026-02-26)
 - global: update dependencies
 
