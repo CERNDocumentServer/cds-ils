@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 6.3.1 (released 2026-04-22)
+
+- add(vocabularies): DRO tag
+
 Version 6.3.0 (released 2026-04-22)
 - fix(ui): update about page
 - change(setup): bump invenio-app-ils
