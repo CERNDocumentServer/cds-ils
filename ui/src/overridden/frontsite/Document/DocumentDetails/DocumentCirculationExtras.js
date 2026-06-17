@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import _get from "lodash/get";
 import _isEmpty from "lodash/isEmpty";
 import { invenioConfig } from "@inveniosoftware/react-invenio-app-ils";
-import { Embed, Button, Divider, Icon } from "semantic-ui-react";
+import { Button, Divider, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import { renderCallNumber, shelfLink } from "../../../utils";
+
+// Uses location.replace() so iframe navigation (including server-side redirects)
+// doesn't add extra entries to the browser's joint session history.
+// eslint-disable-next-line react/prop-types
+function MapIframe({ url }) {
+  const iframeRef = useRef(null);
+  useEffect(() => {
+    if (iframeRef.current) {
+      iframeRef.current.contentWindow.location.replace(url);
+    }
+  }, [url]);
+  return (
+    <div className="ui active embed cern-map">
+      <div className="embed">
+        <iframe
+          ref={iframeRef}
+          src="about:blank"
+          frameBorder={0}
+          allowFullScreen={false}
+          scrolling="no"
+          width="100%"
+          height="100%"
+          title="Find it on shelf map"
+        />
+      </div>
+    </div>
+  );
+}
 
 function canCirculateItem(item) {
   return invenioConfig.ITEMS.canCirculateStatuses.includes(item.status);
@@ -77,11 +105,7 @@ export class DocumentCirculationExtras extends React.Component {
     return (
       <>
         <Divider />
-        <Embed
-          className="cern-map"
-          active
-          url={shelfLink(shelfNumber, { iframe: true })}
-        />
+        <MapIframe url={shelfLink(shelfNumber, { iframe: true })} />
         <Button
           as="a"
           smooth
