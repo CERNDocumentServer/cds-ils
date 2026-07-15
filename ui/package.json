@@ -45,6 +45,9 @@
     "@semantic-ui-react/craco-less": "^3.0.0",
     "react-scripts": "^5.0.1"
   },
+  "overrides": {
+    "webpack": "5.75.0"
+  },
   "scripts": {
     "start": "HOST=127.0.0.1 HTTPS=true craco start",
     "build": "craco build",
