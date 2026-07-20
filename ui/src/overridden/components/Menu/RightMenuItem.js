@@ -68,7 +68,7 @@ export const RightMenuItem = () => {
 export const RightMenuItemMobile = () => {
   return (
     <Media lessThan="computer">
-      <Dropdown item icon="help">
+      <Dropdown item icon="help" aria-label="Help">
         <Dropdown.Menu>
           <DropdownItems />
         </Dropdown.Menu>
