@@ -39,9 +39,16 @@ export class Importer extends Component {
   }
 
   handleChange = (e, { name, value }) => {
-    this.setState({
-      [name]: value,
-    });
+    const update = { [name]: value };
+
+    if (name === "provider") {
+      update.providerMissing = false;
+    }
+    if (name === "mode") {
+      update.modeMissing = false;
+    }
+
+    this.setState(update);
   };
 
   handleCheckboxChange = (e, { name, checked }) => {
@@ -69,7 +76,12 @@ export class Importer extends Component {
 
   handleSubmit = (action) => {
     const { provider, mode, file, ignoreMissingRules } = this.state;
-    this.setState({ submitIsLoading: true });
+    this.setState({
+      submitIsLoading: true,
+      providerMissing: false,
+      modeMissing: false,
+      fileMissing: false,
+    });
     let importMode = mode;
     if (action === "PREVIEW" && mode === "IMPORT") {
       importMode = "PREVIEW_IMPORT";
@@ -103,6 +115,7 @@ export class Importer extends Component {
     const file = this.filesRef.current.files[0];
     this.setState({
       file: file,
+      fileMissing: false,
     });
   };
 
@@ -243,6 +256,7 @@ export class Importer extends Component {
               value={provider}
               options={invenioConfig.IMPORTER.providers}
               onChange={this.handleChange}
+              onOpen={() => this.setState({ providerMissing: false })}
               required
               error={providerMissing ? "Please enter a provider" : null}
             />
@@ -255,6 +269,7 @@ export class Importer extends Component {
               value={mode}
               options={invenioConfig.IMPORTER.modes}
               onChange={this.handleChange}
+              onOpen={() => this.setState({ modeMissing: false })}
               required
               error={modeMissing ? "Please enter a mode" : null}
             />
@@ -274,6 +289,9 @@ export class Importer extends Component {
                 labelPosition="left"
                 onClick={(e) => {
                   e.preventDefault();
+                  this.setState({
+                    fileMissing: false,
+                  });
                   this.filesRef.current.click();
                 }}
               />
