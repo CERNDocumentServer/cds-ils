@@ -36,9 +36,9 @@ alt_titles_types_map = {
     "alternative-title": "ALTERNATIVE_TITLE",
 }
 
-document_type_map = {"publication-thesis": "BOOK"}
+document_type_map = {"publication-thesis": "THESIS"}
 
-document_type_tags_map = {"publication-thesis": "THESIS"}
+document_type_tags_map = {}
 
 conference_identifiers_scheme_map = {"url": "OTHER", "inspire": "INSPIRE_CNUM"}
 
