@@ -66,7 +66,7 @@ def test_rdm_transformation(app):
             }
         ],
         "copyrights": [{"statement": "2025 © Author(s)"}],
-        "document_type": "BOOK",
+        "document_type": "THESIS",
         "edition": "2",
         "extensions": {
             "unit_accelerator": "CERN LHC",
@@ -101,7 +101,6 @@ def test_rdm_transformation(app):
         "source": "CDS",
         # "subjects": None, # todo when UDC introduced in CDS_RDM
         "table_of_content": ["1. Chapter 1: ABC\n 2. Chapter 2: EFG"],
-        "tags": ["THESIS"],
         "title": "Discovery and Characterization of a Higgs boson using four-lepton events from the CMS experiment",
         "urls": [{"value": "https://url.example.com/test"}],
         "restricted": False,

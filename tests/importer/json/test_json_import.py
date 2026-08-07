@@ -39,7 +39,7 @@ def test_rdm_import(app):
         {"value": "CMS-TS-2015-021", "scheme": "REPORT_NUMBER"},
         {"value": "CMS-TS-2015-021", "scheme": "REPORT_NUMBER"},
     ]
-    assert matched_document["document_type"] == "BOOK"
+    assert matched_document["document_type"] == "THESIS"
 
     series1pid = report["series"][0]["series_record"]["pid"]
     series2pid = report["series"][1]["series_record"]["pid"]
