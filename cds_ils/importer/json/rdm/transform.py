@@ -36,7 +36,7 @@ alt_titles_types_map = {
     "alternative-title": "ALTERNATIVE_TITLE",
 }
 
-document_type_map = {"publication-thesis": "THESIS"}
+document_type_map = {"publication-dissertation": "THESIS"}
 
 document_type_tags_map = {}
 
