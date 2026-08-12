@@ -7,6 +7,14 @@
 Changes
 =======
 
+Version 6.4.0 (released 2026-08-12)
+
+- fix(ui): change document verion order e.g "ed. 2nd" to "2nd ed."
+- fix(ui): overlapping text on contents display
+- fix(importer): crashing on large fields
+- add(document type): added thesis document type
+- update(rdm sync): rdm sync supports thesis document type
+
 Version 6.3.1 (released 2026-04-22)
 
 - add(vocabularies): DRO tag
