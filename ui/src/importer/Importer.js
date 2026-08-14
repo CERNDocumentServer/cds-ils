@@ -38,6 +38,13 @@ export class Importer extends Component {
     };
   }
 
+  componentDidMount() {
+    // move to end of event loop so is added after default title
+    setTimeout(() => {
+      document.title = "Importer | CERN Library Catalogue";
+    }, 0);
+  }
+
   handleChange = (e, { name, value }) => {
     const update = { [name]: value };
 
