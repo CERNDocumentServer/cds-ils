@@ -778,6 +778,7 @@ CDS_ILS_IMPORTER_PROVIDERS = {
     },
     "ebl": {"priority": 4, "agency_code": "MiAaPQ"},
     "safari": {"priority": 4, "agency_code": "OCoLC"},
+    "gobi": {"priority": 4, "agency_code": "YBPUID"},
 }
 
 CDS_ILS_IMPORTER_UPLOADS_PATH = "/tmp"

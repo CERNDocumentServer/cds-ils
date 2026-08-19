@@ -47,5 +47,10 @@
     "data": {
       "url_path": "https://repository.cern/records/{identifier}"
     }
+  },
+  {
+    "type": "alternative_identifier_scheme",
+    "key": "GOBI",
+    "text": "GOBI"
   }
 ]
