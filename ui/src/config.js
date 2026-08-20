@@ -265,6 +265,7 @@ export const config = {
       { key: "ebl", text: "EbookCentral (EBL)", value: "ebl" },
       { key: "safari", text: "O'reilly (Safari)", value: "safari" },
       { key: "snv", text: "SNV Standards", value: "snv" },
+      { key: "gobi", text: "GOBI", value: "gobi" },
     ],
     modes: [
       { key: "create", text: "Import", value: "IMPORT" },
