@@ -60,11 +60,11 @@ export const Footer = ({ ...props }) => {
                 </List.Item>
                 <List.Item>
                   <a
-                    href="https://scientific-info.cern"
+                    href="https://library.cern/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Scientific Information Service
+                    Library website
                   </a>
                 </List.Item>
                 <List.Item>

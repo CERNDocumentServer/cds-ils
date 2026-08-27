@@ -37,14 +37,11 @@ const DropdownItems = () => {
         Opening hours
       </Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item as="a" href="https://library.web.cern.ch/resources/remote">
+      <Dropdown.Item as="a" href="https://library.cern/remote-access-to-e-resources/">
         Remote access to e-resources
       </Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item
-        as="a"
-        href="https://scientific-info.cern/search-and-read/online-resources"
-      >
+      <Dropdown.Item as="a" href="https://library.cern/online-resources/">
         CERN Library online resources
       </Dropdown.Item>
     </>
