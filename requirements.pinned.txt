@@ -156,7 +156,7 @@ pyasn1==0.6.2
 pyasn1_modules==0.4.2
 pycountry==24.6.1
 pycparser==2.23
-Pygments==2.19.2
+Pygments==2.20.0
 PyJWT==2.11.0
 PyMySQL==1.1.2
 pynpm==0.3.0
