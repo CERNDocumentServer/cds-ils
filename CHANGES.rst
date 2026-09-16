@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 6.5.0 (released 2026-09-15)
+
+TODO
+
 Version 6.4.0 (released 2026-08-12)
 
 - fix(ui): change document verion order e.g "ed. 2nd" to "2nd ed."
