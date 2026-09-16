@@ -9,7 +9,11 @@ Changes
 
 Version 6.5.0 (released 2026-09-15)
 
-TODO
+- fix(importer): stopped incorrect persisting error messages
+- improvement(config): import from default config
+- change(footer+menu): update links to library website
+- feat(importer): added new gobi importer
+- chore(dependencies): upgrade dependencies
 
 Version 6.4.0 (released 2026-08-12)
 
