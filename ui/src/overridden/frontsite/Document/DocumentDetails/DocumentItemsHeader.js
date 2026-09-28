@@ -10,7 +10,7 @@ export const DocumentItemsHeader = ({ document }) => {
         <Message.Content>
           To access e-standards, follow the{" "}
           <a
-            href="https://sis.web.cern.ch/search-and-read/online-resources/snv-connect"
+            href="https://library.cern/standards/"
             target="_blank"
             rel="noopener noreferrer"
           >
