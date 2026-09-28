@@ -4,11 +4,7 @@ import { Icon } from "semantic-ui-react";
 import _get from "lodash/get";
 
 export const snvLink = (text = "SNV-Connect") => (
-  <a
-    href="https://sis.web.cern.ch/search-and-read/online-resources/snv-connect"
-    target="_blank"
-    rel="noreferrer"
-  >
+  <a href="https://library.cern/standards/" target="_blank" rel="noreferrer">
     {text}
   </a>
 );
