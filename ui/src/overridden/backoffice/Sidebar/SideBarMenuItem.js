@@ -54,7 +54,12 @@ export class SideBarCatalogueItem extends React.Component {
           <Menu.Item as={Link} active={seriesActive} to={BackOfficeRoutes.seriesList}>
             Series / Multiparts
           </Menu.Item>
-          <Menu.Item as={Link} active={itemsActive} to={BackOfficeRoutes.itemsList}>
+          <Menu.Item
+            id="sidebar-physical-copies-button"
+            as={Link}
+            active={itemsActive}
+            to={BackOfficeRoutes.itemsList}
+          >
             Physical Copies
           </Menu.Item>
           <Menu.Item as={Link} active={eitemsActive} to={BackOfficeRoutes.eitemsList}>
