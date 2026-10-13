@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS ldap serializers."""
+
 from functools import partial
 
 from invenio_accounts.models import User

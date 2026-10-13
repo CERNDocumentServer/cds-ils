@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator."""
+
 import uuid
 
 from invenio_app_ils.documents.api import DOCUMENT_PID_TYPE

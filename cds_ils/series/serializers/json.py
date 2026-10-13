@@ -6,6 +6,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Series JSON serializers."""
+
 from invenio_app_ils.literature.serializers.custom_fields import field_cover_metadata
 from invenio_records_rest.serializers.json import JSONSerializer
 

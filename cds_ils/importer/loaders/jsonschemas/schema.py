@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Importer loader."""
+
 from flask import current_app
 from marshmallow import Schema, fields, validate
 from werkzeug.local import LocalProxy

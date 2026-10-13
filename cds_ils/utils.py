@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Utils for modules."""
+
 from flask import current_app
 
 

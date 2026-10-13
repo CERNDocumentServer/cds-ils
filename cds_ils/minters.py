@@ -4,6 +4,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS minters."""
+
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
 
