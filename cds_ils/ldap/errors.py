@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS ldap exceptions."""
+
 import sys
 
 

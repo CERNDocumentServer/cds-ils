@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS Migrator Records MARCXML to JSON dump."""
+
 import logging
 
 import arrow

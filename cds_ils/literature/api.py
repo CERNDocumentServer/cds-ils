@@ -4,6 +4,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS literature API."""
+
 from invenio_pidstore.resolver import Resolver
 
 

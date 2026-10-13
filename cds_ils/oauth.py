@@ -4,6 +4,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS oauth overrides."""
+
 from flask import current_app, flash, g, redirect
 from invenio_oauthclient.contrib.cern_openid import get_resource
 from invenio_oauthclient.errors import OAuthCERNRejectedAccountError

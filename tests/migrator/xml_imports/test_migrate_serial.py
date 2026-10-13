@@ -5,6 +5,7 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 """Test documents migration."""
+
 from cds_ils.migrator.series import journal_marc21, serial_marc21
 from cds_ils.migrator.xml_to_json_dump import CDSRecordDump
 from tests.migrator.xml_imports.helpers import load_json

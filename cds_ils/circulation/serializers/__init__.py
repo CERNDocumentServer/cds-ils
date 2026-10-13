@@ -6,6 +6,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Loan serializers."""
+
 from invenio_app_ils.circulation.serializers.csv import LoanCSVSerializer
 from invenio_app_ils.records.schemas.json import ILSRecordSchemaJSONV1
 from invenio_app_ils.records.serializers import record_responsify_no_etag
