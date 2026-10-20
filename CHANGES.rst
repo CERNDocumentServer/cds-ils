@@ -7,6 +7,13 @@
 Changes
 =======
 
+Version 6.6.0 (released 2026-10-20)
+
+- change(standards): point links to the library standards page
+- update(sidebar): add id to overwritten sidebar item
+- chore(dependencies): updated dependencies
+- update(changes): update change log to follow deployment
+
 Version 6.5.0 (released 2026-09-15)
 
 - fix(importer): stopped incorrect persisting error messages
