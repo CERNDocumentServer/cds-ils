@@ -123,5 +123,11 @@
   { "type": "shelf_number", "key": "123", "text": "SHELF 123" },
   { "type": "shelf_number", "key": "124", "text": "SHELF 124" },
   { "type": "shelf_number", "key": "125", "text": "SHELF 125" },
-  { "type": "shelf_number", "key": "126", "text": "SHELF 126" }
+  { "type": "shelf_number", "key": "126", "text": "SHELF 126" },
+  { "type": "shelf_number", "key": "127", "text": "SHELF 127" },
+  { "type": "shelf_number", "key": "128", "text": "SHELF 128" },
+  { "type": "shelf_number", "key": "129", "text": "SHELF 129" },
+  { "type": "shelf_number", "key": "130", "text": "SHELF 130" },
+  { "type": "shelf_number", "key": "131", "text": "SHELF 131" },
+  { "type": "shelf_number", "key": "132", "text": "SHELF 132" }
 ]
