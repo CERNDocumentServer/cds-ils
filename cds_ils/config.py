@@ -281,6 +281,20 @@ LOGGING_SENTRY_PYWARNINGS = False
 """Enable logging of Python warnings to Sentry."""
 LOGGING_SENTRY_CELERY = False
 """Configure Celery to send logging to Sentry."""
+LOGGING_SENTRY_INIT_KWARGS = {
+    "data_collection": {"user_info": True},
+}
+"""
+Custom args for the Sentry SDK.
+
+data_collection.user_info is True by default, but we keep this here just to be explicit and
+clarify what is happening. This transmits the CDS ID, email, and username of the logged-in
+user, as well as the real client IP address. It does not transmit additional CERN-specific
+data like group membership.
+
+For detailed docs, see: https://docs.sentry.io/platforms/python/integrations/flask/#configure
+and https://docs.sentry.io/platforms/python/data-management/data-collected/#information-about-logged-in-user
+"""
 SENTRY_DSN = None
 """Set SENTRY_DSN environment variable."""
 # Sentry uses env var SENTRY_ENVIRONMENT and SENTRY_RELEASE
