@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """Importer response serializers."""
+
 import json
 
 from flask import abort, current_app

@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS migrator."""
+
 from datetime import date
 
 MIGRATION_DOCUMENT_PID = "L1t3r-4tUr3"

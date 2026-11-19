@@ -5,6 +5,7 @@
 # CDS-ILS is free software; you can redistribute it and/or modify it under
 # the terms of the MIT License; see LICENSE file for more details.
 """CDS-ILS GOBI model."""
+
 from copy import deepcopy
 
 from cds_ils.importer.base_model import Base

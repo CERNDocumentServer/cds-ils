@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS CDS Importer ignored fields."""
+
 CDS_IGNORE_FIELDS = {
     "003",
     "003___",

@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Springer model."""
+
 from copy import deepcopy
 
 from cds_ils.importer.base_model import Base

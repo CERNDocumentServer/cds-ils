@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS MARCXML Journal rules."""
+
 import datetime
 
 from dojson.errors import IgnoreKey

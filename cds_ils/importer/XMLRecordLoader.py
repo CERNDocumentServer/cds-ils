@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS RecordDumpLoader module."""
+
 import importlib_metadata
 
 from cds_ils.importer.errors import RecordNotDeletable, UnknownProvider
