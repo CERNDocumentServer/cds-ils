@@ -6,6 +6,7 @@
 # the terms of the MIT License; see LICENSE file for more details.
 
 """CDS-ILS Importer xml parser module."""
+
 from flask import current_app
 from lxml import etree
 

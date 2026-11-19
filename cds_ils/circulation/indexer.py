@@ -6,6 +6,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Loan indexer APIs."""
+
 from flask import current_app
 from invenio_app_ils.proxies import current_app_ils
 from invenio_pidstore.errors import PIDDeletedError
