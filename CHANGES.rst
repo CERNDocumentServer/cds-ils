@@ -7,6 +7,13 @@
 Changes
 =======
 
+Version 6.7.0 (released 2026-11-19)
+
+- change(installation): upgrade invenio-app-ils and python dependencies
+- change(installation): upgrade frontend dependencies
+- change(CI): switch to python 3.14
+- add(vocabularies): more shelves
+
 Version 6.6.0 (released 2026-10-20)
 
 - change(standards): point links to the library standards page
