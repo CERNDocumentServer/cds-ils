@@ -173,7 +173,7 @@ PyMySQL==1.2.4
 pynpm==0.3.2
 pyparsing==3.3.3
 pyPEG2==2.15.2
-python-dateutil==3.0.0
+python-dateutil==2.9.0.post0
 python-geoip==1.2
 python-ldap==3.4.8
 pytz==2024.1
