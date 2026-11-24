@@ -24,7 +24,7 @@ class CDSDocument(CdsIlsOverdo):
         "980__:THESIS OR 980__:Thesis OR 690C_:BOOK OR 690C_:CONFERENCE OR "
         '690C_:"YELLOW REPORT" OR '
         "980__:PROCEEDINGS OR "
-        "(-980:STANDARD 980:BOOK) OR "
+        "(-980__:STANDARD 980__:BOOK) OR "
         "697C_:LEGSERLIB AND "
         "(-980__:STANDARD "
         "-596__:MULTIVOLUMES1 -596__:MULTIVOLUMESX)"
