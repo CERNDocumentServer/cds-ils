@@ -7,6 +7,11 @@
 Changes
 =======
 
+Version 6.7.1 (released 2026-11-24)
+
+- fix(notifications): total number of sent notification (react-invenio-app-ils)
+- fix(importer): model matching query
+
 Version 6.7.0 (released 2026-11-19)
 
 - change(installation): upgrade invenio-app-ils and python dependencies
