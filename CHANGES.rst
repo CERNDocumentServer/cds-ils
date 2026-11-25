@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 6.7.3 (released 2026-11-25)
+
+- fix(importer): don't block the preview on missing eitem
+
 Version 6.7.2 (released 2026-11-25)
 
 - fix(importer): remove failure on manual import exception
