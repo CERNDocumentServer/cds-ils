@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version 6.7.2 (released 2026-11-25)
+
+- fix(importer): remove failure on manual import exception
+
 Version 6.7.1 (released 2026-11-24)
 
 - fix(notifications): total number of sent notification (react-invenio-app-ils)
