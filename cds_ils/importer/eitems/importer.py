@@ -371,6 +371,10 @@ class EItemImporter(object):
 
     def preview_import(self, matched_document):
         """Preview eitem JSON."""
+        if not self.eitem_json:
+            # eitem is not always there, sometimes we just create a doc
+            return None
+
         self.action = "create"
         if matched_document:
             pid = matched_document["pid"]
