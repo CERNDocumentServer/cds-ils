@@ -123,6 +123,7 @@ importer_exception_handlers = {
     LossyConversion: importer_exception_handler,
     UnexpectedValue: importer_exception_handler,
     RecordModelMissing: importer_exception_handler,
+    ManualImportRequired: importer_exception_handler,
     MissingRequiredField: importer_exception_handler,
     IlsValidationError: ils_validation_exception_handler,
 }
