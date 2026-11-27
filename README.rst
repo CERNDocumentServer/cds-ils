@@ -18,13 +18,20 @@ This is the CERN Document Server source code overlay for InvenioILS.
 Update dependencies
 -------------------
 
-To update Python dependencies you need to run `npm install` in the target deployment environment:
+Python dependencies are managed with `uv <https://docs.astral.sh/uv/>`_. They are declared in
+``pyproject.toml`` and locked in ``uv.lock`` (commit both).
+
+Optional dependencies are grouped in extras (``sentry``, ``xrootd``), which the production image
+installs, and test tooling lives in the ``dev`` dependency group, which ``uv sync`` installs by default.
+
+To add or change a dependency, edit ``pyproject.toml`` and then update the lock:
 
 .. code-block:: shell
 
-    $ docker run -it --platform="linux/amd64" --rm -v $(pwd):/app -w /app \
-        registry.cern.ch/inveniosoftware/almalinux:1 \
-        sh -c "dnf install -y openldap-devel && pip install -e . && pip freeze > requirements.new.txt"
+    $ uv lock --python 3.14
+
+Existing locked versions are kept. To upgrade, use ``uv lock --upgrade`` (everything) or
+``uv lock --upgrade-package <name>`` (a single package).
 
 To update JS dependencies you need to run `npm install` in the target deployment environment:
 

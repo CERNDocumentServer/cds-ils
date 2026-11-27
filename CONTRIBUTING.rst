@@ -68,12 +68,14 @@ Ready to contribute? Here's how to set up `cds-ils` for local development.
 
       $ git clone git@github.com:your_name_here/cds-ils.git
 
-3. Install your local copy. Create a Python virtualenv and then install:
+3. Install your local copy. Create a Python virtualenv and then install
+   (using `uv <https://docs.astral.sh/uv/>`_):
 
    .. code-block:: console
 
       $ cd cds-ils/
-      $ pip install -e .[all]
+      $ uv sync
+      $ source .venv/bin/activate
 
 4. Create a branch for local development:
 

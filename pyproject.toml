@@ -1,3 +1,162 @@
 [build-system]
-requires = ["setuptools", "wheel", "babel>2.8"]
+requires = ["setuptools>=64", "wheel", "babel>2.8"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "cds-ils"
+dynamic = ["version", "readme"]
+description = "CDS-ILS."
+keywords = ["CDS-ILS", "InvenioILS", "Invenio"]
+license = { text = "MIT" }
+authors = [{ name = "CERN" }]
+classifiers = ["Development Status :: 5 - Production/Stable"]
+requires-python = ">=3.14"
+dependencies = [
+    "fuzzywuzzy>=0.18.0",
+    "python-ldap>=3.4.0,<3.5.0",
+    "invenio-app-ils[lorem,opensearch2]>=9.0.0,<10.0.0",
+    # migrator deps
+    "cds-dojson>=0.13.0",
+    "lxml>=4.6.5",
+    "uwsgi>=2.0",
+    "uwsgitop>=0.11",
+    "uwsgi-tools>=1.1.1",
+]
+
+[project.optional-dependencies]
+sentry = [
+    "sentry-sdk>=1.45,<2.0.0",
+]
+xrootd = [
+    "invenio-xrootd",
+    "requests-kerberos",
+]
+
+[dependency-groups]
+dev = [
+    "docker-services-cli>=0.6.1",
+    "mock>=2.0.0",
+    "pydocstyle<6.2.0",
+    "pytest-black>=0.3.0",
+    "pytest-invenio>=3.0.0,<4.0.0",
+    "pytest-mock>=1.6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/CERNDocumentServer/cds-ils"
+
+[project.scripts]
+cds-ils = "invenio_app.cli:cli"
+
+[project.entry-points."flask.commands"]
+user-testing = "cds_ils.cli:user_testing"
+ldap-users = "cds_ils.ldap.cli:ldap_users"
+migration = "cds_ils.migrator.cli:migration"
+importer = "cds_ils.importer.cli:importer"
+covers = "cds_ils.cli:covers"
+maintenance = "cds_ils.cli:maintenance"
+
+[project.entry-points."invenio_db.models"]
+cds_ils_ldap = "cds_ils.ldap.models"
+cds_ils_importer = "cds_ils.importer.models"
+
+[project.entry-points."invenio_base.api_apps"]
+cds_ils = "cds_ils.ext:CdsIls"
+
+[project.entry-points."invenio_base.apps"]
+cds_ils_app = "cds_ils.ext:CdsIls"
+
+[project.entry-points."invenio_base.api_blueprints"]
+cds_ils_patron_loans = "cds_ils.patrons.views:create_patron_loans_blueprint"
+cds_ils_legacy = "cds_ils.literature.views:legacy_blueprint"
+cds_ils_logout = "cds_ils.authentication.views:cern_oauth_blueprint"
+cds_ils_importer = "cds_ils.importer.views:create_importer_blueprint"
+
+[project.entry-points."invenio_config.module"]
+zz_cds_ils = "cds_ils.config"
+
+[project.entry-points."invenio_celery.tasks"]
+cds_ils_tasks = "cds_ils.literature.tasks"
+cds_ils_ldap_tasks = "cds_ils.ldap.tasks"
+cds_ils_mail_tasks = "cds_ils.mail.tasks"
+cds_ils_importer_tasks = "cds_ils.importer.tasks"
+
+[project.entry-points."invenio_access.actions"]
+retrieve_patron_loans_access_action = "cds_ils.patrons.permissions:retrieve_patron_loans_access_action"
+document_importer_access_action = "cds_ils.patrons.permissions:document_importer_access_action"
+
+[project.entry-points."cds_ils.importers"]
+cds = "cds_ils.importer.providers.cds.importer:CDSImporter"
+snv = "cds_ils.importer.providers.snv.importer:SNVImporter"
+springer = "cds_ils.importer.providers.springer.importer:SpringerImporter"
+ebl = "cds_ils.importer.providers.ebl.importer:EBLImporter"
+safari = "cds_ils.importer.providers.safari.importer:SafariImporter"
+gobi = "cds_ils.importer.providers.gobi.importer:GOBIImporter"
+
+[project.entry-points."cds_ils.document_importers"]
+cds = "cds_ils.importer.providers.cds.document_importer:CDSDocumentImporter"
+
+[project.entry-points."cds_ils.importer.base"]
+base = "cds_ils.importer.providers.rules.base"
+
+[project.entry-points."cds_ils.importer.models"]
+cds_book = "cds_ils.importer.providers.cds.models.document:model"
+cds_standard = "cds_ils.importer.providers.cds.models.standard:model"
+snv_standard = "cds_ils.importer.providers.snv.models.standard:model"
+springer_document = "cds_ils.importer.providers.springer.springer:model"
+ebl_document = "cds_ils.importer.providers.ebl.ebl:model"
+safari_document = "cds_ils.importer.providers.safari.safari:model"
+gobi_document = "cds_ils.importer.providers.gobi.gobi:model"
+
+[project.entry-points."cds_ils.migrator.models"]
+cds_book = "cds_ils.importer.providers.cds.models.document:model"
+cds_standard = "cds_ils.importer.providers.cds.models.standard:model"
+
+[project.entry-points."cds_ils.migrator.serial_model"]
+ils_serial = "cds_ils.importer.providers.cds.models.serial:model"
+
+[project.entry-points."cds_ils.migrator.journal_model"]
+ils_journal = "cds_ils.importer.providers.cds.models.journal:model"
+
+[project.entry-points."cds_ils.migrator.multipart_model"]
+ils_multipart = "cds_ils.importer.providers.cds.models.multipart:model"
+
+[project.entry-points."cds_ils.importer.cds.base"]
+base = "cds_ils.importer.providers.cds.rules.base"
+
+[project.entry-points."cds_ils.importer.cds.document"]
+base = "cds_ils.importer.providers.cds.rules.base"
+standard = "cds_ils.importer.providers.cds.rules.standard"
+
+[project.entry-points."cds_ils.importer.document"]
+cds = "cds_ils.importer.providers.cds.rules.base"
+snv = "cds_ils.importer.providers.cds.rules.base"
+springer = "cds_ils.importer.providers.springer.rules.document"
+ebl = "cds_ils.importer.providers.ebl.rules.document"
+safari = "cds_ils.importer.providers.safari.rules.document"
+gobi = "cds_ils.importer.providers.gobi.rules.document"
+
+[project.entry-points."cds_ils.importer.series"]
+serial = "cds_ils.importer.providers.cds.rules.serial"
+multipart = "cds_ils.importer.providers.cds.rules.multipart"
+journal = "cds_ils.importer.providers.cds.rules.journal"
+
+[project.entry-points."cds_ils.migrator.base"]
+base = "cds_ils.importer.providers.cds.rules.base"
+
+[project.entry-points."invenio_pidstore.minters"]
+legacy = "cds_ils.minters:legacy_recid_minter"
+
+[project.entry-points."cds_ils.importer.import_json_transformers"]
+cds = "cds_ils.importer.json.rdm.transform:RDMToILSTransform"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+namespaces = false
+
+[tool.setuptools.dynamic]
+version = { attr = "cds_ils.__version__" }
+readme = { file = ["README.rst", "CHANGES.rst"], content-type = "text/x-rst" }

@@ -20,6 +20,8 @@ include .git-blame-ignore-revs
 include *.rst
 include *.sh
 include *.txt
+include *.toml
+include uv.lock
 include *.yml
 include babel.ini
 include LICENSE
