@@ -18,6 +18,9 @@ dependencies = [
     # migrator deps
     "cds-dojson>=0.13.0",
     "lxml>=4.6.5",
+    # invenio-app-ils still imports `distutils` (removed from the stdlib in Python 3.12);
+    # setuptools provides it. Remove once invenio-app-ils drops that import.
+    "setuptools",
     "uwsgi>=2.0",
     "uwsgitop>=0.11",
     "uwsgi-tools>=1.1.1",
@@ -25,7 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 sentry = [
-    "sentry-sdk>=1.45,<2.0.0",
+    "sentry-sdk>=2.0.0,<3.0.0",
 ]
 xrootd = [
     "invenio-xrootd",
