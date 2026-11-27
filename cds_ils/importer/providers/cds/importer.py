@@ -44,7 +44,7 @@ class CDSImporter(Importer):
                     document_class, external_pid_type, pid_value
                 )
                 return document["pid"], []
-            except (PIDDoesNotExistError, PersistentIdentifierError):
+            except PIDDoesNotExistError, PersistentIdentifierError:
                 ## we pass to try to match by legacy recid
                 pass
         pid_value = self.json_data["legacy_recid"]
@@ -53,7 +53,7 @@ class CDSImporter(Importer):
             document = get_record_by_legacy_recid(
                 document_class, external_pid_type, pid_value
             )
-        except (PIDDoesNotExistError, PersistentIdentifierError):
+        except PIDDoesNotExistError, PersistentIdentifierError:
             return None, []
         return document["pid"], []
 

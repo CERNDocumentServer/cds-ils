@@ -134,7 +134,7 @@ def patrons(app, db):
         **dict(
             user_id=user1_id,
             extra_data=dict(person_id="1", department="Department", legacy_id="1"),
-        )
+        ),
     )
     db.session.add(remote_account)
     db.session.commit()
