@@ -9,9 +9,15 @@ name: CI
 
 on:
   push:
-    branches: master
+    branches:
+      - master
+      - "maint-**"
+      - "feature/**"
   pull_request:
-    branches: master
+    branches:
+      - master
+      - "maint-**"
+      - "feature/**"
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron: "0 3 * * 6"
@@ -34,7 +40,6 @@ jobs:
     env:
       DB: ${{ matrix.db-service }}
       SEARCH: ${{ matrix.search-service }}
-      EXTRAS: tests
 
     steps:
       - name: Install LDAP dependencies
@@ -49,17 +54,21 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: setup.cfg
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: setup.cfg
 
       - name: Install dependencies
         run: |
-          pip install ".[$EXTRAS]"
-          pip freeze
+          uv sync --locked --extra sentry
+          uv pip freeze
           docker version
 
       - name: Run tests
-        run: ./run-tests.sh
+        run: uv run --no-sync ./run-tests.sh
 
   JS:
     runs-on: ubuntu-latest
