@@ -409,7 +409,7 @@ def standard_review(self, key, value):
                     "standard_review_checkdate": check_date_iso,
                 }
             )
-        except (ValueError, IndexError):
+        except ValueError, IndexError:
             raise UnexpectedValue(subfield="z")
     _extensions.update(
         {
@@ -777,7 +777,7 @@ def languages(self, key, value):
         lang = lang.lower()
     try:
         return pycountry.languages.lookup(lang).alpha_3.upper()
-    except (KeyError, AttributeError, LookupError):
+    except KeyError, AttributeError, LookupError:
         raise UnexpectedValue(subfield="a")
 
 
@@ -854,7 +854,7 @@ def conference_info(self, key, value):
             try:
                 _country = pycountry.countries.get(alpha_2=country_codes[0])
                 country = str(_country.alpha_3)
-            except (KeyError, AttributeError):
+            except KeyError, AttributeError:
                 raise UnexpectedValue(subfield="w")
 
         place = clean_val("c", v, str, req=required)

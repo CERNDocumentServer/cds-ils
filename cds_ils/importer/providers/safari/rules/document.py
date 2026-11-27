@@ -182,7 +182,7 @@ def languages(self, key, value):
     lang = clean_val("a", value, str).lower()
     try:
         return pycountry.languages.lookup(lang).alpha_3.upper()
-    except (KeyError, AttributeError, LookupError):
+    except KeyError, AttributeError, LookupError:
         raise UnexpectedValue(subfield="a")
 
 

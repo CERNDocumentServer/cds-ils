@@ -59,9 +59,11 @@ def pages():
     """Register CDS static pages."""
 
     def get_page_content(page):
-        with importlib.resources.files("cds_ils").joinpath("static_pages", page).open(
-            "rb"
-        ) as f:
+        with (
+            importlib.resources.files("cds_ils")
+            .joinpath("static_pages", page)
+            .open("rb") as f
+        ):
             return f.read().decode("utf8")
 
     pages_data = [

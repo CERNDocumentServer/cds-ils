@@ -157,7 +157,7 @@ def languages(self, key, value):
             return new_lang
         else:
             raise IgnoreKey("languages")
-    except (KeyError, AttributeError, LookupError):
+    except KeyError, AttributeError, LookupError:
         raise UnexpectedValue(subfield="a")
 
 
